@@ -14,9 +14,9 @@ namespace TeleSpecialists.BLL.Service
             return model;
         }
 
-        public token GetDetailById(string phy_key, string phy_token_key)
+        public token GetDetailById(string phy_key, string phy_token_key,string PCName)
         {
-            var model = _unitOfWork.TokenRepository.Query().Where(x => x.tok_phy_key == phy_key && x.tok_phy_token == phy_token_key).FirstOrDefault();
+            var model = _unitOfWork.TokenRepository.Query().Where(x => x.tok_phy_key == phy_key && x.tok_phy_token == phy_token_key && x.tok_machine_name == PCName).FirstOrDefault();
             return model;
         }
 
@@ -43,6 +43,12 @@ namespace TeleSpecialists.BLL.Service
                 _unitOfWork.Save();
                 _unitOfWork.Commit();
             }
+        }
+
+        public List<token> deleteToken(string UserId, string MachineName)
+        {
+            var model = _unitOfWork.TokenRepository.Query().Where(x => x.tok_phy_key == UserId && x.tok_machine_name == MachineName).ToList();
+            return model;
         }
     }
 }

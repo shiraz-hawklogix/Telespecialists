@@ -35,6 +35,7 @@ namespace TeleSpecialists.Controllers
         private readonly AlarmService _alarmService;
         private readonly UserVerificationService _userVerificationService;
         private readonly user_fcm_notification _user_Fcm_Notification;
+        private readonly TokenService _tokenservice;
         //   private readonly RateService _rateService;
         public AccountController()
         {
@@ -43,6 +44,7 @@ namespace TeleSpecialists.Controllers
             _alarmService = new AlarmService();
             _userVerificationService = new UserVerificationService();
             _user_Fcm_Notification = new user_fcm_notification();
+            _tokenservice = new TokenService();
             //     _rateService = new RateService();
         }
 
@@ -562,6 +564,7 @@ namespace TeleSpecialists.Controllers
         public ActionResult getSessionTimeOutValue()
         {
             var UserId = ViewBag.ApplicationSetting as application_setting;
+
             return Json(new { result = UserId.aps_session_timeout_in_minutes }, JsonRequestBehavior.AllowGet);
         }
 
@@ -945,7 +948,14 @@ namespace TeleSpecialists.Controllers
         public ActionResult Signout(string isLogout = "")
         {
             var user = loggedInUser;
-            _userVerificationService.userSignOut(user.Id.ToString(), GetUniqueMachineInfo(user.Id.ToString()), isLogout);
+
+            string PCName = GetUniqueMachineInfo(user.Id.ToString());
+            _userVerificationService.userSignOut(user.Id.ToString(), PCName, isLogout);
+
+            // get delete token from specific Machine
+            var tokens = _tokenservice.deleteToken(user.Id.ToString(), PCName);
+            _tokenservice.DeleteRange(tokens);
+
             LogAuditRecord(user.UserName, AuditRecordLogStatus.LogOut.ToString());
 
             return View();

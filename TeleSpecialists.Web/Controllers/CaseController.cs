@@ -18,6 +18,7 @@ using TeleSpecialists.Web.Hubs;
 using TeleSpecialists.Web.Models;
 using TeleSpecialists.BLL.Service.CaseServices;
 using Kendo.DynamicLinq;
+using System.Web;
 
 namespace TeleSpecialists.Controllers
 {
@@ -5787,11 +5788,19 @@ namespace TeleSpecialists.Controllers
         public JsonResult CreateTokens(token model, string phy_token_key)
         {
             string phy_key = User.Identity.GetUserId();
-            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key);
+            // get MachineName
+            string PCName = "";
+            HttpCookie myCookie = Request.Cookies["PCCookieInfo_" + phy_key];
+            if (myCookie != null)
+            {
+                PCName = myCookie.Values["userid"].ToString();
+            }
+            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key, PCName);
             if (GetDetail == null)
             {
                 model.tok_phy_key = phy_key;
                 model.tok_phy_token = phy_token_key;
+                model.tok_machine_name = PCName;
                 _tokenservice.Create(model);
             }
             var detail = _fireBaseUserMailService.GetDetails(phy_key);
@@ -5800,7 +5809,13 @@ namespace TeleSpecialists.Controllers
         public JsonResult DeleteToken(string phy_token_key)
         {
             string phy_key = User.Identity.GetUserId();
-            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key);
+            string PCName = "";
+            HttpCookie myCookie = Request.Cookies["PCCookieInfo_" + phy_key];
+            if (myCookie != null)
+            {
+                PCName = myCookie.Values["userid"].ToString();
+            }
+            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key, PCName);
             if (GetDetail != null)
             {
                 int id = GetDetail.tok_key;
