@@ -492,7 +492,7 @@ namespace TeleSpecialists.Controllers
             }
             string PCName = GetUniqueMachineInfo(UserId);
 
-            var user = _userVerificationService.userVerifications(UserId);
+            var user =   _userVerificationService.userVerifications(UserId);
             if (settings.aps_enable_logout_from_other_devices && user.Count > 0 && !string.IsNullOrEmpty(PCName) && (string.IsNullOrEmpty(isLogout) || isLogout != "true"))
             {
                 if (user.Where(x => x.IsLoggedIn == true).ToList().Any(x => x.MachineName != PCName))
