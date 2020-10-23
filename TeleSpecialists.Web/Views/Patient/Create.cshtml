@@ -1,0 +1,67 @@
+﻿@model TeleSpecialists.BLL.Model.workflow
+@{
+    ViewBag.Title = "Add Workflow";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+@using (Html.BeginForm("Create", "Workflow", FormMethod.Post, new { @class = "form-horizontal", @id = "createForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-sm-10 offset-sm-1">
+            <h2>Create Workflow</h2>
+            <hr />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10 offset-sm-1">
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Title: </label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(x => x.wfl_name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.wfl_name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Description: </label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(x => x.wfl_description, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.wfl_description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Is Active: </label>
+                <div class="col-sm-8">
+                    @Html.CheckBoxFor(x => x.wfl_is_active, new { @class = "", @checked = "checked" })
+                    @Html.ValidationMessageFor(model => model.wfl_is_active, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-6 offset-sm-5 text-right">
+            <a class="btn btn-link" href="@Url.Action("Index")">Cancel</a>
+            <input type="submit" value="Save" class="btn btn-dark" />
+        </div>
+
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+        });
+
+    </script>
+}
+

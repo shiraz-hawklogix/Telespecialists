@@ -1,0 +1,8 @@
+﻿.cke_button_source, .cke_button_save, .cke_button_newpage, .cke_button_print,
+.cke_button_unlink, .cke_button_anchor, .cke_button_image, .cke_button_flash, .cke_button_table,
+.cke_button_horizontalrule, .cke_button_smiley, .cke_button_specialchar, .cke_button_pagebreak,
+.cke_button_iframe, .cke_voice_label, .cke_button_form, .cke_button_checkbox, .cke_button_radio,
+.cke_button_textfield, .cke_button_textarea, .cke_button_select, .cke_button_button,
+.cke_button_imagebutton, .cke_button_hiddenfield, .cke_button_maximize, .cke_button_showblocks, .cke_button_about {
+    display: none !important;
+}

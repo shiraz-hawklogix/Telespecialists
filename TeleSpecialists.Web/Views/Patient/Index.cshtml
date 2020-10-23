@@ -1,0 +1,75 @@
+﻿@{
+    ViewBag.Title = "Workflow";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+@if (ViewBag.Message != "" && ViewBag.Message != null)
+{
+    <div class="alert alert-dismissible @((bool)ViewBag.Error ? "alert-danger" : "alert-success")" id="autoclose">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>@((bool)ViewBag.Error ? "Error!" : "Success!")</strong> @ViewBag.Message
+    </div>
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <a class="btn btn-dark" href="@Url.Action("Create")">Create Workflow</a>
+    </div>
+</div>
+
+<div class="pt-1 customGridHeader">
+    <div id="kendoDataGrid">
+    </div>
+</div>
+
+@section scripts{
+
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#kendoDataGrid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetAll")',
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                },
+                pageSize: 10,
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            //selectable: true,
+            filterable: true,
+            sortable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            columns: [
+                { hidden: true, field: "wfl_key" },
+                { field: "wfl_created_date", title: "Date", template: "#= kendo.toString(kendo.parseDate(wfl_created_date), 'MM/dd/yyyy') #", filterable: { ui: "datepicker" } },
+                { field: "wfl_name", title: "Workflow" },
+                { field: "wfl_description", title: "Description" },
+                { field: "wfl_is_active", title: "Active", template: '<input type="checkbox" #= wfl_is_active ? "checked=checked" : "" # disabled="disabled" ></input>' },
+                { title: "Actions", width: '7%', template: "<a class='btn btn-dark btn-sm py-1' title='Edit Workflow' href='@Url.Action("Edit")/\#= wfl_key#'>Edit</a>" }
+            ]
+        });
+
+    });
+
+    </script>
+
+}

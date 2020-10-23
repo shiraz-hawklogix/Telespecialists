@@ -1,0 +1,281 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@using TeleSpecialists.Models;
+@using Microsoft.AspNet.Identity;
+@{
+    var loggedInUser = ViewBag.loggedInUser as ApplicationUser;
+
+}
+
+<input type="hidden" id="IsQPSQualityDirectororVPQuality" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) ? 1 : 0)" />
+
+<div class="row mt-3">
+    <div class="col-12 text-right">
+        <div class="nav-wrapper d-inline-block mt-4 mt-lg-0 operationsIndicator">
+            <ul class="nav nav-pills OOR_List">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnlastthree">Last 3 Months</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnlasttwo">Last 2 Months</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnlast">Last Month</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" id="btnlast">Last 3 Days</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12 col-xl-12 col-lg-12 col-md-12">
+        <div id="cases-operations-outliers-container">
+        </div>
+    </div>
+</div>
+
+<script>
+
+    //var periodsend;
+    $(document).ready(function () {
+        $("#cases-operations-outliers-container").addClass("d-none");
+        if ($("#IsQPSQualityDirectororVPQuality").val() == "1") {
+            $("#cases-operations-outliers-container").removeClass("d-none");
+            periodsend = "Last 3 Days";
+            refreshoperationsoutliersList('Last 3 Days');
+            //GetCasesRecord('CurrentDate');
+        }
+    })
+    /*
+    function SendNewCaseEmail(data = []) {
+        var cas_keys = parseInt(data);
+        debugger
+        $.ajax({
+            type: "POST",
+            url: "Case/SendNewCaseEmail",
+            dataType: 'json',
+            data: { data: cas_keys },
+            error: function (error) {
+
+            },
+            success: function (data) {
+
+            }
+
+        });
+    }
+    */
+    //function LoadOperationsoutliersList() {
+    //    var period = $('.OOR_List').find('.nav-link.active').text()
+    //    if (refreshoperationsoutliersList.loadTimeout != undefined)
+    //        window.clearTimeout(refreshoperationsoutliersList.loadTimeout);
+
+    //    refreshoperationsoutliersList.loadTimeout = window.setTimeout(function () { refreshoperationsoutliersList(period) }, 5000);
+    //}
+
+    function refreshoperationsoutliersList(period) {
+
+        $("#cases-operations-outliers-container").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetOperationsOutliersList", "Reports")',
+                        contentType: "application/json",
+                        type: "POST",
+                        data: { period: period },
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                //serverPaging: true,
+                //serverFiltering: true,
+                //serverSorting: true,
+                //pageSize: GetKendoPageSize("QualityReport", "RecPerPage", true),
+                //page: KendoGet("QualityReport", "page")
+                serverPaging: true,
+                pageSize: 10,
+                serverFiltering: false,
+                serverSorting: true,
+            },
+            width: '100%',
+            pageable: {
+                refresh: true,
+                //pageSizes: true,
+                //pageSize: 10
+                pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+            },
+            groupable: false,
+            filterable: true,
+            sortable: true,
+            resizable: true,
+
+            dataBound: function (e) {
+
+                $("#cases-operations-outliers-container .k-auto-scrollable").scrollLeft(0);
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+                //LoadOperationsoutliersList();
+                DoColor();
+                //GetDetail();
+            },
+            columns: [
+                {
+                    title: "<span class='font-weight-bold' style='font-size: larger;'>Operations Outliers Report</span>",
+                    columns: [
+                        { hidden: true, field: "CaseKey" },
+                        { title: "TC Case Number", template: "<a class='loadLinkAsync' onclick='AssignTabID.call(this)' title='TC Case Number' href='@Url.Action("Edit", "Case")?id=#= CaseKey#&isReadOnly=#= true#'>#=CaseNumber#</a>", width: 185 },
+                        { field: "CaseType", width: 185, title: "CaseType" },
+                        { field: "StartTime", width: 185, title: "Start Time" },
+                        { field: "FacilityName", width: 250, title: "Facility" },
+                        { field: "Physician_Initials", width: 185, title: "Physician" },
+                        { field: "TS_Response_Time", width: 185, title: "TS Response Time" },
+                        { field: "CallBack_Response_Time", width: 185, title: "CallBack Time" },
+                    ]
+                }]
+        });
+    }
+    //var AssignTabID = function () {
+    //    localStorage.clickfromhome = "casespendingreview";
+    //}
+    function DoColor() {
+        $("#cases-operations-outliers-container tbody tr").each(function (index, element) {
+            var row = $(element);
+            var respTime = row.find("td:nth-child(7)").text();
+            var callback = row.find("td:nth-child(8)").text();
+            var CaseType = row.find("td:nth-child(3)").text();
+            var physician = row.find("td:nth-child(6)").text();
+            var showPurple = false;
+
+            if (physician != undefined && physician != '') {
+                var phyCount = physician.split('/').length;
+
+                if (phyCount > 2) {
+                    row.children("td").addClass("text-orange font-weight-bold");
+                    showPurple = true;
+                }
+            }
+
+            if (CaseType == "Stroke Alert") {
+                if (respTime != undefined && respTime != '') {
+                    var respTimeArray = respTime.split(':');
+                    var hrs = parseInt(respTimeArray[0]);
+                    var mins = parseInt(respTimeArray[1]);
+                    var secs = 0;
+                    if (respTimeArray.length > 2) {
+                        secs = parseInt(respTimeArray[2]);
+                        if (secs > 0)
+                            mins = mins + (secs / 60);
+                    }
+
+                    if (hrs > 0 || mins > 10.0) {
+                        row.children("td").removeClass("text-orange font-weight-bold");
+
+                        if (showPurple) {
+                            row.children("td").addClass("text-purple font-weight-bold");
+                        } else {
+                            row.children("td").addClass("text-pink font-weight-bold");
+                        }
+                    }
+                }
+
+            } else if (CaseType == "STAT Consult") {
+                if (callback != undefined && callback != '') {
+                    var callrespTimeArray = callback.split(':');
+                    var hrs = parseInt(callrespTimeArray[0]);
+                    var mins = parseInt(callrespTimeArray[1]);
+                    var secs = 0;
+                    if (callrespTimeArray.length > 2) {
+                        secs = parseInt(callrespTimeArray[2]);
+                        if (secs > 0)
+                            mins = mins + (secs / 60);
+                    }
+
+                    if (hrs > 0 || mins > 15.0) {
+                        row.children("td").removeClass("text-orange font-weight-bold");
+
+                        if (showPurple) {
+                            row.children("td").addClass("text-purple font-weight-bold");
+                        } else {
+                            row.children("td").addClass("text-pink font-weight-bold");
+                        }
+                    }
+                }
+            }
+
+        });
+    }
+
+    $('.operationsIndicator .nav-link').off("click").click(function (e) {
+
+        e.preventDefault();
+        if (refreshoperationsoutliersList.loadAllTimeout != undefined)
+            window.clearTimeout(refreshoperationsoutliersList.loadAllTimeout);
+        $('.nav.OOR_List>li>a').removeClass('active');
+        $(this).addClass('active');
+        periodsend = $(this).text();
+        refreshoperationsoutliersList($(this).text());
+        //GetCasesRecord('CurrentDate');
+    });
+    /*
+    function GetCasesRecord(param) {
+        $.ajax({
+            type: "POST",
+            url: "Reports/GetOperationsOutliers",
+            dataType: 'json',
+            data: { period: param },
+            error: function (error) {
+
+            },
+            success: function (data) {
+                var detail = data.Data;;
+                GetDetail(detail);
+            }
+
+        });
+    }
+
+    function GetDetail(AllData) {
+        var difference = [];
+        var data;
+        var array = []
+        var getdata = [];
+        debugger
+        for (var i = 0; i < AllData.length; i++) {
+            array.push("" + AllData[i].CaseKey + "");
+        }
+
+        data = localStorage.getItem("currentdata");
+
+        if (data) {
+            getdata = data.split(',');
+        }
+
+        for (var i = 0; i < array.length; i++) {
+            debugger
+            var isfound = (getdata.indexOf(array[i]) > -1);
+            if (!isfound) {
+                difference.push(array[i]);
+            }
+        }
+
+        localStorage.currentdata = array;
+
+        if (difference.length > 0) {
+            SendNewCaseEmail(difference);
+        }
+    }
+    */
+</script>

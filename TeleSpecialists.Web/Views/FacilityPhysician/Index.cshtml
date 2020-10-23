@@ -1,0 +1,148 @@
+﻿@{
+    ViewBag.Title = "Physicians";
+}
+
+
+<div class="pt-1 customGridHeader">
+    <div id="physicianGrid">
+    </div>
+</div>
+
+
+<script type="text/javascript">
+        var contactGrid = null;
+        var fac_key = '@(ViewBag.fac_key)';
+    $(document).ready(function () {
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+            getPhysicians();
+    });
+
+    $("#physicanStatusFilter").off("change").change("#physicanStatusFilter", function () {
+        getPhysicians();
+    });
+
+    $("#physicanOnboardedFilter").off("change").change("#physicanOnboardedFilter", function () {
+        getPhysicians();
+    });
+    
+
+    function getPhysicians() {
+        $("#physicianGrid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetAll")',
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        if (fac_key !== "") {
+                            if (options.filter === undefined)
+                                options.filter = {};
+
+                            if (options.filter.filters === undefined)
+                                options.filter.filters = [];
+
+                            if (options.filter.logic === undefined)
+                                options.filter.logic = "and";
+
+                            options.filter.filters.push({ field: "fap_fac_key", operator: "eq", "value": fac_key });
+
+                            var currentPhyStatus = $("#physicanStatusFilter").val();
+                            if (currentPhyStatus != "") {
+                                options.filter.filters.push({ field: "fap_is_active", operator: "eq", "value": currentPhyStatus == "1" ? true : false });
+                            }
+
+                            var currentPhyOnboardFilt = $("#physicanOnboardedFilter").val();
+                            if (currentPhyOnboardFilt != "") {
+                                options.filter.filters.push({ field: "fap_is_on_boarded", operator: "eq", "value": currentPhyOnboardFilt == "1" ? true : false });
+                            }
+                        }
+                        options = KendoKeepState("FacilityPhysician", options);
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                },
+                page: KendoGet("FacilityPhysician", "page"),
+                pageSize: KendoGet("FacilityPhysician"),
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            filterable: true,
+            sortable: true,
+            scrollable: true,
+            resizable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            dataBound: function (e) {
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+            },
+            columns: [
+                { hidden: true, field: "fap_key" },
+                { field: "phy_first_name", title: "First Name", width: '115px'},
+                { field: "phy_last_name", title: "Last Name", width: '115px'},
+                { field: "phy_email", title: "Email", width: '135px' },
+                {
+                    field: "fap_start_date", title: "Start Date", width: '120px',
+                    template: "#= kendo.toString(kendo.parseDate(fap_start_date), 'MM/dd/yyyy') #", filterable: false
+                },
+                {
+                    field: "fap_end_date", title: "End Date", width: '120px',
+                    template: '<span> #= fap_end_date ? kendo.toString(kendo.parseDate(fap_end_date), "MM/dd/yyyy") : ""# </span>', filterable: false
+                },
+                {
+                    field: "fap_is_on_boarded", title: "Onboarded", width: '100px',
+                    template: '<input type="checkbox" #= fap_is_on_boarded ? "checked=checked" : "" # disabled="disabled" ></input>'
+                },
+                {
+                    field: "fap_onboarded_date", title: "Onboarding Date", width: '150px',
+                    template: '<span> #= fap_onboarded_date && fap_is_on_boarded ? kendo.toString(kendo.parseDate(fap_onboarded_date), "MM/dd/yyyy") + " " +  fap_onboarded_by_name  : ""# </span>',
+                    filterable: false
+                },
+                {
+                    field: "phy_is_active", title: "Active", width: '80px',
+                    template: '<input type="checkbox" #= phy_is_active ? "checked=checked" : "" # disabled="disabled" ></input>'
+                },
+                {
+                    title: "Actions", width: '80px', template: "<a class='btn btn-dark btn-sm py-1 loadModelPopup' title='Edit' href='@Url.Action("EditPhysician")/\#= fap_key#'>Edit</a> " 
+                        //+ "<a class='btn btn-dark btn-sm py-1' onclick='removePhysician(#= fap_key#);' title='Remove' href='javascript:;'>Remove</a>"
+
+                }
+            ]
+        });
+    }
+
+
+     function removePhysician(fap_key) {        
+        var url = "@Url.Action("Remove")";
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+            "<span>Are you sure you want to remove this Physician from the list?</span>",
+            function () {
+                $.get(url, { id: fap_key }, function (response) {
+                    if (response.success) {
+                        getPhysicians();
+                        $("#divModelPopUp").modal("hide");
+                    }
+                    else {
+                        $("#divModelPopUp").find("#validationSummary").showBSDangerAlert("", response.data);
+                    }
+                })
+            });
+
+    }
+
+</script>
+
+

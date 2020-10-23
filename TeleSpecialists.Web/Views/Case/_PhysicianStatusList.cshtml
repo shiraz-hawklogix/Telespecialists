@@ -1,0 +1,114 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+
+@model IEnumerable<TeleSpecialists.BLL.ViewModels.PhysicianStatusViewModel>
+
+@{
+    TeleSpecialists.Models.ApplicationUser loggedInUser = ViewBag.loggedInUser;
+    var onlineUsers = ViewBag.OnlineUsers as List<string>;
+    var defaultStatus = ViewBag.defaultStatus as physician_status;
+
+}
+
+<div class="pb-5">
+    <h4>Physician Status</h4>
+    <table class="table table-sm">
+        <tr>
+            <th class="control-label">Physician</th>
+            <th class="control-label">Status</th>
+            <th class="control-label">Time</th>
+            <th class="control-label">Action</th>
+            <th class="control-label">Logged In Status</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            //bool hasStatusAvailable = item.IsAvailableStatus;
+            //TimeSpan? elapsedTime = DateTime.Now.ToEST() - (string.IsNullOrEmpty(item.StatusChangeDate) ? Convert.ToDateTime(item.CreatedDate) : Convert.ToDateTime(item.StatusChangeDate));
+            <tr>
+                <td>@item.AspNetUser_FirstName @item.AspNetUser_LastName (@item.AspNetUser_CredentialIndex.ToString("0.00"))</td>
+                <td width="30%">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6  col-lg-12 col-xl-7 col-xs-12 mt-1">
+                            @item.phs_name
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2  col-lg-3  col-xs-12">
+                            <button style="width:20px;height:20px; border:none;background-color:@item.phs_color_code" class="rounded-circle" disabled>&nbsp;</button>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <text>  @item.ElapsedTime </text>
+                </td>
+                <td class="" width="15%">
+                    <a title="Call Mobile" href="javascript:ClickToDial('@item.AspNetUser_MobilePhone','@(loggedInUser.EnableFive9.ToString())')" class="fa fa-mobile-phone fa-2x click2dial  @(string.IsNullOrEmpty(item.AspNetUser_MobilePhone) ? "fa-disabled" : "")" data-phonenumber="@item.AspNetUser_MobilePhone"></a>&nbsp;&nbsp;&nbsp;
+                    <a title="Call Phone" href="javascript:ClickToDial('@item.AspNetUser_PhoneNumber','@(loggedInUser.EnableFive9.ToString())')" class="fa fa-phone fa-2x click2dial  @(string.IsNullOrEmpty(item.AspNetUser_PhoneNumber) ? "fa-disabled" : "")" data-phonenumber="@item.AspNetUser_PhoneNumber"></a>
+                </td>
+                <td>
+                    @if (onlineUsers.Contains(item.AspNetUser_Id.ToString()))
+                    {
+                        <small class="text-success">Online</small>
+                    }
+                    else
+                    {
+                        <small>Offline</small>
+                    }
+                </td>
+            </tr>
+        }
+
+
+        @*@foreach (var item in Model)
+        {
+            bool hasStatusAvailable = item.IsAvailableStatus;
+            //TimeSpan? elapsedTime = DateTime.Now.ToEST() - (string.IsNullOrEmpty(item.StatusChangeDate) ? Convert.ToDateTime(item.CreatedDate) : Convert.ToDateTime(item.StatusChangeDate));
+            <tr>
+                <td>@item.Name (@item.CredentialIndex.ToString("0.00"))</td>
+                <td width="30%">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6  col-lg-12 col-xl-7 col-xs-12 mt-1">
+
+                            @(hasStatusAvailable ? item.StatusName : defaultStatus?.phs_name)
+
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2  col-lg-3  col-xs-12">
+                            <button style="width:20px;height:20px; border:none;background-color:@(hasStatusAvailable ? item.StatusColorCode : defaultStatus?.phs_color_code)" class="rounded-circle" disabled>&nbsp;</button>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    @*<text>  @(elapsedTime.FormatTimeSpan()) </text>@
+                    <text>  @item.ElapsedTime </text>
+                </td>
+                @ @if (loggedInUser.EnableFive9)
+                {@
+                <td class="" width="15%">
+                    <a title="Call Mobile" href="javascript:ClickToDial('@item.MobilePhone','@(loggedInUser.EnableFive9.ToString())')" class="fa fa-mobile-phone fa-2x click2dial  @(string.IsNullOrEmpty(item.MobilePhone) ? "fa-disabled" : "")" data-phonenumber="@item.MobilePhone"></a>&nbsp;&nbsp;&nbsp;
+                    <a title="Call Phone" href="javascript:ClickToDial('@item.PhoneNumber','@(loggedInUser.EnableFive9.ToString())')" class="fa fa-phone fa-2x click2dial  @(string.IsNullOrEmpty(item.PhoneNumber) ? "fa-disabled" : "")" data-phonenumber="@item.PhoneNumber"></a>
+                </td>
+                @*}@
+                <td>
+                    @if (onlineUsers.Contains(item.Id))
+                    {
+                        <small class="text-success">Online</small>
+                    }
+                    else
+                    {
+                        <small>Offline</small>
+                    }
+                </td>
+            </tr>
+        }*@
+
+        @if (Model.Count() == 0)
+        {
+            <tr>
+                <td colspan="6" class="noRecordFound">No Physicians Onboarded.</td>
+            </tr>
+        }
+
+    </table>
+</div>
+
+
+

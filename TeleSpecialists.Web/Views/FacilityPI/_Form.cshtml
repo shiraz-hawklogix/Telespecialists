@@ -1,0 +1,270 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@model TeleSpecialists.BLL.Model.quality_goals
+
+
+<div class="modal-dialog modal-lg" id="goalsForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+
+        var fac_key = ViewBag.fac_key;
+        @Html.AntiForgeryToken()
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">@ViewBag.Title</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="form-horizontal">
+
+                    <div id="validationSummary">
+
+                    </div>
+                    <input type="hidden" id="facilitykey" value="@fac_key" />
+                    <div class="row">
+                        <div class="form-group col-xl-4 col-4" style="float:left;">
+                            <label for="Facilities">Facility</label>
+                            @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+                        </div>
+                        <div class="form-group col-xl-4 col-4" style="float:left;">
+                            <label for="qag_time_frame">Time Frame</label><br />
+                            <input type="text" id="qag_time_frame" name="qag_time_frame" class="form-control dateyearpicker" required />
+                            @Html.ValidationMessageFor(m => m.qag_time_frame, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group col-xl-4 col-4" style="float:left;">
+                            <label for="quater">Quater</label><br />
+                            <select class="form-control" id="ddlquater">
+                                <option value="">Select Quarter</option>
+                                <option value="1">Quarter 1</option>
+                                <option value="2">Quarter 2</option>
+                                <option value="3">Quarter 3</option>
+                                <option value="4">Quarter 4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row" id="qualityform" style="display:none">
+                        @Html.Partial("_QualityGoalsForm", Model)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal">Close</a>
+                <input type="submit" class="btn btn-dark" value="Save" />
+            </div>
+
+        </div>
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.dateyearpicker').kendoDatePicker({
+            start: "decade",
+            depth: "decade",
+            format: "yyyy",
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $('#Facilities').multiselect({
+            columns: 1,
+            placeholder: 'Select Facility',
+            selectAll: true,
+            search: true,
+            searchOptions: {
+                'default': 'Search Facility'
+            }
+        });
+
+    })
+    $("#ddlquater").on('change', function () {
+        var facility = "";
+        var facilities = $("#Facilities").val();
+        var fac_key = $("#facilitykey").val();
+        if (facilities == "") {
+            facility = fac_key;
+        } else {
+            facility = facilities;
+        }
+        var timeframe = $("#qag_time_frame").val();
+        var quater = $("#ddlquater").val();
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/FacilityPI/CheckQualityGoalExist',
+            data: { facilities: facility, timeframe: timeframe, quater: quater },
+            success: function (data) {
+                $("#qualityform").show();
+                if (data == "Quality Goals are Not Available") {
+
+                } else {
+                    $("#divModelPopUp").find("#validationSummary").empty().showBSDangerAlert("", data + " " + "If you Save this Previous Goals Value will be overwritten.");
+                }
+            },
+            error: function () {
+
+            }
+        });
+    })
+    $("#goalsForm>form").off().submit("#goalsForm>form", function (e) {
+        e.preventDefault();
+        if ($(this).valid()) {
+            var url = $(this).attr("action");
+            //var data = $(this).serialize();
+            var QualityGoalsData = {
+                Quater: "",
+                qag_door_to_TS_notification_ave_minutes: "",
+                qag_door_to_TS_notification_median_minutes: "",
+                qag_percent10_min_or_less_activation_EMS: "",
+                qag_percent10_min_or_less_activation_PV: "",
+                //qag_percent10_min_or_less_activation_Inpt: "",
+                qag_TS_notification_to_response_average_minute: "",
+                qag_TS_notification_to_response_median_minute: "",
+                qag_percent_TS_at_bedside_grterthan10_minutes: "",
+                //qag_alteplase_administered: "",
+                qag_door_to_needle_average: "",
+                qag_door_to_needle_median: "",
+                qag_verbal_order_to_administration_average_minutes: "",
+                qag_DTN_grter_or_equal_30minutes_percent: "",
+                qag_DTN_grter_or_equal_45minutes_percent: "",
+                qag_DTN_grter_or_equal_60minutes_percent: "",
+                qag_TS_notification_to_needle_grter_or_equal_30minutes_percent: "",
+                qag_TS_notification_to_needle_grter_or_equal_45minutes_percent: "",
+                qag_TS_notification_to_needle_grter_or_equal_60minutes_percent: "",
+            }
+            var model = {
+                Facilities: "",
+                qag_time_frame: "",
+                obj: QualityGoalsData,
+            };
+            var facilities = $("#Facilities").val();
+            var fac_key = $("#facilitykey").val();
+            if (facilities == "") {
+                model.Facilities = fac_key;
+            } else {
+                model.Facilities = facilities;
+            }
+            model.obj.Quater = $("#ddlquater").val();
+            model.qag_time_frame = $("#qag_time_frame").val();
+
+            var qag_door_to_TS_notification_ave_minutes = [];
+            $(".qag_door_to_TS_notification_ave_minutes").each(function () {
+                qag_door_to_TS_notification_ave_minutes.push($(this).val());
+            });
+            model.obj.qag_door_to_TS_notification_ave_minutes = qag_door_to_TS_notification_ave_minutes;
+            var qag_door_to_TS_notification_median_minutes = [];
+            $(".qag_door_to_TS_notification_median_minutes").each(function () {
+                qag_door_to_TS_notification_median_minutes.push($(this).val());
+            });
+            model.obj.qag_door_to_TS_notification_median_minutes = qag_door_to_TS_notification_median_minutes;
+            var qag_percent10_min_or_less_activation_EMS = [];
+            $(".qag_percent10_min_or_less_activation_EMS").each(function () {
+                qag_percent10_min_or_less_activation_EMS.push($(this).val());
+            });
+            model.obj.qag_percent10_min_or_less_activation_EMS = qag_percent10_min_or_less_activation_EMS;
+            var qag_percent10_min_or_less_activation_PV = [];
+            $(".qag_percent10_min_or_less_activation_PV").each(function () {
+                qag_percent10_min_or_less_activation_PV.push($(this).val());
+            });
+            model.obj.qag_percent10_min_or_less_activation_PV = qag_percent10_min_or_less_activation_PV;
+            //var qag_percent10_min_or_less_activation_Inpt = [];
+            //$(".qag_percent10_min_or_less_activation_Inpt").each(function () {
+            //    qag_percent10_min_or_less_activation_Inpt.push($(this).val());
+            //});
+            //model.obj.qag_percent10_min_or_less_activation_Inpt = qag_percent10_min_or_less_activation_Inpt;
+            var qag_TS_notification_to_response_average_minute = [];
+            $(".qag_TS_notification_to_response_average_minute").each(function () {
+                qag_TS_notification_to_response_average_minute.push($(this).val());
+            });
+            model.obj.qag_TS_notification_to_response_average_minute = qag_TS_notification_to_response_average_minute;
+            var qag_TS_notification_to_response_median_minute = [];
+            $(".qag_TS_notification_to_response_median_minute").each(function () {
+                qag_TS_notification_to_response_median_minute.push($(this).val());
+            });
+            model.obj.qag_TS_notification_to_response_median_minute = qag_TS_notification_to_response_median_minute;
+            var qag_percent_TS_at_bedside_grterthan10_minutes = [];
+            $(".qag_percent_TS_at_bedside_grterthan10_minutes").each(function () {
+                qag_percent_TS_at_bedside_grterthan10_minutes.push($(this).val());
+            });
+            model.obj.qag_percent_TS_at_bedside_grterthan10_minutes = qag_percent_TS_at_bedside_grterthan10_minutes;
+            //var qag_alteplase_administered = []
+            //$(".qag_alteplase_administered").each(function () {
+            //    qag_alteplase_administered.push($(this).val());
+            //});
+            //model.obj.qag_alteplase_administered = qag_alteplase_administered;
+            var qag_door_to_needle_average = []
+            $(".qag_door_to_needle_average").each(function () {
+                qag_door_to_needle_average.push($(this).val());
+            });
+            model.obj.qag_door_to_needle_average = qag_door_to_needle_average;
+            var qag_door_to_needle_median = []
+            $(".qag_door_to_needle_median").each(function () {
+                qag_door_to_needle_median.push($(this).val());
+            });
+            model.obj.qag_door_to_needle_median = qag_door_to_needle_median;
+            var qag_verbal_order_to_administration_average_minutes = [];
+            $(".qag_verbal_order_to_administration_average_minutes").each(function () {
+                qag_verbal_order_to_administration_average_minutes.push($(this).val());
+            });
+            model.obj.qag_verbal_order_to_administration_average_minutes = qag_verbal_order_to_administration_average_minutes;
+            var qag_DTN_grter_or_equal_30minutes_percent = [];
+            $(".qag_DTN_grter_or_equal_30minutes_percent").each(function () {
+                qag_DTN_grter_or_equal_30minutes_percent.push($(this).val());
+            });
+            model.obj.qag_DTN_grter_or_equal_30minutes_percent = qag_DTN_grter_or_equal_30minutes_percent;
+            var qag_DTN_grter_or_equal_45minutes_percent = [];
+            $(".qag_DTN_grter_or_equal_45minutes_percent").each(function () {
+                qag_DTN_grter_or_equal_45minutes_percent.push($(this).val());
+            });
+            model.obj.qag_DTN_grter_or_equal_45minutes_percent = qag_DTN_grter_or_equal_45minutes_percent;
+            var qag_DTN_grter_or_equal_60minutes_percent = [];
+            $(".qag_DTN_grter_or_equal_60minutes_percent").each(function () {
+                qag_DTN_grter_or_equal_60minutes_percent.push($(this).val());
+            });
+            model.obj.qag_DTN_grter_or_equal_60minutes_percent = qag_DTN_grter_or_equal_60minutes_percent;
+            var qag_TS_notification_to_needle_grter_or_equal_30minutes_percent = [];
+            $(".qag_TS_notification_to_needle_grter_or_equal_30minutes_percent").each(function () {
+                qag_TS_notification_to_needle_grter_or_equal_30minutes_percent.push($(this).val());
+            });
+            model.obj.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent = qag_TS_notification_to_needle_grter_or_equal_30minutes_percent;
+            var qag_TS_notification_to_needle_grter_or_equal_45minutes_percent = [];
+            $(".qag_TS_notification_to_needle_grter_or_equal_45minutes_percent").each(function () {
+                qag_TS_notification_to_needle_grter_or_equal_45minutes_percent.push($(this).val());
+            });
+            model.obj.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent = qag_TS_notification_to_needle_grter_or_equal_45minutes_percent;
+            var qag_TS_notification_to_needle_grter_or_equal_60minutes_percent = [];
+            $(".qag_TS_notification_to_needle_grter_or_equal_60minutes_percent").each(function () {
+                qag_TS_notification_to_needle_grter_or_equal_60minutes_percent.push($(this).val());
+            });
+            model.obj.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent = qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
+
+            $("#divModelPopUp").find("input:button, input:submit").disable();
+            $.post('/FacilityPI/Save', { model: model }, function (response) {
+                $("#divModelPopUp").find("input:button, input:submit").enable();
+                if (response.success) {
+                    getQualityGoals();
+                    $("#divModelPopUp").modal("hide");
+                    $("#divContentArea").find("#validationSummary").empty().showBSSuccessAlert("", "Quality Goals Saved Successfully!");
+                    setTimeout(function () {
+                        $("#divContentArea").find("#validationSummary").empty();
+                    }, 3000);
+                }
+                else {
+                    $("#divModelPopUp").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                }
+            });
+        }
+    });
+
+</script>
+
+
+

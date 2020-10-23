@@ -1,0 +1,613 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+
+@model @case
+
+@{
+    string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+    facilityTimeZone = Model.facility.fac_timezone;
+    var qpsname = ViewBag.QPSName;
+}
+<!-- #region Header -->
+<div class="Section1">
+<div>
+    <div>
+        <img src='/Content/case/pdf/logo-header.png' alt='TELESPECIALISTS' />
+    </div>
+    <br />
+    <div style='font-size:14px;'>
+        <b>TeleSpecialists TeleNeurology Consult Services</b>
+    </div>
+    <h2>Root Cause Analysis</h2>
+    <br />
+</div>
+<!-- #endregion Header -->
+<!-- #region Demographics -->
+<div>
+    <h3 style='display:block'>Demographics</h3>
+    @if (Model.facility != null)
+    {
+        <div style='display:block'>
+            <b>Facility: </b> @Model.facility.fac_name
+        </div>
+    }
+    @if (Model.cas_ctp_key != 0)
+    {
+        var enumDisplay = (CaseType)Model.cas_ctp_key;
+        string stringValue = enumDisplay.ToString();
+        <div style='display:block'>
+            <b>Case Type: </b>
+            @stringValue
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.cas_cart))
+    {
+        <div style='display:block'>
+            <b>Cart: </b> @Model.cas_cart
+        </div>
+    }
+
+    @if (Model.PhysicianUser != null)
+    {
+        <div style='display:block'>
+            <b>Physician: </b> @Model.PhysicianUser.FirstName @Model.PhysicianUser.LastName
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.cas_created_by_name))
+    {
+        <div style='display:block'>
+            <b>Navigator: </b>    @Model.cas_created_by_name
+        </div>
+    }
+
+    @if (Model.cas_case_number != 0)
+    {
+        <div style='display:block'>
+            <b>Case: </b> @Model.cas_case_number
+        </div>
+    }
+
+    @*@if (Model.facility != null)
+        {
+            if (!string.IsNullOrEmpty(Model.facility.fac_timezone))
+            {
+                string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+                facilityTimeZone = Model.facility.fac_timezone;
+                <div style='display:block'>
+                    <b>Facility Time: </b>
+                    @DateTime.UtcNow.ToTimezoneFromUtc(facilityTimeZone).ToString("HH:mm:ss") <span>@Functions.GetTimeZoneAbbreviation(facilityTimeZone)</span>
+                </div>
+            }
+        }*@
+
+    @if (Model.cas_response_ts_notification.HasValue)
+    {
+        <div style='display:block'>
+            <b>Start Time: </b> @Model.cas_response_ts_notification.Value.ToString("H:mm:ss") @Functions.GetTimeZoneAbbreviation(facilityTimeZone) @Model.cas_response_ts_notification.Value.ToString("MM/dd/yyyy")
+        </div>
+    }
+
+    @if (Model.facility != null)
+    {
+        if (Model.cas_metric_door_time_est.HasValue)
+        {
+            <div style='display:block'>
+                <b>Arrival Time: </b> @Model.cas_metric_door_time_est.Value.ToString("H:mm:ss") @Functions.GetTimeZoneAbbreviation(facilityTimeZone) @Model.cas_metric_door_time_est.Value.ToString("MM/dd/yyyy")
+            </div>
+        }
+    }
+</div>
+<!-- #endregion Demographics -->
+<!-- #region Quality metrics -->
+<div>
+    <h3 style='display:block'>Quality metrics</h3>
+    @if (Model.cas_response_date_consult != null)
+    {
+        var cas_response_date_consult = Model.cas_response_date_consult?.ToString("MM/dd/yyyy");
+        <div style='display:block'>
+            <b>Date of Consult: </b> @cas_response_date_consult
+        </div>
+    }
+
+    @if (Model.PhysicianUser != null)
+    {
+        <div style='display:block'>
+            <b>Physician: </b>
+            @Model.PhysicianUser.FirstName @Model.PhysicianUser.LastName
+        </div>
+    }
+    @*Start Time to Needle Time:(< 40 Minutes)*@
+    @if (Model.cas_metric_needle_time_est.HasValue && Model.cas_response_ts_notification.HasValue)
+    {
+        var start_time = Model.cas_response_ts_notification ?? null;
+        var needle = Model.cas_metric_needle_time_est ?? null;
+        TimeSpan? a = new TimeSpan();
+        a = needle.Value > start_time.Value ? needle.Value - start_time.Value : a;
+        var start_to_needle = a.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Start Time to Needle Time:(< 40 Minutes): </b> @start_to_needle
+        </div>
+    }
+    @*Time First Login Attempt to Needle Time:(< 30 Minutes)*@
+    @if (Model.cas_metric_needle_time_est.HasValue && Model.cas_response_first_atempt.HasValue)
+    {
+        var needle = Model.cas_metric_needle_time_est ?? null;
+        var login_time = Model.cas_response_first_atempt ?? null;
+        TimeSpan? b = new TimeSpan();
+        b = needle.Value > login_time.Value ? needle.Value - login_time.Value : b;
+        var loginAttempt = b.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Time First Login Attempt to Needle Time:(< 30 Minutes): </b>
+            @loginAttempt
+        </div>
+    }
+    @*Alteplase Early Mix Decision to Needle Time:(< 12 minutes)*@
+    @if (Model.cas_metric_needle_time_est.HasValue && Model.cas_metric_tpa_verbal_order_time_est.HasValue)
+    {
+        var needle = Model.cas_metric_needle_time_est ?? null;
+        var tpaverbaltime = Model.cas_metric_tpa_verbal_order_time_est ?? null;
+        TimeSpan? c = new TimeSpan();
+        c = needle.Value > tpaverbaltime.Value ? needle.Value - tpaverbaltime.Value : c;
+        var tpaOrder = c.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Alteplase Early Mix Decision to Needle Time:(< 12 minutes): </b>@tpaOrder
+        </div>
+    }
+    @*Start to Stamp Time: (< 1 minute)*@
+    @if (Model.cas_response_ts_notification.HasValue && Model.cas_metric_stamp_time_est.HasValue)
+    {
+        var start_time = Model.cas_response_ts_notification ?? null;
+        var stamp_time = Model.cas_metric_stamp_time_est ?? null;
+        TimeSpan? _Result = new TimeSpan();
+        _Result = stamp_time.Value > start_time.Value ? stamp_time.Value - start_time.Value : _Result;
+        var start_to_stamp = _Result.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Start to Stamp Time: (< 1 minute): </b>
+            @start_to_stamp
+        </div>
+    }
+    @*Start to Login Time: (< 12 minutes)*@
+    @if (Model.cas_response_ts_notification.HasValue && Model.cas_response_first_atempt.HasValue)
+    {
+        var start_time = Model.cas_response_ts_notification ?? null;
+        var login_time = Model.cas_response_first_atempt ?? null;
+        TimeSpan? s_t_l = new TimeSpan();
+        s_t_l = login_time.Value > start_time.Value ? login_time.Value - start_time.Value : s_t_l;
+        var start_to_login = s_t_l.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Start to Login Time: (< 12 minutes): </b>
+            @start_to_login
+        </div>
+    }
+    @*Stamp to Login Time: (< 10 minutes)*@
+    @if (Model.cas_metric_stamp_time_est.HasValue && Model.cas_response_first_atempt.HasValue)
+    {
+        var stamp_time = Model.cas_metric_stamp_time_est ?? null;
+        var login_time = Model.cas_response_first_atempt ?? null;
+        TimeSpan? stm_t_l = new TimeSpan();
+        stm_t_l = login_time.Value > stamp_time.Value ? login_time.Value - stamp_time.Value : stm_t_l;
+        var stamp_to_login = stm_t_l.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Stamp to Login Time: (< 10 minutes): </b>
+            @stamp_to_login
+        </div>
+    }
+    @*Arrival to Start Time: (< 10 minutes)*@
+    @if (Model.cas_metric_door_time_est.HasValue && Model.cas_response_ts_notification.HasValue)
+    {
+        var door_time = Model.cas_metric_door_time_est ?? null;
+        var start_time = Model.cas_response_ts_notification ?? null;
+        TimeSpan? A_T_S = new TimeSpan();
+        A_T_S = start_time.Value > door_time.Value ? start_time.Value - door_time.Value : A_T_S;
+        var arival_to_starttime = A_T_S.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Arrival to Start Time: (< 10 minutes): </b>
+            @arival_to_starttime
+        </div>
+    }
+    @*First Time Login Attempt to Video Start Time: (< 0 minutes)*@
+    @if (Model.cas_response_first_atempt.HasValue && Model.cas_metric_video_start_time_est.HasValue)
+    {
+        var login_time = Model.cas_response_first_atempt ?? null;
+        var videostartTime = Model.cas_metric_video_start_time_est ?? null;
+        TimeSpan? FTLA_T_VST = new TimeSpan();
+        FTLA_T_VST = videostartTime.Value > login_time.Value ? videostartTime.Value - login_time.Value : FTLA_T_VST;
+        var firstTimeLoginAttemtToVideoStartTime = FTLA_T_VST.FormatTimeSpan();
+        <div style='display:block'>
+            <b>First Time Login Attempt to Video Start Time: (< 0 minutes): </b>
+            @firstTimeLoginAttemtToVideoStartTime
+        </div>
+    }
+    @*Video Start to Video End Time*@
+    @if (Model.cas_metric_video_start_time_est.HasValue && Model.cas_metric_video_end_time_est.HasValue)
+    {
+        var videostartTime = Model.cas_metric_video_start_time_est ?? null;
+        var videoEndtTime = Model.cas_metric_video_end_time_est ?? null;
+        TimeSpan? VST_T_VET = new TimeSpan();
+        VST_T_VET = videoEndtTime.Value > videostartTime.Value ? videoEndtTime.Value - videostartTime.Value : VST_T_VET;
+        var VideoStartTime_VideoEndTime = VST_T_VET.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Video Start to Video End Time: </b>
+            @VideoStartTime_VideoEndTime
+        </div>
+    }
+    @*Time First Login Attempt to NIHSS Start Assessment Time: (< 10 minutes)*@
+    @if (Model.cas_response_first_atempt.HasValue && Model.cas_metric_assesment_time_est.HasValue)
+    {
+        var login_time = Model.cas_response_first_atempt ?? null;
+        var nihssstarttime = Model.cas_metric_assesment_time_est ?? null;
+        TimeSpan? FTLA_T_NSAT = new TimeSpan();
+        FTLA_T_NSAT = nihssstarttime.Value > login_time.Value ? nihssstarttime.Value - login_time.Value : FTLA_T_NSAT;
+        var firstTimeLoginAttemtToNIHSSassTime = FTLA_T_NSAT.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Time First Login Attempt to NIHSS Start Assessment Time: (< 10 minutes): </b>
+            @firstTimeLoginAttemtToNIHSSassTime
+        </div>
+    }
+    @*LKW to Needle Time: (< 30 minutes)
+        Arrival to Needle Time: (< 30 minutes)*@
+    @{ var typename = new KeyValuePair<string, string>(); }
+    @if (typename.Value == "Inpatient")
+    {
+        if (Model.cas_metric_lastwell_date_est.HasValue && Model.cas_metric_needle_time_est.HasValue)
+        {
+            var lastknownwel_time = Model.cas_metric_lastwell_date_est ?? null;
+            var needle = Model.cas_metric_needle_time_est ?? null;
+            TimeSpan? L_T_N = new TimeSpan();
+            L_T_N = needle.Value > lastknownwel_time.Value ? needle.Value - lastknownwel_time.Value : L_T_N;
+            var lastknownwel_to_needletime = L_T_N.FormatTimeSpan();
+            <div style='display:block'>
+                <b>LKW to Needle Time: (< 30 minutes): </b>
+                @lastknownwel_to_needletime
+            </div>
+        }
+    }
+    else if (Model.cas_metric_door_time_est.HasValue && Model.cas_metric_needle_time_est.HasValue)
+    {
+        var doortime = Model.cas_metric_door_time_est ?? null;
+        var needle = Model.cas_metric_needle_time_est ?? null;
+        TimeSpan? A_T_N = new TimeSpan();
+        A_T_N = needle.Value > doortime.Value ? needle.Value - doortime.Value : A_T_N;
+        var arival_to_needletime = A_T_N.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Arrival to Needle Time: (< 30 minutes): </b>
+            @arival_to_needletime
+        </div>
+    }
+    @*Symptom to Needle Time: (< 30 minutes)*@
+    @if (Model.cas_metric_symptom_onset_during_ed_stay_time_est.HasValue && Model.cas_metric_needle_time_est.HasValue)
+    {
+        var symptomtime = Model.cas_metric_symptom_onset_during_ed_stay_time_est ?? null;
+        var needle = Model.cas_metric_needle_time_est ?? null;
+        TimeSpan? A_T_N = new TimeSpan();
+        A_T_N = needle.Value > symptomtime.Value ? needle.Value - symptomtime.Value : A_T_N;
+        var symptom_to_needletime = A_T_N.FormatTimeSpan();
+        <div style='display:block'>
+            <b>Symptom to Needle Time: (< 30 minutes): </b>
+            @symptom_to_needletime
+        </div>
+    }
+    @*Reason for tPA Delay*@
+    @if (Model.cas_metric_tpaDelay_key != 0)
+    {
+        <div style='display:block'>
+            <b>Reason for tPA Delay: </b>
+            @ViewBag.tpareason
+        </div>
+    }
+</div>
+<!-- #endregion Quality metrics -->
+<!-- #region Assignments -->
+<div style='display:block'>
+    <h3 style='display:block'>Assignments</h3>
+    @{
+        var dicOptions = Enum.GetValues(typeof(MetricResponseStatus)).Cast<MetricResponseStatus>().Select(m => new
+        {
+            Key = Convert.ToInt32(m).ToString(),
+            Value = m.ToDescription()
+        }).ToDictionary(m => m.Key, m => m.Value);
+    }
+
+    @*// Case Type*@
+    @if (Model.cas_ctp_key != 0)
+    {
+        var enumDisplay = (CaseType)Model.cas_ctp_key;
+        string stringValue = enumDisplay.ToString();
+        <div style='display:block'>
+            <b>Case Type: </b>
+            @stringValue
+        </div>
+    }
+    @*//Workflow Type*@
+
+    @{
+        var Assignmentstypename = new KeyValuePair<string, string>();
+        if (Model.cas_patient_type != 0)
+        {
+            var patientType = Enum.GetValues(typeof(PatientType)).Cast<PatientType>
+                ()
+                .Select(m => new
+                {
+                    Key = Convert.ToInt32(m).ToString(),
+                    Value = m.ToDescription()
+                }).ToDictionary(m => m.Key, m => m.Value);
+
+            Assignmentstypename = patientType.Where(x => x.Key == Model.cas_patient_type.ToString()).FirstOrDefault();
+        }
+    }
+    <div style='display:block'>
+        <b>Workflow Type: </b> @Assignmentstypename.Value
+    </div>
+
+    @*//Reviewer(S)*@
+    @if (!string.IsNullOrEmpty(Model.cas_response_reviewer))
+    {
+        var arrayy = !string.IsNullOrEmpty(Model.cas_response_reviewer) ? Model.cas_response_reviewer.Split(',') : null;
+
+        TeleSpecialists.BLL.Service.AdminService _adminService = new TeleSpecialists.BLL.Service.AdminService();
+        var listReviewers = _adminService.GetAspNetUsers().Where(x => x.CaseReviewer == true).ToList();
+        string getName = "";
+        for (var i = 0; i < arrayy.Length; i++)
+        {
+            var isExist = listReviewers.Where(x => x.Id == arrayy[i]).FirstOrDefault();
+            if (isExist != null)
+            {
+                getName += isExist.FirstName + " " + isExist.LastName + ",";
+            }
+        }
+        getName = getName.TrimEnd(',');
+        <div style='display:block'>
+            <b>Reviewer(S): </b> @getName
+        </div>
+    }
+    @*//Facility Requested Review*@
+    @if (Model.cas_response_case_facility_request_reviewed != null)
+    {
+        var cas_response_case_facility_request_reviewed_getVal = dicOptions.Where(x => Convert.ToInt32(x.Key) == Model.cas_response_case_facility_request_reviewed).FirstOrDefault();
+        <div style='display:block'>
+            <b>Facility Requested Review: </b> @cas_response_case_facility_request_reviewed_getVal.Value
+        </div>
+    }
+
+    @*//QPS Review Completed*@
+    @if (Model.cas_response_case_qps_reviewed != null)
+    {
+        var cas_response_case_qps_reviewed_getVal = dicOptions.Where(x => Convert.ToInt32(x.Key) == Model.cas_response_case_qps_reviewed).FirstOrDefault();
+        <div style='display:block'>
+            <b>QPS Review Completed: </b> @cas_response_case_qps_reviewed_getVal.Value
+        </div>
+    }
+
+    @*//operations Review Completed*@
+    @if (Model.cas_operations_review_completed != null)
+    {
+        var cas_response_case_operation_reviewed_getVal = dicOptions.Where(x => Convert.ToInt32(x.Key) == Model.cas_operations_review_completed).FirstOrDefault();
+        <div style='display:block'>
+            <b>Operations Review Completed: </b> @cas_response_case_operation_reviewed_getVal.Value
+        </div>
+    }
+
+    @*//Operations Review*@
+    @if (Model.cas_operations_review != null)
+    {
+        <div style='display:block'>
+            <b>Operations Review: </b>  @Model.cas_operations_review
+        </div>
+    }
+
+    @*//QPS Assigned*@
+    @if (!string.IsNullOrWhiteSpace(qpsname))
+    {
+        <div style='display:block'>
+            <b>QPS Assigned: </b> @qpsname
+        </div>
+    }
+</div>
+<!-- #endregion  Assignments-->
+<!-- #region RCA-->
+<div>
+    <h3 style='display:block'>RCA</h3>
+    <ul style='display:block'>
+        @if (Model.cas_rca_primarydetail != null)
+        {
+            <li style='display:block'>
+                @Model.cas_rca_primarydetail
+            </li>
+        }
+        @{
+            var rcaOptions = Enum.GetValues(typeof(RCA)).Cast<RCA>()
+            .Select(m => new
+            {
+                Key = Convert.ToInt32(m).ToString(),
+                Value = m.ToDescription()
+            }).ToDictionary(m => m.Key, m => m.Value);
+
+            var arr = !string.IsNullOrEmpty(Model.cas_work_flow_ids) ? Model.cas_work_flow_ids.Split(',') : null;
+        }
+        @if (arr != null)
+        {
+            for (var i = 0; i < arr.Length; i++)
+            {
+                var isExist = rcaOptions.Where(x => x.Key == arr[i]).FirstOrDefault();
+
+                if (isExist.Value != null)
+                {
+                    <li style='display:block'> @isExist.Value </li>
+                }
+            }
+        }
+
+
+        @*#region Triage*@
+
+        @if (Model.cas_triage_arivalstarttodelay != null)
+        {
+            <li style='display:block'>@Model.cas_triage_arivalstarttodelay</li>
+        }
+        @if (Model.cas_triage_recognition != null)
+        {
+            <li style='display:block'>@Model.cas_triage_recognition</li>
+        }
+        @if (Model.cas_triage_strokealertrigger != null)
+        {
+            <li style='display:block'>@Model.cas_triage_strokealertrigger</li>
+        }
+        @if (Model.cas_triage_transportandrooming != null)
+        {
+            <li style='display:block'>@Model.cas_triage_transportandrooming</li>
+        }
+        @*#endregion*@
+
+        @*#region EMS*@
+        @if (Model.cas_ems_arivaltostarttimedelay != null)
+        {
+            <li style='display:block'>@Model.cas_ems_arivaltostarttimedelay</li>
+        }
+        @if (Model.cas_ems_poor_identification != null)
+        {
+            <li style='display:block'>@Model.cas_ems_poor_identification</li>
+        }
+        @if (Model.cas_ems_identification_occurred != null)
+        {
+            <li style='display:block'>@Model.cas_ems_identification_occurred</li>
+        }
+        @if (Model.cas_inpatient_timefirstlogintonhssstartitme != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_timefirstlogintonhssstartitme</li>
+        }
+        @*#endregion*@
+        @*#region Inpatient*@
+        @if (Model.cas_inpatient_timefirstlogintovideostart != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_timefirstlogintovideostart</li>
+        }
+        @if (Model.cas_inpatient_arivaltoneedletime != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_arivaltoneedletime</li>
+        }
+        @if (Model.cas_inpatient_related_imaging != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_related_imaging</li>
+        }
+        @if (Model.cas_inpatient_unenhancedct != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_unenhancedct</li>
+        }
+        @if (Model.cas_inpatient_telemedicineassessmentroom != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_telemedicineassessmentroom</li>
+        }
+        @if (Model.cas_inpatient_telemedicineasesmentinct != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_telemedicineasesmentinct</li>
+        }
+        @if (Model.cas_inpatient_bpmanagemntrelated != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_bpmanagemntrelated</li>
+        }
+        @if (Model.cas_inpatient_workflowbeforemixing != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_workflowbeforemixing</li>
+        }
+        @if (Model.cas_inpatient_workflowaftermixing != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_workflowaftermixing</li>
+        }
+        @if (Model.cas_inpatient_delaysrelated_imaging != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_delaysrelated_imaging</li>
+        }
+        @if (Model.cas_inpatient_detection_hypertension != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_detection_hypertension</li>
+        }
+        @if (Model.cas_inpatient_poormanagement_hypertension != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_poormanagement_hypertension</li>
+        }
+        @if (Model.cas_inpatient_tpaadministration_delays != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_tpaadministration_delays</li>
+        }
+        @if (Model.cas_inpatient_system != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_system</li>
+        }
+        @if (Model.cas_inpatient_physician_related != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_physician_related</li>
+        }
+        @if (Model.cas_inpatient_centralizedpharmacy_delivery != null)
+        {
+            <li style='display:block'>@Model.cas_inpatient_centralizedpharmacy_delivery</li>
+        }
+        @if (Model.cas_inpatientdelays_mixing != null)
+        {
+            <li style='display:block'>@Model.cas_inpatientdelays_mixing</li>
+        }
+    </ul>
+</div>
+<!-- #endregion RCA -->
+<!-- #region Countermeasure(s) -->
+
+<div style='display:block'>
+    <h3>Countermeasure(s)</h3>
+    <table class='table table-responsive'>
+        <thead>
+            <tr>
+                <th style='border-bottom:1px solid black;border-left:1px solid black;border-top:1px solid black;'>Root Cause</th>
+                <th style='border-bottom:1px solid black;border-left:1px solid black;border-top:1px solid black;'>Countermeasure(s)</th>
+                <th style='border-bottom:1px solid black;border-left:1px solid black;border-top:1px solid black;'>Responsible Party</th>
+                <th style='border-bottom:1px solid black;border-left:1px solid black;border-top:1px solid black;'>Proposed Due Date</th>
+                <th style='border-bottom:1px solid black;border-left:1px solid black;border-top:1px solid black;border-right:1px solid black;'>Completed Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                TeleSpecialists.BLL.Service.RootCauseService _rootCauseService = new TeleSpecialists.BLL.Service.RootCauseService();
+                List<rca_counter_measure> rcamodel = _rootCauseService.GetDetail(Model.cas_key);
+            }
+            @foreach (var item in rcamodel)
+            {
+                <tr>
+                    <td style='border-left:1px solid black;border-bottom:1px solid black;'> @item.rca_root_cause </td>
+                    <td style='border-left:1px solid black;border-bottom:1px solid black;'> @item.rca_proposed_countermeasure </td>
+                    <td style='border-left:1px solid black;border-bottom:1px solid black;'> @item.rca_responsible_party </td>
+                    <td style='border-left:1px solid black;border-bottom:1px solid black;'> @(item.rca_proposed_due_date != null ? item.rca_proposed_due_date.Value.ToString("MM/dd/yyyy") : "")</td>
+                    <td style='border-left:1px solid black;border-bottom:1px solid black;border-right:1px solid black;'> @(item.rca_completed_date != null ? item.rca_completed_date.Value.ToString("MM/dd/yyyy") : "")</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+<!-- #endregion Countermeasure(s) -->
+<!-- #region Assessments(s) -->
+<div>
+    <h3 style='display:block'>Assessments(s)</h3>
+    @*  //QPS Assessment*@
+    @if (!string.IsNullOrEmpty(Model.cas_response_case_qps_assessment))
+    {
+        <div style='display:block'>
+            <b>QPS Assessment: </b> @Model.cas_response_case_qps_assessment
+        </div>
+    }
+    @* //Medical Director*@
+    @if (!string.IsNullOrEmpty(Model.cas_response_case_research))
+    {
+        <div style='display:block'>
+            <b>Medical Director: </b> @Model.cas_response_case_research
+        </div>
+    }
+
+
+</div>
+<!-- #endregion Assessments(s) -->
+
+<div style='display:block;'>
+    <img src='PASTEIMAGEPATHHERE' alt='Timeline' />
+</div>
+</div>

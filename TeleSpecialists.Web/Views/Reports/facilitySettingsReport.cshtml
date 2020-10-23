@@ -1,0 +1,314 @@
+﻿
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+
+@{
+    ViewBag.Title = "Facility Settings Report";
+}
+@Html.Partial("_ReportLayout")
+
+<div class="row"  id="divLocalFilters">
+    <div class="col-12">
+
+        <div class="form-row">
+            <div class="form-group col-xl-2 col-lg-2 col-md-4 col-sm-4">
+                <label>Filter Type</label>
+                <select class="form-control" id="ddlfiltertype">
+                    <option value="SelectType">-- Select Type --</option>
+                    <option value="facility">Facility</option>
+                    <option value="system">System</option>
+                    <option value="regional">Regional</option>
+                    <option value="state">State</option>
+                </select>
+            </div>
+            <div class="form-group col-xl-3 col-3" id="divfacility" style="display:none">
+                <label>Facility</label>
+                @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control", multiple = "multiple", @required = "required" })
+            </div>
+            <div class="form-group col-xl-2 col-2" id="divsystem" style="display:none">
+                <label>System</label>
+                <select id="fac_ucd_key_system" name="fac_ucd_key_system" class="form-control"></select>
+            </div>
+
+            <div class="form-group col-xl-2 col-2" id="divregional" style="display:none">
+                <label>Regional</label>
+                <select id="fac_ucd_region_key" name="fac_ucd_region_key" class="form-control"></select>
+            </div>
+
+            <div class="form-group col-xl-2 col-2" id="divstates" style="display:none">
+                <label>State</label>
+                @Html.DropDownList("States", ViewBag.States as List<SelectListItem>, new { @class = "form-control", multiple = "multiple", @required = "required" })
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group col-xl-2 col-3">
+                <label for="ddlservice">Service Type</label>
+                <select class="form-control" id="ddlservice" multiple>
+                    <option value="42">TeleNeuro</option>
+                    <option value="43">TeleStroke</option>
+                    <option value="335">Sleep</option>
+                </select>
+            </div>
+
+            <div class="form-group col-xl-2 col-3">
+                <label for="ddlcoverage">Coverage Type</label>
+                <select class="form-control" id="ddlcoverage">
+                    <option value="">Please Select</option>
+                    <option value="27">24/7</option>
+                    <option value="28">Nights and Weekends</option>
+                    <option value="29">PRN</option>
+                </select>
+            </div>
+
+            <div class="form-group col-xl-2 col-3">
+                <label for="ddlactive">Active</label>
+                <select class="form-control" id="ddlactive">
+                    <option value="">Please Select</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+            <div class="form-group col-xl-2 col-3">
+                <label for="ddlgolive">Go Live</label>
+                <select class="form-control" id="ddlgolive">
+                    <option value="">Please Select</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-1">
+                <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $('#divLocalFilters').appendTo('#divFilters');
+
+        $('#divLocalFilters').appendTo('#divFilters');
+
+        $("#btnSearch").click(function () {
+            var errorMessage = "";
+            if (errorMessage == "") {
+                var existingGrid = $('#kendoDataGrid').data('kendoGrid');
+                if (existingGrid) {
+                    $('#kendoDataGrid').kendoGrid('destroy').empty();
+                }
+                loadGridData();
+            }
+            else {
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+            }
+        });
+
+        var existingGrid = $('#kendoDataGrid').data('kendoGrid');
+
+        if (existingGrid) {
+            $('#kendoDataGrid').kendoGrid('destroy').empty();
+        }
+
+        resetDropDownOnDeseelect();
+        loadGridData();
+        $("#kendoDataGrid th").css("font-weight", "bold");
+    });
+
+    function loadGridData() {
+        $("#kendoDataGrid").kendoGrid({
+        //toolbar: ["excel", "pdf"],
+        excel: {
+            allPages: true,
+            filterable: false,
+            fileName: '@ViewBag.Title' + '.xlsx',
+            proxyURL: '@Url.Action("ExportToExcel")',
+        },
+        pdf: {
+            author:  "TeleCare",
+            creator: "TeleCare",
+            date: new Date(),
+            fileName: '@ViewBag.Title' + '.pdf',
+            keywords: '@ViewBag.Title',
+            subject: '@ViewBag.Title',
+            title: '@ViewBag.Title',
+            allPages: true,
+            filterable: true
+        },
+        dataSource: {
+            transport: {
+                read: {
+                    url: '@Url.Action("GetfacilitySetingsReport")',
+                    contentType: "application/json",
+                    type: "POST",
+                    data: function () {
+                        var filterModel = { facilities: "", states: "", system: "", region: "", coverageType: "", serviceType: "", active: "", goLive: "" };
+                        filterModel.facilities = $("#Facilities").val();
+                        filterModel.states = $("#States").val();
+                        filterModel.system = $("#fac_ucd_key_system").val();
+                        filterModel.region = $("#fac_ucd_region_key").val();
+                        filterModel.coverageType = $("#ddlcoverage").val();
+                        filterModel.serviceType = $("#ddlservice").val();
+                        filterModel.active = $("#ddlactive").val();
+                        filterModel.goLive = $("#ddlgolive").val();
+
+                        return filterModel;
+                    }
+                },
+                parameterMap: function (options) {
+                    return kendo.stringify(options);
+                }
+            },
+            schema: {
+                data: "Data",
+                total: "Total"
+            },
+            serverPaging: false,
+            serverFiltering: false,
+            serverSorting: false
+            //group: {
+            //    field: "Facility"
+            //}
+        },
+        dataBound: function (e) {
+            $("#kendoDataGrid th").css("font-weight", "bold");
+            // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+            $('[data-role="dropdownlist"]').each(function () {
+                var kendoDropDown = $(this).data("kendoDropDownList");
+                if (kendoDropDown)
+                    kendoDropDown.bind("open", onDropdDownOpen);
+            });
+        },
+        columns: [
+            { hidden: true, field: "id" },
+            {
+                field: "facility", title: "Facility", width: '180px'
+            },
+            {
+                field: "systems", title: "System", width: '120px'
+            },
+            {
+                field: "regions", title: "Region", width: '120px'
+            },
+            {
+                field: "states", title: "State", width: '120px'
+            },
+            {
+                field: "service_Type", title: "Service Type", width: '120px'
+            },
+            {
+                field: "coverage_Type", title: "Coverage Type", width: '120px'
+            },
+            {
+                field: "isActive", title: "Active", width: '120px',
+                template: '<input type="checkbox" #= isActive ? "checked=checked" : "" # disabled="disabled" ></input>'
+            },
+            {
+                field: "isgoLive", title: "Go Live", width: '120px',
+                template: '<input type="checkbox" #= isgoLive ? "checked=checked" : "" # disabled="disabled" ></input>'
+            }
+        ],
+        pageable: {
+            refresh: true,
+            pageSize: 10,
+            pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+        },
+        groupable: false,
+        filterable: false,
+        resizable: true,
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Facilities').multiselect({
+            columns: 1,
+            placeholder: 'Select Facility',
+            search: true,
+            searchOptions: {
+                'default': 'Select Facility'
+            },
+            selectAll: true
+        }); 
+        $('#States').multiselect({
+            columns: 1,
+            placeholder: 'Select State',
+            search: true,
+            searchOptions: {
+                'default': 'Select State'
+            },
+            selectAll: true
+        });
+        $('#ddlservice').multiselect({
+            columns: 1,
+            placeholder: 'Select Service',
+            search: true,
+            searchOptions: {
+                'default': 'Select Service'
+            },
+            selectAll: true
+        });
+        $('#ddlfiltertype').off("change").change(function () {
+            $("#divfacility,#divsystem,#divregional,#divstates").hide();
+            var selectedValue = $(this).val();
+            if (selectedValue == "facility") {
+                $("#fac_ucd_key_system").data("kendoDropDownList").value(-1);
+                $("#fac_ucd_region_key").data("kendoDropDownList").value(-1);
+                $("#States").val("");
+                $('#States').multiselect('reload');
+                $("#divfacility").show();
+            }
+            else if (selectedValue == "system") {
+                $("#Facilities").val("");
+                $('#Facilities').multiselect('reload');
+                $("#fac_ucd_region_key").data("kendoDropDownList").value(-1);
+                $("#States").val("");
+                $('#States').multiselect('reload');
+                $("#divsystem").show();
+            }
+            else if (selectedValue == "regional") {
+                $("#Facilities").val("");
+                $('#Facilities').multiselect('reload');
+                $("#fac_ucd_key_system").data("kendoDropDownList").value(-1);
+                $("#States").val("");
+                $('#States').multiselect('reload');
+                $("#divregional").show();
+            }
+            else if (selectedValue == "state") {
+                $("#Facilities").val("");
+                $('#Facilities').multiselect('reload');
+                $("#fac_ucd_region_key").data("kendoDropDownList").value(-1);
+                $("#fac_ucd_key_system").data("kendoDropDownList").value(-1);
+                $("#divstates").show();
+            }
+        });
+        $("#fac_ucd_key_system").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.System.ToInt())", "ucd_title", "ucd_key", " Select System");
+        $("#fac_ucd_region_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.Regional.ToInt())", "ucd_title", "ucd_key", " Select Region");
+
+    });
+
+
+</script>
+
+
+
+
+
+

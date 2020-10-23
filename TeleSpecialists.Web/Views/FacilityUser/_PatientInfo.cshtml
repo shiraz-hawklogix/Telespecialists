@@ -1,0 +1,249 @@
+﻿@model TeleSpecialists.BLL.Model.@case
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL;
+@{
+    Layout = "";
+}
+<div class="row">
+    <div class="col-md-8 col-12">
+        <h3>Patient Information</h3>
+        <hr />
+    </div>
+</div>
+<div class="row add-facility-info">
+    <input type="hidden" id="hdnFacilityTimeZoneOffSet"/>
+    <input type="hidden" id="hdnFacilityTimeZone"/>
+    @*-----------------------Facility Info Section (Small devices)------------------------*@
+    <div class="col-md-4 col-12 " id="facility-info-small-container">
+        <div class="form-group row">
+            <div class="col-6">
+                <label class="control-label">Facility: </label>
+            </div>
+            <div class="col-6">
+                <label>@Model.facility.fac_name</label>
+            </div>
+        </div>
+        <div class="form-group row @(Model.cas_ctp_key.Equals((int)CaseType.StrokeAlert) || Model.cas_ctp_key.Equals((int)CaseType.StatConsult) ? "" : "d-none")">
+            <div class="col-6">
+                <label class="control-label">Cart: </label>
+            </div>
+            <div class="col-6">
+                <label> @Model.cas_cart</label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-6">
+                <label class="control-label">Callback Phone: </label>
+            </div>
+            <div class="col-6">
+                <label class="phone_number"> @Model.cas_callback</label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-6">
+                <label class="control-label">Extension: </label>
+            </div>
+            <div class="col-6">
+                <label> @Model.cas_callback_extension</label>
+            </div>
+        </div>
+        <div class="form-group row @(Model.cas_ctp_key.Equals((int)CaseType.NursetoDr) ? "" : "d-none")">
+            <div class="col-6">
+                <label class="control-label">Caller: </label>
+            </div>
+            <div class="col-6">
+                <label> @Model.cas_caller</label>
+            </div>
+        </div>
+        <div class="form-group row @(Model.cas_ctp_key.Equals((int)CaseType.DrtoDr)
+                                           || Model.cas_ctp_key.Equals((int)CaseType.RoundingNew)
+                                           || Model.cas_ctp_key.Equals((int)CaseType.RoundingFollowUp)? "": "d-none")">
+            <div class="col-6">
+                <label class="control-label">Referring Physician: </label>
+            </div>
+            <div class="col-6">
+                <label> @Model.cas_referring_physician</label>
+            </div>
+        </div>
+    </div>
+    @*-----------------------Patinent Info Form-------------------------------------------*@
+    <form method="post" class="form-horizontal col-md-8 col-12" id="editForm" action="@(Url.Action("EditFacilityNavigatorCase","FacilityUser"))">
+
+        <div class="">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.cas_key)
+            @Html.HiddenFor(m => m.FacilityTimeZone)
+            <div class="form-group row">
+                <label class="col-lg-4 col-12 control-label">Patient Name: </label>
+                <div class="col-lg-8 col-12">
+                    @Html.TextBoxFor(m => m.cas_patient, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.cas_patient, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-4 col-12 control-label">DOB: </label>
+                <div class="col-lg-8 col-12">
+                    @Html.TextBoxFor(m => m.cas_billing_dob, new { @class = "form-control datepicker" })
+                    @Html.ValidationMessageFor(m => m.cas_billing_dob, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-4 col-12 control-label">Last 4 of SSN: </label>
+                <div class="col-lg-8 col-12">
+                    @Html.TextBoxFor(m => m.cas_last_4_of_ssn, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.cas_last_4_of_ssn, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-4 col-12 control-label">Identification Type: </label>
+                <div class="col-lg-8 col-12">
+                    <select id="facility-info-identifiactionType" name="cas_identification_type"
+                            class="form-control addValidation facility-info-identifiactionType"
+                            data-selectedValue="@(Model != null ? Model.cas_identification_type : 0)"></select>
+                    @Html.ValidationMessageFor(m => m.cas_identification_type, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-4 col-12 control-label">Identification Number: </label>
+                <div class="col-lg-8 col-12">
+                    @Html.TextBoxFor(m => m.cas_identification_number, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.cas_identification_number, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-4 col-12 control-label">Arrival Time: </label>
+                <div class="col-lg-8 col-12">
+                    @Html.FormattedDateTextBoxFor(m => m.cas_metric_door_time_est, new { @class = "form-control timepicker", @data_currentVal = (Model.cas_metric_door_time_est.HasValue ? Model.cas_metric_door_time_est.Value.FormatDateTime() : "") })
+                    @Html.ValidationMessageFor(model => model.cas_metric_door_time_est, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-4 col-12">
+                    <label class="control-label ">ETA: </label>
+                    <input class="form-check-input ml-3 mt-2" type="checkbox" id="facility-info-eta" value="yes" onchange="checkETA()">
+                </div>
+                <div class="col-lg-8 col-12">
+                    @Html.TextBoxFor(m => m.cas_eta, new { @class = "form-control d-none", id = "facility-info-eta-text" })
+                    @Html.ValidationMessageFor(m => m.cas_eta, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-lg-4 col-12 control-label ">Notes: </label>
+                <div class="col-lg-8 col-12">
+                    @Html.TextAreaFor(m => m.cas_notes, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.cas_notes, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+    </form>
+    @*-----------------------Facility Info Section (Normal)-------------------------------*@
+    <div class="col-md-4 col-12 " id="facility-info-normal-container">
+        <div class="form-group row">
+            <div class="col-6">
+                <label class="control-label">Facility: </label>
+            </div>
+            <div class="col-6">
+                <label>@Model.facility.fac_name</label>
+            </div>
+        </div>
+        <div class="form-group row @(Model.cas_ctp_key.Equals((int)CaseType.StrokeAlert) || Model.cas_ctp_key.Equals((int)CaseType.StatConsult) ? "" : "d-none")">
+            <div class="col-6">
+                <label class="control-label">Cart: </label>
+            </div>
+            <div class="col-6">
+                <label> @Model.cas_cart</label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-6">
+                <label class="control-label">Callback Phone: </label>
+            </div>
+            <div class="col-6">
+                <label class="phone_number"> @Model.cas_callback</label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-6">
+                <label class="control-label">Extension: </label>
+            </div>
+            <div class="col-6">
+                <label> @Model.cas_callback_extension</label>
+            </div>
+        </div>
+        <div class="form-group row @(Model.cas_ctp_key.Equals((int)CaseType.NursetoDr) ? "" : "d-none")">
+            <div class="col-6">
+                <label class="control-label">Caller: </label>
+            </div>
+            <div class="col-6">
+                <label> @Model.cas_caller</label>
+            </div>
+        </div>
+        <div class="form-group row @(Model.cas_ctp_key.Equals((int)CaseType.DrtoDr)
+                                           || Model.cas_ctp_key.Equals((int)CaseType.RoundingNew)
+                                           || Model.cas_ctp_key.Equals((int)CaseType.RoundingFollowUp)? "": "d-none")">
+            <div class="col-6">
+                <label class="control-label">Referring Physician: </label>
+            </div>
+            <div class="col-6">
+                <label> @Model.cas_referring_physician</label>
+            </div>
+        </div>
+    </div>
+    @*-----------------------Action Buttons-------------------------------*@
+    <div class="col-md-8 col-12">
+        <div class="form-group row">
+            <div class="col-lg-4 col-6">
+                <a href="#" id="btnCancel_patientInfo" onclick="cancelConsult()">Cancel Consult</a>
+            </div>
+            <div class="col-lg-8 col-6 text-right">
+                <input type="button" class="btn btn-dark" value="Confirm Consult" id="btnConfirmConsult_facilityInfo" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#mainContentArea").find("#validationSummary").empty();
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        var currentFacilityOffset = @(Functions.GetTimeZoneOffset(Settings.DefaultTimeZone));
+        loadFacilityTimeZone('@Model.cas_fac_key');
+        $(".timepicker").kendoTimePicker({
+            open: function (e) {
+                e.preventDefault();
+                var currentDateTime = moment().utcOffset(currentFacilityOffset).format("MM/DD/YYYY HH:mm:ss");
+                this.element.first().attr("data-utc_time", new Date().toUTCString());
+                this.element.first().val(currentDateTime);
+            }
+        });
+        $("#btnConfirmConsult_facilityInfo").off("click").click(function () {
+            if (!$("#editForm").valid())
+                $("#editForm").validate();
+            else
+               $("#editForm").submit();
+        });
+        $('#editForm').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                method: "post",
+                success: function (response) {
+                    if (response.success) {
+                        consultConfirmation(response.data);
+                    }
+                    else {
+                        $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", response.message);
+                    }
+                }         
+
+            });
+        });
+    });
+</script>

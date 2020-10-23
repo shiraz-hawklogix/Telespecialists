@@ -1,0 +1,318 @@
+﻿
+ 
+<div class="pt-1 customGridHeader facility-grid-container">
+    <div id="physicianGrid">
+    </div>
+</div>
+
+<script type="text/javascript">
+    function PACapplyColors() {
+        $("#physicianGrid tr").each(function (index, element) {
+            var open = pacStatusEnum.Open;
+            var row = $(element);
+            var status = row.find("td:nth-child(3)").text().toInt();
+            if (status == open)
+            {
+                if (!$("#hhTabText").hasClass("text-danger font-weight-bold"))
+                {
+                    $("#hhTabText").addClass("text-danger font-weight-bold");
+                }
+               
+                row.children("td").addClass("text-danger font-weight-bold");
+            }            
+        });
+
+        if (PACapplyColors.To != undefined)
+            window.clearTimeout(PACapplyColors.To);
+
+        PACapplyColors.To = window.setTimeout(PACapplyColors, 2000);
+    }
+
+
+    function validateForm() {
+        var selectedOption = $("#pacdateFilter").val();
+        $("#pactxtStartDateError").hide();
+        if (selectedOption == "DateRange") {
+            var start_date = $("#pactxtStartDate").val();
+            var end_date = $("#pactxtEndDate").val();
+            if (start_date != "" && end_date != "") {
+                var duration = moment.duration(moment(end_date).diff(new Date(start_date)));
+                if (duration.asMinutes() < 0) {
+                    $("#pactxtStartDateError").html("Start Date must be less then End Date");
+                    $("#pactxtStartDateError").show();
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    function onPACGridFilter(tab, filters) {
+            if (filters == undefined || filters == null)
+                filters = [];
+
+            @*var pacValues = '@PacCaseType.PACConsultRequest.ToInt()';
+            if (tab == 'homehealthTab') {
+                FilterAdvanceTypes(pacValues.split(","), true);
+            }*@
+
+
+            //filters.push({ field: "date_filter", operator: "eq", "value": $("#pacdateFilter").val() });
+        if ($("#physicianGrid").data("kendoGrid") == undefined || $("#physicianGrid").data("kendoGrid") == null) {
+            $("#physicianGrid").kendoGrid({
+                dataSource: {
+                    page: KendoGet("Case", "page"),
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetAllHomeHealth")',
+                            contentType: "application/json",
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            options = KendoKeepState("Case", options, true);
+
+                            //if (options.filter !== undefined && options.filter.filters !== undefined) {
+                            //    $("#searchBox").val(options.filter.filters[0].value);
+                            //    $("#resetSearch").show();
+                            //}
+
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                    },
+                    pageSize: GetKendoPageSize("Case", "RecPerPage", true),
+                    page: KendoGet("Case", "page"),
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true
+                },
+                filterable: true,
+                sortable: true,
+                scrollable: true,
+                resizable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                dataBound: function (e) {
+                    PACapplyColors();
+                    _refreshData();
+                    //get All records
+                    SetKendoTotalCount("Case", $('#physicianGrid').data("kendoGrid").dataSource.total());
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                },
+
+                columns: [
+                    { hidden: true, field: "pac_key" },
+                    { hidden: true, field: "pac_fac_key" },
+                    { hidden: true, field: "pac_cst_key" },
+                    {
+                        title: "Actions", width: '80px',
+                        template: "<a class='btn btn-dark btn-sm py-1 loadLinkAsync' title='Edit' onClick='StopPACCaseListingTimer()' href='@Url.Action("EditPAC","PACPhysician")/\#= pac_key#'>Edit</a>"
+                    },
+                    
+                    { field: "pac_created_date", title: "Start Time", width: '150px' },
+                    { field: "CaseStatus", title: "Status", width: '120px' },
+                    //{ field: "pac_date_of_consult", title: "Anticipated Date of Consult", width: '200px' },
+                    { field: "pac_date_of_completion", title: "Date of Consult", width: '200px' },
+                    { field: "casetype", title: "Case Type", width: '150px' },
+                    { field: "facilityname", title: "Facility", width: '200px' },
+                    { field: "PhysicianName", title: "Physician", width: '150px' },
+                    { field: "pac_patient", title: "Patient", width: '150px' },
+                    // { field: "pac_patient_initials", title: "Initials", width: '100px' },
+                   // { field: "pac_callback", title: "Callback", width: '100px' },
+                   
+                ]
+            });
+        }
+        else
+        {
+                if (filters.length == 0)
+                    return;
+
+            $("#physicianGrid").data("kendoGrid").dataSource.filter({
+                    logic: "or",
+                    filters: filters
+            });
+        }
+    
+    }
+
+    function PACperformSearchOnCases() {
+        if (!validateForm())
+            return;
+
+        var filters = [];
+
+        var selectedValue = $("#pacdateFilter").val();
+        if (selectedValue == "SpecificDate") {
+            if ($("#pactxtSpecificDate").val() != "") {
+                filters.push({
+                    field: "specific_date",
+                    operator: "eq",
+                    value: $("#pactxtSpecificDate").val()
+                });
+            }
+        }
+        else if (selectedValue == "DateRange") {
+            if ($("#pactxtStartDate").val() != "") {
+                filters.push({
+                    field: "start_date",
+                    operator: "eq",
+                    value: $("#pactxtStartDate").val()
+                });
+            }
+
+            if ($("#pactxtEndDate").val() != "") {
+                filters.push({
+                    field: "end_date",
+                    operator: "eq",
+                    value: $("#pactxtEndDate").val()
+                });
+            }
+        }
+        
+        filters.push({
+            field: "date_filter",
+            operator: "eq",
+            value: selectedValue
+        });
+        
+        var searchValue = $('#pacsearchBox').val();
+
+        if (searchValue != "") {
+            filters.push({
+                field: "search_text",
+                operator: "eq",
+                value: searchValue
+            });
+        }
+        var statusFilter = $("#pacstatusFilter").val().toString();
+        if (statusFilter !== "") {
+            filters.push({
+                field: "cas_status",
+                operator: "eq",
+                value: statusFilter
+            });
+        }
+        
+        // advance search user type
+        if (userTypeValue != "") {
+            var valueUserType = $("#pacuserTypeFilter").val().toString();
+            if (valueUserType && ($("#pacuserTypeFilter option:selected").length != $("#pacuserTypeFilter option").length)) {
+                filters.push({ //
+                    field: "cas_ctp_key_selected", /*multi_cas_ctp_key*/
+                    operator: "eq",
+                    value: valueUserType
+                });
+            }
+        }
+           
+        // advance search
+        $.each(advanceSearchformData, function (index, formElement) {
+            if ($.trim(formElement.value) != "" && formElement.value != undefined) {
+
+                filters.push({
+                    field: "advance_" + formElement.name,
+                    operator: "eq",
+                    value: formElement.value
+                });
+            }
+        }); 
+
+        onPACGridFilter($("#caseListActiveTab").val(), filters);
+
+       // $("#resetSearch").show();
+    }
+
+    function PACgenerateStatusFilter() {
+        $('#pacstatusFilter').multiselect({
+            columns: 1,
+            placeholder: 'Select Status',
+            search: true,
+            searchOptions: {
+                'default': 'Search Status'
+            },
+            selectAll: true,
+            onOptionClick: function () {
+                $("#pacbtnSearch").click();
+            },
+            onSelectAll: function () {
+                PACperformSearchOnCases();
+            }
+        });
+    }
+
+   
+    $(document).ready(function () {
+        PACgenerateStatusFilter();
+        $("#pacdateFilter").val('Last48Hours');
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        PACperformSearchOnCases();
+
+        $("#pacbtnSearch").off("click").click(function () {
+            PACperformSearchOnCases();
+        }); 
+
+        $("#pacdateFilter").unbind("change").change(function () {
+            $("#pacdivDateRange,#pacdivSpecificDate").hide();
+            var selectedValue = $(this).val();
+            if (selectedValue == "SpecificDate") {
+                $("#pacdivSpecificDate").show();
+            }
+            else if (selectedValue == "DateRange") {
+                $("#pacdivDateRange").show();
+            }
+            else {
+                $("#pacbtnSearch").click();
+            }
+        });
+
+        // frmSearch
+        $("#pacsearchBox").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#pacbtnSearch").click();
+            }
+        });
+
+
+          
+        });
+
+    function _refreshData() {
+        //if (_refreshData.timeout != undefined)
+        //    window.clearTimeout(_refreshData.timeout);
+
+        //_refreshData.timeout = window.setTimeout(function () {
+        //    $("#hdnDisableLoader").val("1");
+        //    var _grid = $('#physicianGrid').data("kendoGrid");
+        //    if (_grid != undefined)
+        //        _grid.dataSource.read();
+        //}, 10000);
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl.indexOf("/case") > -1 || currentUrl.indexOf("/case/index") > -1) {
+            if (_refreshData.timeout != undefined)
+                window.clearTimeout(_refreshData.timeout);
+
+            _refreshData.timeout = window.setTimeout(function () {
+                $("#hdnDisableLoader").val("1");
+                var _grid = $('#physicianGrid').data("kendoGrid");
+                if (_grid != undefined)
+                    _grid.dataSource.read();
+            }, 10000);
+        }
+    }
+    function StopPACCaseListingTimer() {
+        if (_refreshData.timeout != undefined)
+            window.clearTimeout(_refreshData.timeout);
+    }
+      
+</script>

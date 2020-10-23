@@ -1,0 +1,911 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Model;
+@using TeleSpecialists.BLL;
+
+@model post_acute_care
+
+@{
+    ViewBag.Title = "PAC Template";
+
+    var patientGender = Enum.GetValues(typeof(Gender)).Cast<Gender>()
+        .Select(m => new
+        {
+            Key = Convert.ToChar(m).ToString().Trim(),
+            Value = m.ToDescription()
+        }).OrderByDescending(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACAppears = Enum.GetValues(typeof(PACAppears)).Cast<PACAppears>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACHeentFirst = Enum.GetValues(typeof(PACHeentFirst)).Cast<PACHeentFirst>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACHeentSecond = Enum.GetValues(typeof(PACHeentSecond)).Cast<PACHeentSecond>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACPresentAbsent = Enum.GetValues(typeof(PACPresentAbsent)).Cast<PACPresentAbsent>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACGI = Enum.GetValues(typeof(PACGI)).Cast<PACGI>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACRaneofMotion = Enum.GetValues(typeof(PACRaneofMotion)).Cast<PACRaneofMotion>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACNeuroFace = Enum.GetValues(typeof(PACNeuroFace)).Cast<PACNeuroFace>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACNeuroSpeech = Enum.GetValues(typeof(PACNeuroSpeech)).Cast<PACNeuroSpeech>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="col-md-8">
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Patient Is:</label>
+                    <div class="col-sm-8 patientGender">
+                        @Html.RadioButtonListFor(m => m.pac_gender, patientGender, new { @id = "pac_gender", @name = "pac_gender" })
+                        <div id="pac_gender-error" class="error_msg" style="display:none;">
+                            <label>This field is required</label>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.pac_gender, "", new { @class = "text-danger" })
+                    </div>
+                </div> 
+                <div class="form-group row">
+                    <label for="pac_chief_complaint" class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Chief Complaint:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @Html.TextAreaFor(m => m.pac_chief_complaint, new { @class = "form-control", @id = "pac_chief_complaint" })
+                        <div id="pac_chief_complaint-error" class="error_msg" style="display:none;">
+                            <label for="pac_chief_complaint">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pac_hpi" class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">HPI:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @Html.TextAreaFor(m => m.pac_hpi, new { @class = "form-control", @id = "pac_hpi" })
+                        <div id="pac_hpi-error" class="error_msg" style="display:none;">
+                            <label for="pac_hpi">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pac_pmh" class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">PMH:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @Html.TextAreaFor(m => m.pac_pmh, new { @class = "form-control", @id = "pac_pmh" })
+                        <div id="pac_pmh-error" class="error_msg" style="display:none;">
+                            <label for="pac_pmh">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pac_ros" class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">ROS:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @Html.TextAreaFor(m => m.pac_ros, new { @class = "form-control", @id = "pac_ros" })
+                        <div id="pac_ros-error" class="error_msg" style="display:none;">
+                            <label for="pac_ros">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pac_impression" class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Impression:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @Html.TextAreaFor(m => m.pac_impression, new { @class = "form-control", @id = "pac_impression" })
+                        <div id="pac_impression-error" class="error_msg" style="display:none;">
+                            <label for="pac_impression">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pac_plan" class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Plan:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @Html.TextAreaFor(m => m.pac_plan, new { @class = "form-control", @id = "pac_plan" })
+                        <div id="pac_plan-error" class="error_msg" style="display:none;">
+                            <label for="pac_plan">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <div class="form-group row">
+                    @{
+                        if (Model.pac_home_healthplan == 1)
+                        {
+                            <input type="hidden" id="pac_home_healthplan" name="pac_home_healthplan" value="1" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="pac_home_healthplan" name="pac_home_healthplan" value="" />
+                        }
+                    }
+                    <div class="checkbox col-xl-2 col-sm-2 col-lg-6">
+                        <input type="checkbox" id="home_healthplan" data-IgnoreAutoSave="true" class="track_change" value="1" @( Model.pac_home_healthplan == 1 ? "checked='checked'" : "")>
+                    </div>
+                    <div class="col-xl-10 col-sm-10 col-lg-12">
+                        <label>This patient was discussed with the home health nurse providing direct services under a home health plan of care.</label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @{
+                        if (Model.pac_home_healthnurse == 1)
+                        {
+                            <input type="hidden" id="pac_home_healthnurse" name="pac_home_healthnurse" value="1" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="pac_home_healthnurse" name="pac_home_healthnurse" value="" />
+                        }
+                    }
+                    <div class="checkbox col-xl-2 col-sm-2 col-lg-6">
+                        <input type="checkbox" id="home_healthnurse" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_home_healthnurse" @( Model.pac_home_healthnurse == 1 ? "checked='checked'" : "")>
+                    </div>
+                    <div class="col-xl-10 col-sm-10 col-lg-12">
+                        <label>This patient's discharge summary and consultation reports were accessed and reviewed with the patient and the participating home health nurse.</label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @{
+                        if (Model.pac_patients_laboratory == 1)
+                        {
+                            <input type="hidden" id="pac_patients_laboratory" name="pac_patients_laboratory" value="1" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="pac_patients_laboratory" name="pac_patients_laboratory" value="" />
+                        }
+                    }
+                    <div class="checkbox col-xl-2 col-sm-2 col-lg-6">
+                        <input type="checkbox" id="patients_laboratory" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_patients_laboratory" @( Model.pac_patients_laboratory == 1 ? "checked='checked'" : "")>
+                    </div>
+                    <div class="col-xl-10 col-sm-10 col-lg-12">
+                        <label>The patients laboratory results were reviewed and discussed with the patient and HH nurse.</label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @{
+                        if (Model.pac_patients_imaging == 1)
+                        {
+                            <input type="hidden" id="pac_patients_imaging" name="pac_patients_imaging" value="1" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="pac_patients_imaging" name="pac_patients_imaging" value="" />
+                        }
+                    }
+                    <div class="checkbox col-xl-2 col-sm-2 col-lg-6">
+                        <input type="checkbox" id="patients_imaging" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_patients_imaging" @( Model.pac_patients_imaging == 1 ? "checked='checked'" : "")>
+                    </div>
+                    <div class="col-xl-10 col-sm-10 col-lg-12">
+                        <label>The patient imaging studies were reviewed and discussed with the HH nurse.</label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @{
+                        if (Model.pac_patients_medicationlist == 1)
+                        {
+                            <input type="hidden" id="pac_patients_medicationlist" name="pac_patients_medicationlist" value="1" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="pac_patients_medicationlist" name="pac_patients_medicationlist" value="" />
+                        }
+                    }
+                    <div class="checkbox col-xl-2 col-sm-2 col-lg-6">
+                        <input type="checkbox" id="patients_medicationlist" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_patients_medicationlist" @( Model.pac_patients_medicationlist == 1 ? "checked='checked'" : "")>
+                    </div>
+                    <div class="col-xl-10 col-sm-10 col-lg-12">
+                        <label>The patient's medication list was reconciled and reviewed with the patient and HH nurse. Necessary changes are documented in the plan above.</label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @{
+                        if (Model.pac_patients_treatmentplan == 1)
+                        {
+                            <input type="hidden" id="pac_patients_treatmentplan" name="pac_patients_treatmentplan" value="1" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="pac_patients_treatmentplan" name="pac_patients_treatmentplan" value="" />
+                        }
+                    }
+                    <div class="checkbox col-xl-2 col-sm-2 col-lg-6">
+                        <input type="checkbox" id="patients_treatmentplan" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_patients_treatmentplan" @( Model.pac_patients_treatmentplan == 1 ? "checked='checked'" : "")>
+                    </div>
+                    <div class="col-xl-10 col-sm-10 col-lg-12">
+                        <label>The patient's treatment plan was reviewed and adjusted according to the new documented plan above.</label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @{
+                        if (Model.pac_reviewing_patientdata == 1)
+                        {
+                            <input type="hidden" id="pac_reviewing_patientdata" name="pac_reviewing_patientdata" value="1" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="pac_reviewing_patientdata" name="pac_reviewing_patientdata" value="" />
+                        }
+                    }
+                    <div class="checkbox col-xl-2 col-sm-2 col-lg-6">
+                        <input type="checkbox" id="reviewing_patientdata" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_reviewing_patientdata" @( Model.pac_reviewing_patientdata == 1 ? "checked='checked'" : "")>
+                    </div>
+                    <div class="col-xl-10 col-sm-10 col-lg-12">
+                        <label>More than 30 minutes were spent reviewing above data, examining the patient discussing the case with the HH nurse, patient and family.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <label><span class="text-danger bold">Exam:&nbsp;&nbsp;&nbsp;</span><span>choose at least 12 of the following for high complexity and at least 6 for low complexity</span></label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xl-3 col-sm-3 col-lg-12">
+                            <label for="pac_pb" class="control-label ml-md-5">BP</label>
+                            @Html.TextAreaFor(m => m.pac_pb, new { @class = "form-control" })
+                        </div>
+                        <div class="col-xl-3 col-sm-3 col-lg-12">
+                            <label for="pac_pulse" class="control-label ml-5">Pulse</label>
+                            @Html.TextAreaFor(m => m.pac_pulse, new { @class = "form-control" })
+                        </div>
+                        <div class="col-xl-3 col-sm-3 col-lg-12">
+                            <label for="pac_temp" class="control-label ml-5">Temp</label>
+                            @Html.TextAreaFor(m => m.pac_temp, new { @class = "form-control" })
+                        </div>
+                        <div class="col-xl-3 col-sm-3 col-lg-12">
+                            <label for="pac_respirations" class="control-label ml-4">Respirations</label>
+                            @Html.TextAreaFor(m => m.pac_respirations, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <label class="bold">General:</label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @{
+                            if (Model.pac_awake == 1)
+                            {
+                                <input type="hidden" id="pac_awake" name="pac_awake" value="1" />
+                            }
+                            else
+                            {
+                                <input type="hidden" id="pac_awake" name="pac_awake" value="" />
+                            }
+                        }
+                        <div class="checkbox col-xl-6 col-sm-6 col-lg-6">
+                            <input type="checkbox" id="awake" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_awake" @( Model.pac_awake == 1 ? "checked='checked'" : "")>
+                            @*</div>
+                    <div class="col-xl-10 col-sm-10 col-lg-12">*@
+                            <label>Alert, Awake</label>
+                        </div>
+                        @*</div>
+                <div class="form-group row">*@
+                        @{
+                            if (Model.pac_acute_distress == 1)
+                            {
+                                <input type="hidden" id="pac_acute_distress" name="pac_acute_distress" value="1" />
+                            }
+                            else
+                            {
+                                <input type="hidden" id="pac_acute_distress" name="pac_acute_distress" value="" />
+                            }
+                        }
+                        <div class="checkbox col-xl-6 col-sm-6 col-lg-6">
+                            <input type="checkbox" id="acute_distress" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_acute_distress" @( Model.pac_acute_distress == 1 ? "checked='checked'" : "")>
+                            @*</div>
+                    <div class="col-xl-10 col-sm-10 col-lg-12">*@
+                            <label>In no acute distress</label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <label>appears:</label>
+                            @Html.RadioButtonListFor(m => m.pac_appears_age, PACAppears)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6" style="float:left;">
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12 pactemplate-padding">
+                                <label class="bold">HEENT:</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xl-6 col-sm-6 col-lg-12 pactemplate-padding">
+                                @{
+                                    if (Model.pac_normocephalic == 1)
+                                    {
+                                        <input type="hidden" id="pac_normocephalic" name="pac_normocephalic" value="1" />
+                                    }
+                                    else
+                                    {
+                                        <input type="hidden" id="pac_normocephalic" name="pac_normocephalic" value="" />
+                                    }
+                                }
+                                <div class="checkbox col-xl-12 col-sm-12 col-lg-12 pactemplate-padding">
+                                    <input type="checkbox" id="normocephalic" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_normocephalic" @( Model.pac_normocephalic == 1 ? "checked='checked'" : "")>
+                                    <label>Normocephalic</label>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-sm-6 col-lg-12 pactemplate-padding">
+                                @{
+                                    if (Model.pac_atraumatic == 1)
+                                    {
+                                        <input type="hidden" id="pac_atraumatic" name="pac_atraumatic" value="1" />
+                                    }
+                                    else
+                                    {
+                                        <input type="hidden" id="pac_atraumatic" name="pac_atraumatic" value="" />
+                                    }
+                                }
+                                <div class="checkbox col-xl-12 col-sm-12 col-lg-12 pactemplate-padding">
+                                    <input type="checkbox" id="atraumatic" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_atraumatic" @( Model.pac_atraumatic == 1 ? "checked='checked'" : "")>
+                                    <label>Atraumatic</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12 pactemplate-padding">
+                                @Html.RadioButtonListFor(m => m.pac_perrl_or_unequalpupils, PACHeentFirst)
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12 pactemplate-padding">
+                                @Html.RadioButtonListFor(m => m.pac_intact_or_impaired, PACHeentSecond)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="float:left;">
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12">
+                                <label class="bold">Neck:</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12">
+                                @{
+                                    if (Model.pac_trachea_midline == 1)
+                                    {
+                                        <input type="hidden" id="pac_trachea_midline" name="pac_trachea_midline" value="1" />
+                                    }
+                                    else
+                                    {
+                                        <input type="hidden" id="pac_trachea_midline" name="pac_trachea_midline" value="" />
+                                    }
+                                }
+                                <input type="checkbox" id="trachea_midline" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_trachea_midline" @( Model.pac_trachea_midline == 1 ? "checked='checked'" : "")>
+                                <label>Trachea Midline</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12">
+                                <label>JVD:</label>
+                                @Html.RadioButtonListFor(m => m.pac_neck_jvd, PACPresentAbsent)
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12">
+                                <label>Masses:</label>
+                                @Html.RadioButtonListFor(m => m.pac_neck_masses, PACPresentAbsent)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6" style="float:left;">
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12 pactemplate-padding">
+                                <label class="bold">GI:</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label>Abdomen:</label>
+                            <div class="col-xl-12 col-sm-12 col-lg-12 pactemplate-padding">
+                                @Html.RadioButtonListFor(m => m.pac_gi_abdomen, PACGI)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="float:left;">
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12">
+                                <label class="bold">Musculoskeletal:</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12">
+                                @{
+                                    if (Model.pac_extremities_spontaneously == 1)
+                                    {
+                                        <input type="hidden" id="pac_extremities_spontaneously" name="pac_extremities_spontaneously" value="1" />
+                                    }
+                                    else
+                                    {
+                                        <input type="hidden" id="pac_extremities_spontaneously" name="pac_extremities_spontaneously" value="" />
+                                    }
+                                }
+                                <input type="checkbox" id="extremities_spontaneously" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_extremities_spontaneously" @( Model.pac_extremities_spontaneously == 1 ? "checked='checked'" : "")>
+                                <label>Moves all extremities spontaneously</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12">
+                                <label>Range of Motion:</label>
+                                @Html.RadioButtonListFor(m => m.pac_range_of_motion, PACRaneofMotion)
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12">
+                                <label>Clubbing:</label>
+                                @Html.RadioButtonListFor(m => m.pac_clubbing, PACPresentAbsent)
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xl-12 col-sm-12 col-lg-12">
+                                <label>Cyanosis:</label>
+                                @Html.RadioButtonListFor(m => m.pac_cyanosis, PACPresentAbsent)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <label class="bold">Cardiovascular:</label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <label>swelling/edema:</label>
+                            @Html.RadioButtonListFor(m => m.pac_swelling_or_edema, PACPresentAbsent)
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <label>Varicosities:</label>
+                            @Html.RadioButtonListFor(m => m.pac_varicosities, PACPresentAbsent)
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <label class="bold">Neuro:</label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xl-3 col-sm-3 col-lg-12">
+                            @{
+                                if (Model.pac_neuro_oriented == 1)
+                                {
+                                    <input type="hidden" id="pac_neuro_oriented" name="pac_neuro_oriented" value="1" />
+                                }
+                                else
+                                {
+                                    <input type="hidden" id="pac_neuro_oriented" name="pac_neuro_oriented" value="" />
+                                }
+                            }
+                            <div class="checkbox col-xl-12 col-sm-12 col-lg-12">
+                                <input type="checkbox" id="neuro_oriented" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_neuro_oriented" @( Model.pac_neuro_oriented == 1 ? "checked='checked'" : "")>
+                                <label>Oriented</label>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-3 col-lg-12">
+                            @{
+                                if (Model.pac_neuro_time == 1)
+                                {
+                                    <input type="hidden" id="pac_neuro_time" name="pac_neuro_time" value="1" />
+                                }
+                                else
+                                {
+                                    <input type="hidden" id="pac_neuro_time" name="pac_neuro_time" value="" />
+                                }
+                            }
+                            <div class="checkbox col-xl-12 col-sm-12 col-lg-12">
+                                <input type="checkbox" id="neuro_time" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_neuro_time" @( Model.pac_neuro_time == 1 ? "checked='checked'" : "")>
+                                <label>Time</label>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-3 col-lg-12">
+                            @{
+                                if (Model.pac_neuro_place == 1)
+                                {
+                                    <input type="hidden" id="pac_neuro_place" name="pac_neuro_place" value="1" />
+                                }
+                                else
+                                {
+                                    <input type="hidden" id="pac_neuro_place" name="pac_neuro_place" value="" />
+                                }
+                            }
+                            <div class="checkbox col-xl-12 col-sm-12 col-lg-12">
+                                <input type="checkbox" id="neuro_place" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_neuro_place" @( Model.pac_neuro_place == 1 ? "checked='checked'" : "")>
+                                <label>Place</label>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-3 col-lg-12">
+                            @{
+                                if (Model.pac_neuro_person == 1)
+                                {
+                                    <input type="hidden" id="pac_neuro_person" name="pac_neuro_person" value="1" />
+                                }
+                                else
+                                {
+                                    <input type="hidden" id="pac_neuro_person" name="pac_neuro_person" value="" />
+                                }
+                            }
+                            <div class="checkbox col-xl-12 col-sm-12 col-lg-12">
+                                <input type="checkbox" id="neuro_person" data-IgnoreAutoSave="true" class="track_change" value="@Model.pac_neuro_person" @( Model.pac_neuro_person == 1 ? "checked='checked'" : "")>
+                                <label>Person</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <label>CN:<span class="ml-3">Face</span></label>
+                            @Html.RadioButtonListFor(m => m.pac_neuro_cn, PACNeuroFace, new { @class = "pac_neuro_cn" })
+                            @{
+                                if (Model.pac_neuro_cn_right == 1)
+                                {
+                                    <input type="hidden" id="pac_neuro_cn_right" name="pac_neuro_cn_right" value="1" />
+                                }
+                                else
+                                {
+                                    <input type="hidden" id="pac_neuro_cn_right" name="pac_neuro_cn_right" value="" />
+                                }
+                            }
+                            <input type="checkbox" id="neuro_cn_right" data-IgnoreAutoSave="true" class="track_change ml-5" value="@Model.pac_neuro_cn_right" @( Model.pac_neuro_cn_right == 1 ? "checked='checked'" : "")>
+                            <label>Right</label>
+                            @{
+                                if (Model.pac_neuro_cn_left == 1)
+                                {
+                                    <input type="hidden" id="pac_neuro_cn_left" name="pac_neuro_cn_left" value="1" />
+                                }
+                                else
+                                {
+                                    <input type="hidden" id="pac_neuro_cn_left" name="pac_neuro_cn_left" value="" />
+                                }
+                            }
+                            <input type="checkbox" id="neuro_cn_left" data-IgnoreAutoSave="true" class="track_change ml-5" value="@Model.pac_neuro_cn_left" @( Model.pac_neuro_cn_left == 1 ? "checked='checked'" : "")>
+                            <label>Left</label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            <label>Speech:</label>
+                            @Html.RadioButtonListFor(m => m.pac_speech, PACNeuroSpeech)
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xl-12 col-sm-12 col-lg-12">
+                            @{
+                                if (Model.pac_tongue_midline == 1)
+                                {
+                                    <input type="hidden" id="pac_tongue_midline" name="pac_tongue_midline" value="1" />
+                                }
+                                else
+                                {
+                                    <input type="hidden" id="pac_tongue_midline" name="pac_tongue_midline" value="" />
+                                }
+                            }
+                            <input type="checkbox" id="tongue_midline" data-IgnoreAutoSave="true" class="track_change ml-5" value="@Model.pac_tongue_midline" @( Model.pac_tongue_midline == 1 ? "checked='checked'" : "")>
+                            <label>Tongue Midline</label>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="pac_exam_free_text" class="control-label col-xl-4 col-sm-4 col-lg-12">Exam Free Text:</label>
+                        <div class="col-xl-8 col-sm-8 col-lg-12">
+                            @Html.TextAreaFor(m => m.pac_exam_free_text, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function validateTemplateRequiredFields(isCaseCompleteCall) {
+
+        //$(".error_msg").hide();
+
+        var result = true;
+        var pac_gender = true;
+        var pac_chief_complaint = true;
+
+        var pac_hpi = true;
+        var pac_pmh = true;
+
+        var pac_ros = true;
+        var pac_impression = true;
+        var pac_plan = true;
+
+            if ($('input:radio[name=pac_gender]').length > 0) {
+                if ($('input:radio[name=pac_gender]:checked').val() == undefined) {
+                    $("#pac_gender-error").show();
+                    result = false;
+                    pac_gender = false;
+                }
+        }
+
+            if ($.trim($("#pac_chief_complaint").val()) == "") {
+                $("#pac_chief_complaint-error").show();
+                result = false;
+                pac_chief_complaint = false;
+            }
+
+            if ($.trim($("#pac_hpi").val()) == "") {
+                $("#pac_hpi-error").show();
+                result = false;
+                pac_hpi = false;
+            }
+
+            if ($.trim($("#pac_pmh").val()) == "") {
+                $("#pac_pmh-error").show();
+                result = false;
+                pac_pmh = false;
+            }
+
+            if ($.trim($("#pac_ros").val()) == "") {
+                $("#pac_ros-error").show();
+                result = false;
+                pac_ros = false;
+            }
+
+            if ($.trim($("#pac_impression").val()) == "") {
+                $("#pac_impression-error").show();
+                result = false;
+                pac_impression = false;
+            }
+
+            if ($.trim($("#pac_plan").val()) == "") {
+                $("#pac_plan-error").show();
+                result = false;
+                pac_plan = false;
+            }
+        
+            /// Focusing the first invalid control on the tab
+            if (!result) {
+
+                var element = null;
+
+                if (!pac_gender) {
+                    element = $("input:radio[name=pac_gender]");
+                }
+                else if (!pac_chief_complaint) {
+                    element = $("#pac_chief_complaint");
+                }
+                else if (!pac_hpi) {
+                    element = $("#pac_hpi");
+                }
+
+                else if (!pac_pmh) {
+                    element = $("#pac_pmh");
+                }
+                else if (!pac_ros) {
+                    element = $("#pac_ros");
+                }
+                else if (!pac_impression) {
+                    element = $("#pac_impression");
+                }
+                else if (!pac_plan) {
+                    element = $("#pac_plan");
+                }
+
+                if (element !== null) {
+
+                    window.setTimeout(function () { $(element).focus(); }, 250)
+                }
+            }
+        
+        return result;
+    }
+
+    $(".pac_neuro_cn").click(function () {
+        if ($(this).is(":checked")) {
+            var abc = document.querySelector('input[name="pac_neuro_cn"]:checked').value;
+            if (abc == "1") {
+                $("#neuro_cn_right").attr('disabled', true);
+                $("#neuro_cn_left").attr('disabled', true);
+                $("#neuro_cn_right").prop('checked', false);
+                $("#neuro_cn_left").prop('checked', false);
+            } else {
+                $("#neuro_cn_right").attr('disabled', false);
+                $("#neuro_cn_left").attr('disabled', false);
+            }
+        }
+    });
+    $("#home_healthplan").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_home_healthplan").val(1)
+        } else {
+            $("#pac_home_healthplan").val("")
+        }
+    });
+    $("#home_healthnurse").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_home_healthnurse").val(1)
+        } else {
+            $("#pac_home_healthnurse").val("")
+        }
+    });
+    $("#patients_laboratory").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_patients_laboratory").val(1)
+        } else {
+            $("#pac_patients_laboratory").val("")
+        }
+    });
+    $("#patients_imaging").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_patients_imaging").val(1)
+        } else {
+            $("#pac_patients_imaging").val("")
+        }
+    });
+    $("#patients_medicationlist").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_patients_medicationlist").val(1)
+        } else {
+            $("#pac_patients_medicationlist").val("")
+        }
+    });
+    $("#patients_treatmentplan").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_patients_treatmentplan").val(1)
+        } else {
+            $("#pac_patients_treatmentplan").val("")
+        }
+    });
+    $("#reviewing_patientdata").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_reviewing_patientdata").val(1)
+        } else {
+            $("#pac_reviewing_patientdata").val("")
+        }
+    });
+    $("#awake").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_awake").val(1)
+        } else {
+            $("#pac_awake").val("")
+        }
+    });
+    $("#acute_distress").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_acute_distress").val(1)
+        } else {
+            $("#pac_acute_distress").val("")
+        }
+    });
+    $("#normocephalic").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_normocephalic").val(1)
+        } else {
+            $("#pac_normocephalic").val("")
+        }
+    });
+    $("#atraumatic").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_atraumatic").val(1)
+        } else {
+            $("#pac_atraumatic").val("")
+        }
+    });
+    $("#trachea_midline").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_trachea_midline").val(1)
+        } else {
+            $("#pac_trachea_midline").val("")
+        }
+    });
+    $("#extremities_spontaneously").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_extremities_spontaneously").val(1)
+        } else {
+            $("#pac_extremities_spontaneously").val("")
+        }
+    });
+    $("#neuro_oriented").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_neuro_oriented").val(1)
+        } else {
+            $("#pac_neuro_oriented").val("")
+        }
+    });
+    $("#neuro_time").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_neuro_time").val(1)
+        } else {
+            $("#pac_neuro_time").val("")
+        }
+    });
+    $("#neuro_place").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_neuro_place").val(1)
+        } else {
+            $("#pac_neuro_place").val("")
+        }
+    });
+    $("#neuro_person").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_neuro_person").val(1)
+        } else {
+            $("#pac_neuro_person").val("")
+        }
+    });
+    $("#neuro_cn_right").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_neuro_cn_right").val(1)
+        } else {
+            $("#pac_neuro_cn_right").val("")
+        }
+    });
+    $("#neuro_cn_left").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_neuro_cn_left").val(1)
+        } else {
+            $("#pac_neuro_cn_left").val("")
+        }
+    });
+    $("#tongue_midline").click(function () {
+        if ($(this).is(":checked")) {
+            $("#pac_tongue_midline").val(1)
+        } else {
+            $("#pac_tongue_midline").val("")
+        }
+    });
+</script>

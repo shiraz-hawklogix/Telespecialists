@@ -1,0 +1,58 @@
+﻿
+@model TeleSpecialists.BLL.Model.physician_status
+
+    <div >        
+        <!-- Modal Header -->
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div class="snooze_popup_message">
+                Do you need more time? 
+            </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="text-right mb-2 ">
+            @foreach (var option in Model.physician_status_snooze_option.ToList())
+            {
+                <a class="btn btn-dark btnSnoozePopup"   data-dismiss="modal" href="@Url.Action("SnoozeStatus","Physician", new { phs_key = Model.phs_key, pso_key = option.pso_key })">@option.pso_message</a>
+            }
+
+            <a class="btn btn-dark" id="btnNoSnooze" data-dismiss="modal" href="javascript:;">No I am Finishing the Case</a>
+        </div>
+
+
+    </div>
+
+
+<script>
+    $("#btnNoSnooze,#btnCloseSnoozePopup").off("click").click(function (e) {
+        e.preventDefault();
+        deleteCookie("SnoozePopup");
+        if (snoozetimeoutId != undefined) {
+            window.clearTimeout(snoozetimeoutId);
+            snoozetimeoutId = null;
+        }
+
+        $("#divModelLessPopup").data("kendoWindow").close();
+            
+    })
+    $(".btnSnoozePopup").off("click").click(function (e) {
+        e.preventDefault();
+        deleteCookie("SnoozePopup");
+        $("#divModelLessPopup").data("kendoWindow").close();
+
+        var url = $(this).attr("href");
+
+        if (snoozetimeoutId != undefined) {
+            window.clearTimeout(snoozetimeoutId);
+            snoozetimeoutId = null;
+        }
+        var rnd = Math.floor(Math.random() * 10000) + 1; // adding rnd to disable cache in IE
+
+        $.get(url, {rnd : rnd}, function (response) {            
+        });
+
+        
+    });
+</script>

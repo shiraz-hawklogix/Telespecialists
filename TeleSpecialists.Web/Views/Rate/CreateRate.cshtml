@@ -1,0 +1,72 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@model TeleSpecialists.BLL.Model.physician_rate
+@{
+    ViewBag.Title = "Add Physician Productivity Rate";
+    ViewBag.Edit = false;
+    var Physicians = ViewBag.Physicians;
+    ViewBag.physicians_List = Physicians;
+    var status = ViewBag.Status;
+    ViewBag.Status = status;
+    var rejectedlist = ViewBag.RejectedList;
+    ViewBag.RejectedList = rejectedlist;
+    //var indexList = Enum.GetValues(typeof(IndexRate)).Cast<IndexRate>().Select(m => new { key = (int)m , title = (int)m });//.OrderBy(m => m.ucd_title);
+}
+<h4>Add Physician Productivity Rate</h4>
+<hr />
+@Html.Partial("_formRate", Model)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var uclData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.UclData, Newtonsoft.Json.Formatting.Indented));
+        //var currentFacilityOffset = @(Functions.GetTimeZoneOffset(Settings.DefaultTimeZone));
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        //$("#phy_list").fillKendoDropDown("/LookUp/GetAllPhysicians", "Name", "Id", "-- Select --");
+        //$("#cas_ctp_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.CaseType.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#cas_ctp_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.BillingCode.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+        $("#rate_end_Date").kendoDatePicker();
+        $("#rate_start_Date").kendoDatePicker();
+
+        $('#rat_shift_id').multiselect({
+            columns: 1,
+            placeholder: ' -- Select Shift --',
+            search: false,
+            selectAll: true
+        });
+
+        $('#phy_list').multiselect({
+            columns: 1,
+            placeholder: ' -- Select --',
+            search: true,
+            searchOptions: {
+                'default': 'Search'
+            },
+            selectAll: true
+        });
+    });
+    $('#rat_ending').on('change', function () {
+        var start = parseInt($('#rat_starting').val());
+        var end = parseInt($('#rat_ending').val());
+        if (end < start) {
+            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "End Index Must be greater than Start Index.");
+        }
+    });
+    $('#rat_starting').on('change', function () {
+        var start = parseInt($('#rat_starting').val());
+        var end = parseInt($('#rat_ending').val());
+        if (end === '' || end === 0)
+        {
+        }
+        else if (end < start)
+        {
+            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "End Index Must be greater than Start Index.");
+        }
+    });
+    //$('#btn_detail').on('click', function () {
+    //    $('#DuplicateDetails').modal('show');
+    //});
+</script>
+
+
+

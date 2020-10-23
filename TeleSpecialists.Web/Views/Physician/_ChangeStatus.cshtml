@@ -1,0 +1,20 @@
+﻿@model TeleSpecialists.BLL.Model.AspNetUser
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@{
+    //var list = ViewBag.StatusList as List<SelectListItem>;
+}
+
+
+@if (Model != null)
+{
+    @*@Html.DropDownListFor(m => m.status_key, list, "-- Select --",new { @class = "font_11px", @id = "drp_physican_status", @data_role = "dropdownlist" });*@
+
+    <select id="drp_physican_status" name="drp_physican_status" data-role="dropdownlist" class="font_11px">
+        <option value="">-- Select --</option>
+        <option value="@PhysicianStatus.Available.ToInt()" @(Model?.physician_status?.phs_name == PhysicianStatus.Available.ToDescription() ? "selected" : "")> @PhysicianStatus.Available.ToDescription() </option>
+        <option value="@PhysicianStatus.Rounding.ToInt()"  @(Model?.physician_status?.phs_name == PhysicianStatus.Rounding.ToDescription() ? "selected" : "")> @PhysicianStatus.Rounding.ToDescription() </option>
+    </select>
+}
+

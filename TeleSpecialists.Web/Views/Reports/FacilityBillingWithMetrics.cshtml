@@ -1,0 +1,261 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@{
+    ViewBag.Title = "Facility Billing with Metrics";
+    var currentDate = DateTime.Now.ToEST();
+    var previousMonth = currentDate.AddMonths(-1);
+}
+
+@Html.Partial("_ReportLayout")
+
+<div class="row" id="divLocalFilters">
+    <div class="col-12">
+        <div class="form-row">
+            <div class="form-group col-xl-3 col-6">
+                <label for="Facilities">Facility</label>
+                @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control Facilities", @multiple = "multiple" })
+            </div>
+            <div class="form-group col-xl-2 col-6">
+                <label for="ddlTimeFrame">Time Frame</label>
+                <select class="form-control" id="ddlTimeFrame">
+                    <option value="ThisMonth" selected="selected">This Month</option>
+                    <option value="PreviousMonth">Previous Month</option>
+                    <option value="ThisYear">This Year</option>
+                    <option value="PreviousYear">Previous Year</option>
+                    <option value="CustomRange">Custom Range</option>
+                </select>
+            </div>
+            <div class="form-group row col-xl-6 col-12" id="divCustomDate" style="display:none;">
+                <div class="col-6 pr-0">
+                    <label for="FromDate">From</label>
+                    <input type="text" id="FromDate" name="FromDate" required class="form-control datepicker" />
+                </div>
+
+                <div class="col-6">
+                    <label for="ToDate">To</label>
+                    <input type="text" id="ToDate" name="ToDate" required class="form-control datepicker" />
+                </div>
+            </div>
+            <div class="form-group col-1 mt-xl-4 pt-2">
+                <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $("#btnExportPdf").hide();
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $("#ddlTimeFrame").off("change").change(function () {
+            if ($(this).val() == "CustomRange") {
+                $("#divCustomDate").show();
+            }
+            else {
+                $("#divCustomDate").hide();
+            }
+        });
+        $('#divLocalFilters').appendTo('#divFilters');
+        $('.Facilities').multiselect({
+            columns: 1,
+            placeholder: 'Select Facility',
+            selectAll: true,
+            search: true,
+            searchOptions: {
+                'default': 'Search Facility'
+            }
+        });
+        resetDropDownOnDeseelect();
+        loadGridData();
+        $("#btnSearch").click(function () {
+            var errorMessage = "";
+            if ($("#ddlTimeFrame").val() == "CustomRange") {
+                if ($("#FromDate").val() == "")
+                    errorMessage = "Enter From Date<br/>";
+                if ($("#ToDate").val() == "")
+                    errorMessage += "Enter To Date";
+            }
+            if (errorMessage == "") {
+                loadGridData();
+            }
+            else {
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+            }
+        });
+    });
+   
+    function loadGridData() {
+        $("#kendoDataGrid").attr("style", "min-height : unset !important");
+        $("#kendoDataGrid").kendoGrid({
+            excel: {
+                allPages: true,
+                filterable: false,
+                fileName: '@ViewBag.Title' + '.xlsx',
+                proxyURL: '@Url.Action("ExportToExcel")',
+            },
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetFacilityBillingWithMetrics")',
+                        contentType: "application/json",
+                        data: function () {
+                            var filterModel = { facilities: "", startDate : null, endDate: null, duration: "Month"  };
+                            filterModel.facilities = $(".Facilities").val();
+
+                            switch ($("#ddlTimeFrame").val()) {
+                                case "ThisMonth":
+                                    filterModel.startDate = "@(new DateTime(currentDate.Year, currentDate.Month,1).ToString())";
+                                    filterModel.endDate = "@(new DateTime(currentDate.Year, currentDate.Month, currentDate.Day).ToString())";
+                                    break;
+
+                                case "PreviousMonth":
+                                    filterModel.startDate = "@(new DateTime(previousMonth.Year, previousMonth.Month,1).ToString())";
+                                    filterModel.endDate = "@(new DateTime(previousMonth.Year,previousMonth.Month, DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month)).ToString())";
+                                    break;
+                                case "ThisYear":
+                                    filterModel.startDate = "@(new DateTime(currentDate.Year, 1,1).ToString())";
+                                    filterModel.endDate = "@currentDate.ToString()";
+                                    break;
+                                case "PreviousYear":
+                                    filterModel.startDate = "@(new DateTime(currentDate.AddYears(-1).Year, 1,1).ToString())";
+                                    filterModel.endDate = "@(new DateTime(currentDate.AddYears(-1).Year, 12,31).ToString())";
+                                    break;
+                                case "CustomRange":
+                                    filterModel.startDate = $("#FromDate").val();
+                                    filterModel.endDate = $("#ToDate").val();
+                                    break;
+                            }
+                             return filterModel;
+
+                        },
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+
+                        options = KendoKeepState("facilityReport", options, true);
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                    errors: function (response) {
+                        if (response != null && response.success != undefined && response.success != null && !response.success) {
+                            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Error! Please try again.");
+                            HideLoading();
+                        }
+                    }
+                },
+                //serverPaging: true,
+                //serverFiltering: true,
+                //serverSorting: true,
+                //pageSize: GetKendoPageSize("Fac_Billing_User", "RecPerPage", true),
+                //page: KendoGet("Fac_Billing_User", "page"),
+                serverPaging: true,
+                pageSize: 10,
+                serverFiltering: false,
+                serverSorting: true,
+
+            },
+            width: '100%',
+            groupable: false,
+            filterable: true,
+            sortable: true,
+            resizable: true,
+            pageable: {
+                refresh: true,
+                //pageSizes: true,
+                //pageSize: 10
+                pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+            },
+            dataBound: function (e) {
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+            },
+            columns: [
+                { hidden: true, field: "cas_key" },
+                { field: "cas_billing_date_of_consult", width: 180, title: "Date Of Consult" },
+                { field: "cas_created_date", width: 120, title: "Date" },
+                //Added by husnain
+                { field: "Physician", width: 180, title: "Physician" },
+                { field: "fac_name", width: 220, title: "Facility" },
+                { field: "cas_case_number", width: 180, title: "Case Number" },
+                { field: "case_type", width: 180, title: "Case Type" },
+                { field: "billing_code", width: 180, title: "Billing Code" },
+                { field: "caseStatus", width: 180, title: "Case Status" },
+                // husnain code end
+                { field: "cas_billing_patient_name", width: 220, title: "Patient Name" },
+                { field: "cas_billing_dob", width: 150, title: "Date Of Birth" },
+                { field: "identification_type", width: 220, title: "Identification Type" },
+                { field: "cas_identification_number", width: 250, title: "Identification Number" },
+                { field: "cas_billing_visit_type", width: 280, title: "Sign Off or Follow-Up" },
+                { field: "billing_followUp_date", width: 220, title: "Follow-Up Date" },
+                { field: "cas_billing_diagnosis", width: 220, title: "Diagnosis" },
+                { field: "cas_billing_notes", width: 220, title: "Notes" },
+                { field: "cas_is_nav_blast", width: 220, title: "Navigator Blast" },
+                { field: "cas_billing_physician_blast", width: 220, title: "Physician Blast" },
+                { field: "on_shift_physician_blast", width: 320, title: "On shift for Physician Blast" },
+
+                { field: "cas_metric_is_lastwell_unknown", width: 300, title: "Is last Unknown" },
+                { field: "cas_metric_lastwell_date", width: 250, title: "Last Known Well" },
+                { field: "cas_response_ts_notification", width: 220, title: "Start Time" },
+                { field: "cas_patient_type", width: 220, title: "Workflow Type" },
+                { field: "cas_metric_door_time", width: 220, title: "Arrival Time" },
+                { field: "cas_metric_stamp_time", width: 220, title: "Stamp Time" },
+                { field: "cas_response_first_atempt", width: 350, title: "Time First Login Attempt" },
+                { field: "cas_metric_video_start_time", width: 250, title: "Video Start Time" },
+                { field: "cas_metric_symptoms", width: 220, title: "Symptoms" },
+                { field: "cas_metric_assesment_time", width: 380, title: "NIHSS Start Assessment Time" },
+                { field: "login_delay_reason", width: 350, title: "Reason for Login Delay" },
+                { field: "cas_metric_notes", width: 280, title: "Login Delay Notes" },
+
+                { field: "cas_metric_last_seen_normal", width: 380, title: "Last Seen Normal outside of 4.5 hours" },
+                { field: "cas_metric_has_hemorrhgic_history", width: 450, title: "History of hemorrhagic complications or intracranial hemorrhage" },
+                { field: "cas_metric_has_recent_anticoagulants", width: 320, title: "Recent Anticoagulants" },
+                { field: "cas_metric_has_major_surgery_history", width: 380, title: "History of recent major surgery" },
+                { field: "cas_metric_has_stroke_history", width: 380, title: "History of recent stroke" },
+                { field: "cas_metric_tpa_verbal_order_time", width: 320, title: "Alteplase Early Mix Decision Time" },
+                { field: "cas_metric_tpa_consult", width: 220, title: "tPA Candidate" },
+                { field: "cas_metric_pa_ordertime", width: 320, title: "tPA CPOE Order Time" },
+                { field: "cas_metric_needle_time", width: 220, title: "Needle Time" },
+                { field: "cas_metric_weight", width: 350, title: "Weight Noted By Staff" },
+                { field: "cas_metric_weight_unit", width: 220, title: "Weight Unit" },
+
+                { field: "cas_metric_total_dose", width: 220, title: "Total Dose" },
+                { field: "cas_metric_bolus", width: 150, title: "Bolus" },
+                { field: "cas_metric_infusion", width: 150, title: "Infusion" },
+                { field: "cas_metric_discard_quantity", width: 320, title: "Discard Quantity" },
+                { field: "cas_metric_video_end_time", width: 320, title: "Video End Time" },
+                { field: "cas_metric_tpaDelay_key", width: 380, title: "Reason for tPA Delay" },
+                { field: "cas_billing_tpa_delay_notes", width: 320, title: "tPA Delay Notes" },
+                { field: "cas_metric_ct_head_has_no_acture_hemorrhage", width: 450, title: "CT Head showed no acute hemorrhage or acute core infarct" },
+                { field: "cas_metric_ct_head_is_reviewed", width: 320, title: "CT Head Reviewed" },
+                { field: "cas_metric_ct_head_is_not_reviewed", width: 380, title: "CT Head Not Reviewed" }, 
+
+                /// TCARE 484
+                { field: "cas_metric_advance_imaging_cta_head_and_neck", width: 210, title: "CTA Head and Neck" }, 
+                { field: "cas_metric_advance_imaging_ct_perfusion", width: 190, title: "CT Perfusion" },  
+                { field: "cas_metric_advance_imaging_to_be_reviewed_by_ed_provider_and_nir", width: 450, title: "Advanced Imaging to be Reviewed by ED Provider and NIR" },  
+                { field: "cas_metric_advance_imaging_is_suggestive_of_large_vessel_occlusion", width: 500, title: "Advanced Imaging is Suggestive of Large Vessel Occlusion, Neurointerventional Specialist to be Consulted" },  
+                { field: "cas_metric_advance_imaging_reviewed_no_indication_of_large_vessel_occlusive_thrombus", width: 500, title: "Reviewed, No Indication of Large Vessel Occlusive Thrombus, Patient is not an NIR Candidate" },  
+                //
+                { field: "cas_metric_is_neuro_interventional", width: 350, title: "Neuro Interventional Case" },
+                { field: "cas_metric_discussed_with_neurointerventionalist", width: 400, title: "Discussed with Neurointerventionalist?" },
+                { field: "cas_metric_physician_notified_of_thrombolytics", width: 400, title: "ED Physician Notified of Diagnostic Impression and Management Plan" },
+                { field: "cas_metric_physician_recommented_consult_neurointerventionalist", width: 500, title: "ER physician recommended to consult neurointerventionalist physician if the advanced imaging suggestive of Large Vessel Occlusive Thrombotic Disease" },
+            ]
+        });
+    }
+</script>
+
+

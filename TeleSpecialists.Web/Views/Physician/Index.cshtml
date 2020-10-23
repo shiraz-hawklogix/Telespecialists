@@ -1,0 +1,88 @@
+﻿@using TeleSpecialists.BLL.Model;
+@using Microsoft.AspNet.Identity;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model IEnumerable<physician_status>
+
+@{
+    ViewBag.Title = "Physician Status";
+    var physician = ViewBag.physician as AspNetUser;
+    string url = Request.RawUrl;    
+
+}
+<input type="hidden" id="currentUrl" value="@Request.RawUrl" />
+<div class="row">
+    <div class="col-12">
+        @if (User.IsInRole(UserRoles.Physician.ToDescription()))
+        {
+            <h4>Click to Change Status</h4>
+        }
+        else
+        {
+            <h4>Click to Change Status of Dr. @physician.FirstName</h4>
+        }
+
+
+        @foreach (var item in Model)
+        {
+            <div class="m-4 d-inline-block">
+                <button class="round-button status-button set-Status" data-status="@item.phs_key" style="background-color: @item.phs_color_code">@item.phs_name</button>
+            </div>
+        }
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+     var isPhysician = @User.IsInRole("Physician").ToString().ToLower();
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        var userId = "@ViewBag.Id";
+       
+        var url = "@Url.Action("_CurrentStatus", "Physician")";
+        if (userId != "" && userId != undefined)
+            url = url + "?Id=" + userId;
+
+        loadPageAsync(url, "physicianCurrentStatus");
+    });
+   
+
+    $(".set-Status").off("click").click(function () {        
+        var selectedValue = $(this).data("status");
+        var selectedText = $(this).text();
+        var userId = "@ViewBag.Id";
+        var url = "@Url.Action("SetStatus")";
+        //
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+            "<span>Are you sure you want to change the status to " + selectedText.trim() +"?</span>",
+            function () {
+                
+                $.post(url, { id: selectedValue, userId: userId }, function (response) {
+                    if (response.success) {
+                        
+                        $("#divModelPopUp").modal("hide");
+                        $(".current-status-button, .current-status-button-layout").css("background-color", response.data.phs_color_code.toString());
+                        $(".current-status-button, .current-status-button-layout").removeClass("d-none");
+                        $("#currentStatus").html(response.data.phs_name);
+                        if (!isPhysician) {
+                            loadPageAsync('/Physician/Status');
+                        }
+                        else {
+                            loadPageAsync("@url");
+                        }                        
+                        if (response.data.isResetTimer)
+                        upTime(new Date().toUTCString().replace(" GMT", ""), $("#physicianStatusTimer"));
+                    }
+                });
+
+            });
+        //
+
+
+
+        });
+
+
+
+</script>

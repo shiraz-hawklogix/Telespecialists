@@ -1,0 +1,163 @@
+﻿@{
+    ViewBag.Title = "Physican State Licensing";
+}
+
+@Html.Partial("_ReportLayout")
+
+<div class="row" id="divLocalFilters">
+    <div class="col-12">
+        <div class="form-row">
+            <div class="form-group col-lg-4 col-sm-6">
+                <label for="" class="control-label">Physician</label>
+                @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+            </div>  
+            <div class="form-group col-lg-3 col-sm-6">
+                <label for="" class="control-label">State</label>
+                @Html.DropDownList("States", ViewBag.States as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+            </div>
+            <div class="form-group col-lg-5 col-sm-5 mt-lg-4 pt-lg-2">
+                <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+                <button type="button" class="btn btn-dark" id="btnClear" style="display: none">Clear Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var listStates = [];
+        var listPhysicians = [];
+        var filters = [];
+        $('#divLocalFilters').appendTo('#divFilters');
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $('#States').multiselect({
+            columns: 1,
+            placeholder: 'Select States',
+            selectAll: true,
+            search: true,
+            searchOptions: {
+                'default': 'Search States'
+            }
+        });
+        $('#Physicians').multiselect({
+            columns: 1,
+            placeholder: 'Select Physician',
+            selectAll: true,
+            search: true,
+            searchOptions: {
+                'default': 'Search Physician'
+            }
+        });
+        $('#btnClear').click(function () {
+            $('#btnClear').css('display', 'none');
+            $("#kendoDataGrid").data("kendoGrid").dataSource.filter({});
+            $("#States").val("");
+            $("#States").multiselect('reload');
+            $("#Physicians").val("");
+            $("#Physicians").multiselect('reload');
+            $("#ddlOnboarded").val('');
+        });
+        $('#btnSearch').click(function () {
+            $('#btnClear').css('display', '');
+            loadDate();
+        });
+        resetDropDownOnDeseelect();
+        loadDate();
+        setWidthOfDropDowns();
+    });
+
+    function loadDate() {
+        $("#kendoDataGrid").kendoGrid({
+            excel: {
+                allPages: true,
+                filterable: false,
+                fileName: '@ViewBag.Title' + '.xlsx',
+                proxyURL: '@Url.Action("ExportToExcel")',
+            },
+            pdf: {
+                author: "Condado Group",
+                creator: "Condado Group",
+                date: new Date(),
+                fileName: '@ViewBag.Title' + '.pdf',
+                keywords: '@ViewBag.Title',
+                subject: '@ViewBag.Title',
+                title: '@ViewBag.Title'
+            },
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetLicense")',
+                        contentType: "application/json",
+                        type: "POST",
+                        data: function () {
+                            var filterModel = { physicians: "", states: ""};
+                            filterModel.physicians = $("#Physicians").val();
+                            filterModel.states = $("#States").val();
+                            return filterModel;
+                        }
+                    },
+                    parameterMap: function (options) {
+                        options = KendoKeepState("Report", options);
+                        exportPostData = options;
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                    errors: function (response) {
+                        if (response != null && response.success != undefined && response.success != null && !response.success) {
+                            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Error! Please try again.");
+                            HideLoading();
+                        }
+                    }
+                },
+                //serverPaging: true,
+                //serverFiltering: true,
+                //serverSorting: true
+                serverPaging: true,
+                pageSize: 10,
+                serverFiltering: false,
+                serverSorting: true,
+            },
+            width: '100%',
+            groupable: false,
+            filterable: true,
+            sortable: true,
+            resizable: true,
+            pageable: {
+                refresh: true,
+                //pageSizes: true,
+                //pageSize: 10
+                pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+            },
+            dataBound: function (e) {
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+            },
+            columns: [
+                {
+                    field: "FullName", title: "Physician", width: '110px'
+                },
+                {
+                    field: "ucd_title", title: "State", width:'70px',
+                },
+                {
+                    field: "phl_issued_date", title: "Issue Date", type: "date", width:'110px',
+                    template: '<span> #= phl_issued_date ? kendo.toString(kendo.parseDate(phl_issued_date), "MM/dd/yyyy") : ""# </span>',
+                    filterable: false
+                },
+                {
+                    field: "phl_expired_date", title: "Expire Date", type: "date",width: '110px',
+                    template: '<span> #= phl_expired_date ? kendo.toString(kendo.parseDate(phl_expired_date), "MM/dd/yyyy") : ""# </span>',
+                    filterable: false
+                },
+            ]
+        }); 
+    }
+</script>
+

@@ -1,0 +1,592 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@using TeleSpecialists.Models;
+@using Microsoft.AspNet.Identity;
+
+@model TeleSpecialists.BLL.Model.facility
+@{
+    /**/
+    var loggedInUser = ViewBag.loggedInUser as ApplicationUser;
+    ViewBag.Title = "Edit Facility";
+    ViewBag.Edit = true;
+    var fapj_key = 0;
+    if (User.IsInRole(UserRoles.Physician.ToDescription()))
+    {
+        fapj_key = Model.facility_physician.Where(x => x.fap_user_key == loggedInUser.Id).Select(x => x.fap_key).FirstOrDefault();
+    }
+    else
+    {
+        fapj_key = Model.facility_physician.Select(x => x.fap_key).FirstOrDefault();
+    }
+
+    var checklogin = "false";
+}
+<div id="validationSummary">
+
+</div>
+
+<div class="alert case-info">
+    <div class="row">
+        <div class="col-9">
+            <div class="row">
+                <div class="d-inline-block">
+                    <strong>Facility:</strong> <span> @Model.fac_name </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()))
+{
+    <ul class="nav nav-tabs" role="tablist" id="myTab">
+        <li class="nav-item"><a data-toggle="tab" class="nav-link active" href="#contact">Contact</a></li>
+    </ul>
+}
+else
+{
+
+    if (User.IsInRole(UserRoles.Physician.ToDescription()))
+    {
+        checklogin = "true";
+
+        <ul class="nav nav-tabs" role="tablist" id="myTab">
+            <li class="nav-item"><a data-toggle="tab" class="nav-link active" id="Onboardedli" href="#Onboarded">On boarding</a></li>
+            <li class="nav-item"><a data-toggle="tab" class="nav-link" id="hospitalprotocolsli" href="#hospitalprotocols">Hospital Protocols</a></li>
+        </ul>
+
+    }
+    else
+    {
+        <ul class="nav nav-tabs" role="tablist" id="myTab">
+            <li class="nav-item"><a data-toggle="tab" class="nav-link active" href="#facility">General</a></li>
+            <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#questionnaire">Pre Go Live</a></li>
+            <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#contact">Contact</a></li>
+            <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#physician">Physician</a></li>
+            @*<li class="nav-item"><a data-toggle="tab" class="nav-link" href="#contract">Contract</a></li>*@
+            <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#notes">Notes</a></li>
+            <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#qualitygoals">Quality Goals</a></li>
+            <li class="nav-item"><a data-toggle="tab" class="nav-link" id="Onboardedli" href="#Onboarded">On boarding</a></li>
+            <li class="nav-item"><a data-toggle="tab" class="nav-link" id="hospitalprotocolsli" href="#hospitalprotocols">Hospital Protocols</a></li>
+        </ul>
+    }
+}
+@if (User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()))
+{
+    <div class="tab-content mt-3">
+
+        <div id="contact" role="tabpanel" class="tab-pane fade in active show">
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <a class="btn btn-dark loadModelPopup" href="@Url.Action("Create", "Contact", new { fac_key = Model.fac_key })">Add Contact</a>
+                </div>
+            </div>
+
+            @{Html.RenderAction("Index", "Contact", new { fac_key = Model.fac_key }); }
+
+            <div class="form-group row">
+                <div class="col-sm-6 offset-sm-5 text-right">
+                    <br />
+                    <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index")">Cancel</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+}
+
+else
+{
+    if (User.IsInRole(UserRoles.Physician.ToDescription()))
+    {
+        <div class="tab-content mt-3">
+            <div id="Onboarded" role="tabpanel" class="tab-pane fade in active show">
+                <div class="onboardingdata"></div>
+            </div>
+
+            <div id="hospitalprotocols" role="tabpanel" class="tab-pane fade">
+                <div class="protocolsdata"></div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="tab-content mt-3">
+            <div id="facility" role="tabpanel" class="tab-pane fade in active show">
+                @Html.Partial("_Form", Model)
+            </div>
+
+            <div id="questionnaire" class="tab-pane fade">
+                @{Html.RenderAction("_PreLiveForm", "FacilityQuestionnaire", Model.fac_key);}
+            </div>
+
+            <div id="Onboarded" role="tabpanel" class="tab-pane fade">
+                <div id="OnBoardedMain">
+                    <div class="row">
+                        <div class="col-7">
+                            @*<a class="btn btn-dark loadLinkAsync" href="@Url.Action("CreateOnboarded", "Facility", new { fac_key = Model.fac_key, issave = "0" })">Add Onboarding</a>*@
+                            @*<a href="@Url.Action("EditButton", "Facility", new { fac_key = Model.fac_key })" class="btn btn-dark loadLinkAsync">Edit Onboarding</a>*@
+                            <input type="button" class="btn btn-dark" value="Add Onboarding" onclick="addOnBoardingData('@Model.fac_key','0','/Facility/CreateOnboarded')" />
+                            <input type="button" class="btn btn-dark" value="Edit Onboarding" onclick="editonboardingData('@Model.fac_key','/Facility/EditButton')" />
+                        </div>
+                        <div class="col-3">
+                            @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control btn-space cas_fac_key addonfacility_key Facilities", @multiple = "multiple" })
+                        </div>
+                        <div class="col-2">
+                            <button id="new_fac_add" onclick="fac_addonboarding();" class="btn btn-dark loadLinkAsync">Add on facility</button>
+                        </div>
+                    </div>
+                    <div class="onboardingdata"></div>
+                </div>
+
+                <div class="AddEditOnBaorded d-none">
+                </div>
+
+            </div>
+
+            <div id="hospitalprotocols" role="tabpanel" class="tab-pane fade">
+                <div id="ProtocolMain">
+                    <div class="row">
+                        <div class="col-7">
+                            @*<a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create", "HospitalProtocols", new { fac_key = Model.fac_key, issave = "0" })">Add Hospital-Protocols</a>
+                        <a href="@Url.Action("Edit", "HospitalProtocols", new { fac_key = Model.fac_key })" class="btn btn-dark loadLinkAsync">Edit Hospital-Protocols</a>*@
+                            <input type="button" class="btn btn-dark" value="Add Hospital-Protocols" onclick="addProtocolsData('@Model.fac_key','0','/HospitalProtocols/Create')" />
+                            <input type="button" class="btn btn-dark" value="Edit Hospital-Protocols" onclick="editProtocolsData('@Model.fac_key','/HospitalProtocols/Edit')" />
+                        </div>
+                        <div class="col-3">
+                            @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control btn-space cas_fac_key Facilities", @multiple = "multiple" })
+                        </div>
+                        <div class="col-2">
+                            <button id="new_fac_add" onclick="new_fac_add();" class="btn btn-dark loadLinkAsync">Add on facility</button>
+                        </div>
+                    </div>
+                    <div class="protocolsdata"></div>
+                </div>
+
+                <div class="AddEditProtocols d-none">
+                </div>
+
+            </div>
+
+            <div id="contact" role="tabpanel" class="tab-pane fade">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="btn btn-dark loadModelPopup" href="@Url.Action("Create", "Contact", new { fac_key = Model.fac_key })">Add Contact</a>
+                    </div>
+                </div>
+
+                @{Html.RenderAction("Index", "Contact", new { fac_key = Model.fac_key }); }
+
+                <div class="form-group row">
+                    <div class="col-sm-6 offset-sm-5 text-right">
+                        <br />
+                        <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index")">Cancel</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="physician" role="tabpanel" class="tab-pane fade">
+
+                <div class="clearfix text-lg-right">
+                    <div class="float-right">
+                        <div class="row">
+                            <div class="d-inline-block mr-3">
+                                <div class="text-left">
+                                    <label class="control-label">Onboarded</label>
+                                    <select id="physicanOnboardedFilter" class="form-control active">
+                                        <option value="" selected="selected">All</option>
+                                        <option value="1">Yes</option>
+                                        <option value="0">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-inline-block mr-3">
+                                <div class="text-left">
+                                    <label class="control-label">Status</label>
+                                    <select id="physicanStatusFilter" class="form-control active">
+                                        <option value="" selected="selected">All</option>
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div class="row">
+                <div class="col-sm-12">
+                    <a class="btn btn-dark loadModelPopup" href="@Url.Action("_AddPhysician", "FacilityPhysician", new { fac_key = Model.fac_key })" id="btnAddPhysician">Add Physician</a>
+                </div>
+            </div>*@
+
+                @{Html.RenderAction("Index", "FacilityPhysician", new { fac_key = Model.fac_key }); }
+
+                <div class="form-group row">
+                    <div class="col-sm-6 offset-sm-5 text-right">
+                        <br />
+                        <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index")">Cancel</a>
+                    </div>
+                </div>
+
+
+            </div>
+
+            @*<div id="contract" role="tabpanel" class="tab-pane fade">
+
+            <div class="row" id="facilityContractRow" style="@(Model.facility_contract != null ? "display:none" : "")">
+                <div class="col-sm-12">
+
+                    <a class="btn btn-dark loadModelPopup" href="@Url.Action("Add","FacilityContract", new {fac_key = Model.fac_key })">Add Contract</a>
+                </div>
+            </div>
+
+
+            @{Html.RenderAction("Index", "FacilityContract", new { fac_key = Model.fac_key }); }
+
+            <div class="form-group row">
+                <div class="col-sm-6 offset-sm-5 text-right">
+                    <br />
+                    <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index")">Cancel</a>
+                </div>
+            </div>
+
+        </div>*@
+
+            <div id="notes" role="tabpanel" class="tab-pane fade">
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a class="btn btn-dark loadModelPopup" href="@Url.Action("Create", "EntityNote", new { etn_entity_key = Model.fac_key, entity_type = EntityTypes.Facility })">Add Note</a>
+                    </div>
+                </div>
+
+                @{Html.RenderAction("Index", "EntityNote", new { etn_entity_key = Model.fac_key, entity_type = EntityTypes.Facility }); }
+
+                <div class="form-group row">
+                    <div class="col-sm-6 offset-sm-5 text-right">
+                        <br />
+                        <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index")">Cancel</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="qualitygoals" role="tabpanel" class="tab-pane fade">
+                @if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()))
+                {
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <a class="btn btn-dark loadModelPopup" href="@Url.Action("Create", "FacilityPI", new { fac_key = Model.fac_key })">Add QualityGoals</a>
+                        </div>
+                    </div>
+                }
+
+                @{Html.RenderAction("Index", "FacilityPI", new { fac_key = Model.fac_key }); }
+
+                <div class="form-group row">
+                    <div class="col-sm-6 offset-sm-5 text-right">
+                        <br />
+                        <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index")">Cancel</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+}
+<script type="text/javascript">
+
+
+    $("#fac_emr").bind('input', function () {
+
+
+        $("#emrValidationInfo").hide();
+
+        var link = $.trim($("#fac_emr").val());
+        var match = ValidateURL(link);
+
+        if (!match) {
+
+            $("#emrValidationInfo").show();
+        }
+    });
+
+
+
+    $(document).ready(function () {
+        if (@checklogin) {
+            GetOnboardingData();
+        }
+        $('.Facilities').multiselect({
+            columns: 1,
+            placeholder: 'Select Facility',
+            selectAll: true,
+            search: true,
+            searchOptions: {
+                'default': 'Search Facility'
+            }
+        });
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+            $("#fac_stt_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.State.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+            $("#fac_timezone").fillKendoDropDown("/LookUp/GetAllTimeZones", "tmz_name", "tmz_key", "-- Select --");
+
+
+            $("#fac_cst_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.EMR.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#fac_sct_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.StrokeDesignation.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#fac_ai_software_ddl").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.FacilityAI.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#fac_ucd_key_system").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.System.ToInt())", "ucd_title", "ucd_key", "-- Select --", function () {
+             // functionn on_facility_type_change is dependent on ucd_key_system as well that's why calling it after the system dropdown is popuplated
+            $("#fac_fct_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.FacilityType.ToInt())", "ucd_title", "ucd_key", "-- Select --", function () {
+            on_facility_type_change();
+        });
+        });
+
+        $("#fac_freestanding_fac_key").fillKendoDropDown("/LookUp/GetFacility?phoneNumber=", "fac_name", "fac_key", "--Select--");
+        $("#fac_ucd_region_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.Regional.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#fac_ucd_bed_size").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.BedSize.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        //fac_ucd_bed_size
+
+
+
+
+            $(".datepicker").kendoDatePicker({
+                open: function (e) {
+                    onDatePickerOpen(e);
+                }
+            });
+
+    });
+
+     $("#fac_is_active").off("click").click(function (e) {
+        var checked = $("#fac_go_live:checked").length > 0;
+        var ischecked = $(this).prop('checked');
+        if (checked || ischecked) {
+            $(this).prop("checked", true);
+             $("#fac_go_live").prop('disabled', false);
+        }
+        else if(ischecked==false){
+            $("#fac_go_live").prop('checked', false);
+            $("#fac_go_live").prop('disabled', true);
+        }
+     });
+
+    $('#fac_go_live').off("click").click(function () {
+        var isCheckedActive = $("#fac_is_active").is(':checked');
+        if (isCheckedActive == false) {
+            $(this).prop('checked', false);
+            $(this).prop('disabled', true);
+        }
+    });
+
+
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+            localStorage.setItem('activeTab', $(e.target).attr('href'));
+        });
+        var activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            $('#myTab a[href="' + activeTab + '"]').tab('show');
+            if (activeTab == '#Onboarded') {
+                GetOnboardingData();
+            }
+            if (activeTab == '#hospitalprotocols') {
+                GetProtocolsData();
+            }
+        }
+    });
+</script>
+
+<script>
+
+
+    $("#Onboardedli").off('click').click(function () {
+        GetOnboardingData();
+    });
+    function GetOnboardingData() {
+        debugger;
+        ShowLoading();
+        
+        var fac_key = '@Model.fac_key';
+        var facilityname = encodeURIComponent('@Model.fac_name');
+        var id = parseInt('@fapj_key');
+
+        $.ajax({
+            type: "POST",
+            url: "/Facility/Onboarded",
+            dataType: 'json',
+            data: { Id: id, fap_key: fac_key, facilityname: facilityname },
+            error: function (xhr, error) {
+
+            },
+            success: function (response) {
+
+                $(".onboardingdata").empty();
+                $(".onboardingdata").html(response.data);
+                $("#OnBoardedMain").removeClass('d-none');
+                $(".AddEditOnBaorded").addClass('d-none');
+                var tab = "Onboarded";
+                var panId = tab.replace("#", "");
+                $('.nav-tabs .nav-link').removeClass("active");
+                $('.tab-content .tab-pane').removeClass("fade in active show");
+                $('#Onboardedli').addClass('active');
+                $('.tab-content div[id="' + panId + '"]').addClass("fade in active show");
+
+                HideLoading();
+            }
+
+        });
+    }
+
+    function addOnBoardingData(fac_key, issave, url) {
+
+        ShowLoading();
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: 'json',
+            data: { fac_key: fac_key, issave: issave },
+            error: function (xhr, error) {
+
+            },
+            success: function (response) {
+
+                $("#OnBoardedMain").addClass('d-none');
+                $(".AddEditOnBaorded").empty();
+                $(".AddEditOnBaorded").html(response.data);
+                $(".AddEditOnBaorded").removeClass('d-none');
+
+                HideLoading();
+            }
+
+        });
+    }
+    function editonboardingData(fac_key, url) {
+        debugger
+        if (fac_key == undefined && url == undefined) {
+            fac_key = '@Model.fac_key';
+            url = "/Facility/EditButton";
+        }
+        ShowLoading();
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: 'json',
+            data: { fac_key: fac_key },
+            error: function (xhr, error) {
+
+            },
+            success: function (response) {
+                debugger
+                $("#OnBoardedMain").addClass('d-none');
+                $(".AddEditOnBaorded").empty();
+                $(".AddEditOnBaorded").html(response.data);
+                $(".AddEditOnBaorded").removeClass('d-none');
+
+                HideLoading();
+            }
+
+        });
+    }
+
+
+    $("#hospitalprotocolsli").off('click').click(function () {
+        GetProtocolsData();
+    });
+    function GetProtocolsData() {
+
+        ShowLoading();
+        var fac_key = '@Model.fac_key';
+        var facilityname = encodeURIComponent('@Model.fac_name');
+        var fap_key = '@Model.fac_key';
+        var id = parseInt('@fapj_key');
+        $.ajax({
+            type: "POST",
+            url: "/HospitalProtocols/Index",
+            dataType: 'json',
+            data: { Id: id, fap_key: fac_key, facilityname: facilityname },
+            error: function (xhr, error) {
+
+            },
+            success: function (response) {
+                $(".protocolsdata").empty();
+                $(".protocolsdata").append(response.data);
+                $("#ProtocolMain").removeClass('d-none');
+                $(".AddEditProtocols").addClass('d-none');
+                var tab = "hospitalprotocols";
+                var panId = tab.replace("#", "");
+                $('.nav-tabs .nav-link').removeClass("active");
+                $('.tab-content .tab-pane').removeClass("fade in active show");
+                $('#hospitalprotocolsli').addClass('active');
+                $('.tab-content div[id="' + panId + '"]').addClass("fade in active show");
+
+
+                HideLoading();
+            }
+
+        });
+    }
+
+    function addProtocolsData(fac_key, issave, url) {
+
+        ShowLoading();
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: 'json',
+            data: { fac_key: fac_key, issave: issave },
+            error: function (xhr, error) {
+
+            },
+            success: function (response) {
+
+                $("#ProtocolMain").addClass('d-none');
+                $(".AddEditProtocols").empty();
+                $(".AddEditProtocols").html(response.data);
+                $(".AddEditProtocols").removeClass('d-none');
+
+                HideLoading();
+            }
+
+        });
+    }
+
+    function editProtocolsData(fac_key, url) {
+        debugger
+        if (fac_key == undefined && url == undefined) {
+            fac_key = '@Model.fac_key';
+            url = "/HospitalProtocols/Edit";
+        }
+        ShowLoading();
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: 'json',
+            data: { fac_key: fac_key },
+            error: function (xhr, error) {
+
+            },
+            success: function (response) {
+                debugger
+                $("#ProtocolMain").addClass('d-none');
+                $(".AddEditProtocols").empty();
+                $(".AddEditProtocols").html(response.data);
+                $(".AddEditProtocols").removeClass('d-none');
+
+                HideLoading();
+            }
+
+        });
+    }
+
+
+</script>

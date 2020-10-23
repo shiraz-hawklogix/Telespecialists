@@ -1,0 +1,2720 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.ViewModels.Reports;
+@using TeleSpecialists.BLL.Helpers;
+
+@{
+    ViewBag.Title = "Facility Dashboard";
+}
+<div id="FacilityDashboardGrid">
+</div>
+<div class="modal" id="FacilityDashboardGraph" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" style=" max-width: 1000px; width: 1000px; ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="export-pdf k-button">Save as PDF</button>
+            </div>
+            <div class="modal-body">
+                <div id="chart"></div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="FacilityDashboardALLGraph" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" style=" max-width: 1000px; width: 1000px; ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="exportpdf k-button">Save as PDF</button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="AllCharts">
+                    <div id="doortostartChart"></div>
+                    <div id="activationemsBarChart"></div>
+                    <div id="starttoresponseChart"></div>
+                    <div id="BedsideBarChart"></div>
+                    <div id="alteplaseBarChart"></div>
+                    <div id="doortoneadleChart"></div>
+                    <div id="verbalorderChart"></div>
+                    <div id="DTN30BarChart"></div>
+                    <div id="STN30BarChart"></div>
+                    <div id="CPOEtoNeedleChart"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function showAllColumns() {
+
+        var grid = $("#FacilityDashboardGrid").data("kendoGrid");
+        if (grid != null && grid != 'undefined') {
+
+            var cols = grid.columns.length
+
+            /// Starting from 2nd column so it will not effect the Action column
+            for (var i = 2; i < cols; i++) {
+                grid.showColumn(i)
+            }
+        }
+    }
+    function filterColumns() {
+        var grid = $("#FacilityDashboardGrid").data("kendoGrid");
+        if (grid == null || grid == 'undefined')
+            return;
+        showAllColumns();
+
+            for (var i = 0; i < grid._data.length; i++) {
+
+                $.each(grid._data[i], function (key, val) {
+                    if (val != null) {
+                        grid.showColumn(key);
+                    }
+                    else {
+                        grid.hideColumn(key);
+                    }
+                })
+        }
+        $(".k-grid-header-wrap > table").css("width", "100%");
+        $(".k-grid-content > table").css("width", "100%");
+
+    }
+    function ApplyRedColor() {
+        $("#FacilityDashboardGrid tbody tr").each(function (index, element) {
+            var row = $(element);
+
+            var QualityMetrics = row.find("td:nth-child(2)").text();
+            if (QualityMetrics == "Door to TS Notification Ave. Minutes") {
+                var JanData = row.find("td:nth-child(3)").text().split(':');
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (parseInt(JanData[0]) > JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = row.find("td:nth-child(5)").text().split(':');
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (parseInt(FebData[0]) > FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = row.find("td:nth-child(7)").text().split(':');
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (parseInt(MarData[0]) > MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = row.find("td:nth-child(9)").text().split(':');
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (parseInt(AprData[0]) > AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = row.find("td:nth-child(11)").text().split(':');
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (parseInt(MayData[0]) > MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = row.find("td:nth-child(13)").text().split(':');
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (parseInt(JunData[0]) > JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = row.find("td:nth-child(15)").text().split(':');
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (parseInt(JulData[0]) > JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = row.find("td:nth-child(17)").text().split(':');
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (parseInt(AugData[0]) > AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = row.find("td:nth-child(19)").text().split(':');
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (parseInt(SepData[0]) > SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = row.find("td:nth-child(21)").text().split(':');
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (parseInt(OctData[0]) > OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = row.find("td:nth-child(23)").text().split(':');
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (parseInt(NovData[0]) > NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = row.find("td:nth-child(25)").text().split(':');
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (parseInt(DecData[0]) > DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "Door to TS Notification Median Minutes") {
+                var JanData = row.find("td:nth-child(3)").text().split(':');
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (parseInt(JanData[0]) > JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = row.find("td:nth-child(5)").text().split(':');
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (parseInt(FebData[0]) > FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = row.find("td:nth-child(7)").text().split(':');
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (parseInt(MarData[0]) > MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = row.find("td:nth-child(9)").text().split(':');
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (parseInt(AprData[0]) > AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = row.find("td:nth-child(11)").text().split(':');
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (parseInt(MayData[0]) > MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = row.find("td:nth-child(13)").text().split(':');
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (parseInt(JunData[0]) > JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = row.find("td:nth-child(15)").text().split(':');
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (parseInt(JulData[0]) > JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = row.find("td:nth-child(17)").text().split(':');
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (parseInt(AugData[0]) > AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = row.find("td:nth-child(19)").text().split(':');
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (parseInt(SepData[0]) > SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = row.find("td:nth-child(21)").text().split(':');
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (parseInt(OctData[0]) > OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = row.find("td:nth-child(23)").text().split(':');
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (parseInt(NovData[0]) > NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = row.find("td:nth-child(25)").text().split(':');
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (parseInt(DecData[0]) > DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "% 10 Min or Less Activation (EMS)") {
+                var JanData = parseInt(row.find("td:nth-child(3)").text());
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (JanData < JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = parseInt(row.find("td:nth-child(5)").text());
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (FebData < FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = parseInt(row.find("td:nth-child(7)").text());
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (MarData < MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = parseInt(row.find("td:nth-child(9)").text());
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (AprData < AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = parseInt(row.find("td:nth-child(11)").text());
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (MayData < MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = parseInt(row.find("td:nth-child(13)").text());
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (JunData < JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = parseInt(row.find("td:nth-child(15)").text());
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (JulData < JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = parseInt(row.find("td:nth-child(17)").text());
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (AugData < AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = parseInt(row.find("td:nth-child(19)").text());
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (SepData < SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = parseInt(row.find("td:nth-child(21)").text());
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (OctData < OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = parseInt(row.find("td:nth-child(23)").text());
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (NovData < NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = parseInt(row.find("td:nth-child(25)").text());
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (DecData < DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "% 10 Min or Less Activation (PV)") {
+                var JanData = parseInt(row.find("td:nth-child(3)").text());
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (JanData < JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = parseInt(row.find("td:nth-child(5)").text());
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (FebData < FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = parseInt(row.find("td:nth-child(7)").text());
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (MarData < MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = parseInt(row.find("td:nth-child(9)").text());
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (AprData < AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = parseInt(row.find("td:nth-child(11)").text());
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (MayData < MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = parseInt(row.find("td:nth-child(13)").text());
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (JunData < JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = parseInt(row.find("td:nth-child(15)").text());
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (JulData < JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = parseInt(row.find("td:nth-child(17)").text());
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (AugData < AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = parseInt(row.find("td:nth-child(19)").text());
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (SepData < SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = parseInt(row.find("td:nth-child(21)").text());
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (OctData < OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = parseInt(row.find("td:nth-child(23)").text());
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (NovData < NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = parseInt(row.find("td:nth-child(25)").text());
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (DecData < DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "TS Notification to Response Average Minute") {
+                var JanData = row.find("td:nth-child(3)").text().split(':');
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (parseInt(JanData[0]) > JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = row.find("td:nth-child(5)").text().split(':');
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (parseInt(FebData[0]) > FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = row.find("td:nth-child(7)").text().split(':');
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (parseInt(MarData[0]) > MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = row.find("td:nth-child(9)").text().split(':');
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (parseInt(AprData[0]) > AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = row.find("td:nth-child(11)").text().split(':');
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (parseInt(MayData[0]) > MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = row.find("td:nth-child(13)").text().split(':');
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (parseInt(JunData[0]) > JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = row.find("td:nth-child(15)").text().split(':');
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (parseInt(JulData[0]) > JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = row.find("td:nth-child(17)").text().split(':');
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (parseInt(AugData[0]) > AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = row.find("td:nth-child(19)").text().split(':');
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (parseInt(SepData[0]) > SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = row.find("td:nth-child(21)").text().split(':');
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (parseInt(OctData[0]) > OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = row.find("td:nth-child(23)").text().split(':');
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (parseInt(NovData[0]) > NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = row.find("td:nth-child(25)").text().split(':');
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (parseInt(DecData[0]) > DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "TS Notification to Response Median Minute") {
+                var JanData = row.find("td:nth-child(3)").text().split(':');
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (parseInt(JanData[0]) > JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = row.find("td:nth-child(5)").text().split(':');
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (parseInt(FebData[0]) > FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = row.find("td:nth-child(7)").text().split(':');
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (parseInt(MarData[0]) > MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = row.find("td:nth-child(9)").text().split(':');
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (parseInt(AprData[0]) > AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = row.find("td:nth-child(11)").text().split(':');
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (parseInt(MayData[0]) > MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = row.find("td:nth-child(13)").text().split(':');
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (parseInt(JunData[0]) > JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = row.find("td:nth-child(15)").text().split(':');
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (parseInt(JulData[0]) > JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = row.find("td:nth-child(17)").text().split(':');
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (parseInt(AugData[0]) > AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = row.find("td:nth-child(19)").text().split(':');
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (parseInt(SepData[0]) > SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = row.find("td:nth-child(21)").text().split(':');
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (parseInt(OctData[0]) > OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = row.find("td:nth-child(23)").text().split(':');
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (parseInt(NovData[0]) > NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = row.find("td:nth-child(25)").text().split(':');
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (parseInt(DecData[0]) > DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "% TS at Bedside <10 Minutes") {
+                var JanData = parseInt(row.find("td:nth-child(3)").text());
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (JanData < JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = parseInt(row.find("td:nth-child(5)").text());
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (FebData < FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = parseInt(row.find("td:nth-child(7)").text());
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (MarData < MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = parseInt(row.find("td:nth-child(9)").text());
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (AprData < AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = parseInt(row.find("td:nth-child(11)").text());
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (MayData < MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = parseInt(row.find("td:nth-child(13)").text());
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (JunData < JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = parseInt(row.find("td:nth-child(15)").text());
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (JulData < JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = parseInt(row.find("td:nth-child(17)").text());
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (AugData < AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = parseInt(row.find("td:nth-child(19)").text());
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (SepData < SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = parseInt(row.find("td:nth-child(21)").text());
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (OctData < OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = parseInt(row.find("td:nth-child(23)").text());
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (NovData < NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = parseInt(row.find("td:nth-child(25)").text());
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (DecData < DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "Door to Needle Average (min:sec)") {
+                var JanData = row.find("td:nth-child(3)").text().split(':');
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (parseInt(JanData[0]) > JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = row.find("td:nth-child(5)").text().split(':');
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (parseInt(FebData[0]) > FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = row.find("td:nth-child(7)").text().split(':');
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (parseInt(MarData[0]) > MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = row.find("td:nth-child(9)").text().split(':');
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (parseInt(AprData[0]) > AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = row.find("td:nth-child(11)").text().split(':');
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (parseInt(MayData[0]) > MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = row.find("td:nth-child(13)").text().split(':');
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (parseInt(JunData[0]) > JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = row.find("td:nth-child(15)").text().split(':');
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (parseInt(JulData[0]) > JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = row.find("td:nth-child(17)").text().split(':');
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (parseInt(AugData[0]) > AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = row.find("td:nth-child(19)").text().split(':');
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (parseInt(SepData[0]) > SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = row.find("td:nth-child(21)").text().split(':');
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (parseInt(OctData[0]) > OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = row.find("td:nth-child(23)").text().split(':');
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (parseInt(NovData[0]) > NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = row.find("td:nth-child(25)").text().split(':');
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (parseInt(DecData[0]) > DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "Door to Needle Median (min:sec)") {
+                var JanData = row.find("td:nth-child(3)").text().split(':');
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (parseInt(JanData[0]) > JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = row.find("td:nth-child(5)").text().split(':');
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (parseInt(FebData[0]) > FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = row.find("td:nth-child(7)").text().split(':');
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (parseInt(MarData[0]) > MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = row.find("td:nth-child(9)").text().split(':');
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (parseInt(AprData[0]) > AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = row.find("td:nth-child(11)").text().split(':');
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (parseInt(MayData[0]) > MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = row.find("td:nth-child(13)").text().split(':');
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (parseInt(JunData[0]) > JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = row.find("td:nth-child(15)").text().split(':');
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (parseInt(JulData[0]) > JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = row.find("td:nth-child(17)").text().split(':');
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (parseInt(AugData[0]) > AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = row.find("td:nth-child(19)").text().split(':');
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (parseInt(SepData[0]) > SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = row.find("td:nth-child(21)").text().split(':');
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (parseInt(OctData[0]) > OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = row.find("td:nth-child(23)").text().split(':');
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (parseInt(NovData[0]) > NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = row.find("td:nth-child(25)").text().split(':');
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (parseInt(DecData[0]) > DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "Alteplase early mix decision to Administration Average Minutes") {
+                var JanData = row.find("td:nth-child(3)").text().split(':');
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (parseInt(JanData[0]) > JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                   //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = row.find("td:nth-child(5)").text().split(':');
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (parseInt(FebData[0]) > FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = row.find("td:nth-child(7)").text().split(':');
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (parseInt(MarData[0]) > MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = row.find("td:nth-child(9)").text().split(':');
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (parseInt(AprData[0]) > AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = row.find("td:nth-child(11)").text().split(':');
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (parseInt(MayData[0]) > MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = row.find("td:nth-child(13)").text().split(':');
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (parseInt(JunData[0]) > JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = row.find("td:nth-child(15)").text().split(':');
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (parseInt(JulData[0]) > JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = row.find("td:nth-child(17)").text().split(':');
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (parseInt(AugData[0]) > AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = row.find("td:nth-child(19)").text().split(':');
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (parseInt(SepData[0]) > SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = row.find("td:nth-child(21)").text().split(':');
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (parseInt(OctData[0]) > OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = row.find("td:nth-child(23)").text().split(':');
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (parseInt(NovData[0]) > NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = row.find("td:nth-child(25)").text().split(':');
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (parseInt(DecData[0]) > DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "DTN Less or Equal 30 Minutes %") {
+                var JanData = parseInt(row.find("td:nth-child(3)").text());
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (JanData < JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = parseInt(row.find("td:nth-child(5)").text());
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (FebData < FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = parseInt(row.find("td:nth-child(7)").text());
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (MarData < MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = parseInt(row.find("td:nth-child(9)").text());
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (AprData < AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = parseInt(row.find("td:nth-child(11)").text());
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (MayData < MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = parseInt(row.find("td:nth-child(13)").text());
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (JunData < JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = parseInt(row.find("td:nth-child(15)").text());
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (JulData < JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = parseInt(row.find("td:nth-child(17)").text());
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (AugData < AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = parseInt(row.find("td:nth-child(19)").text());
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (SepData < SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = parseInt(row.find("td:nth-child(21)").text());
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (OctData < OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = parseInt(row.find("td:nth-child(23)").text());
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (NovData < NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = parseInt(row.find("td:nth-child(25)").text());
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (DecData < DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "DTN Less or Equal 45 Minutes %") {
+                var JanData = parseInt(row.find("td:nth-child(3)").text());
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (JanData < JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = parseInt(row.find("td:nth-child(5)").text());
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (FebData < FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = parseInt(row.find("td:nth-child(7)").text());
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (MarData < MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = parseInt(row.find("td:nth-child(9)").text());
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (AprData < AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = parseInt(row.find("td:nth-child(11)").text());
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (MayData < MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = parseInt(row.find("td:nth-child(13)").text());
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (JunData < JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = parseInt(row.find("td:nth-child(15)").text());
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (JulData < JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = parseInt(row.find("td:nth-child(17)").text());
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (AugData < AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = parseInt(row.find("td:nth-child(19)").text());
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (SepData < SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                 //   row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = parseInt(row.find("td:nth-child(21)").text());
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (OctData < OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = parseInt(row.find("td:nth-child(23)").text());
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (NovData < NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = parseInt(row.find("td:nth-child(25)").text());
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (DecData < DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "DTN Less or Equal 60 Minutes %") {
+                var JanData = parseInt(row.find("td:nth-child(3)").text());
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (JanData < JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = parseInt(row.find("td:nth-child(5)").text());
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (FebData < FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = parseInt(row.find("td:nth-child(7)").text());
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (MarData < MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = parseInt(row.find("td:nth-child(9)").text());
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (AprData < AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = parseInt(row.find("td:nth-child(11)").text());
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (MayData < MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = parseInt(row.find("td:nth-child(13)").text());
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (JunData < JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = parseInt(row.find("td:nth-child(15)").text());
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (JulData < JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = parseInt(row.find("td:nth-child(17)").text());
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (AugData < AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = parseInt(row.find("td:nth-child(19)").text());
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (SepData < SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = parseInt(row.find("td:nth-child(21)").text());
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (OctData < OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = parseInt(row.find("td:nth-child(23)").text());
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (NovData < NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = parseInt(row.find("td:nth-child(25)").text());
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (DecData < DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "TS Notification to Needle Less or Equal 30 Minutes %") {
+                var JanData = parseInt(row.find("td:nth-child(3)").text());
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (JanData < JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = parseInt(row.find("td:nth-child(5)").text());
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (FebData < FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = parseInt(row.find("td:nth-child(7)").text());
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (MarData < MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = parseInt(row.find("td:nth-child(9)").text());
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (AprData < AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = parseInt(row.find("td:nth-child(11)").text());
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (MayData < MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = parseInt(row.find("td:nth-child(13)").text());
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (JunData < JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = parseInt(row.find("td:nth-child(15)").text());
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (JulData < JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = parseInt(row.find("td:nth-child(17)").text());
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (AugData < AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = parseInt(row.find("td:nth-child(19)").text());
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (SepData < SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = parseInt(row.find("td:nth-child(21)").text());
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (OctData < OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = parseInt(row.find("td:nth-child(23)").text());
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (NovData < NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = parseInt(row.find("td:nth-child(25)").text());
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (DecData < DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                 //   row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "TS Notification to Needle Less or Equal 45 Minutes %") {
+                var JanData = parseInt(row.find("td:nth-child(3)").text());
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (JanData < JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = parseInt(row.find("td:nth-child(5)").text());
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (FebData < FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = parseInt(row.find("td:nth-child(7)").text());
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (MarData < MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                 //   row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = parseInt(row.find("td:nth-child(9)").text());
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (AprData < AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                 //   row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = parseInt(row.find("td:nth-child(11)").text());
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (MayData < MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                 //   row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = parseInt(row.find("td:nth-child(13)").text());
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (JunData < JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = parseInt(row.find("td:nth-child(15)").text());
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (JulData < JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = parseInt(row.find("td:nth-child(17)").text());
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (AugData < AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = parseInt(row.find("td:nth-child(19)").text());
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (SepData < SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                  //  row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = parseInt(row.find("td:nth-child(21)").text());
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (OctData < OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = parseInt(row.find("td:nth-child(23)").text());
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (NovData < NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = parseInt(row.find("td:nth-child(25)").text());
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (DecData < DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "TS Notification to Needle Less or Equal 60 Minutes %") {
+                var JanData = parseInt(row.find("td:nth-child(3)").text());
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (JanData < JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = parseInt(row.find("td:nth-child(5)").text());
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (FebData < FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = parseInt(row.find("td:nth-child(7)").text());
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (MarData < MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = parseInt(row.find("td:nth-child(9)").text());
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (AprData < AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = parseInt(row.find("td:nth-child(11)").text());
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (MayData < MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = parseInt(row.find("td:nth-child(13)").text());
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (JunData < JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = parseInt(row.find("td:nth-child(15)").text());
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (JulData < JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = parseInt(row.find("td:nth-child(17)").text());
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (AugData < AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = parseInt(row.find("td:nth-child(19)").text());
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (SepData < SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = parseInt(row.find("td:nth-child(21)").text());
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (OctData < OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = parseInt(row.find("td:nth-child(23)").text());
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (NovData < NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = parseInt(row.find("td:nth-child(25)").text());
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (DecData < DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                   // row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            //Added By Axim 30-09-2020
+            if (QualityMetrics == "CPOE order to Needle time Ave. Minutes") {
+                var JanData = row.find("td:nth-child(3)").text().split(':');
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (parseInt(JanData[0]) > JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = row.find("td:nth-child(5)").text().split(':');
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (parseInt(FebData[0]) > FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = row.find("td:nth-child(7)").text().split(':');
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (parseInt(MarData[0]) > MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = row.find("td:nth-child(9)").text().split(':');
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (parseInt(AprData[0]) > AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = row.find("td:nth-child(11)").text().split(':');
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (parseInt(MayData[0]) > MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = row.find("td:nth-child(13)").text().split(':');
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (parseInt(JunData[0]) > JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = row.find("td:nth-child(15)").text().split(':');
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (parseInt(JulData[0]) > JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = row.find("td:nth-child(17)").text().split(':');
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (parseInt(AugData[0]) > AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = row.find("td:nth-child(19)").text().split(':');
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (parseInt(SepData[0]) > SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                    // row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = row.find("td:nth-child(21)").text().split(':');
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (parseInt(OctData[0]) > OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = row.find("td:nth-child(23)").text().split(':');
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (parseInt(NovData[0]) > NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = row.find("td:nth-child(25)").text().split(':');
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (parseInt(DecData[0]) > DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+            if (QualityMetrics == "CPOE order to Needle time Median Minutes") {
+                var JanData = row.find("td:nth-child(3)").text().split(':');
+                var JanGoals = parseInt(row.find("td:nth-child(4)").text());
+                if (parseInt(JanData[0]) > JanGoals) {
+                    row.find("td:nth-child(3)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(4)").addClass("text-danger font-weight-bold");
+                }
+                var FebData = row.find("td:nth-child(5)").text().split(':');
+                var FebGoals = parseInt(row.find("td:nth-child(6)").text());
+                if (parseInt(FebData[0]) > FebGoals) {
+                    row.find("td:nth-child(5)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(6)").addClass("text-danger font-weight-bold");
+                }
+                var MarData = row.find("td:nth-child(7)").text().split(':');
+                var MarGoals = parseInt(row.find("td:nth-child(8)").text());
+                if (parseInt(MarData[0]) > MarGoals) {
+                    row.find("td:nth-child(7)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(8)").addClass("text-danger font-weight-bold");
+                }
+                var AprData = row.find("td:nth-child(9)").text().split(':');
+                var AprGoals = parseInt(row.find("td:nth-child(10)").text());
+                if (parseInt(AprData[0]) > AprGoals) {
+                    row.find("td:nth-child(9)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(10)").addClass("text-danger font-weight-bold");
+                }
+                var MayData = row.find("td:nth-child(11)").text().split(':');
+                var MayGoals = parseInt(row.find("td:nth-child(12)").text());
+                if (parseInt(MayData[0]) > MayGoals) {
+                    row.find("td:nth-child(11)").addClass("text-danger font-weight-bold");
+                    row.find("td:nth-child(12)").addClass("text-danger font-weight-bold");
+                }
+                var JunData = row.find("td:nth-child(13)").text().split(':');
+                var JunGoals = parseInt(row.find("td:nth-child(14)").text());
+                if (parseInt(JunData[0]) > JunGoals) {
+                    row.find("td:nth-child(13)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(14)").addClass("text-danger font-weight-bold");
+                }
+                var JulData = row.find("td:nth-child(15)").text().split(':');
+                var JulGoals = parseInt(row.find("td:nth-child(16)").text());
+                if (parseInt(JulData[0]) > JulGoals) {
+                    row.find("td:nth-child(15)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(16)").addClass("text-danger font-weight-bold");
+                }
+                var AugData = row.find("td:nth-child(17)").text().split(':');
+                var AugGoals = parseInt(row.find("td:nth-child(18)").text());
+                if (parseInt(AugData[0]) > AugGoals) {
+                    row.find("td:nth-child(17)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(18)").addClass("text-danger font-weight-bold");
+                }
+                var SepData = row.find("td:nth-child(19)").text().split(':');
+                var SepGoals = parseInt(row.find("td:nth-child(20)").text());
+                if (parseInt(SepData[0]) > SepGoals) {
+                    row.find("td:nth-child(19)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(20)").addClass("text-danger font-weight-bold");
+                }
+                var OctData = row.find("td:nth-child(21)").text().split(':');
+                var OctGoals = parseInt(row.find("td:nth-child(22)").text());
+                if (parseInt(OctData[0]) > OctGoals) {
+                    row.find("td:nth-child(21)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(22)").addClass("text-danger font-weight-bold");
+                }
+                var NovData = row.find("td:nth-child(23)").text().split(':');
+                var NovGoals = parseInt(row.find("td:nth-child(24)").text());
+                if (parseInt(NovData[0]) > NovGoals) {
+                    row.find("td:nth-child(23)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(24)").addClass("text-danger font-weight-bold");
+                }
+                var DecData = row.find("td:nth-child(25)").text().split(':');
+                var DecGoals = parseInt(row.find("td:nth-child(26)").text());
+                if (parseInt(DecData[0]) > DecGoals) {
+                    row.find("td:nth-child(25)").addClass("text-danger font-weight-bold");
+                    //row.find("td:nth-child(26)").addClass("text-danger font-weight-bold");
+                }
+            }
+
+        });
+    }
+    function loadPIFacilityGridData() {
+        showAllColumns();
+        $("#FacilityDashboardGrid").kendoGrid({
+            excel: {
+                allPages: true,
+                filterable: false,
+                fileName: '@ViewBag.Title' + '.xlsx',
+                proxyURL: '@Url.Action("ExportToExcel")',
+            },
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetSpreadSheetReport", "FacilityPI")',
+                        contentType: "application/json",
+                        type: "POST",
+                        data: function () {
+                            var model = {
+                                Facilities: "",
+                                System: "",
+                                Regional: "",
+                                States: "",
+                                QPS: "",
+                                qag_time_frame: "",
+                                fromMonth: "",
+                                toMonth: "",
+                                ReportType: "",
+                            };
+                            var fac_keys = $("#Facilities").val();
+                            if (fac_keys == "") {
+                                model.Facilities = null;
+                            } else {
+                                model.Facilities = $("#Facilities").val();
+                            }
+
+                            var system = $("#fac_ucd_key_system").val();
+                            if (system == "") {
+                                model.System = null;
+                            } else {
+                                model.System = $("#fac_ucd_key_system").val();
+                            }
+
+                            var region = $("#fac_ucd_region_key").val();
+                            if (region == "") {
+                                model.Regional = null;
+                            } else {
+                                model.Regional = $("#fac_ucd_region_key").val();
+                            }
+
+                            var state = $("#fac_stt_key").val();
+                            if (state == "") {
+                                model.States = null;
+                            } else {
+                                model.States = $("#fac_stt_key").val();
+                            }
+
+                            var qps = $("#facilityQPS").val();
+                            if (qps == "" || qps == "0" || qps == undefined) {
+                                model.QPS = null;
+                            } else {
+                                model.QPS = $("#facilityQPS").val();
+                            }
+                            var YearFromDate = $("#FromMonth").val();
+                            if (YearFromDate) {
+                                var year = YearFromDate.split(" ");
+                                var timeframe = year[1];
+                                if (timeframe) {
+                                    model.qag_time_frame = timeframe + '-1-1';
+                                }
+                            }
+                            model.fromMonth = $("#FromMonth").val();
+                            model.toMonth = $("#ToMonth").val();
+                            model.ReportType = $("#ddlreporttype").val();
+                            localStorage.setItem('QualityMetricsReport.Filter', JSON.stringify(model));
+                            return model;
+                        },
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                //serverPaging: true,
+                //serverFiltering: true,
+                //serverSorting: true,
+                //pageSize: GetKendoPageSize("QualityReport", "RecPerPage", true),
+                //page: KendoGet("QualityReport", "page")
+                //serverPaging: true,
+                //pageSize: 20,
+                //serverFiltering: false,
+                //serverSorting: true,
+            },
+            width: '100%',
+            //pageable: {
+            //    refresh: false,
+            //    //pageSizes: true,
+            //    //pageSize: 10
+            //    pageSizes: [20, 30, 40,50,60, 'All']
+            //},
+            groupable: false,
+            filterable: true,
+            sortable: true,
+            resizable: true,
+            dataBound: function (e) {
+
+                $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+                filterColumns();
+                ApplyRedColor();
+            },
+            columns: [
+                //{ hidden: true, field: "id" },
+                {
+                    title: "<b>Graph</b>", width: '80px',
+                    template: "<input type='button' class='btn btn-dark btn-sm' data-status='#= QualityMetrics#' onclick='showFacilityDashboardGraph.call(this)' value='View' />"
+                },
+                { field: "QualityMetrics", title: "Quality Metrics", width: '300px' },
+                { field: "JanData", title: "January", width: '90px' },
+                { field: "JanGoals", title: "Jan Goals", width: '90px' },
+                { field: "FebData", title: "February", width: '90px' },
+                { field: "FebGoals", title: "Feb Goals", width: '90px' },
+                { field: "MarData", title: "March", width: '90px' },
+                { field: "MarGoals", title: "Mar Goals", width: '90px' },
+                { field: "AprData", title: "April", width: '90px' },
+                { field: "AprGoals", title: "Apr Goals", width: '90px' },
+                { field: "MayData", title: "May", width: '90px' },
+                { field: "MayGoals", title: "May Goals", width: '90px' },
+                { field: "JunData", title: "June", width: '90px' },
+                { field: "JunGoals", title: "Jun Goals", width: '90px' },
+                { field: "JulData", title: "July", width: '90px' },
+                { field: "JulGoals", title: "Jul Goals", width: '90px' },
+                { field: "AugData", title: "August", width: '90px' },
+                { field: "AugGoals", title: "Aug Goals", width: '90px' },
+                { field: "SepData", title: "September", width: '90px' },
+                { field: "SepGoals", title: "Sep Goals", width: '90px' },
+                { field: "OctData", title: "October", width: '90px' },
+                { field: "OctGoals", title: "Oct Goals", width: '90px' },
+                { field: "NovData", title: "November", width: '90px' },
+                { field: "NovGoals", title: "Nov Goals", width: '90px' },
+                { field: "DecData", title: "December", width: '90px' },
+                { field: "DecGoals", title: "Dec Goals", width: '90px' },
+                { field: "Cumulative", title: "Cumulative", width: '100px' },
+            ]
+        });
+    }
+    var showFacilityDashboardGraph = function () {
+        var ReportName = $(this).data("status");
+        var model = {
+            Facilities: "",
+            System: "",
+            Regional: "",
+            States: "",
+            QPS: "",
+            qag_time_frame: "",
+            fromMonth: "",
+            toMonth: "",
+        };
+        var fac_keys = $("#Facilities").val();
+        if (fac_keys) {
+            model.Facilities = $("#Facilities").val();
+        }
+
+        var system = $("#fac_ucd_key_system").val();
+        if (system) {
+            model.System = $("#fac_ucd_key_system").val();
+        }
+
+        var region = $("#fac_ucd_region_key").val();
+        if (region){
+            model.Regional = $("#fac_ucd_region_key").val();
+        }
+
+        var state = $("#fac_stt_key").val();
+        if (state){
+            model.States = $("#fac_stt_key").val();
+        }
+
+        var qps = $("#facilityQPS").val();
+        if (qps) {
+            model.QPS = $("#facilityQPS").val();
+        }
+        var timeframe = $("#timeframe").val();
+        if (timeframe != "") {
+            model.qag_time_frame = $("#timeframe").val() + '-1-1';
+        }
+        model.fromMonth = $("#FromMonth").val();
+        model.toMonth = $("#ToMonth").val();
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/FacilityPI/GetFacilityDashboardGraph',
+            data: { model: model, status: ReportName },
+            success: function (data) {
+                var title;
+                var mean;
+                var meancal = [];
+                var mindate;
+                var catgory;
+                $.each(data, function (key, value) {
+                    $.each(value, function (id, dat) {
+                        if (id == "Title") {
+                            if (dat == null) {
+                                title = "";
+                            } else {
+                                title = dat;
+                            }
+                        } else if (id == "Mean") {
+                            if (dat == null) {
+                                mean = "";
+                            } else {
+                                mean = dat;
+                            }
+                        } else if (id == "MinDate") {
+                            if (dat == null) {
+                                mindate = "";
+                            } else {
+                                mindate = dat;
+                            }
+                        } else if (id == "Category") {
+                            if (dat == null) {
+                                catgory = "";
+                            } else {
+                                catgory = dat;
+                            }
+                        } else if (id == "MeanCalculation") {
+                            if (dat == null) {
+                                meancal = "";
+                            } else {
+                                $.each(dat, function (keys, val) {
+                                    if (title == "Door to TS Notification Ave. Minutes" || title == "Door to TS Notification Median Minutes" || title == "TS Notification to Response Average Minute" || title == "TS Notification to Response Median Minute" || title == "Door to Needle Average (min:sec)" || title == "Door to Needle Median (min:sec)" || title == "Alteplase early mix decision to Administration Average Minutes" || title == "CPOE order to Needle time Ave. Minutes" || title == "CPOE order to Needle time Median Minutes") {
+                                        meancal.push(new Date(mindate + " " + val).getTime());
+                                    } else {
+                                        meancal.push(val);
+                                    }
+                                })
+                            }
+                        }
+                    });
+                });
+
+                if (title == "Door to TS Notification Ave. Minutes" || title == "Door to TS Notification Median Minutes" || title == "TS Notification to Response Average Minute" || title == "TS Notification to Response Median Minute" || title == "Door to Needle Average (min:sec)" || title == "Door to Needle Median (min:sec)" || title == "Alteplase early mix decision to Administration Average Minutes" || title == "CPOE order to Needle time Ave. Minutes" || title == "CPOE order to Needle time Median Minutes") {
+                   LineChart(title, mean, meancal, mindate, catgory);
+
+                } else {
+                    var datalist = [{ name: title, data: meancal,color:"@ChartColors.Blue.ToDescription()" }];
+                    BarChart(title, catgory, datalist, mean);
+                }
+
+                $("#FacilityDashboardGraph").modal('show');
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+
+    function GetFacilityDashboardAllCharts() {
+        var model = {
+            Facilities: null,
+            System: "",
+            Regional: "",
+            States: "",
+            QPS: "",
+            qag_time_frame: "",
+            fromMonth: "",
+            toMonth: "",
+        };
+        var fac_keys = $("#Facilities").val();
+        if (fac_keys) {
+            model.Facilities = $("#Facilities").val();
+        }
+
+        var system = $("#fac_ucd_key_system").val();
+        if (system) {
+            model.System = $("#fac_ucd_key_system").val();
+        }
+
+        var region = $("#fac_ucd_region_key").val();
+        if (region) {
+            model.Regional = $("#fac_ucd_region_key").val();
+        }
+
+        var state = $("#fac_stt_key").val();
+        if (state) {
+            model.States = $("#fac_stt_key").val();
+        }
+
+        var qps = $("#facilityQPS").val();
+        if (qps) {
+            model.QPS = $("#facilityQPS").val();
+        }
+        var YearFromDate = $("#FromMonth").val();
+        if (YearFromDate) {
+            var year = YearFromDate.split(" ");
+            var timeframe = year[1];
+            if (timeframe) {
+                model.qag_time_frame = timeframe + '-1-1';
+            }
+        }
+        model.fromMonth = $("#FromMonth").val();
+        model.toMonth = $("#ToMonth").val();
+        console.log(model)
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/FacilityPI/GetFacilityDashboardAllCharts',
+            data: { model: model },
+            success: function (data) {
+
+                var doortostarttitle;
+                var doortostartmean;
+                var doortostartmedian;
+                var doortostartmeancal = [];
+                var doortostartmediancal = [];
+                var doortostartmindate;
+                var doortostartcatgory;
+
+                var activationemstitle;
+                var activationemsmean;
+                var activationemsmeancal = [];
+                var activationemsmindate;
+                var activationemscatgory;
+
+                var activationpvtitle;
+                var activationpvmean;
+                var activationpvmeancal = [];
+                var activationpvmindate;
+                var activationpvcatgory;
+
+                //var activationinptitle;
+                //var activationinpmean;
+                //var activationinpmeancal = [];
+                //var activationinpmindate;
+                //var activationinpcatgory;
+
+                var starttoresponsetitle;
+                var starttoresponsemean;
+                var starttoresponsemeancal = [];
+                var starttoresponsemindate;
+                var starttoresponsecatgory;
+                var starttoresponsemedian;
+                var starttoresponsemediancal = [];
+
+                var bedsidetitle;
+                var bedsidemean;
+                var bedsidemeancal = [];
+                var bedsidemindate;
+                var bedsidecatgory;
+
+                var alteplaseadmintitle;
+                var alteplaseadminmean;
+                var alteplaseadminmeancal = [];
+                var alteplaseadminmindate;
+                var alteplaseadmincatgory;
+
+                var doortoneedletitle;
+                var doortoneedlemean;
+                var doortoneedlemeancal = [];
+                var doortoneedlemindate;
+                var doortoneedlecatgory;
+                var doortoneedlemedian;
+                var doortoneedlemediancal = [];
+
+                var verbalordertoadmintitle;
+                var verbalordertoadminmean;
+                var verbalordertoadminmeancal = [];
+                var verbalordertoadminmindate;
+                var verbalordertoadmincatgory;
+
+                var DTN30percenttitle;
+                var DTN30percentmean;
+                var DTN30percentmeancal = [];
+                var DTN30percentmindate;
+                var DTN30percentcatgory;
+
+                var DTN45percenttitle;
+                var DTN45percentmean;
+                var DTN45percentmeancal = [];
+                var DTN45percentmindate;
+                var DTN45percentcatgory;
+
+                var DTN60percenttitle;
+                var DTN60percentmean;
+                var DTN60percentmeancal = [];
+                var DTN60percentmindate;
+                var DTN60percentcatgory;
+
+                var STN30percenttitle;
+                var STN30percentmean;
+                var STN30percentmeancal = [];
+                var STN30percentmindate;
+                var STN30percentcatgory;
+
+                var STN45percenttitle;
+                var STN45percentmean;
+                var STN45percentmeancal = [];
+                var STN45percentmindate;
+                var STN45percentcatgory;
+
+                var STN60percenttitle;
+                var STN60percentmean;
+                var STN60percentmeancal = [];
+                var STN60percentmindate;
+                var STN60percentcatgory;
+
+                var CPOEtoNeedletitle;
+                var CPOEtoNeedlemean;
+                var CPOEtoNeedlemedian;
+                var CPOEtoNeedlemeancal = [];
+                var CPOEtoNeedlemediancal = [];
+                var CPOEtoNeedlemindate;
+                var CPOEtoNeedlecatgory;
+
+                $.each(data, function (key, value) {
+                    $.each(value, function (id, val) {
+                        if (id == "Mean") {
+                            return false;
+                        }
+                        var report = "";
+                        if (id == "Title") {
+                            report = val;
+                        }
+                        if (report == "Door to TS Notification Ave. & Median Minutes")
+                        {
+                            doortostarttitle = report;
+                            doortostartmean = value.Mean;
+                            doortostartmedian = value.Median;
+                            doortostartmindate = value.MinDate;
+                            doortostartcatgory = value.Category;
+                            $.each(value.MeanCalculation, function (id, val) {
+                                doortostartmeancal.push(new Date(doortostartmindate + " " + val).getTime());
+                            })
+                            $.each(value.MedianCalculation, function (id, val) {
+                                doortostartmediancal.push(new Date(doortostartmindate + " " + val).getTime());
+                            })
+                        }
+                        if (report == "% 10 Min or Less Activation (EMS)") {
+                            activationemstitle = report;
+                            activationemsmean = value.Mean;
+                            activationemsmindate = value.MinDate;
+                            activationemscatgory = value.Category;
+                            activationemsmeancal = value.MeanCalculation;
+                        }
+                        if (report == "% 10 Min or Less Activation (PV)") {
+                            activationpvtitle = report;
+                            activationpvmean = value.Mean;
+                            activationpvmindate = value.MinDate;
+                            activationpvcatgory = value.Category;
+                            activationpvmeancal = value.MeanCalculation;
+                        }
+                        //if (report == "% 10 Min or Less Activation (Inpt)") {
+                        //    activationinptitle = report;
+                        //    activationinpmean = value.Mean;
+                        //    activationinpmindate = value.MinDate;
+                        //    activationinpcatgory = value.Category;
+                        //    activationinpmeancal = value.MeanCalculation;
+                        //}
+                        if (report == "TS Notification to Response Average & Median Minute") {
+                            starttoresponsetitle = report;
+                            starttoresponsemean = value.Mean;
+                            starttoresponsemedian = value.Median;
+                            starttoresponsemindate = value.MinDate;
+                            starttoresponsecatgory = value.Category;
+                            $.each(value.MeanCalculation, function (id, val) {
+                                starttoresponsemeancal.push(new Date(starttoresponsemindate + " " + val).getTime());
+                            })
+                            $.each(value.MedianCalculation, function (id, val) {
+                                starttoresponsemediancal.push(new Date(starttoresponsemindate + " " + val).getTime());
+                            })
+                        }
+                        if (report == "% TS at Bedside <10 Minutes") {
+                            bedsidetitle = report;
+                            bedsidemean = value.Mean;
+                            bedsidemindate = value.MinDate;
+                            bedsidecatgory = value.Category;
+                            bedsidemeancal = value.MeanCalculation;
+                        }
+                        if (report == "ALTEPLASE ADMINISTERED #") {
+                            alteplaseadmintitle = report;
+                            alteplaseadminmean = value.Mean;
+                            alteplaseadminmindate = value.MinDate;
+                            alteplaseadmincatgory = value.Category;
+                            alteplaseadminmeancal = value.MeanCalculation;
+                        }
+                        if (report == "Door to Needle Average & Median (min:sec)") {
+                            doortoneedletitle = report;
+                            doortoneedlemean = value.Mean;
+                            doortoneedlemedian = value.Median;
+                            doortoneedlemindate = value.MinDate;
+                            doortoneedlecatgory = value.Category;
+                            $.each(value.MeanCalculation, function (id, val) {
+                                doortoneedlemeancal.push(new Date(doortoneedlemindate + " " + val).getTime());
+                            })
+                            $.each(value.MedianCalculation, function (id, val) {
+
+                                doortoneedlemediancal.push(new Date(doortoneedlemindate + " " + val).getTime());
+                            })
+                        }
+                        if (report == "Alteplase early mix decision to Administration Average Minutes") {
+                            verbalordertoadmintitle = report;
+                            verbalordertoadminmean = value.Mean;
+                            verbalordertoadminmindate = value.MinDate;
+                            verbalordertoadmincatgory = value.Category;
+                            $.each(value.MeanCalculation, function (id, val) {
+                                verbalordertoadminmeancal.push(new Date(verbalordertoadminmindate + " " + val).getTime());
+                            })
+                        }
+                        if (report == "DTN Less or Equal 30 Minutes %") {
+                            DTN30percenttitle = report;
+                            DTN30percentmean = value.Mean;
+                            DTN30percentmindate = value.MinDate;
+                            DTN30percentcatgory = value.Category;
+                            DTN30percentmeancal = value.MeanCalculation;
+                        }
+                        if (report == "DTN Less or Equal 45 Minutes %") {
+                            DTN45percenttitle = report;
+                            DTN45percentmean = value.Mean;
+                            DTN45percentmindate = value.MinDate;
+                            DTN45percentcatgory = value.Category;
+                            DTN45percentmeancal = value.MeanCalculation;
+                        }
+                        if (report == "DTN Less or Equal 60 Minutes %") {
+                            DTN60percenttitle = report;
+                            DTN60percentmean = value.Mean;
+                            DTN60percentmindate = value.MinDate;
+                            DTN60percentcatgory = value.Category;
+                            DTN60percentmeancal = value.MeanCalculation;
+                        }
+                        if (report == "TS Notification to Needle Less or Equal 30 Minutes %") {
+                            STN30percenttitle = report;
+                            STN30percentmean = value.Mean;
+                            STN30percentmindate = value.MinDate;
+                            STN30percentcatgory = value.Category;
+                            STN30percentmeancal = value.MeanCalculation;
+                        }
+                        if (report == "TS Notification to Needle Less or Equal 45 Minutes %") {
+                            STN45percenttitle = report;
+                            STN45percentmean = value.Mean;
+                            STN45percentmindate = value.MinDate;
+                            STN45percentcatgory = value.Category;
+                            STN45percentmeancal = value.MeanCalculation;
+                        }
+                        if (report == "TS Notification to Needle Less or Equal 60 Minutes %") {
+                            STN60percenttitle = report;
+                            STN60percentmean = value.Mean;
+                            STN60percentmindate = value.MinDate;
+                            STN60percentcatgory = value.Category;
+                            STN60percentmeancal = value.MeanCalculation;
+                        }
+
+                        if (report == "CPOE order to Needle Ave. & Median Minutes") {
+                            CPOEtoNeedletitle = report;
+                            CPOEtoNeedlemean = value.Mean;
+                            CPOEtoNeedlemedian = value.Median;
+                            CPOEtoNeedlemindate = value.MinDate;
+                            CPOEtoNeedlecatgory = value.Category;
+                            $.each(value.MeanCalculation, function (id, val) {
+                                CPOEtoNeedlemeancal.push(new Date(CPOEtoNeedlemindate + " " + val).getTime());
+                            })
+                            $.each(value.MedianCalculation, function (id, val) {
+                                CPOEtoNeedlemediancal.push(new Date(CPOEtoNeedlemindate + " " + val).getTime());
+                            })
+                        }
+                    })
+                })
+
+                doortostartChart(doortostarttitle, doortostartmean, doortostartmedian, doortostartmeancal, doortostartmediancal, doortostartmindate, doortostartcatgory);
+                activationemsBarChart(activationemstitle, activationemsmean, activationemsmeancal, activationpvmeancal, activationemscatgory);
+                starttoresponseChart(starttoresponsetitle, starttoresponsemean, starttoresponsemedian, starttoresponsemeancal, starttoresponsemediancal, starttoresponsemindate, starttoresponsecatgory);
+                BedsideBarChart(bedsidetitle, bedsidemean, bedsidemeancal, bedsidecatgory);
+                alteplaseBarChart(alteplaseadmintitle, alteplaseadminmean, alteplaseadminmeancal, alteplaseadmincatgory);
+                doortoneadleChart(doortoneedletitle, doortoneedlemean, doortoneedlemedian, doortoneedlemeancal, doortoneedlemediancal, doortoneedlemindate, doortoneedlecatgory);
+                verbalorderChart(verbalordertoadmintitle, verbalordertoadminmean, verbalordertoadminmeancal, verbalordertoadminmindate, verbalordertoadmincatgory);
+                DTN30BarChart(DTN30percenttitle, DTN30percentmean, DTN30percentmeancal, DTN45percentmeancal, DTN60percentmeancal, DTN30percentcatgory);
+                STN30BarChart(STN30percenttitle, STN30percentmean, STN30percentmeancal, STN45percentmeancal, STN60percentmeancal, STN30percentcatgory);
+                CPOEtoNeedleChart(CPOEtoNeedletitle, CPOEtoNeedlemean, CPOEtoNeedlemedian, CPOEtoNeedlemeancal, CPOEtoNeedlemediancal, CPOEtoNeedlemindate, CPOEtoNeedlecatgory);
+                $("#FacilityDashboardALLGraph").modal('show');
+            },
+            error: function () {
+
+            }
+
+        })
+    }
+    function doortoneadleChart(title, mean, median, meancal = [], mediancal = [], mindate, catgory = []) {
+        var chartHeight = 600;//(meancal.length + mediancal.length) * 50;
+        $("#doortoneadleChart").css("height", chartHeight);
+
+        $("#doortoneadleChart").kendoChart({
+            title: {
+                text: title,
+                color: "black",
+                margin: { top: 20, bottom:50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "line",
+                style: "smooth",
+            },
+            series: [
+                {
+                    labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top", margin: { bottom: 30 }, },
+                    name: mean,
+                    data: meancal,
+                    color: "@ChartColors.Purple.ToDescription()"
+            },
+                {
+                    labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top" },
+                name: median,
+                data: mediancal,
+                color: "@ChartColors.Grayish.ToDescription()"
+            }
+            ],
+            valueAxis: {
+                labels: {
+                    template: "#= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+                },
+                min: new Date(mindate).getTime(),
+                //majorUnit: 10 * 60 * 1000
+            },
+            categoryAxis: {
+                categories: catgory,
+                majorGridLines: {
+                    visible: false
+                },
+                labels: {
+                    rotation: "auto"
+                }
+            },
+            //tooltip: {
+            //    visible: false,
+            //    template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+            //}
+        });
+    }
+    function doortostartChart(title, mean, median, meancal = [], mediancal = [], mindate, catgory = []) {
+        var chartHeight = 600;//var chartHeight = (meancal.length + mediancal.length) * 50;
+        $("#doortostartChart").css("height", chartHeight);
+        $("#doortostartChart").kendoChart({
+            title: {
+                text: title,
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "line",
+                style: "smooth"
+            },
+            series: [{
+                labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top", margin: { bottom: 30 }, },
+                name: mean,
+                data: meancal,
+                color: "@ChartColors.Purple.ToDescription()"
+            },
+                {
+                    labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top" },
+                name: median,
+                data: mediancal,
+                color: "@ChartColors.Grayish.ToDescription()"
+            }
+            ],
+            valueAxis: {
+                labels: {
+                    template: "#= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+                },
+                min: new Date(mindate).getTime(),
+                //majorUnit: 10 * 60 * 1000
+            },
+            categoryAxis: {
+                categories: catgory,
+                majorGridLines: {
+                    visible: false
+                },
+                labels: {
+                    rotation: "auto"
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+            //}
+        });
+    }
+
+    function CPOEtoNeedleChart(title, mean, median, meancal = [], mediancal = [], mindate, catgory = []) {
+        var chartHeight = 600;//var chartHeight = (meancal.length + mediancal.length) * 50;
+        $("#CPOEtoNeedleChart").css("height", chartHeight);
+        $("#CPOEtoNeedleChart").kendoChart({
+            title: {
+                text: title,
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "line",
+                style: "smooth"
+            },
+            series: [{
+                labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top", margin: { bottom: 30 }, },
+                name: mean,
+                data: meancal,
+                color: "@ChartColors.Purple.ToDescription()"
+            },
+                {
+                    labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top" },
+                name: median,
+                data: mediancal,
+                color: "@ChartColors.Grayish.ToDescription()"
+            }
+            ],
+            valueAxis: {
+                labels: {
+                    template: "#= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+                },
+                min: new Date(mindate).getTime(),
+                //majorUnit: 10 * 60 * 1000
+            },
+            categoryAxis: {
+                categories: catgory,
+                majorGridLines: {
+                    visible: false
+                },
+                labels: {
+                    rotation: "auto"
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+            //}
+        });
+    }
+    
+    function starttoresponseChart(title, mean, median, meancal = [], mediancal = [], mindate, catgory = []) {
+        
+        var chartHeight = 600;//var chartHeight = (meancal.length + mediancal.length) * 50;
+        $("#starttoresponseChart").css("height", chartHeight);
+
+        $("#starttoresponseChart").kendoChart({
+            title: {
+                text: title,
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "line",
+                style: "smooth"
+            },
+            series: [{
+                labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top", margin: { bottom: 30 }, },
+                name: mean,
+                data: meancal,
+                color: "@ChartColors.Purple.ToDescription()"
+            },
+                {
+                    labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top" },
+                name: median,
+                data: mediancal,
+                color: "@ChartColors.Grayish.ToDescription()"
+            }
+            ],
+            valueAxis: {
+                labels: {
+                    template: "#= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+                },
+                min: new Date(mindate).getTime(),
+                //majorUnit: 10 * 60 * 1000
+            },
+            categoryAxis: {
+                categories: catgory,
+                majorGridLines: {
+                    visible: false
+                },
+                labels: {
+                    rotation: "auto"
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+            //}
+        });
+    }
+    function FacilityPieChart(title, datas = []) {
+        
+        $("#chart").kendoChart({
+            title: {
+                position: "bottom",
+                text: title,
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                visible: true
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                labels: {
+                    visible: true,
+                    background: "transparent",
+                    template: "#= category #: \n #= value#"
+                }
+            },
+            series: [{
+                type: "pie",
+                startAngle: 150,
+                data: datas
+            }],
+            tooltip: {
+                visible: true,
+                format: "{0}"
+            }
+        });
+    }
+    function LineChart(title, mean, meancal = [], mindate, catgory = []) {
+        var chartHeight = 600;//var chartHeight = meancal.length * 50;
+        $("#chart").css("height", chartHeight);
+        $("#chart").kendoChart({
+            title: {
+                text: title,
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "line",
+                style: "smooth"
+            },
+            series: [{
+                labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top" },
+                name: mean,
+                data: meancal,
+                color: "@ChartColors.Purple.ToDescription()"
+            }],
+            valueAxis: {
+                labels: {
+                    template: "#= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+                },
+                min: new Date(mindate).getTime()//,
+               // majorUnit: 10 * 60 * 1000
+            },
+            categoryAxis: {
+                categories: catgory,
+                majorGridLines: {
+                    visible: false
+                },
+                labels: {
+                    rotation: "auto"
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+            //}
+        });
+    }
+    function verbalorderChart(title, mean, meancal = [], mindate, catgory = []) {
+        var chartHeight = 600;//var chartHeight = meancal.length * 50;
+        $("#verbalorderChart").css("height", chartHeight);
+        $("#verbalorderChart").kendoChart({
+            title: {
+                text: title,
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "line",
+                style: "smooth"
+            },
+            series: [{
+                labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top" },
+                name: mean,
+                data: meancal,
+                color: "@ChartColors.Purple.ToDescription()"
+            }
+            ],
+            valueAxis: {
+                labels: {
+                    template: "#= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+                },
+                min: new Date(mindate).getTime(),
+                //majorUnit: 10 * 60 * 1000
+            },
+            categoryAxis: {
+                categories: catgory,
+                majorGridLines: {
+                    visible: false
+                },
+                labels: {
+                    rotation: "auto"
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+            //}
+        });
+    }
+    function BarChart(title, category = [], datalist = [], xaxis) {
+        var chartHeight = 600;
+        $("#chart").css("height", chartHeight);
+        $("#chart").kendoChart({
+            title: {
+                text: title,
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "column",
+                labels: {
+                    visible: true,
+                    template: "#= value #",
+                    format: "{0}",
+                    margin: 20
+                }
+            },
+            series: datalist,
+            valueAxis: {
+                labels: {
+                    format: "{0}"
+                },
+                line: {
+                    visible: false
+                },
+                //title: {
+                //    text: "Case Count"
+                //},
+                axisCrossingValue: 0
+            },
+            categoryAxis: {
+                categories: category,
+                line: {
+                    visible: false
+                },
+                title: {
+                    text: xaxis
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    format: "{0}",
+            //    template: "#= value #"
+            //},
+        });
+    }
+    function activationemsBarChart(title, xaxis, datalist = [], activationpvmeancal = [], category = []) {
+        var chartHeight = 600;
+        $("#activationemsBarChart").css("height", chartHeight);
+        $("#activationemsBarChart").kendoChart({
+            title: {
+                text: "% 10 Min or Less Activation EMS, Triage & Inpatient",
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "column",
+                labels: {
+                    visible: true,
+                    template: "#= series.name #: #= value #",
+                    format: "{0}",
+                    margin: 20
+                }
+            },
+            series: [
+                { data: datalist, name: "EMS", color:"@ChartColors.Grayish.ToDescription()" },
+                { data: activationpvmeancal, name: "Triage", color: "@ChartColors.Purple.ToDescription()"}
+            ],
+            valueAxis: {
+                labels: {
+                    format: "{0}"
+                },
+                line: {
+                    visible: false
+                },
+                //title: {
+                //    text: "Case Count"
+                //},
+                axisCrossingValue: 0
+            },
+            categoryAxis: {
+                categories: category,
+                line: {
+                    visible: false
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    format: "{0}",
+            //    template: "#= series.name #: #= value #"
+            //},
+        });
+    }
+
+    function BedsideBarChart(title, xaxis, datalist = [], category = []) {
+        var chartHeight = 600;
+        $("#BedsideBarChart").css("height", chartHeight);
+        $("#BedsideBarChart").kendoChart({
+            title: {
+                text: title,
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "column",
+                labels: {
+                    visible: true,
+                    template: "#= value #",
+                    format: "{0}",
+                    margin: 20
+                }
+            },
+            series: [{ data: datalist, color:"@ChartColors.SoftBlue.ToDescription()" }],
+            valueAxis: {
+                labels: {
+                    format: "{0}"
+                },
+                line: {
+                    visible: false
+                },
+                axisCrossingValue: 0
+            },
+            categoryAxis: {
+                categories: category,
+                line: {
+                    visible: false
+                },
+                title: {
+                    text: xaxis
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    format: "{0}",
+            //    template: "#= value #"
+            //}
+        });
+    }
+    function alteplaseBarChart(title, xaxis, datalist = [], category = []) {
+        var chartHeight = 600;
+        $("#alteplaseBarChart").css("height", chartHeight);
+        $("#alteplaseBarChart").kendoChart({
+            title: {
+                text: title,
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "column",
+                labels: {
+                    visible: true,
+                    template: "#= value #",
+                    format: "{0}",
+                    margin: 20
+                }
+            },
+            series: [{ data: datalist, color:"@ChartColors.SoftBlue.ToDescription()" }],
+            valueAxis: {
+                labels: {
+                    format: "{0}"
+                },
+                line: {
+                    visible: false
+                },
+                axisCrossingValue: 0
+            },
+            categoryAxis: {
+                categories: category,
+                line: {
+                    visible: false
+                },
+                title: {
+                    text: xaxis
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    format: "{0}",
+            //    template: "#= value #"
+            //}
+        });
+    }
+    function DTN30BarChart(title, xaxis, datalist = [], DTN45percentmeancal = [], DTN60percentmeancal = [], category = []) {
+        var chartHeight = 600;
+        $("#DTN30BarChart").css("height", chartHeight);
+        $("#DTN30BarChart").kendoChart({
+            title: {
+                text: "DTN Less or Equal 30, 45 & 60 Minutes %",
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "column"
+            },
+            series: [
+                { data: datalist, name: "(30)Min", color: "@ChartColors.Grayish.ToDescription()", labels: { visible: true, template: "#= series.name #: #= value #", format: "{0}"} },
+                { data: DTN45percentmeancal, name: "(45)Min", color: "@ChartColors.Purple.ToDescription()", labels: { visible: true, template: "#= series.name #: #= value #", format: "{0}", margin: 15 }},
+                { data: DTN60percentmeancal, name: "(60)Min", color: "@ChartColors.SoftBlue.ToDescription()", labels: { visible: true, template: "#= series.name #: #= value #", format: "{0}", margin: 30 }}
+            ],
+            valueAxis: {
+                labels: {
+                    format: "{0}"
+                },
+                line: {
+                    visible: false
+                },
+                //title: {
+                //    text: "Case Count"
+                //},
+                axisCrossingValue: 0
+            },
+            categoryAxis: {
+                categories: category,
+                line: {
+                    visible: false
+                },
+                title: {
+                    text: xaxis
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    format: "{0}",
+            //    template: "#= series.name #: #= value #"
+            //},
+        });
+    }
+    function STN30BarChart(title, xaxis, datalist = [], STN45percentmeancal = [], STN60percentmeancal = [], category = []) {
+        var chartHeight = 600;
+        $("#STN30BarChart").css("height", chartHeight);
+        $("#STN30BarChart").kendoChart({
+            title: {
+                text: "TS Notification to Needle Less or Equal 30, 45 & 60 Minutes %",
+                color: "black",
+                margin: { top: 20, bottom: 50 }
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "column"
+            },
+            series: [
+                { data: datalist, name: "(30)Min", color: "@ChartColors.Grayish.ToDescription()", labels: { visible: true, template: "#= series.name #: #= value #", format: "{0}" } },
+                { data: STN45percentmeancal, name: "(45)Min", color: "@ChartColors.Purple.ToDescription()", labels: { visible: true, template: "#= series.name #: #= value #", format: "{0}", margin: 15 } },
+                { data: STN60percentmeancal, name: "(60)Min", color: "@ChartColors.SoftBlue.ToDescription()", labels: { visible: true, template: "#= series.name #: #= value #", format: "{0}", margin: 30 } }
+            ],
+            valueAxis: {
+                labels: {
+                    format: "{0}"
+                },
+                line: {
+                    visible: false
+                },
+                //title: {
+                //    text: "Case Count"
+                //},
+                axisCrossingValue: 0
+            },
+            categoryAxis: {
+                categories: category,
+                line: {
+                    visible: false
+                },
+                title: {
+                    text: xaxis
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    format: "{0}",
+            //    template: "#= series.name #: #= value #"
+            //},
+        });
+    }
+
+    $(".export-pdf").click(function () {
+        $("#chart").getKendoChart().saveAsPDF();
+    })
+    $(".exportpdf").click(function () {
+        kendo.drawing.drawDOM($("#AllCharts"), {
+            paperSize: "auto",
+            landscape: true,
+            margin: { left: "1cm", top: "1cm", right: "1cm", bottom: "1cm" },
+            template: $("#page-template").html()
+        })
+            .then(function (group) {
+                return kendo.drawing.exportPDF(group);
+            })
+            .done(function (data) {
+                kendo.saveAs({
+                    dataURI: data,
+                    fileName: "FacilityDashboardCharts.pdf"
+                });
+            });
+
+    });
+    
+</script>

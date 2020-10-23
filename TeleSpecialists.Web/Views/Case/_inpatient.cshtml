@@ -1,0 +1,45 @@
+﻿@model TeleSpecialists.BLL.Model.@case
+
+@{
+    bool btn = false;
+    var nhis = ViewBag.NIHS;
+    var videoStartTime = ViewBag.videoStartTime;
+    var needleTime = ViewBag.needleTime;
+    var btnStatus = ViewBag.isFoundIds;
+    if (!string.IsNullOrEmpty(btnStatus))
+    {
+        btn = true;
+    }
+}
+<div class="row inpatient">
+    <div class="col-md-12">
+        @{
+            if (btn)
+            {
+                <input type="button" id="btnShow" class="btn btn-dark" value="RCA Initiated" />
+            }
+            else
+            {
+                <input type="button" id="btnShow" class="btn btn-dark" value="RCA Initiate" />
+            }
+        }
+        <span id="messagealert" style="color:red;font-weight:bolder;"></span>
+        <div class="parent" style="margin-top:10px">
+            <div class="child" id="div">
+                @Html.Partial("_others")
+                <ul>
+                    <li class="endChild">
+                        <input type="text" class="form-control" name="cas_rca_primarydetail" value="@Model.cas_rca_primarydetail" id="cas_rca_primarydetail" data-inputid="611" data-oldval="@Model.cas_rca_primarydetail" placeholder="Add Primary Detail.." />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <input type="button" id="countermeasureEndChild" class="btn btn-dark" value="Countermeasure(s)" />
+    </div>
+</div>
+<input type="hidden" id="work-flow-ids" name="cas_work_flow_ids" value="@Model.cas_work_flow_ids" />
+<link href="~/Content/case/rca.css" rel="stylesheet" />
+<script src="~/Scripts/Case_File/InpatientWorkFlow.js"></script>
+<script src="~/Scripts/Case_File/OtherWorkFlow.js"></script>

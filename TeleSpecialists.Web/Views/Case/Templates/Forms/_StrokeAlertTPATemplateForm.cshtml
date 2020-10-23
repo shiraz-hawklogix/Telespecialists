@@ -1,0 +1,459 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@model TeleSpecialists.BLL.Model.@case
+@{
+    var AcuteISchemicStrokeList = Enum.GetValues(typeof(AcuteISchemicStroke)).Cast<AcuteISchemicStroke>()
+                           .Select(m => new SelectListItem
+                           {
+                               Value = Convert.ToInt32(m).ToString(),
+                               Text = m.ToDescription(),
+                               Selected = (Model?.case_template_stroke_tpa?.cts_acute_stroke != null ? Model.case_template_stroke_tpa.cts_acute_stroke.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                           });
+
+    var TPAVerbalConsent = Enum.GetValues(typeof(TPAVerbalConsent)).Cast<TPAVerbalConsent>()
+                            .Where(m => m != TeleSpecialists.BLL.Helpers.TPAVerbalConsent.None)
+                            .Select(m => new
+                            {
+                                Value = Convert.ToInt32(m).ToString(),
+                                Text = m.ToDescription(),
+                                Selected = (Model?.case_template_stroke_tpa?.cts_verbal_consent != null ? Model.case_template_stroke_tpa.cts_verbal_consent.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                            });
+
+    var StrokeMechanismList = Enum.GetValues(typeof(StrokeMechanism)).Cast<StrokeMechanism>()
+                    .Select(m => new SelectListItem
+                    {
+                        Value = Convert.ToInt32(m).ToString(),
+                        Text = m.ToDescription(),
+                        Selected = (Model?.case_template_stroke_tpa?.cts_mechanism_stroke != null ? Model.case_template_stroke_tpa.cts_mechanism_stroke.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                    });
+
+    var TpaBolusGiven = Enum.GetValues(typeof(TPABolusGiven)).Cast<TPABolusGiven>()
+                            .Select(m => new
+                            {
+                                Key = Convert.ToInt32(m).ToString(),
+                                Value = m.ToDescription()
+                            }).ToDictionary(m => m.Key, m => m.Value);
+
+
+    var nihssList = ViewBag.NIHSSList as List<TeleSpecialists.BLL.Model.nih_stroke_scale_question>;
+    var nihssSelectedOptions = ViewBag.NIHSSSelectedOptions as List<int>;
+    if (nihssSelectedOptions == null)
+    {
+        nihssSelectedOptions = new List<int>();
+    }
+
+    IDictionary<string, object> dynamicHtmlAttributesTextArea = new Dictionary<string, object>();
+    IDictionary<string, object> dynamicHtmlAttributes = new Dictionary<string, object>();
+    IDictionary<string, object> dynamicHtmlAttributesForComment = new Dictionary<string, object>();
+
+
+    dynamicHtmlAttributesTextArea.Add("style", "width:100%");
+    dynamicHtmlAttributes.Add("class", "form-control");
+    dynamicHtmlAttributes.Add("maxlength", "50");
+    dynamicHtmlAttributesForComment.Add("style", "width:100%; height:100px;");
+
+    var status = "false";
+    if (Model.case_template_stroke_tpa != null)
+    {
+        if (Model.case_template_stroke_tpa.cts_patient_family_cosulted == null)
+        {
+            Model.case_template_stroke_tpa.cts_patient_family_cosulted = true;
+        }
+        if (Model.case_template_stroke_tpa.cts_patient_family_cosulted != null && Model.case_template_stroke_tpa.cts_patient_family_cosulted == false)
+        {
+            status = "true";
+        }
+    }
+
+    DateTime examdate = Convert.ToDateTime("09/22/2020");
+    var examtext = "false";
+    var classdanger = "";
+    if (Model.cas_created_date > examdate)
+    {
+        examtext = "true";
+        classdanger = "text-danger";
+    }
+}
+
+@Html.HiddenFor(m => m.case_template_stroke_tpa.cts_nihss_totalscore)
+@Html.HiddenFor(m => m.SelectedNIHSQuestionResponse)
+
+
+@if (Model.case_template_stroke_tpa != null)
+{
+    <input type="hidden" name="TemplateKey" id="TemplateKey" value="@Model.case_template_stroke_tpa.cts_cas_key" />
+}
+
+<input type="hidden" name="TemplateKeyName" id="TemplateKeyName" value="cts_cas_key" />
+
+<input type="hidden" name="case_template_stroke_tpa.cts_cas_key" id="case_template_stroke_tpa_cts_cas_key" value="@Model.cas_key" />
+<div class="form-group row case-template-tab">
+    <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+        <div class="form-group row">
+            <label class="control-label col-12">Date of Consult: </label>
+            <div class="col-12">
+                @Model.cas_created_date.FormatDateTime()
+            </div>
+        </div>
+
+        <div id="divImpression">
+            <div class="form-group row">
+                <label class="control-label col-12 text-danger">Impression: </label>
+                <div class="col-10 col-offset-2 cts_acute_stroke">
+                    @Html.HiddenFor(m => m.case_template_stroke_tpa.cts_acute_stroke)
+                    @foreach (var item in AcuteISchemicStrokeList)
+                    {
+                        <div class="checkbox">
+                            <input data-IgnoreAutoSave="true" type="checkbox" class="track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")><label>&nbsp;@item.Text</label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-9">
+                    @Html.TextAreaFor(m => m.case_template_stroke_tpa.cts_impression, dynamicHtmlAttributesTextArea)
+                    <div style="display:none;">
+                        <label>This field is required</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*<div class="form-group row">
+                <label class="control-label col-12 text-danger">Comments:</label>
+                <div class="col-10" id="divComment">
+                    @Html.TextAreaFor(m => m.case_template_stroke_tpa.cts_comment, new { @style = "width: 100%; height: 100%;" })
+                    <div class="text-danger">
+                        <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label>
+                    </div>
+                    <div class="error_msg" style="display:none;">
+                        <label>This field is required</label>
+                    </div>
+                </div>
+            </div>*@
+        @{
+            var templateTypes = new List<int>()
+            {
+            EntityTypes.StrokeAlertTemplateTpa.ToInt(),
+            EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt(),
+            EntityTypes.StrokeAlertTemplateNoTpa.ToInt(),
+            EntityTypes.StrokeAlertTemplateNoTpaTeleStroke.ToInt()
+            };
+
+            if (Model.TemplateEntityType.HasValue && templateTypes.Contains(Model.TemplateEntityType.Value))
+            {
+                <div class="form-group row">
+                    <label class="control-label col-12 text-danger">Comments/Sign-Out:</label>
+                    <div class="col-10" id="divComment">
+                        @Html.TextAreaFor(m => m.cas_billing_comments, dynamicHtmlAttributesForComment)
+                        <div class="text-danger">
+                            <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label>
+                        </div>
+                        <div class="error_msg" style="display:none;">
+                            <label>This field is required</label>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+        <div class="form-group row">
+            <label class="control-label col-12">Mechanism of Stroke:</label>
+            <div class="col-10 col-offset-2 cts_mechanism_stroke">
+                @Html.HiddenFor(m => m.case_template_stroke_tpa.cts_mechanism_stroke)
+                @foreach (var item in StrokeMechanismList)
+                {
+                    <div class="checkbox">
+                        <label><input type="checkbox" data-IgnoreAutoSave="true" class="track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "" )>&nbsp;&nbsp;@item.Text</label>
+                    </div>
+                }
+                <div id="case_template_stroke_tpa.cts_mechanism_stroke_freeText">
+                    @Html.TextAreaFor(m => m.case_template_stroke_tpa.cts_mechanism_stroke_text, new { @class = "form-control mechanism_stroke_text", style = "width: 100%" }) @*, placeholder = "Max text limit 2000." })*@
+
+                    @Html.ValidationMessageFor(model => model.case_template_stroke_tpa.cts_mechanism_stroke_text, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="control-label col-12">tPA Bolus Given: </label>
+            <div class="col-12">
+
+                @Html.RadioButtonListFor(m => m.case_template_stroke_tpa.cts_tpa_bolus_complications, TpaBolusGiven)
+
+
+                @Html.ValidationMessageFor(model => model.case_template_stroke_tpa.cts_tpa_bolus_complications, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-10" id="cts_tpa_bolus_complications_text" style="display:none;">
+                @Html.TextAreaFor(m => m.case_template_stroke_tpa.cts_tpa_bolus_complications_text, new { style = "width:100%" })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="control-label col-12">Verbal Consent to tPA: </label>
+            <div class="col-12" id="divVerbalConsent">
+                @Html.HiddenFor(m => m.case_template_stroke_tpa.cts_verbal_consent)
+                @foreach (var item in TPAVerbalConsent)
+                {
+                    <div class="checkbox">
+                        <input type="checkbox" data-IgnoreAutoSave="true" class="track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")><label>&nbsp;@item.Text</label>
+                    </div>
+                }
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12">Vitals Before tPA:</label>
+            <div class="col-12">
+
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12 text-danger">BP: </label>
+            <div class="col-9" id="divBP">
+                @Html.TextAreaFor(m => m.case_template_stroke_tpa.cts_vitals_bp, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12 @classdanger">Pulse: </label>
+            <div class="col-9" id="divpulse">
+                @Html.TextAreaFor(m => m.case_template_stroke_tpa.cts_vitals_pulse, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12 text-danger">Blood Glucose: </label>
+            <div class="col-9" id="divBloodGlucose">
+                @Html.TextAreaFor(m => m.case_template_stroke_tpa.cts_vitals_blood_glucose, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            @{
+                var yesNoOptions = new Dictionary<string, string>();
+                yesNoOptions.Add("true", "Yes");
+                yesNoOptions.Add("false", "No");
+            }
+            <label class="control-label col-12">Patient/Family Consent to Neurology Consult via TeleHealth</label>
+            <div class="col-4">
+                @Html.RadioButtonListFor(m => m.case_template_stroke_tpa.cts_patient_family_cosulted, yesNoOptions, new { @class = "cts_familyRD", @id = "cts_familyRD" })
+            </div>
+        </div>
+
+        <div class="form-check mb-1" id="cts-family-consent" style="display:none">
+            @Html.CheckBox("case_template_stroke_tpa.cts_family_consent_available", new { @class = "form-check-input track_change" })<label class="form-check-label"> Consent could not be obtained due to patient status and family not available </label>
+        </div>
+
+
+        <div class="form-group row">
+            <label class="control-label col-12 text-danger">Critical Care was Provided: </label>
+
+            <div class="col-12" id="divcriticalCare">
+                @Html.RadioButtonListFor(m => m.case_template_stroke_tpa.cts_critical_care_was_provided, yesNoOptions)
+                <div class="error_msg" style="display:none">
+                    <label>This field is required</label>
+                </div>
+            </div>
+
+            @{
+                var display = "none";
+                if (Model.case_template_stroke_tpa != null)
+                {
+                    if (Model.case_template_stroke_tpa.cts_critical_care_was_provided.HasValue && Model.case_template_stroke_tpa.cts_critical_care_was_provided.Value)
+                    {
+                        display = "";
+                    }
+                }
+            }
+        </div>
+        <div class="form-group row" id="criticalcareTimeDiv" style="display:@display">
+            <div class="col-8">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.case_template_stroke_tpa.cts_critical_care_minutes, new { @class = "form-control minutes", @type = "number" })
+                    <div class="input-group-append">
+                        <span class="input-group-text">Minutes</span>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="error_msg" style="display:none">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+        <div class="form-group row">
+            <div class="col-12">
+                @*@Html.CheckBoxFor(m => m.case_template_stroke_tpa.cts_ignore_nihss)*@
+                @Html.CheckBoxFor(m => m.cas_nihss_cannot_completed)
+                <label class="checkbox-inline">
+                    <b>NIHSS Cannot be Completed Due to Patient Status</b>
+                </label>
+            </div>
+        </div>
+        @* Added BY axim 10-09-2020 *@
+        <div class="form-group row" id="divexamTextFree" style="display:none">
+            <label class="control-label col-12 @classdanger">Exam Free Text: </label>
+            <div class="col-12" id="divexamFree">
+                @Html.TextAreaFor(m => m.cas_exam_free_text, new { @class = "form-control" })
+                <div class="text-danger">
+                    <label class="error">50 characters minimum (<span class="Counter">0</span>)</label>
+                </div>
+                <div class="error_msg" id="cas_exam_free_text-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        @* Ended by Axim 10-09-2020 *@
+        <div class="form-group row">
+            <label id="stATPALabel" class="control-label col-12">NIH Stroke Scale/Score: </label>
+            <div class="col-12" id="divTotalScore">
+            </div>
+        </div>
+        <div id="stATPADiv">
+            @foreach (var item in nihssList)
+            {
+                <div class="form-group row">
+                    <label class="control-label col-12">@(item.nsq_title): </label>
+                    <div class="col-12 nihss-empty d-none">
+                        @Html.DropDownList("parent", Enumerable.Empty<SelectListItem>(), "", new { @class = "form-control" })
+                    </div>
+                    <div class="col-12 nihss">
+                        @{
+                            var defaultZero = item.nih_stroke_scale.Where(m => m.nss_score == 0).FirstOrDefault();
+                            var selectItemList = item.nih_stroke_scale.Select(m => new SelectListItem
+                            {
+                                Text = m.nss_title + (m.nss_score > 0 ? " +" : " ") + m.nss_score,
+                                Value = m.nss_key.ToString(),
+                                Selected = nihssSelectedOptions.Contains(m.nss_key) ? true : (nihssSelectedOptions.Count() == 0 ? (m.nss_key == defaultZero?.nss_key) : false)
+                            });
+                            var name = "case_template_stroke_tpa.cts_nihss_" + item.nsq_key;
+                        }
+                        @Html.DropDownList(name, selectItemList, new { @style = "Width: 100%", @class = "form-control", @data_IgnoreAutoSave = true })
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        onCriticalOptionsChanged();
+        setCriticalCareDefaults();
+        cts_tpa_bolus_complications_change();
+        calculateScore("#case_template_stroke_tpa_cts_nihss_totalscore");
+
+        //if ($("#case_template_stroke_tpa_cts_ignore_nihss").is(':checked')) {
+        if ($("#cas_nihss_cannot_completed").is(':checked')) {
+            $(".nihss-empty").removeClass("d-none");
+            $(".nihss").addClass("d-none");
+            $("#divTotalScore").addClass("d-none");
+            $("#divexamTextFree").show();
+            @*if (@examtext) {
+                $("#cas_exam_free_text").attr('required', true);
+            }*@
+        }
+        else {
+            $(".nihss-empty").addClass("d-none");
+            $(".nihss").removeClass("d-none");
+            $("#divTotalScore").removeClass("d-none");
+            $("#divexamTextFree").hide();
+           // $("#cas_exam_free_text").removeAttr('required');
+        }
+    });
+            $("input[name='case_template_stroke_tpa.cts_tpa_bolus_complications']").off("change").on("change", cts_tpa_bolus_complications_change);
+            function cts_tpa_bolus_complications_change() {
+                var selectedVal = $("input[name='case_template_stroke_tpa.cts_tpa_bolus_complications']:checked").val();
+                var withComplication = @TPABolusGiven.WithComplication.ToInt();
+                if (selectedVal == withComplication) {
+                    $("#cts_tpa_bolus_complications_text").show();
+                }
+                else {
+                    $("#cts_tpa_bolus_complications_text").hide();
+                }
+            }
+            $(".nihss select").off("change").change(function () {
+                calculateScore("#case_template_stroke_tpa_cts_nihss_totalscore");
+                //nihssScoreValidatoin("#case_template_stroke_tpa_cts_ignore_nihss");
+    });
+    // Added By Axim 10-09-2020
+    var existingText = $("#cas_exam_free_text").val();
+    if (existingText != undefined) {
+        var charactersTyped = existingText.replace(/\s/g, '').length;
+        $(".Counter").html(charactersTyped);
+
+        $("#cas_exam_free_text").keyup(function () {
+            var text = $(this).val();
+            var charactersTyped = text.replace(/\s/g, '').length;
+            $(".Counter").html(charactersTyped)
+        });
+    }
+    //Added By Axim
+    if (@status== true) {
+        $("#cts-family-consent").show();
+    }
+            //$('#case_template_stroke_tpa_cts_ignore_nihss').change(function () {
+            $('#cas_nihss_cannot_completed').change(function () {
+                if ($(this).is(":checked")) {
+                    $(".nihss-empty").removeClass("d-none");
+                    $(".nihss").addClass("d-none");
+                    $("#divTotalScore").addClass("d-none");
+                    $("#divexamTextFree").show();
+                    @*if (@examtext) {
+                        $("#cas_exam_free_text").attr('required', true);
+                    }*@
+                }
+                else {
+                    $(".nihss-empty").addClass("d-none");
+                    $(".nihss").removeClass("d-none");
+                    $("#divTotalScore").removeClass("d-none");
+                    $("#divexamTextFree").hide();
+                    //$("#cas_exam_free_text").removeAttr('required');
+                }
+
+    });
+    $(".cts_familyRD").on("change").change(function () {
+        var _value = $(this).val();
+        if (_value == "false") {
+            $("#cts-family-consent").show();
+        }
+        else {
+            $("#cts-family-consent").hide();
+        }
+    });
+            function caseTemplateBeforeSubmit() {
+                setQuestionResponse();
+                setTemplateFieldData('#divImpression', '#case_template_stroke_tpa_cts_acute_stroke');
+                setTemplateFieldData('.cts_mechanism_stroke', '#case_template_stroke_tpa_cts_mechanism_stroke');
+                setTemplateFieldData('#divVerbalConsent', '#case_template_stroke_tpa_cts_verbal_consent');
+                calculateScore("#case_template_stroke_tpa_cts_nihss_totalscore");
+            }
+            function setQuestionResponse() {
+                var result = [];
+                $(".nihss select").each(function () {
+                    var selectedVal = $.trim($(this).find("option:selected").val());
+                    if (selectedVal != "") {
+                        result.push(selectedVal);
+                    }
+                });
+
+                $("#SelectedNIHSQuestionResponse").val(result.join(","));
+            }
+</script>
+
+

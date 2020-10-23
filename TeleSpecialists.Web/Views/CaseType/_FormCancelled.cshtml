@@ -1,0 +1,30 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.case_cancelled_type
+
+<div class="ajaxForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.cct_key)
+        @Html.HiddenFor(m => m.cct_created_by)
+        @Html.HiddenFor(m => m.cct_created_on)
+    <div class="form-horizontal">
+        <div class="form-group row">
+            @Html.Label("Type Name:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+            <div class="col-lg-8 col-md-12 col-xs-12">
+                @Html.EditorFor(model => model.cct_name, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+                @Html.ValidationMessageFor(model => model.cct_name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-6 offset-sm-5 text-right">
+                <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Cancelled")">Cancel</a>
+                <input type="submit" value="Save" class="btn btn-dark" />
+            </div>
+        </div>
+    </div>
+    }
+</div>
+
+

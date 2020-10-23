@@ -1,0 +1,313 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@{
+    ViewBag.Title = "User Presence Report";
+    var currentDate = DateTime.Now.ToEST();
+    var previousMonth = currentDate.AddMonths(-1);
+}
+@Html.Partial("_ReportLayout")
+
+<div class="row" id="divLocalFilters">
+    <div class="col-12">
+
+        <div class="form-row">
+            <div class="form-group col-xl-3 col-4" id="divfacility">
+                <label for="Physicians">Physician</label>
+                @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control" })
+
+                @*<select class="form-control" id="ddlstatus" multiple>
+                    <option value="Available">Available</option>
+                    <option value="TPA">TPA</option>
+                    <option value="Stroke Alert">Stroke Alert</option>
+                    <option value="Rounding">Rounding</option>
+                    <option value="STAT Consult">STAT Consult</option>
+                    <option value="Break">Break</option>
+                </select>*@
+
+            </div>
+            <div class="form-group col-xl-3 col-4">
+                <label for="ddlTimeFrame">Time Frame</label>
+                <select class="form-control" id="ddlTimeFrame">
+                    <option value="ThisMonth" selected="selected">This Month</option>
+                    <option value="PreviousMonth">Previous Month</option>
+                    @*<option value="ThisYear">This Year</option>
+                    <option value="PreviousYear">Previous Year</option>*@
+                    <option value="CustomMonth">Custom Month</option>
+                    @*<option value="CustomRange">Custom Range</option>*@
+                </select>
+            </div>
+            <div class="form-group col-xl-3 col-4" style="display:none">
+                <label for="ddlTimeFrame">Report Type</label>
+                <select class="form-control" id="ddlreportType">
+                    <option value="daily" selected="selected">Daily</option>
+                    @*<option value="monthly">Monthly</option>*@
+                    @*<option value="ThisYear">This Year</option>
+                    <option value="PreviousYear">Previous Year</option>
+                    <option value="CustomRange">Custom Range</option>*@
+                </select>
+            </div>
+
+        </div>
+
+        @*<div class="form-row">
+            <div class="form-group row col-xl-6 col-12" id="divCustomDate" style="display:none;">
+                <div class="col-6 pr-0">
+                    <label for="FromDate">From</label>
+                    <input type="text" id="FromDate" name="FromDate" required class="form-control datepicker" />
+                </div>
+
+                <div class="col-6">
+                    <label for="ToDate">To</label>
+                    <input type="text" id="ToDate" name="ToDate" required class="form-control datepicker" />
+                </div>
+            </div>
+
+        </div>*@
+        <div class="form-group row col-xl-6 col-12" id="divCustomDate" style="display:none;">
+            <div class="col-6 pr-0">
+                <label for="FromDate">Month</label>
+                <input type="text" id="FromDate" name="FromDate" required class="form-control datepicker" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-1">
+                <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $("#FromDate").kendoDatePicker({
+            start: "year",
+            depth: "year",
+            format: "MMMM yyyy",
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $("#ddlTimeFrame").off("change").change(function () {
+            if ($(this).val() == "CustomMonth") {
+                $("#divCustomDate").show();
+            }
+            else {
+                $("#divCustomDate").hide();
+            }
+        });
+
+        //$("#ddlTimeFrame").off("change").change(function () {
+        //    if ($(this).val() == "CustomRange") {
+        //        $("#divCustomDate").show();
+        //    }
+        //    else {
+        //        $("#divCustomDate").hide();
+        //    }
+        //});
+
+        $('#divLocalFilters').appendTo('#divFilters');
+
+        $('#divLocalFilters').appendTo('#divFilters');
+
+        $("#btnSearch").click(function () {
+            var errorMessage = "";
+            if($("#ddlTimeFrame").val() == "CustomMonth") {
+                if ($("#FromDate").val() == "")
+                    errorMessage = "Enter From Date<br/>";
+            }
+            if ($("#ddlTimeFrame").val() == "CustomRange") {
+                if ($("#FromDate").val() == "")
+                    errorMessage = "Enter From Date<br/>";
+                if ($("#ToDate").val() == "")
+                    errorMessage += "Enter To Date";
+            }
+            if (errorMessage == "") {
+                var existingGrid = $('#kendoDataGrid').data('kendoGrid');
+                if (existingGrid) {
+                    $('#kendoDataGrid').kendoGrid('destroy').empty();
+                }
+                loadGridData();
+            }
+            else {
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+            }
+        });
+
+        var existingGrid = $('#kendoDataGrid').data('kendoGrid');
+
+        if (existingGrid) {
+            $('#kendoDataGrid').kendoGrid('destroy').empty();
+        }
+
+        resetDropDownOnDeseelect();
+        loadGridData();
+        $("#kendoDataGrid th").css("font-weight", "bold");
+    });
+
+    function loadGridData() {
+
+        ShowLoading();
+
+        $("#kendoDataGrid").kendoGrid({
+        //toolbar: ["excel", "pdf"],
+        excel: {
+            allPages: true,
+            filterable: false,
+            fileName: '@ViewBag.Title' + '.xlsx',
+            proxyURL: '@Url.Action("ExportToExcel")',
+        },
+        pdf: {
+            author:  "TeleCare",
+            creator: "TeleCare",
+            date: new Date(),
+            fileName: '@ViewBag.Title' + '.pdf',
+            keywords: '@ViewBag.Title',
+            subject: '@ViewBag.Title',
+            title: '@ViewBag.Title',
+            allPages: true,
+            filterable: true
+        },
+        dataSource: {
+            transport: {
+                read: {
+                    url: '@Url.Action("GetUserPresenceReport")',
+                    contentType: "application/json",
+                    type: "POST",
+                    data: function () {
+                        var filterModel = { startDate: null, endDate: null, Physicians: "",ReportType:""};
+
+                        filterModel.Physicians = $("#Physicians").val();
+                        filterModel.ReportType = $("#ddlreportType").val();
+                        switch ($("#ddlTimeFrame").val()) {
+                            case "ThisMonth":
+                                filterModel.startDate = "@(new DateTime(currentDate.Year, currentDate.Month,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(currentDate.Year, currentDate.Month, currentDate.Day).ToString())";
+                                break;
+
+                            case "PreviousMonth":
+                                filterModel.startDate = "@(new DateTime(previousMonth.Year, previousMonth.Month,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(previousMonth.Year,previousMonth.Month, DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month)).ToString())";
+                                break;
+                            @*case "ThisYear":
+                                filterModel.startDate = "@(new DateTime(currentDate.Year, 1,1).ToString())";
+                                filterModel.endDate = "@currentDate.ToString()";
+                                break;
+                            case "PreviousYear":
+                                filterModel.startDate = "@(new DateTime(currentDate.AddYears(-1).Year, 1,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(currentDate.AddYears(-1).Year, 12,31).ToString())";
+                                break;
+                            case "CustomRange":
+                                filterModel.startDate = $("#FromDate").val();
+                                filterModel.endDate = $("#ToDate").val();
+                                break;*@
+                            case "CustomMonth":
+                                var newdate = $("#FromDate").val();
+                                if (newdate) {
+                                    var timeframe = newdate.split(" ");
+                                    var year = timeframe[1];
+                                    var month = new Date(Date.parse(timeframe[0] + '1,', year)).getMonth() + 1;
+                                    if (!isNaN(month)) {
+                                        var days = new Date(year, month, 0).getDate();
+                                    }
+                                    if (days) {
+                                        filterModel.startDate = month + '/1/' + year;
+                                        filterModel.endDate = month + '/' + days + '/' + year;
+                                    }
+                                }
+                                break;
+                        }
+                        return filterModel;
+                    }
+                },
+                parameterMap: function (options) {
+                    return kendo.stringify(options);
+                }
+            },
+            schema: {
+                               data: "Data",
+                total: "Total"
+            },
+            serverPaging: false,
+            serverFiltering: false,
+            serverSorting: false,
+            group: {
+                field: "Physician"
+            }
+        },
+        dataBound: function (e) {
+            $("#kendoDataGrid th").css("font-weight", "bold");
+
+            // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+            $('[data-role="dropdownlist"]').each(function () {
+                var kendoDropDown = $(this).data("kendoDropDownList");
+                if (kendoDropDown)
+                    kendoDropDown.bind("open", onDropdDownOpen);
+            });
+
+            HideLoading();
+        },
+        columns: [
+            {
+                field: "Id", hidden: true
+            },
+            {
+                field: "CreatedDate", title: "Date", width: '150px'
+                //template: "#= kendo.toString(kendo.parseDate(CreatedDate, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
+            },
+            {
+                field: "Physician", title: "Physician", width: '180px'
+            },
+            {
+                field: "AvailableS", title: "Available", width: '80px'
+            },
+            {
+                field: "TPAS", title: "TPA", width: '80px'
+            },
+            {
+                field: "StrokeAlertS", title: "Stroke Alert", width: '80px'
+            },
+            {
+                field: "RoundingS", title: "Rounding", width: '80px'
+            },
+            {
+                field: "STATConsultS", title: "STAT Consult", width: '80px'
+            },
+            {
+                field: "BreakS", title: "Break", width: '80px'
+            }
+        ],
+        pageable: {
+            refresh: true,
+            pageSize: 10,
+            pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+        },
+        groupable: false,
+        filterable: false,
+        resizable: true,
+        });
+    }
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$('#Physicians').multiselect({
+        //    columns: 1,
+        //    placeholder: 'Select Physician',
+        //    search: true,
+        //    searchOptions: {
+        //        'default': 'Select Physician'
+        //    },
+        //    selectAll: true
+        //});
+    });
+</script>

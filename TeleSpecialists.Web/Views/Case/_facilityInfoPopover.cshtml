@@ -1,0 +1,312 @@
+﻿@model TeleSpecialists.BLL.Model.@case
+@using TeleSpecialists.BLL.Helpers
+
+@{
+
+    var infoFound = false;
+
+
+
+    var f_contacts = Model.facility?.contacts != null ? Model.facility.contacts.Where(x => x.cnt_is_active && x.cnt_is_deleted == false && (!string.IsNullOrEmpty(x.cnt_role) || x.cnt_role_ucd_key != null)) : null;
+    var f_general_information = Model.facility != null ? Model.facility : null;
+    var f_contracts = Model.facility?.facility_contract != null ? Model.facility.facility_contract.fct_is_active : false;
+    var f_notes = ViewBag.FacilityNotes;
+
+    if ((f_contacts != null && f_contacts.Count() > 0) || (f_contracts) || (f_notes != null && f_notes.Count > 0))
+    {
+        infoFound = true;
+
+    }
+
+
+    var dictServiceType = new Dictionary<int, string>();
+    var dictCoverageType = new Dictionary<int, string>();
+    var dictNoteTypes = new Dictionary<int, string>();
+
+
+
+    if (ViewBag.ServiceTypes != null)
+    {
+        dictServiceType = ViewBag.ServiceTypes;
+    }
+
+    if (ViewBag.CoverageTypes != null)
+    {
+        dictCoverageType = ViewBag.CoverageTypes;
+    }
+
+    if (ViewBag.NoteTypes != null)
+    {
+        dictNoteTypes = ViewBag.NoteTypes;
+    }
+}
+
+
+
+<div id="tooltip" class="col-12" style="display:none;">   
+    <div id="popupModelFacility" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg ">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <div class="card popover-data" style="padding:0px;margin:0px">
+                        <div class="card-header pl-1 font-weight-bold" style="background-color:black">
+                            <h5><span style="color:white" class="font-weight-bold">@Model.facility.fac_name</span></h5>
+                        </div>
+
+                        <div class="card-body p-0">
+                            @if (infoFound)
+                            {
+                                                                    //by shiraz but design change
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="alert case-info m-0 pl-2 l-height">
+                                                <span class="font-weight-bold">General Infromation</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="contractGrid" class="table-responsive">
+                                        <table id="" class="table table-striped table-bordered table-sm" cellspacing="0">
+
+                                            <tr>
+                                                <th scope="col" style="width: 222px;"> EMR Type</th>
+                                                <td>
+                                                    @if (@Model.facility.fac_cst_key == 21)
+                                                    {
+                                                        <span>EPIC</span>
+                                                    }
+                                                    else if (@Model.facility.fac_cst_key == 22)
+                                                    {
+                                                        <span>Meditech</span>
+                                                    }
+                                                    else if (@Model.facility.fac_cst_key == 23)
+                                                    {
+                                                        <span>Cerner</span>
+                                                    }
+                                                    else if (@Model.facility.fac_cst_key == 24)
+                                                    {
+                                                        <span>Paragon</span>
+                                                    }
+                                                    else if (@Model.facility.fac_cst_key == 25)
+                                                    {
+                                                        <span>All Scripts</span>
+                                                    }
+                                                    else if (@Model.facility.fac_cst_key == 26)
+                                                    {
+                                                        <span>Med Host</span>
+                                                    }
+                                                   
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col" style="width: 222px;">EMR Portal</th>
+                                                <td>@Model.facility.fac_emr</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col" style="width: 222px;">EMR Specifics</th>
+                                                <td>@Model.facility.fac_emr_portal</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col" style="width: 222px;">Transfer Process</th>
+                                                <td>@Model.facility.fac_transfer_process</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col" style="width: 222px;">AI Software</th>
+                                                <td>@Model.facility.fac_ai_software</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col" style="width: 222px;"> TPA Orderset</th>
+                                                <td>@Model.facility.fac_tpa_orderset</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col" style="width: 222px;">Imaging Protocol </th>
+                                                <td>@Model.facility.fac_imaging_protocol</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col" style="width: 222px;">  Cart Type </th>
+                                                <td>@Model.facility.fac_cart_type</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col" style="width: 222px;">Cart #</th>
+                                                <td>
+                                                    @{
+                                                        if (Model.facility.fac_cart_numbers != null)
+                                                        {
+                                                            foreach (var x in Model.facility.fac_cart_numbers.Split('#'))
+                                                            {
+                                                                @x <br />
+                                                            }
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+
+                                    //old work
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="alert case-info m-0 pl-2 l-height">
+                                                <span class="font-weight-bold">Alert Notes</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="contractGrid" class="table-responsive">
+                                        <table id="" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">
+                                                        Note
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                @foreach (var item in f_notes)
+                                                {
+                                                    var chk_note_key_value = Convert.ToInt32(item.etn_ntt_key);
+                                                    if (chk_note_key_value == 41)
+                                                    {
+                                                        <tr scope="row">
+                                                            <td>@Html.Raw(item.etn_notes.Replace("\r\n", "<br/>"))</td>
+                                                        </tr>
+                                                    }
+
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                             
+                                if (f_contacts != null && f_contacts.Count() > 0)
+                                {
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="alert case-info m-0 pl-2 l-height">
+                                                <span class="font-weight-bold">Contacts</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="contractGrid" class="table-responsive">
+                                        <table id="" class="table table-striped table-bordered table-sm" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">
+                                                        First Name
+                                                    </th>
+                                                    <th scope="col">
+                                                        Last Name
+                                                    </th>
+                                                    <th scope="col">
+                                                        Contact Role
+                                                    </th>
+                                                    <th scope="col">
+                                                        Department Role
+                                                    </th>
+                                                    <th scope="col">
+                                                        Primary
+                                                    </th>
+                                                    <th scope="col">
+                                                        Mobile
+                                                    </th>
+                                                    <th scope="col">
+                                                        Email
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in f_contacts)
+                                                {
+
+                                                    <tr scope="row">
+                                                        <td>@item.cnt_first_name</td>
+                                                        <td>@item.cnt_last_name</td>
+                                                        <td>@(item.ucl_data?.ucd_title)</td>
+                                                        <td>@item.cnt_role </td>
+                                                        <td> @Functions.FormatAsPhoneNumber(item.cnt_primary_phone)</td>
+                                                        <td>@Functions.FormatAsPhoneNumber(item.cnt_mobile_phone)</td>
+                                                        <td>@item.cnt_email</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                                if (f_contracts)
+                                {
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="alert case-info m-0 pl-2 l-height">
+                                                <span class="font-weight-bold">Contracts</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="contractGrid" class="table-responsive">
+                                        <table id="" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">
+                                                        Start Date
+                                                    </th>
+                                                    <th scope="col">
+                                                        End Date
+                                                    </th>
+
+                                                    <th scope="col">
+                                                        Service Type
+                                                    </th>
+                                                    <th scope="col">
+                                                        Coverage Type
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr scope="row">
+                                                    <td>@(Model.facility.facility_contract.fct_start_date?.ToShortDateString())</td>
+                                                    <td>@(Model.facility.facility_contract.fct_end_date?.ToShortDateString())</td>
+
+                                                    <td>
+                                                        <text>
+                                                            @Model.facility.facility_contract.fct_service_calc
+                                                        </text>
+                                                        @*@Model.facility.facility_contract.service_type.srv_name*@
+                                                    </td>
+                                                    <td>
+                                                        @if (dictCoverageType.ContainsKey(Model.facility.facility_contract.fct_cvr_key))
+                                                        {
+                                                            <text>
+                                                                @dictCoverageType[Model.facility.facility_contract.fct_cvr_key]
+                                                            </text>
+                                                        }
+
+                                                        @*@Model.facility.facility_contract.coverage_type.cvr_name*@
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="alert case-info m-0 pl-2 l-height">
+                                            <span class="">No information found for this facility.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" style="color:white;background-color:black" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,260 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using Microsoft.AspNet.Identity;
+
+@model TeleSpecialists.BLL.Model.entity_note
+@{
+    var isFacilityPhysician = User.IsInRole(UserRoles.FacilityPhysician.ToDescription());
+}
+ 
+<div class="modal-dialog modal-lg" id="notesForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+        var title = isFacilityPhysician ? "Add Note" : "View Note";
+
+        @Html.AntiForgeryToken()
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">@title</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+                <div id="validationSummary">
+
+                </div>
+
+
+                @Html.HiddenFor(m => m.etn_key)
+                @Html.HiddenFor(m => m.etn_entity_key)
+                @Html.HiddenFor(m => m.etn_ent_key)
+                @Html.HiddenFor(m => m.etn_is_active)
+                @Html.HiddenFor(m => m.etn_created_date)
+                @Html.HiddenFor(m => m.etn_created_by)
+
+                <div class="row">
+                    <div class="col-12">
+
+                        <div id="listView" class="w-100"></div>
+                    </div>
+                </div>
+
+
+
+                @*<div id="listview" role="application">
+                            <select id="notes"></select>
+                    </div>*@
+
+                <input type="hidden" id="etn_ntt_key" name="etn_ntt_key" value="@UclTypes.NoteType.ToInt()" />
+                @if (isFacilityPhysician)
+                {
+                    <div class="form-group row">
+                        @Html.Label("Note Description:", htmlAttributes: new { @class = "control-label col-12" })
+                        <div class="col-12">
+
+                            @Html.TextAreaFor(model => model.etn_notes, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.etn_notes, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal">Close</a>
+                @if (isFacilityPhysician)
+                {
+
+                    <input type="submit" class="btn btn-dark" value="Save" />
+                }
+            </div>
+
+        </div>
+    }
+</div>
+<script>
+
+    //    destryCkEditorField("etn_notes");
+    //    window.setTimeout(function () {
+    //        CKEDITOR.replace("etn_notes");
+    //}, 100);
+    //
+    ////////
+
+
+    $(document).ready(function () { 
+        createNotesView();
+    })
+
+    var userid = '@User.Identity.GetUserId()';
+    function createNotesView() {
+         var displayTemplate = `<div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <p class="mb-0">#: Name #</p>
+                                        <p class="mb-0">#: Date #<span> EST</span> <span class="k-icon  #:IsModified? 'k-i-edit' : '' #" style="color:rgba(50, 50, 50, 0.5)"> </span> </p>
+
+                                    </div>
+                                    <div class="col-7">
+                                        #: Notes #
+                                    </div>
+                               </div>
+                               <div class="row note-separator">
+                                   <div class="col-12 text-right mb-1">
+                                       <a class="k-button k-edit-button note-btn-edit #: userid==CreatedBy?'':'d-none' # " href="\\#"><span class="k-icon k-i-edit"></span></a>
+                                   </div>
+                               </div>
+                            </div>`;
+
+        var editTemplate = `    <div class="note-mode-edit">
+                                <div class="row">
+                                    <div class="col-12">
+                                      <textarea data-bind="value:Notes"   data-type="string" name="Notes" class="note-area w-100" required="required" ></textarea>
+                                    </div>
+                               </div>
+                               <div class="row">
+                                   <div class="col-12 text-right">
+                                       <a class="k-button k-update-button  note-btn-ok" href="\\#"><span class="k-icon k-i-check"></span></a>
+                                    <a class="k-button k-cancel-button note-btn-cancel" href="\\#"><span class="k-icon k-i-cancel"></span></a>
+                                   </div>
+                               </div>
+                            </div> `;
+
+        var readOnlyTemplate = ` <div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <p class="mb-0">#: Name #</p>
+                                         <p class="mb-0">#: Date #<span> EST</span> <span class="k-icon  #:IsModified? 'k-i-edit' : '' #" style="color:rgba(50, 50, 50, 0.5)"> </span> </p>
+
+
+                                    </div>
+                                    <div class="col-7">
+                                        #: Notes #
+                                    </div>
+                               </div>
+                               <div class="row note-separator">
+                                &nbsp;
+                               </div>
+                            </div>`;
+
+        @if (!isFacilityPhysician)
+        {
+            <Text>
+        editTemplate = displayTemplate = readOnlyTemplate;
+            </Text>
+        }
+
+                            $("#listView").kendoListView({
+
+                                template: kendo.template(displayTemplate),
+                                editTemplate: kendo.template(editTemplate),
+
+                               dataSource: {
+                                    transport: {
+                                            read: {
+                                                url: '@Url.Action("GetSignOutNotes","EntityNote")',
+                                                contentType: "application/json",
+                                                type: "POST"
+                                                                },
+                                           update: {
+                                                url: '@Url.Action("EditNotes", "EntityNote")',
+                                                type: "POST",
+                                                dataType: "json"
+                                        },
+                                        parameterMap: function (options, type) { 
+                                            if (type == "read") {
+                                               
+                                               //options = KendoKeepState("SignOutListingNotes", options, true);
+                                                if ((options.filter !== undefined && options.filter.filters !== undefined) == false) {
+                                                    if (options.filter === undefined)
+                                                        options.filter = {};
+                                                    if (options.filter.filters === undefined)
+                                                        options.filter.filters = [];
+                                                    if (options.filter.logic === undefined)
+                                                        options.filter.logic = "and";
+                                                    options.filter.filters.push({ field: "date_filter", operator: "eq", "value": $("#dateFilter").val() }); 
+                                                    options.filter.filters.push({ field: "etn_entity_key", operator: "eq", "value": $("#Facilities").val() }); 
+                                                    //options = KendoKeepState("SignOutListingNotes", options, true);
+                                                }
+                                               // exportPostData = options;
+                                                return kendo.stringify(options);
+                                            }
+                                            else if (type == "update" && options.models) {
+                                                return { models: kendo.stringify(options.models) };
+                                            }
+                                            else {
+                                                return options;
+                                            }
+                                        }
+                                                           },
+                                          requestEnd: function (e) {
+                                            if (e.type === "update") {
+                                                refreshNotes();
+                                            }
+                                        },
+                                      schema: {
+                                        model: {
+                                            id: "Id",
+                                                fields: {
+                                                Id: { type: "number" },
+                                                Name: { type: "string" },
+                                                Date: { type: "string" },
+                                                Notes: { type: "string" }, 
+                                                CreatedBy: { type: "string" }, 
+                                                CreatedOrModified: { type: "date" },
+                                                IsModified: { type: "boolean"} 
+                                                }
+                                            },
+
+                                                           }
+                                    },
+
+                            });
+    }
+
+
+    $("#notesForm>form").off().submit("#notesForm>form", function (e) {
+
+        e.preventDefault();
+        if ($(this).valid()) {
+            var url = $(this).attr("action");
+
+            // var notes = CKEDITOR.instances["etn_notes"].getData();
+            var notes = $("#etn_notes").val();
+
+            if ($.trim(notes) == "") {
+                $("#divModelPopUp").find("#validationSummary").empty().showBSDangerAlert("", "Notes is required");
+                return;
+            }
+
+            // $("#etn_notes").val(notes);
+            var data = $(this).serialize();
+            $("#divModelPopUp").find("input:button, input:submit").disable();
+            $.post(url, data, function (response) {
+                $("#divModelPopUp").find("input:button, input:submit").enable();
+                if (response.success) {
+                    refreshNotes();
+                    $("#etn_notes").val("");
+                }
+                else {
+                    $("#divModelPopUp").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                }
+            });
+        }
+    });
+
+
+    function refreshNotes() {
+        var listView = $("#listView").data("kendoListView");
+        if (listView != undefined || listView != null) {
+            listView.dataSource.read();
+        }
+    }
+</script>
+
+

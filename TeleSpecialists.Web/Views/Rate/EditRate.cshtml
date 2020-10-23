@@ -1,0 +1,77 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@model TeleSpecialists.BLL.Model.physician_rate
+@{
+    ViewBag.Title = "Update Physician Productivity Rate";
+    ViewBag.Edit = false;
+    var status = ViewBag.Status;
+    ViewBag.Status = status;
+}
+<h4>Update Physician Productivity Rate</h4>
+<hr />
+<div class="alert case-info">
+    <div class="row">
+        <div class="col-9">
+            <div class="row">
+                <div class="d-inline-block">
+                    <strong>Physician:</strong> <span> @ViewBag.name </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("_formRate", Model)
+<script type="text/javascript">
+
+    $(document).ready(function () {
+      var uclData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.UclData, Newtonsoft.Json.Formatting.Indented));
+        //var currentFacilityOffset = @(Functions.GetTimeZoneOffset(Settings.DefaultTimeZone));
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $("#phy_list").fillKendoDropDown("/LookUp/GetAllPhysicians", "Name", "Id", "-- Select --");
+       // $("#cas_ctp_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.CaseType.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#cas_ctp_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.BillingCode.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+        $("#rate_end_Date").kendoDatePicker();
+        $("#rate_start_Date").kendoDatePicker();
+
+        $('#rat_shift_id').multiselect({
+            columns: 1,
+            placeholder: ' -- Select Shift --',
+            search: false,
+            selectAll: true,
+        });
+
+        $('#phy_list').multiselect({
+            columns: 1,
+            placeholder: ' -- Select --',
+            search: true,
+            searchOptions: {
+                'default': 'Search'
+            },
+            selectAll: true
+        });
+
+    });
+    $('#rat_ending').on('change', function () {
+        var start = parseInt($('#rat_starting').val());
+        var end = parseInt($('#rat_ending').val());
+        if (end < start) {
+            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "End Index Must be greater than Start Index.");
+        }
+    });
+    $('#rat_starting').on('change', function () {
+        var start = parseInt($('#rat_starting').val());
+        var end = parseInt($('#rat_ending').val());
+        if (end === '' || end === 0)
+        {
+        }
+        else if (end < start)
+        {
+            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "End Index Must be greater than Start Index.");
+        }
+    });
+
+</script>
+
+
+

@@ -1,0 +1,125 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@{
+    ViewBag.Title = "Contacts";
+}
+
+<div class="pt-1 customGridHeader">
+    <div id="contactsGrid">
+    </div>
+</div>
+
+
+<script type="text/javascript">
+        var contactGrid = null;
+        var fac_key = "@(ViewBag.fac_key)";
+    $(document).ready(function () {
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+            getContacts();
+        });
+
+        function getContacts() {
+            $("#contactsGrid").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetAll")',
+                            contentType: "application/json",
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            if (fac_key !== "") {
+                                if (options.filter === undefined)
+                                    options.filter = {};
+
+                                if (options.filter.filters === undefined)
+                                    options.filter.filters = [];
+
+                                if (options.filter.logic === undefined)
+                                    options.filter.logic = "and";
+
+                                options.filter.filters.push({ field: "cnt_fac_key", operator: "eq", "value": fac_key });
+                            }
+                            options = KendoKeepState("Contact", options);
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                    },
+                    page: KendoGet("Contact", "page"),
+                    pageSize: GetKendoPageSize("Contact", "RecPerPage", true),
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true
+                },
+                filterable: true,
+                sortable: true,
+                scrollable: true,
+                resizable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                dataBound: function (e) {
+                    //get All records
+                    SetKendoTotalCount("Contact", $('#contactsGrid').data("kendoGrid").dataSource.total());
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                },
+                columns: [
+                    { hidden: true, field: "cnt_key" },
+                    { field: "cnt_first_name", title: "First Name", width: '100px'},
+                    { field: "cnt_last_name", title: "Last Name", width: '100px'},
+                    { field: "ucd_title", title: "Contact Role", width: '150px' },
+                    { field: "cnt_role", title: "Department / Role", width: '150px' },
+                    {
+                        field: "cnt_primary_phone", title: "Primary Phone",width: '135px',
+                        template: "#= formatPhoneNumber(kendo.toString(cnt_primary_phone)) #"
+                    },
+                    {
+                        field: "cnt_extension", title: "Extension", width: '135px'
+                    },
+                    {
+                        field: "cnt_mobile_phone", title: "Mobile Phone", width: '135px',
+                        template: "#= formatPhoneNumber(kendo.toString(cnt_mobile_phone)) #"
+                    },
+                    { field: "cnt_email", title: "Email", width: '135px'},
+                    {
+                        field: "cnt_is_active", title: "Active", width: '80px',
+                        template: '<input type="checkbox" #= cnt_is_active ? "checked=checked" : "" # disabled="disabled" ></input>'
+                    },
+                    {
+                        title: "Actions", width: '135px', template: "<a class='btn btn-dark btn-sm py-1 loadModelPopup' title='Edit' href='@Url.Action("Edit")/\#= cnt_key#'>Edit</a> " +
+                            "<a class='btn btn-dark btn-sm py-1' onclick='removeContact(#= cnt_key#);' title='Remove' href='javascript:;'>Remove</a>"
+                    }
+                ]
+            });
+        }
+
+         function removeContact(cnt_key) {
+        var url = "@Url.Action("Remove")";
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+            "<span>Are you sure you want to remove this Contact from the list?</span>",
+            function () {
+                $.get(url, { id: cnt_key }, function (response) {
+                    if (response.success) {
+                        getContacts();
+                        $("#divModelPopUp").modal("hide");
+                    }
+                    else {
+                        $("#divModelPopUp").find("#validationSummary").showBSDangerAlert("", response.data);
+                    }
+                })
+            });
+
+        }
+
+</script>
+
+

@@ -1,0 +1,108 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@model TeleSpecialists.BLL.Model.ucl_data
+
+<div class="ajaxForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-horizontal">
+            <h4>@ViewBag.Title</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(m => m.ucd_key)
+            @Html.HiddenFor(m => m.ucd_created_date)
+            @Html.HiddenFor(m => m.ucd_created_by)
+            @Html.HiddenFor(m => m.ucd_ucl_key)
+            @Html.HiddenFor(m => m.ucd_is_locked)
+
+            <div class="row">
+                <div class="col-sm-10 offset-sm-1">
+                    <div class="form-group row">
+                        @Html.Label("Type:", htmlAttributes: new { @class = "control-label col-lg-2  col-sm-12" })
+                        <div class="col-lg-10 col-sm-12">
+                            @Html.EditorFor(model => model.ucl.ucl_title, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("Title:", htmlAttributes: new { @class = "control-label col-lg-2  col-sm-12" })
+                        <div class="col-lg-10 col-sm-12">
+                            @if (!Model.ucd_is_locked)
+                            {
+                                @Html.EditorFor(model => model.ucd_title, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.ucd_title, "", new { @class = "text-danger" })
+                            }
+                            else
+                            {
+                                @Html.EditorFor(model => model.ucd_title, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("Description:", htmlAttributes: new { @class = "control-label col-lg-2  col-sm-12" })
+                        <div class="col-lg-10 col-sm-12">
+                            @Html.EditorFor(model => model.ucd_description, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ucd_description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @if (ViewBag.Edit != null)
+                    {
+                        <div class="form-group row">
+                            @Html.Label("Sort Order:", htmlAttributes: new { @class = "control-label col-lg-2  col-sm-12" })
+                            <div class="col-lg-10 col-sm-12">
+                                @Html.EditorFor(m => m.ucd_sort_order, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.ucd_sort_order, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group row">
+                        <div class="col-lg-10 col-sm-12 offset-md-0 offset-lg-2 offset-sm-0">
+                            <div class="checkbox">
+                                <div class="checkbox">
+                                    <label>
+                                        @Html.CheckBoxFor(model => model.ucd_is_default) &nbsp;Default
+                                    </label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.ucd_is_default, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-lg-10 col-sm-12 offset-md-0 offset-lg-2 offset-sm-0">
+                            <div class="checkbox">
+                                <div class="checkbox">
+                                    <label>
+                                        @Html.CheckBoxFor(model => model.ucd_is_active) &nbsp; Active
+                                    </label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.ucd_is_active, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6 offset-sm-5 text-right">
+                    <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index", new { @id = Model.ucd_ucl_key })">Cancel</a>
+                    <input type="submit" value="Save" class="btn btn-dark" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {        
+
+        if ($('#ucd_is_locked').val() == 'True') {
+            //$('#ucd_is_active').prop('readonly', true);
+            //$('#ucd_is_active').attr('readonly', true);
+            //$('#ucd_is_active').attr('readonly', 'readonly');
+            //$('#ucd_is_active').attr("disabled", "disabled");
+        }
+    });
+</script>

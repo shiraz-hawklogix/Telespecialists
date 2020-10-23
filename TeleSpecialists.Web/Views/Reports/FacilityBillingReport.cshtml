@@ -1,0 +1,233 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@{
+    ViewBag.Title = "Facility Billing Report";
+    var currentDate = DateTime.Now.ToEST();
+    var previousMonth = currentDate.AddMonths(-1);
+    //ViewBag.showPrint = true;
+}
+
+@Html.Partial("_ReportLayout")
+
+<div class="row" id="divLocalFilters">
+
+    <div class="col-12">
+        <div class="form-row">
+            <div class="form-group col-3">
+                <label for="Facilities">Facility</label>
+                @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control Facilities", @multiple = "multiple" })
+            </div>
+
+            <div class="form-group col-2">
+                <label for="ddlTimeFrame">Time Frame</label>
+                <select class="form-control" id="ddlTimeFrame">
+                    <option value="ThisMonth" selected="selected">This Month</option>
+                    <option value="PreviousMonth">Previous Month</option>
+                    <option value="ThisYear">This Year</option>
+                    <option value="PreviousYear">Previous Year</option>
+                    <option value="CustomRange">Custom Range</option>
+                </select>
+            </div>
+            <div class="form-group col-3">
+                <label for="ddlTimeFrame">Physician</label>
+                @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+            </div>
+            <div class="form-group col-2">
+                <label for="BillingCodes">Billing Codes</label>
+                @Html.DropDownList("BillingCodes", ViewBag.BillingCodes as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+            </div>
+
+            <div class="form-group col-2">
+                <label for="">&nbsp;</label><br />
+                <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+                <button type="button" class="btn btn-dark" id="btnClear" style="display: none">Clear Search</button>
+            </div>
+
+
+        </div>
+        <div class="form-row" id="divCustomDate" style="display:none;">
+            <div class="form-group col-2 offset-3">
+                <label for="FromDate">From</label>
+                <input type="text" id="FromDate" name="FromDate" required class="form-control datepicker" />
+            </div>
+
+            <div class="form-group col-2">
+                <label for="ToDate">To</label>
+                <input type="text" id="ToDate" name="ToDate" required class="form-control datepicker" />
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    var isDateField = [];
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $('#divLocalFilters').appendTo('#divFilters');
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $("#ddlTimeFrame").off("change").change(function () {
+            if ($(this).val() == "CustomRange") {
+                $("#divCustomDate").show();
+            }
+            else {
+                $("#divCustomDate").hide();
+            }
+        });
+        $('#BillingCodes').multiselect({
+            columns: 1,
+            placeholder: 'Select Billing Code',
+            search: true,
+            selectAll: true,
+        });
+        $('.Facilities').multiselect({
+            columns: 1,
+            placeholder: 'Select Facility',
+            search: true,
+            selectAll: true,
+        });
+        $('#Physicians').multiselect({
+            columns: 1,
+            placeholder: 'Select Physician',
+            search: true,
+            selectAll: true,
+        });
+        resetDropDownOnDeseelect();
+        loadGridData();
+        setWidthOfDropDowns();
+        $("#btnSearch").off("click").click(function () {
+            var errorMessage = "";
+            if ($("#ddlTimeFrame").val() == "CustomRange") {
+                if ($("#FromDate").val() == "")
+                    errorMessage = "Enter From Date<br/>";
+                if ($("#ToDate").val() == "")
+                    errorMessage += "Enter To Date";
+            }
+            if (errorMessage == "") {
+                $("#kendoDataGrid").empty();
+                loadGridData();
+            }
+            else {
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+            }
+        });
+    });
+   function loadGridData() {
+        $("#kendoDataGrid").kendoGrid({
+            //toolbar: ["excel", "pdf"],
+            excel: {
+                allPages: true,
+                filterable: false,
+                fileName: '@ViewBag.Title' + '.xlsx',
+                proxyURL: '@Url.Action("ExportToExcel")',
+            },
+            pdf: {
+                author:  "TeleCare",
+                creator: "TeleCare",
+                date: new Date(),
+                fileName: '@ViewBag.Title' + '.pdf',
+                keywords: '@ViewBag.Title',
+                subject: '@ViewBag.Title',
+                title: '@ViewBag.Title'
+            },
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetFacilityBillingReport")',
+                        contentType: "application/json",
+                        data: function () {
+                             var filterModel = { facilities :  "", physicians: "", billingCodes : "", startDate : null, endDate: null, duration: "Month"  };
+                            filterModel.facilities = $(".Facilities").val();
+                            filterModel.physicians = $("#Physicians").val();
+
+                        filterModel.billingCodes = $("#BillingCodes").val();
+
+                        switch ($("#ddlTimeFrame").val()) {
+                            case "ThisMonth":
+                                filterModel.startDate = "@(new DateTime(currentDate.Year, currentDate.Month,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(currentDate.Year, currentDate.Month, currentDate.Day).ToString())";
+                                break;
+
+                            case "PreviousMonth":
+                                filterModel.startDate = "@(new DateTime(previousMonth.Year, previousMonth.Month,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(previousMonth.Year,previousMonth.Month, DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month)).ToString())";
+                                break;
+                            case "ThisYear":
+                                filterModel.startDate = "@(new DateTime(currentDate.Year, 1,1).ToString())";
+                                filterModel.endDate = "@currentDate.ToString()";
+                                break;
+                            case "PreviousYear":
+                                filterModel.startDate = "@(new DateTime(currentDate.AddYears(-1).Year, 1,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(currentDate.AddYears(-1).Year, 12,31).ToString())";
+                                break;
+                            case "CustomRange":
+                                filterModel.startDate = $("#FromDate").val();
+                                filterModel.endDate = $("#ToDate").val();
+                                break;
+                            }
+                            return filterModel;
+                        },
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+
+                //serverPaging: true,
+                //pageSize: 10,
+                //serverFiltering: false,
+                //serverSorting: true,
+                serverPaging: true,
+                pageSize: 10,
+                serverFiltering: false,
+                serverSorting: true,
+
+            },
+            resizable: true,
+            filterable: false,
+            groupable: false,
+            sortable: true,
+            pageable: {
+                refresh: true,
+                //pageSizes: true,
+                //buttonCount: 5
+                pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+            },
+            dataBound: function (e) {
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+            },
+            columns: [               
+                { field: "cas_billing_date_of_consult", width: 100, title: "Date of Consult" },
+                { field: "cas_identification_type", width: 70, title: "ID type" }, 
+                { field: "cas_identification_number", width: 80, title: "ID Number" },
+                { field: "patient_name", width: 120, title: "Patient Name" },  
+                { field: "cas_billing_dob", width: 70, title: "DOB" },
+                { field: "billing_code", width: 100, title: "Billing Code" },               
+                { field: "Physician", width: 120, title: "Physician" },
+                { field: "cas_case_number", width: 100, title: "TC Case Number" },
+                { field: "fac_name", width: 200, title: "Facility" },
+                { field: "case_type", width: 80, title: "Case Type" },
+                { field: "caseStatus", width: 80, title: "Case Status" },
+                //{ field: "start_date", width: 160, title: "Start Time" },
+                //{ field: "cas_metric_firstlogin_date_est", width: 220, title: "Time First Login Attempt" },
+                //{ field: "stampt_to_login_time", width: 180, title: "Stamp to Login Time"  }, 
+            ]
+        });
+    }
+</script>

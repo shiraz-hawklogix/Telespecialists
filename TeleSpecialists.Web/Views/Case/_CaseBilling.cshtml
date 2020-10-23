@@ -1,0 +1,614 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.@case
+@{
+    var dicOptions = new Dictionary<string, string>();
+    dicOptions.Add("true", "Yes");
+    dicOptions.Add("false", "No");
+
+    var isTeleNeuroFacility = false;
+    if (Model.facility != null)
+    {
+        if (Model.facility.facility_contract != null)
+        {
+            if (Model.facility.facility_contract.fct_service_calc != null
+                && Model.facility.facility_contract.fct_service_calc != ""
+                && Model.facility.facility_contract.fct_service_calc.Contains(ContractServiceTypes.TeleNeuro.ToString()))
+            {
+                isTeleNeuroFacility = true;
+            }
+        }
+    }
+
+    IDictionary<string, object> dynamicHtmlAttributesForComment = new Dictionary<string, object>();
+    dynamicHtmlAttributesForComment.Add("style", "width:100%; height:100px;");
+    var userPhysician = User.IsInRole(UserRoles.Physician.ToDescription());
+    var now = DateTime.Now.ToEST();
+    var later = now.AddDays(2);
+    var earlier = now.AddDays(-2);
+}
+@*<input type="hidden" value="" id="billingAssignPhyscian" />*@
+<div class="form-group row case-billing-tab">
+    <div class="col-xl-5  col-lg-6 col-md-12 col-sm-12">
+        <div class="form-group row">
+            <label class="control-label col-sm-4 text-danger">Billing Code: </label>
+            <div class="col-sm-8">
+                <select id="cas_billing_bic_key" name="cas_billing_bic_key" class="form-control"
+                        data-selectedValue="@(Model != null ? Model.cas_billing_bic_key : 0)" required></select>
+                <div id="cas_billing_bic_key-error" class="error_msg mb-1 " style="display:none;">
+                    <label for="cas_billing_bic_key">This field is required</label>
+                </div>
+                <div id="cas_billing_bic_key-CustomMessage" style="display:none;">
+                    <label></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4 ">Date of Consult: </label>
+            <div class="col-sm-8">
+                @Html.TextBoxFor(m => m.cas_billing_date_of_consult, new { @class = "form-control d-none" })
+                <div class="date_consult_timepicker @(Model.cas_ctp_key == CaseType.StrokeAlert.ToInt()? "d-none": "")">
+                    @Html.FormattedDateTextBoxFor(m => m.cas_billing_date_of_consult, new { @class = "form-control timepicker ", name = "billing_date_time_of_consult" })
+                </div>
+
+                <div class="date_consult_datepicker physicianValidationID @(Model.cas_ctp_key != CaseType.StrokeAlert.ToInt()? "d-none": "")">
+                    @Html.TextBoxFor(m => m.cas_billing_date_of_consult, new { @class = "form-control datepicker ", name = "billing_date_of_consult" })
+                </div>
+                <div class="error_msg" id="billing_date_of_consult_error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                <div id="cas_billing_date_of_consult-EarlierDateError" class="error_msg" style="display:none;">
+                    <label for="cas_phy_key" style="font-size:small">Sorry, you can't create a consult earlier than two days, Please contact your administrator.</label>
+                </div>
+                <div id="cas_billing_date_of_consult-LaterDateError" class="error_msg" style="display:none;">
+                    <label for="cas_phy_key" style="font-size:small">Sorry, you can't create a consult later than two days, Please contact your administrator.</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.cas_billing_date_of_consult, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4 text-danger">Patient Name: </label>
+            <div class="col-sm-8">
+                @Html.TextBoxFor(m => m.cas_billing_patient_name, new { @class = "form-control", id = "billing_cas_patient_name", @placeholder = "Last Name, First Name" })
+                <div class="error_msg" id="billing_cas_patient_error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.cas_billing_patient_name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4 text-danger">Date of Birth: </label>
+            <div class="col-sm-8">
+                <input type="text" id="billing_cas_dob" value="@(Model.cas_billing_dob?.FormatDate())" class="form-control datepicker" />
+                @*@Html.TextBoxFor(m => m.cas_billing_dob, new { @class = "form-control datepicker", id = "billing_cas_dob" })*@
+                <div id="billing_cas_dob-error" class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.cas_billing_dob, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4">Identification Type: </label>
+            <div class="col-sm-8">
+                <select id="billing_cas_identification_type" name="cas_identification_type" class="cas_identification_type form-control addValidation"
+                        data-selectedValue="@(Model != null ? Model.cas_identification_type : 0)"></select>
+                <div class="error_msg" id="billing_cas_identification_type-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(m => m.cas_identification_type, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4">Identification Number: </label>
+            <div class="col-sm-8">
+                <input type="text" maxlength="50" value="@Model.cas_identification_number" id="billing_cas_identification_number" class="form-control" />
+                <div class="error_msg" id="billing_cas_identification_number-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.cas_identification_number, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @if (User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Finance.ToDescription()))
+        {
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Revised Billing Code: </label>
+                <div class="col-sm-8">
+                    <select id="cas_billing_bic_key3" class="form-control"></select>
+                    <label id="lblRevised" class="control-label text-danger"></label>
+                </div>
+            </div>
+        }
+        @if (Model.cas_billing_bic_key_initial != null)
+        {
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Initial Billing Code:</label>
+                <div class="col-sm-8">
+                    <label class="control-label text-danger">Billing Code  @ViewBag.revised  Was Set By The Physician</label>
+                </div>
+            </div>
+        }
+    </div>
+    @{
+        var eegsList = new List<int>()
+{
+CaseType.StatEEG.ToInt(),
+CaseType.RoutineEEG.ToInt(),
+CaseType.LongTermEEG.ToInt()
+};
+
+        var hideForEEGs = false;
+
+        if (eegsList.Contains(Model.cas_ctp_key))
+        {
+            hideForEEGs = true;
+        }
+
+        var hideSignUpFollowUp = hideForEEGs || !isTeleNeuroFacility;
+    }
+    <div class="col-xl-5  col-lg-6 col-md-12 col-sm-12">
+        <div class="form-group row @(hideSignUpFollowUp?"d-none":"")"
+             id="billing_facility_visit_type">
+            @{
+                var required = "";
+                if (isTeleNeuroFacility)
+                {
+                    var billingCodes = new List<int>()
+                                                                            {
+                                                                                CaseBillingCode.New.ToInt(),
+                                                                                CaseBillingCode.FU.ToInt(),
+                                                                                CaseBillingCode.CC1_STAT.ToInt(),
+                                                                                CaseBillingCode.TC.ToInt(),
+                                                                                CaseBillingCode.CC1_StrokeAlert.ToInt()
+                                                                            };
+                    var currentBillingCode = Model.cas_billing_bic_key.HasValue ? Model.cas_billing_bic_key.Value : 0;
+                    if (billingCodes.Contains(currentBillingCode))
+                    {
+                        required = "text-danger";
+                    }
+                }
+            }
+            <label class="control-label col-sm-4 @required">Sign Off or Follow-Up: </label>
+            <div class="col-sm-8">
+                <select id="cas_billing_visit_type" name="cas_billing_visit_type" data-role="dropdownlist" class="form-control staticDropDown">
+                    <option value="">Select</option>
+                    <option value="@FollowUpTypes.SignOff.ToDescription()" @(Model?.cas_billing_visit_type == FollowUpTypes.SignOff.ToDescription() ? "selected" : "")>@FollowUpTypes.SignOff.ToDescription() </option>
+                    <option value="@FollowUpTypes.FollowUp.ToDescription()" @(Model?.cas_billing_visit_type == FollowUpTypes.FollowUp.ToDescription() ? "selected" : "")>@FollowUpTypes.FollowUp.ToDescription()</option>
+                </select>
+                <div id="cas_billing_visit_type-error" class="error_msg" style="display:none;">
+                    <label for="cas_billing_visit_type">This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class='form-group row @(Model?.cas_billing_visit_type == FollowUpTypes.FollowUp.ToDescription() && isTeleNeuroFacility?"":"d-none")'
+             id="billing_followUp_date_container">
+            <label class="control-label col-sm-4">Follow-Up Date: </label>
+            <div class="col-sm-8">
+                @Html.TextBoxFor(m => m.cas_follow_up_date, new { @class = "form-control datepicker", id = "billing_followUp_date" })
+                @Html.ValidationMessageFor(model => model.cas_follow_up_date, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))? "d-none" : "")">
+            <label class="control-label col-sm-4">Diagnosis: </label>
+            <div class="col-sm-8">            
+                @Html.TextAreaFor(m => m.cas_billing_diagnosis, new { @class = "form-control", rows = "4" })
+                <div class="error_msg" id="cas_billing_diagnosis-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))? "d-none" : "")">
+            <label class="control-label col-sm-4">Notes: </label>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.cas_billing_notes, new { @class = "form-control" })
+            </div>
+        </div>
+        @* Added By Axim 13-08-2020 *@
+        @{
+            var caseslist = new List<int>()
+{
+CaseType.RoutineConsultNew.ToInt(),
+CaseType.RoutineConsultFollowUp.ToInt()
+};
+            var status = "none";
+            if (caseslist.Contains(Model.cas_ctp_key))
+            {
+                status = "";
+            }
+
+        }
+        <div class="form-group" style="display:@status">
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Signout not required. I am rounding tomorrow in this facility: </label>
+                <div class="col-sm-4">
+                    @{
+                        if (Model.cas_commnets_off == null)
+                        {
+                            Model.cas_commnets_off = false;
+                        }
+                    }
+                    @Html.CheckBox("cas_commnets_off", Model.cas_commnets_off ?? false)
+                </div>
+            </div>
+
+            @{
+                var templateTypes = new List<int>()
+                                                        {
+                                                        EntityTypes.StrokeAlertTemplateTpa.ToInt(),
+                                                        EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt(),
+                                                        EntityTypes.StrokeAlertTemplateNoTpa.ToInt(),
+                                                        EntityTypes.StrokeAlertTemplateNoTpaTeleStroke.ToInt()
+                                                        };
+
+                if (!Model.TemplateEntityType.HasValue || !templateTypes.Contains(Model.TemplateEntityType.Value))
+                {
+                    var commentRequired = Model.cas_billing_visit_type == FollowUpTypes.FollowUp.ToDescription() ? "text-danger" : "";
+
+                    if (Model.cas_billing_bic_key == CaseBillingCode.NotSeen.ToInt() || !isTeleNeuroFacility)
+                    {
+                        commentRequired = "";
+                    }
+                    //added By Axim 12-08-2020
+                    <div class="form-group row" id="commentContainer">
+
+                        <label class="control-label col-sm-4 @commentRequired" id="cas_billing_comments_label">Comments/Sign-Out:</label>
+                        <div class="col-8" id="divComment">
+                            @Html.TextAreaFor(m => m.cas_billing_comments, dynamicHtmlAttributesForComment)
+                            <div class="text-danger">
+                                <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label>
+                            </div>
+                            <div class="error_msg" style="display:none;">
+                                <label>This field is required</label>
+                            </div>
+                        </div>
+                    </div>
+                    //Ended By Axim 12-08-2020
+                }
+            }
+        </div>
+        @{
+            var strokeslist = new List<int>()
+{
+CaseType.StrokeAlert.ToInt(),
+CaseType.StatConsult.ToInt()
+};
+            var display = "none";
+            if (strokeslist.Contains(Model.cas_ctp_key))
+            {
+                display = "";
+            }
+
+        }
+        <div class="form-group row @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription())) ? "d-none" : "")" style="display:@display">
+            <label class="control-label col-sm-4">Physician Blast:</label>
+            @Html.HiddenFor(m => m.cas_billing_physician_blast_date)
+            @Html.HiddenFor(m => m.cas_billing_physician_blast_date_est)
+            <div class="col-8">
+                @Html.RadioButtonListFor(m => m.cas_billing_physician_blast, dicOptions, new { @class = "disabled" })
+                @Html.ValidationMessageFor(model => model.cas_billing_physician_blast, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @* Ended By Axim 13-08-2020 *@
+
+        @if (Model.cas_cst_key == 140)
+        {
+            @Html.HiddenFor(m => m.cas_cancelled_text)
+            @Html.HiddenFor(m => m.cas_cancelled_type)
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Cancel Type:</label>
+                <div class="col-8">
+                    @Html.Raw(Model.cas_cancelled_type)
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Cancel Description:</label>
+                <div class="col-8">
+                    @Html.Raw(Model.cas_cancelled_text)
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    //fillDignosesCode();  
+    var caseBillingCodeEnum = @Html.Raw(TeleSpecialists.BLL.Helpers.Functions.ConvertToJson(typeof(CaseBillingCode)));
+    oncaseBillingCodeChange(@Model.cas_billing_bic_key);
+    $("#cas_billing_bic_key").off("change").change(function () {
+        var currentBiilingCode = $(this).val();
+         ShowLableForBillingCode(currentBiilingCode);
+        oncaseBillingCodeChange(currentBiilingCode);
+        isSignOffFollowUpRequired();
+        var value = $(this).val();
+        if (value == "@CaseBillingCode.NotSeen.ToInt()" || !@isTeleNeuroFacility.ToString().ToLower()) {
+            $("#commentContainer").find("label").removeClass("text-danger");
+        }
+        else {
+
+            if (isSignOffFollowUpRequired()) {
+                if ($("#cas_billing_visit_type").val() == "@FollowUpTypes.FollowUp.ToDescription()") {
+
+                $("#commentContainer").find("label").addClass("text-danger");
+                }
+            }
+        }
+    });
+
+     function ShowLableForBillingCode(billingCode) {
+            var div = $('#cas_billing_bic_key-CustomMessage');
+            if ( @CaseBillingCode.TC.ToInt() == parseInt(billingCode) || @CaseBillingCode.NotSeen.ToInt() == parseInt(billingCode)) {
+                $(div).show();
+                $(div).children('label').html("TC = Telephone consult (consultation for new patient not previously seen, no video) <br/> Not Seen = Phone call for patient previously seen");
+            }
+            else {
+                $(div).hide();
+                $(div).children('label').text("");
+            }
+        }
+
+    function oncaseBillingCodeChange(currentBiilingCode) {
+        if (currentBiilingCode != undefined && currentBiilingCode != null && currentBiilingCode != "") {
+            if (currentBiilingCode == caseBillingCodeEnum.NotSeen) {
+                $(".case-billing-tab .error_msg").hide();
+
+                $(".case-billing-tab [name='cas_billing_diagnosis']").parent().siblings("label").removeClass("text-danger");
+                $(".case-billing-tab #billing_cas_identification_number").parent().siblings("label").removeClass("text-danger");
+                $(".case-billing-tab .cas_identification_type").parent().siblings("label").removeClass("text-danger");
+                $(".case-billing-tab [name='cas_billing_date_of_consult']").parent().siblings("label").removeClass("text-danger");
+
+                $(".case-billing-tab #billing_cas_dob").parent().siblings("label").addClass("text-danger");
+                $(".case-billing-tab #billing_cas_patient_name").parent().siblings("label").addClass("text-danger");
+            }
+            else if (currentBiilingCode == caseBillingCodeEnum.CC1_StrokeAlert
+                || currentBiilingCode == caseBillingCodeEnum.CC1_STAT
+                || currentBiilingCode == caseBillingCodeEnum.New
+                || currentBiilingCode == caseBillingCodeEnum.FU
+                || currentBiilingCode == caseBillingCodeEnum.EEG
+                || currentBiilingCode == caseBillingCodeEnum.LTMEEG
+                || currentBiilingCode == caseBillingCodeEnum.TC
+                || currentBiilingCode == caseBillingCodeEnum.EEG61119mins
+                || currentBiilingCode == caseBillingCodeEnum.StatEEG
+                || currentBiilingCode == caseBillingCodeEnum.LTMWithVideo212hrs
+                || currentBiilingCode == caseBillingCodeEnum.def) {
+                $(".case-billing-tab [name='cas_billing_diagnosis']").parent().siblings("label").addClass("text-danger");
+                $(".case-billing-tab #billing_cas_identification_number").parent().siblings("label").addClass("text-danger");
+                $(".case-billing-tab .cas_identification_type").parent().siblings("label").addClass("text-danger");
+                $(".case-billing-tab [name='cas_billing_date_of_consult']").parent().siblings("label").addClass("text-danger");
+            }
+        }
+    }
+    function validateBillingRequiredFields(isCaseCompleteCall) {
+        var result = true;
+        var cas_billing_bic_key = true;
+        var cas_billing_visit_type = true;
+        var billing_cas_dob = true;
+        var billing_cas_patient_name = true;
+        var cas_billing_diagnosis = true;
+        var billing_cas_identification_number = true;
+        var billing_cas_identification_type = true;
+        var cas_billing_date_of_consult = true;
+        var commentsAreRequired = false;
+        var cas_billing_comments = true;
+        //$(".error_msg").hide();
+        if ($.trim($("#cas_cst_key").val()).toInt() == caseStatusEnum.Cancelled) {
+            return true;
+        }
+
+        if (($("#billing").css("display").toLowerCase() != "none" || isCaseCompleteCall) && $('a[href="#billing"]').length > 0) {
+
+            if ($("#cas_billing_bic_key").data("kendoDropDownList").value() == "" || $("#cas_billing_bic_key").data("kendoDropDownList").value() == "selected") {
+                $("#cas_billing_bic_key-error").show();
+
+                result = false;
+                cas_billing_bic_key = false;
+            }
+            if (isSignOffFollowUpRequired()) {
+                if ($("#billing_facility_visit_type").css("display").toLowerCase() != "none" && $("#cas_billing_visit_type").val() == "") {
+                    $("#cas_billing_visit_type-error").show();
+                    result = false;
+                    cas_billing_visit_type = false;
+                }
+            }
+
+           if ($("#billing_facility_visit_type").css("display").toLowerCase() != "none" && $("#cas_billing_visit_type").val() == "@FollowUpTypes.FollowUp.ToDescription()") {
+                let _cas_id = "@Model.cas_ctp_key";
+                if (_cas_id === '163' || _cas_id === '164')
+                    commentsAreRequired = true;
+            }
+
+            //added by axim 12-08-2020
+            if (commentsAreRequired) {
+                if (@isTeleNeuroFacility.ToString().ToLower()) {
+
+                    if ($('#cas_commnets_off').is(":checked")) { }
+                    else {
+                        if ($("#commentContainer").length && $("#commentContainer").css("display").toLowerCase() != "none") {
+
+                            if ($("#cas_billing_bic_key").val() != @CaseBillingCode.NotSeen.ToInt()) {
+
+                                var comments = $.trim($("#divComment").find("textarea").val());
+                                if (comments == "") {
+                                    result = false;
+                                    cas_billing_comments = false;
+                                }
+                                else {
+                                    let trimmedComments = comments.replace(/\s/g, "")
+
+                                    if (trimmedComments.length < 100) {
+                                        result = false;
+                                        cas_billing_comments = false;
+                                    }
+                                }
+
+                                if (!cas_billing_comments) {
+                                    result = false;
+                                    $("#divComment").find(".error_msg").show();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //Ended By Axim 12-08-2020
+
+            if ($.trim($("#billing_cas_dob").val()) == "") {
+                $("#billing_cas_dob-error").show();
+                result = false;
+                billing_cas_dob = false;
+            }
+            if ($.trim($("#billing_cas_patient_name").val()) == "") {
+                $("#billing_cas_patient_error").parent().find(".error_msg").show();
+                result = false;
+                billing_cas_patient_name = false;
+            }
+
+            //if ($.trim($("#cas_exam_free_text").val()) == "" || $("cas_exam_free_text").length<50) {
+            //    $("#cas_exam_free_text-error").parent().find(".error_msg").show();
+            //    result = false;
+            //    cas_exam_free_text = false;
+            //}
+
+            @*if ($("#cas_ctp_key").val() != '@CaseType.StrokeAlert.ToInt()') {
+                if ($.trim($("[name='cas_billing_date_of_consult']").val()) == "") {
+                    $("[name='cas_billing_date_of_consult']").parent().find(".error_msg").show();
+                    result = false;
+                }
+            }*@
+
+            var currentBiilingCode = $("#cas_billing_bic_key").val();
+            if (currentBiilingCode == caseBillingCodeEnum.CC1_StrokeAlert
+                || currentBiilingCode == caseBillingCodeEnum.CC1_STAT
+                || currentBiilingCode == caseBillingCodeEnum.New
+                || currentBiilingCode == caseBillingCodeEnum.FU
+                || currentBiilingCode == caseBillingCodeEnum.EEG
+                || currentBiilingCode == caseBillingCodeEnum.LTMEEG
+                || currentBiilingCode == caseBillingCodeEnum.TC
+                || currentBiilingCode == caseBillingCodeEnum.def
+                || currentBiilingCode == caseBillingCodeEnum.StatEEG
+                || currentBiilingCode == caseBillingCodeEnum.EEG61119mins
+                || currentBiilingCode == caseBillingCodeEnum.LTMWithVideo212hrs) {
+                if ($.trim($(".case-billing-tab [name='cas_billing_diagnosis']").val()) == "") {
+                    $(".case-billing-tab [name='cas_billing_diagnosis']").parent().find(".error_msg").show();
+                    result = false;
+                    cas_billing_diagnosis = false;
+                }
+                if ($.trim($(".case-billing-tab #billing_cas_identification_number").val()) == "") {
+                    $(".case-billing-tab #billing_cas_identification_number").parent().find(".error_msg").show();
+                    result = false;
+                    billing_cas_identification_number = false;
+                }
+                if ($(".case-billing-tab #billing_cas_identification_type").val() == "") {
+                    $(".case-billing-tab #billing_cas_identification_type-error").parent().find(".error_msg").show();
+                    result = false;
+                    billing_cas_identification_type = false;
+                }
+                if ($(".case-billing-tab [name='cas_billing_date_of_consult']").val() == "") {
+                    $(".case-billing-tab #billing_date_of_consult_error").show();
+
+                    result = false;
+                    cas_billing_date_of_consult = false;
+                }
+            }
+
+        }
+
+        /// Focusing the first invalid control on the tab
+        if (!result ) {
+
+            var element = null;
+
+            if (!cas_billing_bic_key) {
+                element =  $("#cas_billing_bic_key").parent(".k-dropdown");
+            }
+            else if (!cas_billing_date_of_consult) {
+
+                element =  $("#cas_billing_date_of_consult");
+            }
+            else if (!cas_billing_visit_type) {
+                element =  $("#cas_billing_visit_type");
+            }
+            else if (!cas_billing_comments) {
+                element = $("#divComment").find("textarea");
+            }
+            else if (!billing_cas_patient_name) {
+                element =  $("#billing_cas_patient_name");
+            }
+            else if (!billing_cas_dob) {
+                element =  $("#billing_cas_dob");
+            }
+            else if (!billing_cas_identification_type) {
+                element =  $("#billing_cas_identification_type");
+            }
+            else if (!billing_cas_identification_number) {
+
+                element =  $("#billing_cas_identification_number");
+            }
+            else if (!cas_billing_diagnosis) {
+                element =  $("#cas_billing_diagnosis");
+            }
+
+            if (element !== null) {
+                window.setTimeout(function () { $(element).focus();}, 250);
+            }
+        }
+
+        return result;
+    }
+    //added By Axim 12-08-2020
+    $("#cas_commnets_off").off("change").change(function () {
+        if ($('#cas_commnets_off').is(":checked")) {
+            $(".case-billing-tab [name='cas_billing_comments']").parent().siblings("label").removeClass("text-danger");
+        }
+        else {
+            $(".case-billing-tab [name='cas_billing_comments']").parent().siblings("label").addClass("text-danger");
+        }
+    });
+    //Ended By Axim 12-08-2020
+    //TCARE-550
+        $("#cas_billing_visit_type").off("change").change(function () {
+
+        var value = $(this).val();
+
+            if (value == "@FollowUpTypes.FollowUp.ToDescription()")
+            {
+            if ($("#cas_billing_bic_key").val() != @CaseBillingCode.NotSeen.ToInt() && @isTeleNeuroFacility.ToString().ToLower())
+            {
+
+                $("#commentContainer").find("label").addClass("text-danger");
+            }
+         }
+        else {
+            $("#commentContainer").find("label").removeClass("text-danger");
+        }
+    });
+
+    $('.physicianValidationID').change(function () {
+        $('#cas_billing_date_of_consult-LaterDateError').hide();
+        $('#cas_billing_date_of_consult-EarlierDateError').hide();
+        $('#btnSave, #btnSaveClose, #btnCompleteCase').enable();
+        if (@userPhysician.ToString().ToLower())
+        {
+            var consultDate = $('#cas_billing_date_of_consult').val();
+
+            consultDate = new Date(consultDate);
+            var later = new Date('@later.Month/@later.Day/@later.Year 23:59:59');
+            var earlier = new Date('@earlier.Month/@earlier.Day/@earlier.Year 00:00:00');
+
+            if (consultDate > later) {
+                $('#cas_billing_date_of_consult-LaterDateError').show();
+                PauseAutoSave();
+                $('#btnSave, #btnSaveClose, #btnCompleteCase').disable();
+            }
+            else if (consultDate < earlier) {
+                $('#cas_billing_date_of_consult-EarlierDateError').show();
+                PauseAutoSave();
+                $('#btnSave, #btnSaveClose, #btnCompleteCase').disable();
+            }
+            else {
+                ResumeAutoSave();
+                $('#btnSave, #btnSaveClose, #btnCompleteCase').enable();
+            }
+        }
+    });
+</script>
+
+

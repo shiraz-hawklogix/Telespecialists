@@ -1,0 +1,17 @@
+﻿@model TeleSpecialists.BLL.Model.entity_note
+@{
+    ViewBag.Title = "Add Note";
+
+    var IsSignOutNotes = (bool)ViewBag.IsSignOutNotes;
+}
+
+@if (IsSignOutNotes)
+{
+    @Html.Partial("_SignOutNotes", Model) 
+}
+else
+{
+    @Html.Partial("_Form", Model)
+}
+
+

@@ -1,0 +1,85 @@
+﻿@model TeleSpecialists.BLL.Model.@case
+@{
+    bool btn = false;
+    var nhis = ViewBag.NIHS;
+    var videoStartTime = ViewBag.videoStartTime;
+    var needleTime = ViewBag.needleTime;
+    var arival = ViewBag.arivalTime;
+    var btnStatus = ViewBag.isFoundIds;
+    if (!string.IsNullOrEmpty(btnStatus))
+    {
+        btn = true;
+    }
+
+}
+
+<div class="row ems">
+    <div class="col-md-12">
+        @{
+            if (btn)
+            {
+                <input type="button" id="btnShow" class="btn btn-dark" value="RCA Initiated" />
+            }
+            else
+            {
+                <input type="button" id="btnShow" class="btn btn-dark" value="RCA Initiate" />
+            }
+        }
+        <span id="messagealert" style="color:red;font-weight:bolder;"></span>
+        <div class="parent" style="margin-top:10px">
+            <div class="child" id="div">
+                <ul>
+                    <li>
+                        <label class="Greencolor"><input type="checkbox" class="gotVal gotVal_rad" value="200" id="200" />Arrival to start time delay <i class="fa fa-arrow-right"></i></label>
+                        <ul class="dropdown hideShowUl childarivaldelay">
+                            <li class="childhideShowUl">
+                                <label class="Bluecolor">
+                                    <input type="checkbox" class="gotVal childhideShowUl" value="201" id="201" /> Poor identification by EMS <i class="fa fa-arrow-right"></i>
+                                </label>
+                                <ul class="dropdown grandChild endChild childpoorems">
+                                    <li> <label><input type="checkbox" class="gotVal" value="202" id="202" />Acute LOC presentation for basilar thrombosis missed </label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="203" id="203" />Alternating symptoms presentation for basilar thrombosis missed </label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="204" id="204" />Poor design or training of questions that would trigger tool usage (Defect)</label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="205" id="205" />Posterior Circulation symptoms (dizziness , nausea) missed  </label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="206" id="206" />Concurrent presentation / code (chest pain, trauma, sepsis alert)  </label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="207" id="207" />"Resolving" or "improving" symptoms  </label></li>
+                                    <li>
+                                        <input type="text" class="form-control" value="@Model.cas_ems_poor_identification" name="cas_ems_poor_identification" id="cas_ems_poor_identification" data-inputid="1000" data-oldval="@Model.cas_ems_poor_identification" placeholder="Add other detail.." />
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="childhideShowUl">
+                                <label class="childhideShowUl Bluecolor"><input type="checkbox" class="gotVal childhideShowUl" value="208" id="208" /> Identification occurred <i class="fa fa-arrow-right"></i></label>
+                                <ul class="dropdown endChild childidntifcationaccurd">
+                                    <li><label><input type="checkbox" class="gotVal" value="209" id="209" /> Pre-arrival activation by EMS did not take place</label></li>
+                                    <li><label><input type="checkbox" class="gotVal" value="210" id="210" /> Pre-arrival activation by EMS took place, ED staff did not activate Stroke Alert </label></li>
+                                    <li><label><input type="checkbox" class="gotVal" value="211" id="211" /> Pre-arrival activation by EMS took place, TS was not notified with ETA </label></li>
+                                    <li><label><input type="checkbox" class="gotVal" value="212" id="212" /> ETA protocol was not carried out by TeleSpecialists RRC </label></li>
+                                    <li><label><input type="checkbox" class="gotVal" value="213" id="213" /> No activation of stroke team</label></li>
+                                    <li><label><input type="checkbox" class="gotVal" value="214" id="214" /> Activation of hospital stroke team took place, but poor preparedness of the team</label></li>
+                                    <li>
+                                        <input type="text" class="form-control" value="@Model.cas_ems_identification_occurred" name="cas_ems_identification_occurred" id="cas_ems_identification_occurred" data-inputid="1001" data-oldval="@Model.cas_ems_identification_occurred" placeholder="Add other detail.." />
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="endChild"><input type="text" class="form-control" value="@Model.cas_ems_arivaltostarttimedelay" name="cas_ems_arivaltostarttimedelay" id="cas_ems_arivaltostarttimedelay" data-inputid="1002" data-oldval="@Model.cas_ems_arivaltostarttimedelay" placeholder="Add Free Text.." /></li>
+                        </ul>
+                    </li>
+                </ul>
+                @Html.Partial("_others")
+                <ul>
+                    <li class="endChild">
+                        <input type="text" class="form-control" name="cas_rca_primarydetail" value="@Model.cas_rca_primarydetail" id="cas_rca_primarydetail" data-inputid="611" data-oldval="@Model.cas_rca_primarydetail" placeholder="Add Primary Detail.." />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <input type="button" id="countermeasureEndChild" class="btn btn-dark" value="Countermeasure(s)" />
+    </div>
+</div>
+<input type="hidden" id="work-flow-ids" name="cas_work_flow_ids" value="@Model.cas_work_flow_ids" />
+<link href="~/Content/case/rca.css" rel="stylesheet" />
+<script src="~/Scripts/Case_File/EMSWorkFlow.js"></script>
+<script src="~/Scripts/Case_File/OtherWorkFlow.js"></script>

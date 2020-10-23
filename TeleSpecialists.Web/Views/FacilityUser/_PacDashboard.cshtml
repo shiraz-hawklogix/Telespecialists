@@ -1,0 +1,56 @@
+﻿@*@model IEnumerable<TeleSpecialists.BLL.ViewModels.FacilityUser.GetCaeTypeViewModel>*@
+ 
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@{
+    Layout = "";
+    var consultType = ViewBag._types;/* as IEnumerable<TeleSpecialists.BLL.Model.ucl_data>;*/
+}
+<div class="facility-navigator-dashbord mb-4" id="facility-navigator-dashbord">
+    <div class="row">
+        <div class="col-md-9 col-12 offset-md-1">
+            <h3>Consult Type</h3>
+            <hr />
+        </div>
+    </div>
+    <div class="row col-md-4 col-md-7 col-lg-5 col-xl-4 p-2 mx-auto">
+        @{
+            if (consultType != null)
+            {
+                <div class="col-12  dashboard-indicators p-2">
+                    <label class="font-weight-normal">Please select one of the following consult types:</label>
+                </div>
+                //foreach (var consultType in Model)
+                //{
+                    <div class="col-6  dashboard-indicators p-2">
+                        <button type="button" class="btn btn-danger bold"
+                                data-type="@consultType.ucd_title" data-case-type-key="@consultType.ucd_key">
+                            @consultType.ucd_title
+                        </button>
+                    </div>
+                //}
+            }
+            else
+            {
+                <div class="col-12  dashboard-indicators p-2">
+                    <label class="font-weight-normal">No consult type assigned to the user. Please contact your system administrator.</label>
+                </div>
+            }
+        }
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".facility-navigator-dashbord button").on("click", function () {
+            var caseType = $(this).data("type");
+            var caseTypeKey = $(this).data("case-type-key");
+            var className = "";
+            if ($(this).hasClass("btn-danger"))
+                className = "text-danger";
+            else
+                className = "color-lightgray";
+
+            navigateToFacilityInfoHomeHealth(caseType, className, caseTypeKey);
+        });
+    });
+</script>

@@ -1,0 +1,97 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@model TeleSpecialists.BLL.Model.post_acute_care
+@{
+    ViewBag.Title = "Create PAC Case";
+    ViewBag.Edit = false;
+    Layout = "";
+    var guid = Guid.NewGuid().ToString();
+}
+<h4>Create Sleep</h4>
+<hr />
+@Html.Partial("_Form", Model)
+<div class="row">
+    <div class="col-2 btn-copy-popup">
+        <input type="button" value="Copy" class="btn btn-dark" id="btnCopy" />
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-8 col-xs-5 btn-save-close-cancel">
+        <a href="@Url.Action("Index","Case")" class="btn btn-link CaseCancelled">Cancel</a>
+        <button type="button" class="btn btn-dark" value="Save" id="btnSave">Save</button>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+@Html.Partial("_CaseCopyPopup")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var currentFacilityOffset = @(Functions.GetTimeZoneOffset(Settings.DefaultTimeZone));
+
+        maskPhoneNumber();
+        $("#btnCopy").off("click").click(PACcopyCase);
+
+        $(".CaseCancelled").off("click").on("click", function (e) {
+            e.preventDefault();
+            $("#divModelPopUp").empty().showConfirmPopUp("Confirm", "<span>Are you sure you want to close this case without saving?</span>", function () {
+                    var url = '@Url.Action("Index","Case")';
+                    $("#divModelPopUp").modal("hide");
+                     loadPageAsync(url);
+                }, "Yes", function () {
+                $("#divModelPopUp").modal("hide");
+            });
+        });
+
+
+        $(".datepicker").kendoTimePicker({
+            open: function (e) {
+                e.preventDefault();
+
+                var currentDateTime = moment().utcOffset(currentFacilityOffset).format("MM/DD/YYYY HH:mm:ss");
+                this.element.first().attr("data-utc_time", new Date().toUTCString());
+                this.element.first().val(currentDateTime);
+
+                var timePicker = this.element.first();
+                ShowHideTimeZone(timePicker);
+            }
+        });
+        $(".datepicker").kendoMaskedTextBox({
+            mask: "00/00/0000 00:00:00"
+        });
+
+        $("#btnSave").off("click").click(function () {
+
+            //if (!$("#createPACForm").valid()) {
+            //    $("#createPACForm").validate();
+            //}
+            if (!validateGeneralRequiredFields(0)) {
+                return;
+            }
+            else {
+                $("#createPACForm").submit();
+            }
+        });
+
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+
+        var facilityDropDown = $("#pac_fac_key").fillKendoDropDown("/LookUp/GetPACFacility?phoneNumber=@*@Model.cas_ani*@", "fac_name", "fac_key", "--Select--", function () {
+            window.setTimeout(function () {
+                var selectedFacility = $.trim($("#pac_fac_key").val());
+                if (selectedFacility != "") {
+                    //loadFacilityTimeZone(selectedFacility);
+                    //showDuplicateCheckPopup(selectedFacility);
+                }
+            }, 50);
+        });
+
+        facilityDropDown.unbind("change").bind("change", function (e) {
+            if ($.trim($("#pac_fac_key").val()) == "" || $("#pac_fac_key").val() == "00000000-0000-0000-0000-000000000000") {
+            }
+            else {
+            }
+        });
+
+
+    });
+
+</script>

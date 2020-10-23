@@ -1,0 +1,169 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_FacilityUser.cshtml";
+    ViewBag.Title = "Dashboard";
+}
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+<script type="text/javascript">
+    //$("#pac_fac_key_sleep").fillKendoDropDown("/LookUp/GetPACFacility?phoneNumber=", "fac_name", "fac_key", "--Select--");
+    /****** Load dashboard area *****/
+     navigateToDashBoard();
+    /********************************/
+
+    /*** EAlert helper functions ***/
+    function navigateToDashBoard() {
+        loadPageAsync("/FacilityUser/DashBoard");
+    }
+    function navigateToFacilityInfo(caseType, className, caseTypeKey) {
+        var url = "/FacilityUser/FacilityInfo?caseType=" + caseType + "&className=" + className + "&caseTypeKey=" + caseTypeKey;
+        $.get(url, function (response) {
+            if (response) {
+                $(".facility-navigator-dashbord").empty().html(response);
+            }
+        });
+    }
+
+    function navigateToFacilityInfoHomeHealth(caseType, className, caseTypeKey) {
+        var url = "/FacilityUser/FacilityInfoHomeHealth?caseType=" + caseType + "&className=" + className + "&caseTypeKey=" + caseTypeKey;
+        $.get(url, function (response) {
+            if (response) {
+                $(".facility-navigator-dashbord").empty().html(response);
+            }
+        });
+    }
+
+    function consultConfirmation(caseNumber, case_time_stamp) {
+        var title = "Case Consult";
+        var message = "Case "+caseNumber+" has been created.";
+        $("#divModelPopUp").empty().showAlertPopUp(title, message, function () {
+           // window.location.href = '/FacilityUser/FacilityNavigator'
+            navigateToDashBoard();
+        });
+        if (case_time_stamp != undefined) {
+            $("#divModelPopUp .modal-header").append("<span>" + case_time_stamp + "</span>");
+        }
+    }
+    function cancelConsult() {
+        var title = "Cancel Consult";
+        var message = "Are you sure you want to cancel this consult?";
+        $("#divModelPopUp").empty().showConfirmPopUp(title, message, setCancelStatusToCase, "Yes", function () { $("#divModelPopUp").modal("hide");} );
+    }
+    function setCancelStatusToCase() {
+       var caseKey = $("#cas_key").val();
+        $.ajax({
+            url: "/FacilityUser/SetCaseStatus?caseKey="+ parseInt(caseKey),
+            data: $(this).serialize(),
+            method: "post",
+            success: function (response) {
+                if (response.success) {
+                    window.location.href = '/FacilityUser/FacilityNavigator'
+                }
+                else {
+                    $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", response.message);
+                }
+            }
+        });
+    }
+    function checkETA() {
+        if ($('#facility-info-eta').is(":checked")) {
+            $('#facility-info-eta-text').removeClass("d-none");
+        }
+        else {
+            $('#facility-info-eta-text').addClass("d-none");
+        }
+        $('#facility-info-eta-text').val("");
+    }
+    function loadFacilityTimeZone(id) {
+          if ($.trim(id) != "" && id != "00000000-0000-0000-0000-000000000000") {
+              var url = "@Url.Action("GetFacilityTimeZone", "Case")";
+              var stamp_time = $.trim($("#five9_intial_utc_time").val());
+              $.get(url, { id: id, inputDateTime: stamp_time }, function (response) {
+                  if (response.success) {
+                      currentFacilityOffset = response.timeZoneOffset;
+                      $("#hdnFacilityTimeZone").val(response.timeZone);
+                      $("#FacilityTimeZone").val(response.timeZone);
+                      $("#hdnFacilityTimeZoneOffSet").val(response.timeZoneOffset);
+                      if (response.convertedTime != "") {
+                          $("#five9_start_time").val(response.convertedTime);
+                      }
+                      // handling arrival time conversion after facility is changed\
+                      var arrivalTime = $.trim($("#cas_metric_door_time_est").attr("data-utc_time"));
+                      if (arrivalTime != "") {
+                          $("#cas_metric_door_time_est").val(moment.utc(arrivalTime.replace("GMT", "")).utcOffset(response.timeZoneOffset).format("MM/DD/YYYY HH:mm:ss"));
+                      }
+                  }
+                  else {
+                      $("#mainContentArea").find("#validationSummary").empty().showBSSuccessAlert("", "An error has occurred while converting time to facility time zone, please contact support.");
+                  }
+              })
+        }
+    }
+    function loadUserAssignedFacilities() {
+        $.ajax({
+            url: '@Url.Action("GetAllAssignedFacilities")',
+            success: function (response) {
+                if (response != null) {
+                    $("#warning-no-facility").addClass("d-none");
+                    $(".add-facility-info").removeClass("d-none");
+                    if (response.length == 0) {
+                        $("#warning-no-facility").removeClass("d-none");
+                        $(".add-facility-info").addClass("d-none");
+                    }
+                    else if (response.length == 1) {
+                        $("#txt-facility-info-facility").removeClass("d-none");
+                        $("#txt-facility-info-facility").val(response[0].FacilityName);
+                        $("#txt-facility-info-facility").enable = false;
+                        $("#id-facility-info-facility").val(response[0].Facility);
+                        $("#cas_fac_key").remove();
+                        GetFacilityCart(response[0].Facility);
+                    }
+                    else {
+                        $("#txt-facility-info-facility").addClass("d-none");
+                        $("#cas_fac_key").fillKendoDropDown('@Url.Action("GetAllAssignedFacilities")', "FacilityName", "Facility", "-- Select --", function () { });
+                    }
+                }
+            },
+            global: false
+        });
+    }
+    function loadUserAssignedFacilitiesForSleep() {
+        $.ajax({
+            url: '@Url.Action("GetAllAssignedFacilitiesSleep")',
+            success: function (response) {
+                if (response != null) {
+                    $("#warning-no-facility").addClass("d-none");
+                    $(".add-facility-info").removeClass("d-none");
+                    if (response.length == 0) {
+                        $("#warning-no-facility").removeClass("d-none");
+                        $(".add-facility-info").addClass("d-none");
+                    }
+                    else if (response.length == 1) {
+                        $("#txt-facility-info-facility").removeClass("d-none");
+                        $("#txt-facility-info-facility").val(response[0].FacilityName);
+                        $("#txt-facility-info-facility").enable = false;
+                        $("#id-facility-info-facility").val(response[0].Facility);
+                        $("#cas_fac_key").remove();
+                        GetFacilityCart(response[0].Facility);
+                    }
+                    else {
+                        $("#txt-facility-info-facility").addClass("d-none");
+                        $("#cas_fac_key").fillKendoDropDown('@Url.Action("GetAllAssignedFacilitiesSleep")', "FacilityName", "Facility", "-- Select --", function () { });
+                    }
+                }
+            },
+            global: false
+        });
+    }
+    function navigateToPatientInfo(casekey) {
+        var url = "/FacilityUser/PatientInfo?caseKey=" + casekey;
+        $.get(url, function (response) {
+            if (response) {
+                $(".facility-navigator-dashbord").empty().html(response);
+                $("#facility-info-identifiactionType").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.IdentificationType.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+            }
+        });
+    }
+   /*****************************/
+</script>
+

@@ -1,0 +1,114 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@model TeleSpecialists.BLL.Model.physician_license
+
+
+    <div class="modal-dialog modal-lg" id="licenseForm">
+        @using (Html.BeginForm(new { role = "form" }))
+        {
+
+
+            @Html.AntiForgeryToken()
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">@ViewBag.Title</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="form-horizontal">
+
+                        <div id="validationSummary">
+
+                        </div>
+
+
+                        @Html.HiddenFor(m => m.phl_key)
+                        @Html.HiddenFor(m => m.phl_user_key)
+                        @Html.HiddenFor(m => m.phl_is_active)
+                        @Html.HiddenFor(m => m.phl_created_date)
+                        @Html.HiddenFor(m => m.phl_created_by)
+                        <div class="row">
+                            <div class="col-sm-10 offset-sm-1">
+                                <div class="form-group row">
+                                    @Html.Label("License Number:", htmlAttributes: new { @class = "control-label col-lg-3 col-sm-12" })
+                                    <div class="col-lg-9 col-sm-12">
+                                        @Html.EditorFor(model => model.phl_license_number, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.phl_license_number, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    @Html.Label("Start Date:", htmlAttributes: new { @class = "control-label col-lg-3 col-sm-12" })
+                                    <div class="col-lg-9 col-sm-12">
+                                        @Html.TextBoxFor(model => model.phl_issued_date, new { @class = "form-control datepicker", @Value = (Model.phl_issued_date != DateTime.MinValue ? Model.phl_issued_date.ToString("MM/dd/yyyy") : "") })
+                                        @Html.ValidationMessageFor(model => model.phl_issued_date, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    @Html.Label("End Date:", htmlAttributes: new { @class = "control-label col-lg-3 col-sm-12" })
+                                    <div class="col-lg-9 col-sm-12">
+                                        @Html.EditorFor(model => model.phl_expired_date, new { htmlAttributes = new { @class = "form-control datepicker", @value = Model.phl_expired_date?.ToString("MM/dd/yyyy") } })
+                                        @Html.ValidationMessageFor(model => model.phl_expired_date, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    @Html.Label("State:", htmlAttributes: new { @class = "control-label col-lg-3 col-sm-12" })
+                                    <div class="col-lg-9 col-sm-12">
+                                        @Html.DropDownListFor(model => model.phl_license_state, null, "", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.phl_license_state, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <a class="btn btn-link" data-dismiss="modal">Close</a>
+                    <input type="submit" class="btn btn-dark" value="Save" />
+                </div>
+
+            </div>
+        }
+    </div>
+
+    <script>
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        
+        $("#licenseForm > form").off("submit").submit(function (e) {
+            e.preventDefault();
+            var url = $(this).attr("action");
+            var data = $(this).serialize();
+            $("#divModelPopUp").find("input:button, input:submit").disable();       
+            $.post(url, data, function (response) {
+                $("#divModelPopUp").find("input:button, input:submit").enable();       
+                if (response.success) {
+
+                    getLicense();
+                    $("#divModelPopUp").modal("hide");
+                }
+                else {
+                    $("#divModelPopUp").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                }
+            });
+        });
+       
+    </script>
+
+
+

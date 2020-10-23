@@ -1,0 +1,1442 @@
+﻿@-webkit-keyframes blink {
+    50% {
+        border-color: #ff0000;
+    }
+}
+
+
+.blink_border {
+    border: 23px solid;
+    -webkit-animation: blink .5s step-end infinite alternate;
+}
+
+html {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    position: relative;
+    margin: 0;
+    padding-bottom: 3rem;
+    min-height: 100%;
+}
+/* Menu Effect*/
+
+.navbar-nav li:hover > ul.dropdown-menu {
+    display: block;
+}
+
+.k-current-page {
+    display: none !important;
+}
+
+.dropdown-submenu {
+    position: relative;
+}
+
+    .dropdown-submenu > .dropdown-menu {
+        top: 0;
+        left: 100%;
+        margin-top: -6px;
+    }
+
+   a.cursor{
+        cursor:pointer;
+    }
+
+/* rotate caret on hover */
+.dropdown-menu > li > a:hover:after {
+    text-decoration: underline;
+    transform: rotate(90deg);
+}
+/* End of Menu Effect*/
+/*Page Break*/
+.page-break-after {
+    page-break-after: always !important;
+}
+
+.page-break-before {
+    page-break-before: always !important;
+}
+
+
+.bg-black {
+    background-color: black !important;
+}
+
+
+.readonly-color > .k-dropdown-wrap, .readonly-color k-state-default {
+    background-color: #e9ecef !important;
+    color: #333;
+}
+
+.timepicker[readonly] {
+    background-color: #e9ecef !important;
+    color: #333;
+}
+
+.custom-bg-leftnav {
+    margin-bottom: 3px;
+}
+
+    .custom-bg-leftnav .btn-link {
+        color: black !important;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+        .custom-bg-leftnav .btn-link :hover {
+            text-decoration: none;
+        }
+
+.control-label {
+    text-align: left !important;
+    font-weight: bold !important;
+}
+
+footer {
+    background-color: #f5f5f5;
+    text-align: left;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 0.7rem;
+}
+
+    footer span {
+        color: black;
+        font-size: 12px;
+    }
+
+.body-dashboard {
+    padding: 2% 5%;
+    overflow: hidden;
+    margin-bottom: 4.5%;
+}
+
+
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+/*Case Grid row color*/
+.text-orange {
+    color: #fd5200;
+}
+
+.text-yellow {
+    color: #c8c81d;
+} 
+
+/*Disable the input arrows on numeric input types*/
+input[type=number], input[type=date] {
+    -moz-appearance: textfield;
+}
+
+.currencyinput {
+    border: 1px inset #ccc;
+}
+
+    .currencyinput input {
+        border: 0;
+    }
+
+[data-toggle="collapse"] .fa:before {
+    content: "\f107";
+    font-weight: bold;
+}
+
+[data-toggle="collapse"].collapsed .fa:before {
+    content: "\f105";
+    font-weight: bold;
+}
+
+.iconFontSize-sm {
+    font-size: 10px !important;
+}
+
+.accordion-custom-link a {
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+}
+
+.font-md {
+    font-size: 18px !important;
+}
+
+.link, .link:hover {
+    cursor: pointer !important;
+    text-decoration: none;
+    color: black;
+}
+
+.text-underline {
+    text-decoration: underline !important;
+}
+
+.custom-space-table {
+    border-collapse: separate;
+    border-spacing: 4px;
+}
+
+.td-border-dark td {
+    border-color: #343a40 !important;
+}
+
+label.error {
+    color: red !important;
+}
+
+input.error {
+    border: 1px solid red !important;
+}
+
+.loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 2000000000;
+    opacity: 0.5;
+}
+
+
+/*#region Kendo Custom Styles*/
+.customGridHeader table thead tr th, .customGridHeader table thead tr th a {
+    background-color: #d3d3d3;
+    font-weight: bold;
+}
+
+/*#endregion*/
+
+.logo-sec .img-sm-resp {
+    width: 100%;
+}
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+    .img-sm-resp {
+        /*width: 30vw;*/
+        /*margin-left: 20px;*/
+        margin-bottom: 15px;
+        top: 6px;
+    }
+
+    .display-block {
+        display: block;
+    }
+}
+
+
+@media (max-width: 500px) {
+}
+
+
+
+@media screen and (min-width: 767px) and (max-width: 860px) {
+    .img-sm-resp {
+        /*width: 15vw;
+        margin-left: 20px;*/
+        margin-bottom: 15px;
+    }
+}
+
+.k-dropdown.form-control {
+    width: 100% !important;
+}
+
+.nav-item-login > a {
+    color: white;
+    text-decoration: none;
+}
+
+/*Case Edit Page*/
+.nav-tabs .nav-link {
+    display: block;
+    padding: .5em 1em;
+    border: 1px solid transparent;
+    border-radius: .25rem .25rem 0 0;
+}
+
+/*
+    Commented By atta - please check with him before umcomment
+
+ .nav-item > a {
+    color: white;
+}
+.nav-link-login {
+    display: inline-block;
+    color: #0275d8 !important;
+    text-decoration: none;
+}
+*/
+
+.nav-tabs > .nav-item > a {
+    color: black !important;
+}
+
+/* Metric Color Codes*/
+
+.stamp_to_login {
+    background-color: #00b050
+}
+
+.door_stamp_time {
+    background-color: #ffd966
+}
+
+.door_needle_time {
+    background-color: #ff0000;
+}
+
+.total_consult_time {
+    background-color: #00b050;
+}
+
+.bg_concret {
+    background-color: #f2f2f2;
+}
+
+.header_bottom {
+    background: #3A3A3C;
+    min-height: 28px;
+    padding: 0px;
+}
+
+.text_black {
+    color: #373631;
+}
+
+.navbar .welcome_text {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.navbar .datetime {
+    font-size: 10px;
+}
+
+.signout {
+    background: url(images/power_icon.png) no-repeat;
+    width: 20px;
+    height: 18px;
+    display: inline-block;
+    position: relative;
+    top: 5px;
+}
+
+.change_pp {
+    background: url(images/lock_icon.png) no-repeat bottom;
+    width: 20px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+}
+
+.topbarLinks {
+    color: #373631 !important;
+    font-weight: bold;
+}
+
+.case-info {
+    background-color: #ebebeb !important;
+    border-color: #d8d8d8 !important;
+    color: black !important;
+}
+
+/* Boxes at home page */
+
+.info-box {
+    margin-right: 15px;
+    font-weight: bold;
+}
+
+    .info-box .info-box-content {
+        border: 2px solid #000;
+        height: 70px;
+    }
+
+    .info-box .box-info-left-text {
+        background-color: #000;
+        color: #FFF;
+        padding: 10px;
+    }
+
+/* Reports Page*/
+#Reports #panelBarMenu li {
+    display: block;
+}
+
+.timepicker {
+    width: 100% !important;
+}
+
+.datepicker {
+    width: 100% !important;
+}
+
+k-autocomplete.k-state-default, .k-multiselect-wrap, .k-numeric-wrap.k-state-default, .k-picker-wrap.k-state-default {
+    border-color: #ccc;
+    height: calc(2.25rem + 2px) !important; /* 35px !important;*/
+}
+
+#kendoDataGrid .k-autocomplete.k-state-default, #kendoDataGrid .k-dropdown-wrap.k-state-default, #kendoDataGrid .k-multiselect-wrap, #kendoDataGrid .k-numeric-wrap.k-state-default, #kendoDataGrid .k-picker-wrap.k-state-default {
+    height: auto !important;
+}
+/*Physician Status Page*/
+.round-button {
+    width: 100%;
+    height: 100%;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 100%;
+    font-weight: bold;
+    outline: none !important;
+    /*shadow code*/
+    -webkit-transition: all .25s ease-in-out;
+    -o-transition: all .25s ease-in-out;
+    -moz-transition: all .25s ease-in-out;
+    transition: all .25s ease-in-out;
+    box-shadow: 2px 2px 7px rgba(0,0,0,.2);
+    border-radius: 300px;
+    border-width: 4px;
+    border-style: solid;
+}
+
+
+.status-button:hover {
+    opacity: .85;
+}
+
+.status-button:active {
+    transform: scale(0.9);
+}
+
+.poup-current-status {
+    border-color: red;
+}
+
+.status-button {
+    cursor: pointer;
+    width: 125px;
+    height: 125px;
+    font-size: 16px;
+}
+
+.current-status-button {
+    /*max-width: 280px;
+    min-width: 225px;*/
+    width: 90px;
+    height: 90px;
+    font-size: 13px
+}
+
+/* Facility Control Tab*/
+
+.l-height {
+    line-height: 0.5
+}
+
+.popover-data {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/*.popover-section {
+    max-height: 130px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}*/
+
+.popover-header {
+    display: none;
+}
+
+.status-scroll {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.fa-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    text-decoration: none !important;
+}
+
+.click2dial {
+    color: black !important;
+}
+
+.noRecordFound {
+    color: #a1a1a1
+}
+
+.case-multiselect .ms-options {
+    width: 400px !important;
+    max-height: none !important;
+}
+
+.elapsed-time {
+    color: red !important;
+}
+
+[data-title="Actions"] {
+    font-weight: bold !important;
+}
+
+.ms-has-selections {
+    min-width: 150px !important
+}
+
+.k-loading-mask {
+    display: none;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.wrapWord {
+    word-break: break-word
+}
+
+.teleCareLog {
+    width: 100%;
+    max-width: 300px;
+    max-height: 82px;
+}
+
+.case-header-height {
+    /*margin-top: -10px;
+    margin-bottom: -10px;*/
+    line-height: 2;
+}
+
+.form-column-seprator {
+    margin-right: 8.333333%
+}
+
+
+.modalLessPopup {
+    position: absolute;
+    top: 30%;
+    left: 20%;
+    z-index: 1050;
+    width: 50%;
+}
+
+#metric_physician_checkboxes .error {
+    white-space: nowrap;
+}
+
+.bg-light-blue {
+    background-color: #99d9ea;
+}
+
+.site-footer {
+    font-size: 9.52px !important;
+    text-align: center !important;
+}
+
+.font_11px {
+    font-size: 11px !important;
+}
+.font_12px {
+    font-size: 12px !important;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.no-right-padding {
+    padding-right: 0px !important;
+}
+
+.no-padding {
+    padding: 0px !important;
+}
+
+#frmSearch label {
+    margin-bottom: 0px !important;
+}
+
+#frmSearch .filter-button-group {
+    margin: auto;
+    display: block;
+    text-align: right;
+}
+
+    #frmSearch .filter-button-group > a, #frmSearch .filter-button-group > input {
+        margin: 5px;
+        width: 114px;
+    }
+
+.padding-r-5 {
+    padding-right: 5px;
+}
+
+.padding-l-5 {
+    padding-left: 5px;
+}
+
+.padding-b-5 {
+    padding-bottom: 5px;
+}
+
+.padding-t-5 {
+    padding-top: 5px;
+}
+
+.margin-b-5 {
+    margin-bottom: 5px;
+}
+
+.k-input {
+    height: auto !important;
+}
+
+.btn-cancel-save-offset {
+    margin-left: 34.833333%;
+}
+
+#inputGroupFileAddon01 {
+    border-radius: 0.25rem 0px 0px 0.25rem;
+}
+
+@media only screen and (max-width: 468px) {
+    .sm-div-seperator {
+        margin-top: 10px;
+    }
+}
+
+.color-lightgray {
+    color: #615d5d !important;
+}
+/***********************************************************************************
+*****************************Facility Navigator Dashboard *****************
+************************************************************************************/
+.facility-navigator-dashbord button {
+    min-width: 100%; /*125px*/
+    max-width: 100%;
+    white-space: normal;
+    min-height: 110px;
+    max-height: 110px;
+    font-size: 18px;
+}
+
+@media only screen and (max-width: 768px) {
+    #facility-info-small-container {
+        display: block;
+    }
+
+    #facility-info-normal-container {
+        display: none;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    #facility-info-small-container {
+        display: none;
+    }
+
+    #facility-info-normal-container {
+        display: block;
+    }
+}
+
+
+/***********************************************************************************
+*****************************main navigatio bar && Dashboard style *****************
+************************************************************************************/
+.dashboard-indicators {
+    padding: 10px;
+}
+
+    .dashboard-indicators p {
+        max-width: 140px;
+    }
+
+nav {
+    margin-left: 0px;
+}
+
+.small-devices-user-loginStats {
+    display: none;
+}
+
+.normal-device-user-loginStats {
+    margin-right: 10px;
+}
+
+.normal-device-user-loginStats {
+    margin-right: 10px;
+}
+
+ul.navbar-nav {
+    margin: 0 auto;
+}
+
+@media only screen and (min-width: 991px) and (max-width: 1190px) {
+    nav .navbar-nav {
+        font-size: 14px !important;
+    }
+
+    .navbar .welcome_text {
+        font-size: 12px !important;
+    }
+
+    .navbar .align-self-center {
+        padding: 5px !important;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    .small-devices-user-loginStats {
+        display: block;
+        text-align: right;
+    }
+
+    .normal-device-user-loginStats {
+        display: none;
+    }
+
+    .navbar-nav .dropdown-menu {
+        background-color: #f8f9fa !important;
+        border: 0px;
+        margin-left: 10%;
+    }
+
+        .navbar-nav .dropdown-menu a {
+            padding-left: 5px;
+        }
+
+    nav .navbar-toggler {
+        margin-right: 5px;
+    }
+}
+
+@media only screen and (max-width: 330px) {
+    .navbar .navbar-toggler {
+        margin: 0 auto;
+    }
+
+    .nav-item-login .font_11px {
+        font-size: 10px !important;
+    }
+}
+
+@media only screen and (max-width: 599px) {
+    .dashboard-indicators {
+        padding: 10px 0px 10px 20px;
+    }
+
+    .navbar-brand, .navbar-brand .loadLinkAsync, .navbar-brand .loadLinkAsync-cancel {
+        width: 90%;
+    }
+
+        .navbar-brand .teleCareLog {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-height: 100% !important;
+        }
+}
+
+/***********************************************************************************
+*****************************Case Listing Grid *************************************
+************************************************************************************/
+/* Donot change it without testing, It will effect the appearence of grid*/
+@media only screen and (max-width: 1600px) {
+    #kendoDataGrid, #Credentials-Expiring-container, .facility-grid-container #grid, #contactsGrid, #physicianGrid, #PhysicianPasswordkendoDataGrid, #protocols_grid,
+    #contractsGrid, #notesGrid, #FacilityDashboardGrid, #tPAcaseanalysisGrid, #pitrendsGrid, #casereviewtrendsGrid, #StrokeAlertCasesGrid, #CounterMeasureGrid, #VolumeMetricsGrid, #qualitygoalsGrid, #roles_grid, #users_grid, .kendo-ui-grid-control {
+        font-size: 11px;
+    }
+}
+
+/***********************************************************************************
+***************************** Five9 Changes / Physicain CTA list *****************
+************************************************************************************/
+.five-9-phoneBar {
+    /*height: 98vh;*/
+    height: 98%;
+}
+
+.five-9-phoneBar, #phycisian-listing-container, #phycisian-listing-container table {
+    width: 100%;
+}
+
+    #phycisian-listing-container .tb-container {
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        padding: 4px;
+    }
+
+    #phycisian-listing-container .tb-wrapper {
+        max-height: 280px;
+        overflow-x: auto;
+        max-width: 100%;
+        overflow-y: auto;
+    }
+
+.queue-listing {
+    width: 400px !important;
+}
+
+#phycisian-listing-container .list-item {
+    font-size: 12px;
+    overflow: hidden;
+    line-height: 1.6em;
+    vertical-align: middle;
+    text-overflow: ellipsis;
+    border: 1px solid #ccc;
+}
+
+#phycisian-listing-container .list-item .case-start-time {
+    min-width: 75px;
+}
+/*#phycisian-listing-container table {
+    background-color: #f5f5f5;
+}*/
+
+@media (min-width: 991px) and (max-width: 1440px) {
+    #phycisian-listing-container h5 {
+        font-size: 16px !important;
+    }
+
+    .queue-listing {
+        width: 100% !important;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .five-9-phoneBar, #phycisian-listing-container .card {
+        max-height: 288px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        overflow-y: auto;
+    }
+
+    #phycisian-listing-container h5 {
+        padding: 10px !important;
+    }
+
+    #phycisian-listing-container .list-item {
+        font-size: 14px !important;
+        margin: 0px 0px 0.5rem 0px;
+    }
+
+    .queue-listing {
+        width: 100% !important;
+    }
+}
+/***********************************************************************************
+***************************** Case Edit - Header Changes *****************
+************************************************************************************/
+@media (min-width:1200px) {
+    .case-header-border {
+        border-left: 1px solid #CCC;
+    }
+}
+
+@media (max-width:1199px) {
+    .header-column-breaker {
+        display: none !important;
+    }
+}
+
+@media (min-width:1200px) and (max-width: 1377px) {
+    .case-header-border {
+        font-size: 15px !important;
+    }
+}
+/***********************************************************************************
+***************************** Case Listing - Search Filter Changes *****************
+************************************************************************************/
+@media (min-width:1200px) {
+    .btn-create-case {
+        position: absolute;
+        bottom: 3px;
+    }
+}
+/***********************************************************************************
+***************************** Physician Status Changes *****************
+************************************************************************************/
+.physician-status .status-filters {
+    float: right !important;
+}
+
+@media only screen and (max-width: 991px) {
+    .physician-status .status-filters {
+        float: left !important;
+    }
+}
+/***********************************************************************************
+***************************** Case Edit *****************
+************************************************************************************/
+.btn-copy-popup {
+    margin-left: 33.333333%;
+}
+
+.btn-save-close-cancel {
+    text-align: right;
+}
+
+.metrics-billing-tab .second-col {
+    padding: 10px;
+}
+
+@media only screen and (max-width: 768px) {
+    .btn-copy-popup {
+        margin-left: 16.666667%;
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    .metrics-billing-tab .second-col {
+        padding: 0px !important;
+    }
+}
+
+@media only screen and (max-width: 579px) {
+    .btn-copy-popup {
+        margin-left: 0px;
+    }
+}
+
+@media (min-width:415px) and (max-width: 576px) {
+    .btn-save-close-cancel {
+        width: 70% !important;
+    }
+}
+
+@media (max-width:414px) {
+    .btn-save-close-cancel {
+        width: 83%;
+    }
+}
+
+@media (max-width:350px) {
+    .btn-save-close-cancel {
+        width: 92%;
+    }
+}
+/***********************************************************************************
+***************************** Label Size********************************************
+************************************************************************************/
+.no-bold {
+    font-weight: normal !important;
+}
+
+@media (min-width:992px) and (max-width: 1550px) {
+    .control-label {
+        /*font-size: 14px !important;*/
+        font-size: 13px !important;
+    }
+
+    .sm-dot-warning {
+        height: 21px !important;
+        width: 23px !important;
+    }
+
+        .sm-dot-warning .warning-alert-icon {
+            height: 16px !important;
+            width: 19px !important;
+        }
+}
+/***********************************************************************************
+***************************** Popover design changes********************************
+************************************************************************************/
+.popover {
+    max-width: 50%;
+}
+
+@media (max-width: 545px) {
+    .popover {
+        max-width: 60%;
+    }
+}
+/***********************************************************************************
+***************************** Reporting ********************************************
+************************************************************************************/
+#Reports ul.panelbar h4 {
+    font-size: 1.1rem !important; 
+    padding-top: 2px;
+}
+
+.k-panel > .k-item > .k-link {
+    line-height: 1.6 !important;
+}
+
+@media (min-width:768px) and (max-width:1250px) {
+    #Reports ul.panelbar {
+        font-size: 12px !important;
+    }
+
+        #Reports ul.panelbar h4 {
+            font-size: 12px !important;
+            font-weight: bold;
+        }
+}
+/****************************************************************************************/
+.k-multiselect-wrap {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#checkDuplicateCasePopup .modal-body {
+    max-height: 255px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+@media print {
+    .k-icon, .k-tool-icon {
+        display: none !important;
+    }
+}
+
+#frmAdvanceSearch .ms-options {
+    width: 93%;
+}
+
+.error_msg label {
+    color: red;
+}
+
+#facilities-selector .k-state-selected, #casetypes-selector .k-state-selected {
+    color: #333 !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+
+.eAlert-sub-heading {
+    font-size: 20px;
+    position: absolute;
+    right: 0;
+    bottom: 15px;
+    font-weight: bold;
+    text-align: right !important;
+}
+/********************************Security Setting Start*******************************************/
+.security-head-margin {
+    margin-left: -15px;
+}
+
+.security-numField-length {
+    width: 55px !important;
+}
+/********************************Security Setting End*******************************************/
+
+.sm-dot-warning {
+    background-color: red;
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+}
+
+.sm-dot-warning .warning-alert-icon {
+    height: 20px;
+    width: 21px;
+    position: absolute;
+    top: 1.7px;
+    left: 1.7px;
+}
+
+.link-color-change {
+    color: #0503a0 !important;
+}
+
+#schedulerValidator .field-validation-error {
+    color: red !important;
+    width: 100%;
+    text-align: left;
+}
+
+.ms-options-wrap > button:focus, .ms-options-wrap > button {
+    color: #495057 !important;
+}
+.k-pager-sizes > .k-widget.k-dropdown.k-header {
+    margin-right: 12px !important;
+    display: -webkit-inline-box !important;
+}
+
+.snooze_popup_message {
+    font-size: 23px;
+}
+
+.toolTipAntiFlicker {
+    pointer-events: none;
+}
+.k-timepicker .k-icon.k-i-clock {
+    left: 30%;
+}
+#schedulerValidator .k-timepicker .k-icon.k-i-clock {
+    left: 0 !important;
+}
+/* Donot change it without testing, It will effect the appearence of grid*/
+@media only screen and (min-width: 600px) {
+    .physician-status #SortOrder {
+        margin-top: -5px;
+    }
+}
+
+.text-orange {
+    color: orange;
+}
+.text-purple{
+    color: #800080;
+}
+.text-pink {
+    color: #de6fa1;
+}
+.bg-light-blued {
+    background-color: #99d9ea;
+}
+.text-blue {
+    color: blue;
+}
+
+.facility-tooltip{
+    display:inline-block;
+    width: 16px;
+    height:16px;    
+    background-image:url('/Content/images/facility-info-icon.png')
+}
+
+#newcasePopupAlert .modal-body, #newcasePopupAlert .modal-footer {
+    font-size:22px
+}
+
+/*Axim Works Start 01-01-2020*/
+.alarm_setting {
+    background: url(images/alarm.png) no-repeat bottom;
+    width: 20px;
+    height: 16px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+}
+/*Axim Works Start 01-01-2020*/
+
+/*Start > Case Listing Page Tabs color */
+
+#caseListTabs  {
+    border-bottom: solid  2px #dee2e6  !important;
+}
+
+#caseListTabs.nav-tabs .nav-item {
+        margin-bottom: -2px;       
+}
+
+#caseListTabs .nav-link.active {
+        border-width: 2px;
+}
+    /*End > Case Listing Page Tabs color */
+    .physicianCurrentStatus > .current-status-button {
+        cursor: pointer !important;
+    }
+
+.facility-emr-link {       
+    margin-top: -5px;
+    width: 24px;
+}
+
+.edMainLink {
+    font-size: 18px !important;    
+}
+
+
+.row-disabled > td {
+    background-color: #dcdada;
+    color: #a1a1a1;
+}
+
+.timer-container {
+    display: grid;
+    display:-ms-grid;
+    display:-moz-grid;
+    grid-template-columns: 90% auto;
+    -ms-grid-columns: 90% auto;
+    -moz-columns: 90% auto; 
+}
+.est-container {
+    position: relative;
+    -ms-grid-column:2; 
+}
+    .est-container > span {
+        position: absolute;
+        bottom: 0;
+        margin-bottom: -4px;
+        margin-left: 2px;
+    }
+
+#basic .middle-panel .k-dropdown, #metric .k-dropdown,
+#basic .middle-panel textarea, #metric textarea,
+#basic .middle-panel div > input[type=number], #metric div > input[type=number],
+#basic .middle-panel div > input[type=text],
+#basic .middle-panel .k-datepicker, #metric .k-datepicker,
+#basic .middle-panel select, #metric select {
+    width: 90% !important;
+}
+
+.w-101 {
+    width: 101% !important;
+}
+.w-90 {
+    width: 90% !important;
+}
+
+.rapids-inbox{
+    padding-right: 5px;
+}
+#rapids .k-timepicker .k-icon.k-i-clock{
+    left: auto;
+}
+#rapids .fa-eye,
+#rapids .fa-eye-slash {
+    padding: 0;
+    color: black;
+}
+#rapids .a-fa-overlap {
+    position:relative;
+    top: -28px;
+    right:5px;
+}
+
+.rapids-unread{
+    font-weight:bold;
+}
+
+#thrombectomyChecks .form-check-inline {
+    align-items: baseline !important;
+}
+
+#listView {
+    border-width: 0;
+    height: 400px;
+    overflow: auto;
+}
+
+.note-btn-cancel, .note-btn-edit {
+    margin-right: 35px !important;
+}
+
+.note-area {
+    min-height: 100px;
+}
+
+.note-mode-edit {
+    background-color: rgba(103, 133, 158, 0.17);
+}
+
+.note-separator {
+    border-bottom: 1px solid rgba(204, 201, 201, 0.85);
+    margin-bottom: 3px;
+}
+
+#form2 > form > .validation-summary-errors {
+    margin-left: -14px;
+}
+
+    #form2 > form > .validation-summary-errors > ul {
+        display: inline;
+        list-style-type: none;
+    }
+
+/* Axim Works Starts 06-03-2020 */
+.player {
+    position: relative;
+    top: 10px;
+    width: 230px;
+    overflow: hidden;
+    direction: ltl;
+    border-top-right-radius: 0.5em 0.5em;
+    border-bottom-right-radius: 1em 0.7em;
+}
+
+.audiostyle {
+    width: 318px;
+}
+/* Axim Works End 06-03-2020 */
+.k-grid-content {
+    max-height: 500px;
+}
+#basic #grid tr textarea:disabled, #basic #grid tr textarea:disabled:hover {
+    background-color: #ebebeb;
+}
+.pactemplate-padding {
+    padding: 0px;
+}
+
+#case_edit_header_col5  .btn{
+    font-size:11px;
+    min-width:93px;
+}
+
+.edMainHeaderLink {
+    font-size:15px !important;
+}
+.headerDiv {
+    background: #D2D0CF; /*#1abc9c;*/
+    color: black;
+}
+
+.margin-temp {
+    margin-top: 5px;
+}
+
+.reduce-margin-left {
+    margin-left: -10px;
+}
+
+.add-margin-left {
+    margin-left: 10px;
+}
+.hideimagediv {
+    display: none;
+}
+
+/*Added by Ahmad*/
+/*
+.five-9-phoneBar, #Credentials-Expiring-container, #Credentials-Expiring-container table {
+    width: 100%;
+}
+
+    #Credentials-Expiring-container .tb-container {
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        padding: 4px;
+    }
+
+    #Credentials-Expiring-container .tb-wrapper {
+        max-height: 280px;
+        overflow-x: auto;
+        max-width: 100%;
+        overflow-y: auto;
+    }
+
+    #Credentials-Expiring-container .list-item {
+        font-size: 12px;
+        overflow: hidden;
+        line-height: 1.6em;
+        vertical-align: middle;
+        text-overflow: ellipsis;
+        border: 1px solid #ccc;
+    }
+
+        #Credentials-Expiring-container .list-item .case-start-time {
+            min-width: 75px;
+        }
+
+@media (min-width: 991px) and (max-width: 1440px) {
+    #Credentials-Expiring-container h5 {
+        font-size: 16px !important;
+    }
+
+    .queue-listing {
+        width: 100% !important;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .five-9-phoneBar, #Credentials-Expiring-container .card {
+        max-height: 288px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        overflow-y: auto;
+    }
+
+    #Credentials-Expiring-container h5 {
+        padding: 10px !important;
+    }
+
+    #Credentials-Expiring-container .list-item {
+        font-size: 14px !important;
+        margin: 0px 0px 0.5rem 0px;
+    }
+
+    .queue-listing {
+        width: 100% !important;
+    }
+}
+*/
+
+.five-9-phoneBar, #cases-pending-review-container, #cases-pending-review-container table {
+    width: 100%;
+}
+
+    #cases-pending-review-container .tb-container {
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        padding: 4px;
+    }
+
+    #cases-pending-review-container .tb-wrapper {
+        max-height: 280px;
+        overflow-x: auto;
+        max-width: 100%;
+        overflow-y: auto;
+    }
+
+    #cases-pending-review-container .list-item {
+        font-size: 12px;
+        overflow: hidden;
+        line-height: 1.6em;
+        vertical-align: middle;
+        text-overflow: ellipsis;
+        border: 1px solid #ccc;
+    }
+
+        #cases-pending-review-container .list-item .case-start-time {
+            min-width: 75px;
+        }
+/*#cases-pending-review-container table {
+    background-color: #f5f5f5;
+}*/
+
+@media (min-width: 991px) and (max-width: 1440px) {
+    #cases-pending-review-container h5 {
+        font-size: 16px !important;
+    }
+
+    .queue-listing {
+        width: 100% !important;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .five-9-phoneBar, #cases-pending-review-container .card {
+        max-height: 288px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        overflow-y: auto;
+    }
+
+    #cases-pending-review-container h5 {
+        padding: 10px !important;
+    }
+
+    #cases-pending-review-container .list-item {
+        font-size: 14px !important;
+        margin: 0px 0px 0.5rem 0px;
+    }
+
+    .queue-listing {
+        width: 100% !important;
+    }
+}
+/*End added by ahmad*/

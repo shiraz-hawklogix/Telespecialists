@@ -1,0 +1,25 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@model TeleSpecialists.BLL.Model.physician_shift_rate
+@{
+    ViewBag.Title = "Add Physician Floor Rate";
+    ViewBag.Edit = false;
+}
+<h4>Add Physician Floor Rate</h4>
+<hr />
+@Html.Partial("_Form", Model)
+<script type="text/javascript">
+    $(document).ready(function () {
+        var currentFacilityOffset = @(Functions.GetTimeZoneOffset(Settings.DefaultTimeZone));
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $("#phy_list").fillKendoDropDown("/LookUp/GetAllPhysicians", "Name", "Id", "-- Select --");
+        $("#rate_end_Date").kendoDatePicker();
+        $("#rate_start_Date").kendoDatePicker();
+    });
+    $('.cls_shift_name').on('change', function () {
+        $('#lbl_shift_name').val($("#shift_name_id option:selected").text());
+    });
+</script>
+
+

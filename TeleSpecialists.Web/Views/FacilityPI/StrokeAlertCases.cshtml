@@ -1,0 +1,304 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@{
+    ViewBag.Title = "Stroke Alert Cases";
+}
+
+<div class="row">
+    <div id="StrokeAlertCasesGrid">
+    </div>
+</div>
+<div class="modal" id="StrokeAlertCasesModal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" style=" max-width: 1000px; width: 1000px; ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="exportStrokepdf k-button">Save as PDF</button>
+            </div>
+            <div class="modal-body">
+                <div id="StrokePiechart"></div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function getStrokeAlertCases() {
+        $("#StrokeAlertCasesGrid").kendoGrid({
+            excel: {
+                allPages: true,
+                filterable: false,
+                fileName: '@ViewBag.Title' + '.xlsx',
+                proxyURL: '@Url.Action("ExportToExcel")',
+            },
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetStrokeAlertCases")',
+                        contentType: "application/json",
+                        type: "POST",
+                        data: function () {
+                            var model = {
+                                Facilities: "",
+                                System: "",
+                                Regional: "",
+                                States: "",
+                                QPS: "",
+                                qag_time_frame: "",
+                                fromMonth: "",
+                                toMonth: "",
+                            };
+                            var fac_keys = $("#Facilities").val();
+                            if (fac_keys == "") {
+                                model.Facilities = null;
+                            } else {
+                                model.Facilities = $("#Facilities").val();
+                            }
+
+                            var system = $("#fac_ucd_key_system").val();
+                            if (system == "") {
+                                model.System = null;
+                            } else {
+                                model.System = $("#fac_ucd_key_system").val();
+                            }
+
+                            var region = $("#fac_ucd_region_key").val();
+                            if (region == "") {
+                                model.Regional = null;
+                            } else {
+                                model.Regional = $("#fac_ucd_region_key").val();
+                            }
+
+                            var state = $("#fac_stt_key").val();
+                            if (state == "") {
+                                model.States = null;
+                            } else {
+                                model.States = $("#fac_stt_key").val();
+                            }
+
+                            var qps = $("#facilityQPS").val();
+                            if (qps == "" || qps == "0" || qps == undefined) {
+                                model.QPS = null;
+                            } else {
+                                model.QPS = $("#facilityQPS").val();
+                            }
+                            var YearFromDate = $("#FromMonth").val();
+                            if (YearFromDate) {
+                                var year = YearFromDate.split(" ");
+                                var timeframe = year[1];
+                                if (timeframe) {
+                                    model.qag_time_frame = timeframe + '-1-1';
+                                }
+                            }
+                            model.fromMonth = $("#FromMonth").val();
+                            model.toMonth = $("#ToMonth").val();
+                            localStorage.setItem('QualityMetricsReport.Filter', JSON.stringify(model));
+                            return model;
+                        },
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                },
+                //page: KendoGet("QualityGoals", "page"),
+                //pageSize: KendoGet("QualityGoals"),
+                //serverPaging: true,
+                //serverFiltering: true,
+                //serverSorting: true
+            },
+            width: '100%',
+            groupable: false,
+            filterable: false,
+            sortable: false,
+            resizable: true,
+            //pageable: {
+            //    refresh: true,
+            //    pageSizes: true,
+            //    buttonCount: 5
+            //},
+            dataBound: function (e) {
+
+                $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+            },
+            columns: [
+                { field: "date", width: 100, title: "Date" },
+                {
+                    field: "EMS", width: 100, title: "EMS Arrival #"
+                },
+                {
+                    field: "EMSPercent", width: 100, title: "Proportion EMS"
+                },
+                {
+                    field: "Triage", width: 120, title: "PV/Walk In Arrival #"
+                },
+                {
+                    field: "TriagePercent", width: 130, title: "Proportion PV/ Walk In"
+                },
+                {
+                    field: "Inpatient", width: 100, title: "Inpatient #"
+                },
+                {
+                    field: "InpatientPercent", width: 120, title: "Proportion Inpatient"
+                },
+            ]
+        });
+    }
+
+    function GetStrokeAlertPieChart() {
+        var model = {
+            Facilities: "",
+            System: "",
+            Regional: "",
+            States: "",
+            QPS: "",
+            qag_time_frame: "",
+            fromMonth: "",
+            toMonth: "",
+        };
+        var fac_keys = $("#Facilities").val();
+        if (fac_keys == "") {
+            model.Facilities = null;
+        } else {
+            model.Facilities = $("#Facilities").val();
+        }
+
+        var system = $("#fac_ucd_key_system").val();
+        if (system == "") {
+            model.System = null;
+        } else {
+            model.System = $("#fac_ucd_key_system").val();
+        }
+
+        var region = $("#fac_ucd_region_key").val();
+        if (region == "") {
+            model.Regional = null;
+        } else {
+            model.Regional = $("#fac_ucd_region_key").val();
+        }
+
+        var state = $("#fac_stt_key").val();
+        if (state == "") {
+            model.States = null;
+        } else {
+            model.States = $("#fac_stt_key").val();
+        }
+
+        var qps = $("#facilityQPS").val();
+        if (qps == "" || qps == "0" || qps == undefined) {
+            model.QPS = null;
+        } else {
+            model.QPS = $("#facilityQPS").val();
+        }
+        var YearFromDate = $("#FromMonth").val();
+        if (YearFromDate) {
+            var year = YearFromDate.split(" ");
+            var timeframe = year[1];
+            if (timeframe) {
+                model.qag_time_frame = timeframe + '-1-1';
+            }
+        }
+        model.fromMonth = $("#FromMonth").val();
+        model.toMonth = $("#ToMonth").val();
+
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/FacilityPI/GetStrokeAlertPieChart',
+            data: { model: model },
+            success: function (data) {
+                var datasour = [];
+                var title = "";
+                var patientcount = "";
+                $.each(data, function (key, value) {
+                    $.each(value, function (id, dat) {
+                        if (id == "date") {
+                            title = "StrokeAlert Chart, " + dat;
+                        }
+                        else if (id == "EMS") {
+                            datasour.push({ category: "EMS", value: dat, color: "@ChartColors.Blue.ToDescription()" });
+                        }
+                        //else if (id == "EMSPercent") {
+                        //    datasour.push({ category: "EMS", value: dat, color: "@ChartColors.SoftBlue.ToDescription()" });
+                        //}
+                        else if (id == "Triage") {
+                            datasour.push({ category: "Triage", value: dat, color: "@ChartColors.Grayish.ToDescription()" });
+                        }
+                        //else if (id == "TriagePercent") {
+                        //    datasour.push({ category: "Triage", value: dat, color: "@ChartColors.Teal.ToDescription()" });
+                        //}
+                        else if (id == "Inpatient") {
+                            datasour.push({ category: "Inpatient", value: dat, color: "@ChartColors.Purple.ToDescription()" });
+                        }
+                        //else if (id == "InpatientPercent") {
+                        //    datasour.push({ category: "Inpatient", value: dat, color: "@ChartColors.Grayish.ToDescription()" });
+                        //}
+                        else if (id == "patienttypecounts") {
+                            patientcount = "Total PatientType Cases" + " - " + dat;
+                        }
+                    })
+
+                })
+
+                createStrokePieChart(title, datasour, patientcount);
+                $(document).bind("kendo:skinChange", createPieChart);
+                $("#StrokeAlertCasesModal").modal('show');
+            },
+            error: function () {
+
+            }
+
+        })
+    }
+    function createStrokePieChart(title, datas = [], patientcount) {
+        $("#StrokePiechart").kendoChart({
+            title: {
+                position: "bottom",
+                text: title + "\n" + patientcount
+            },
+            legend: {
+                visible: true
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                labels: {
+                    visible: true,
+                    background: "transparent",
+                    template: "#= category #: \n #= value#"
+                }
+            },
+            series: [{
+                type: "pie",
+                startAngle: 150,
+                data: datas
+            }],
+            tooltip: {
+                visible: true,
+                format: "{0}"
+            }
+        });
+    }
+    $(".exportStrokepdf").click(function () {
+        $("#StrokePiechart").getKendoChart().saveAsPDF();
+    })
+</script>
+
+
+
+
+

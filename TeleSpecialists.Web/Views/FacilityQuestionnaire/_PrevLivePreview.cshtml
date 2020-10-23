@@ -1,0 +1,247 @@
+﻿@model TeleSpecialists.BLL.ViewModels.FacilityQuestionnaire.PreLiveVM
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@{ 
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .bgColumn {
+            background-color: #2e74b5;
+            color: #fff;
+        }
+
+        .headerCol {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .blackBorder {
+            border: solid 1px #000;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body style="font-family:'Open Sans', sans-serif; font-size:13px;">
+    <div>
+        <table cellpadding="5" cellspacing="0" style="width:100%;">
+            <tr>
+                <td style="width:20%; text-align: left">
+                    <img src="https://strokealert911.com/Content/images/logo-header.png" alt="TELESPECIALISTS" style="width:50%;" />
+
+                </td>
+                <td style="text-align:right; width:50%; vertical-align:bottom;"><h2>Facility Questionnaire</h2></td>
+                <td></td>
+            </tr>
+        </table>
+        <hr />
+    </div>
+    <div>
+        <table cellpadding="5" cellspacing="0" style="width:100%;" border="1">
+            <tr>
+                <td style="width:30%;" class="bgColumn headerCol">
+                    Facility Name <br />
+                    <p>
+                        Facility Address
+                    </p>
+                    <br />
+                </td>
+                <td>
+                    @Model.facilityModel.fac_name
+                    <p>
+                        <span> @Model.facilityModel.fac_address_line1</span>
+                        <span>@Model.facilityModel.fac_address_line2</span>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td class="bgColumn headerCol">Health System</td>
+               <td>@(Model.facilityHealthSystem?.ucd_title) </td>
+            </tr>
+            <tr>
+                <td class="bgColumn headerCol">Facility State</td>
+                <td>@(Model.facilityState?.ucd_title)</td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        &nbsp;
+    </div>
+    <div class="bgColumn headerCol blackBorder">Volume</div>
+    <div>
+        <table cellpadding="5" cellspacing="0" style="width:100%;" border="1">
+            <tr>
+                <th>FACILITY</th>
+                <th>BED COUNT</th>
+                <th>
+                    ED visits <br />
+                    (annually)
+                </th>
+
+                <th>
+                    Pre GoLive Stroke Alerts <br />
+                    (annually)
+                </th>
+                <th>
+                    Pre GoLive IP Neuro Per Day
+                </th>
+                <th>
+                    Pre GoLive EEG/month
+                </th>
+
+            </tr>
+            <tr>
+                <td>@Model.facilityModel.fac_name</td>
+                <td>@(Model.questionnaireModel.fqp_bedsize?.ToString())</td>
+                <td>@Model.questionnaireModel.fqp_volume_ed_visits</td>
+                <td>@Model.questionnaireModel.fqp_volume_go_live_annual_strokes</td>
+                <td>@Model.questionnaireModel.fqp_volume_go_live_ip_neuro_per_day</td>
+                <td>@Model.questionnaireModel.fqp_volume_go_live_EEG_per_month</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="bgColumn headerCol blackBorder">Current Operational Resources</div>
+
+    <div>
+        <table cellpadding="5" cellspacing="0" style="width:100%;" border="1">
+            <tr>
+                <td style="width:30%">Emergency Neuro</td>
+                <td>@Model.questionnaireModel.fqp_op_emergency_neuro</td>
+            </tr>
+            <tr>
+                <td>General Neuro</td>
+                <td>@Model.questionnaireModel.fqp_op_general_neuro</td>
+            </tr>
+            <tr>
+                <td>EEG</td>
+                <td>@Model.questionnaireModel.fqp_op_EEG</td>
+            </tr>
+            <tr>
+                <td>EEG Equipment</td>
+                <td>
+                    @Model.questionnaireModel.fqp_volume_go_live_EEG_per_month
+                </td>
+            </tr>
+            <tr>
+                <td> CT/CTA (schedule of coverage)</td>
+                <td>@Model.questionnaireModel.fqp_op_ct_cta_schedule</td>
+            </tr>
+            <tr>
+                <td>MRI (schedule of coverage)</td>
+                <td>@Model.questionnaireModel.fqp_op_mri_schedule</td>
+            </tr>
+            <tr>
+                <td>Radiology coverage for stroke (describe 24/7 coverage)</td>
+                <td>
+                    @Model.questionnaireModel.fqp_op_radiology_coverage_for_stroke
+                </td>
+            </tr>
+            <tr>
+                <td>NIR</td>
+                <td>
+                    @Model.questionnaireModel.fqp_op_nir
+                </td>
+            </tr>
+            <tr>
+                <td>Weighted Stretchers</td>
+                <td>@Model.questionnaireModel.fqp_op_weighted_stretchers</td>
+            </tr>
+
+        </table>
+    </div>
+    <div>&nbsp;</div>
+    <div>
+        <table cellpadding="5" cellspacing="0" style="width:100%;" border="1">
+            <tr>
+                <th class="bgColumn headerCol">Other Key Stakholders:</th>
+                <th class="bgColumn headerCol">Name</th>
+                <th class="bgColumn headerCol">EMAIL/PHONE NUMBER</th>
+            </tr>
+            <tbody>
+                @foreach (var contact in  Model.contactList)
+                {
+                    <tr>
+                        <td>@contact.fqd_name</td>
+                        <td>@contact.fqc_name</td>
+                        <td>@contact.fqc_email @contact.fqc_phone</td>
+                    </tr>
+                }
+                </tbody>
+
+        </table>
+    </div>
+    <div>
+        <table cellpadding="5" cellspacing="0" style="width:100%;" border="1">
+            <tr>
+                <th style="width:30%;" class="headerCol">Facility Name</th>
+                <th class="headerCol">Service</th>
+            </tr>
+            <tr>
+                <td>@Model.facilityModel.fac_name</td>
+                <td style="padding:0px;">
+                    <table cellpadding="5" cellspacing="0" style="width:100%" border="1">
+                        <tr>
+                            <th>TeleStroke</th>
+                            <th>TeleNeuroHospatilist</th>
+                            <th>STAT Consult</th>
+                            <th>EEG</th>
+                        </tr>
+                        <tr>
+                            
+                                <th>@(Model.questionnaireModel.fqp_service_has_telestroke ? "X" : "")</th>
+                                <th>@(Model.questionnaireModel.fqp_service_has_teleneuro ? "X" : "")</th>
+                                <th>@(Model.questionnaireModel.fqp_service_has_stat_consult ? "X" : "")</th>
+                                <th>@(Model.questionnaireModel.fqp_service_has_eeg ? "X" : "")</th>
+                           
+                          
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="blackBorder bgColumn headerCol">
+        Processes
+    </div>
+    <div>
+        <table cellpadding="5" cellspacing="0" style="width:100%;" border="1">
+            <tr>
+                <td style="width:30%">
+                    Describe current ED Stroke Process:
+                    <p>(Stroke identification Scale used by facility, EMS, Hot-Stretcher process, where is alteplase mised? ETC.) </p>
+                </td>
+                <td>@Model.questionnaireModel.fqp_process_ed_stroke_desc</td>
+            </tr>
+            <tr>
+                <td>
+                    Do you have a STAT response/Rapid Response Team?  Is so, who is on that team?
+                </td>
+                <td>@Model.questionnaireModel.fqp_process_stat_response</td>
+            </tr>
+            <tr>
+                <td>
+                    What timeframe do you currently use for code stroke activations? (3,4.5 or 6 hours)
+                </td>
+                <td> @Model.questionnaireModel.fqp_process_timeframe_code_stroke </td>
+            </tr>
+            <tr>
+                <td>Do you currently admit post tPA patients? If so to what service?</td>
+                <td> @Model.questionnaireModel.fqp_process_admin_post_tpa_patients </td>
+            </tr>
+            <tr>
+                <td>If you transfer patients for stroke and intervention, to what facility?</td>
+                <td> @Model.questionnaireModel.fqp_process_facility_transfer_patient_stroke </td>
+            </tr>
+            <tr>
+                <td>Are your RN's currently NIHSS certified?</td>
+                <td>@(Model.questionnaireModel.fqp_process_rn_nihss_certified ? "Yes" : "No")</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,201 @@
+﻿@model TeleSpecialists.BLL.ViewModels.FacilityUser.PostFacilityViewModel
+@{
+    Layout = "";
+}
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">Add Facility</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div id="validationSummary">
+            </div>
+            <div class="row">
+                <div class="col-sm-10 offset-sm-1">
+
+                    <div class="form-group row">
+                        <div class="col-lg-8 col-sm-12">
+                            <input type="text" id="text-search-input" class="form-control" />
+                        </div>
+                        <div class="control-label col-lg-3 col-sm-12">
+                            <input type="button" class="btn btn-dark" id="btn-search-facility" value="Search" />
+                        </div>
+                    </div>
+                    <form method="post" role="form" id="facilityForm" action="@Url.Action("AddFacilities")">
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Facilities, new { id = "efa-facilities" })
+                        @Html.HiddenFor(m => m.UserKey, new { id = "efa-add-userkey" })
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <div id="facilities-selector" class="kendo-ui-grid-control"></div>
+                                <div id="all-facilities-error" style="display:none;">
+                                    <label style="color: red">Please select at least one facility.</label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+            <a href="#" class="btn btn-link" data-dismiss="modal">Cancel</a>
+            <input type="button" class="btn btn-dark" id="btn-save-facilities" value="Save" />
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var selectedFacilities = [];
+    function onDataBound(e) {
+        var grid = e.sender;
+        var selectedFacilitie = "@(string.Join(",", @Model.Facilities))";
+        var selectedFacilitiesArray = new Array();
+        selectedFacilitiesArray = selectedFacilitie.split(",");
+        $.each(grid.tbody.find('tr'), function () {
+            var gridData = grid.dataItem(this);
+            $.map(selectedFacilitiesArray, function (elementOfArray, indexInArray) {
+                if (elementOfArray == gridData.fac_key) {
+                    selectedFacilities.push(gridData.fac_key);
+                    $('[data-uid=' + gridData.uid + ']').addClass('k-state-selected');
+                    $('[data-uid=' + gridData.uid + '] input[type="checkbox"]').attr("checked", "checked");
+                }
+            });
+        });
+        if ($('td input[type="checkbox"]:checked').length == $('#facilities-selector tbody tr:not([style*="display: none"])').length) {
+            $('#header-chb').prop('checked', true)
+        }
+        if ($('td input[type="checkbox"]:checked').length != $('#facilities-selector tbody tr:not([style*="display: none"])').length) {
+            $('#header-chb').prop('checked', false)
+        }
+    }
+    var gridControl = $("#facilities-selector").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '/LookUp/GetFacility',
+                        contentType: "application/json",
+                        type: "Get"
+                    }
+                },
+                schema: {
+                        model: {
+                            id: "fac_key"
+                        }
+                },
+                serverPaging: false,
+                serverFiltering: false,
+                serverSorting: false,
+            },
+       dataBound: onDataBound,
+       height: 419,
+       pageable: false,
+       scrollable: true,
+       persistSelection: true,
+       sortable: true,
+       columns: [
+            { hidden: true, field: "fac_key" },
+            {
+                field: "fac_name", title: "Select All",
+                headerAttributes: {
+                    style: "font-weight:bold"
+                }
+            },
+           {
+               title: 'Select All',
+               headerTemplate: "<input type='checkbox' id='header-chb' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='header-chb'></label>",
+               template: function (dataItem) {
+                   return "<input type='checkbox' value='" + dataItem.fac_key + "' id='" + dataItem.fac_key + "' onChange='onChange(this)'  class='k-checkbox row-checkbox'><label class='k-checkbox-label' for='" + dataItem.fac_key + "'></label>";
+               },
+               width: 80
+           }
+        ]
+    });
+    $("#text-search-input").keyup(function (event) {
+        if (event.keyCode == 13) {
+            $("#btn-search-facility").click();
+        }
+    });
+    $("#btn-search-facility").on("click", function () {
+        var searchCriteria = $("#text-search-input").val().toLowerCase();
+        $('#header-chb').prop('checked', false);
+        $($("#facilities-selector table")[1]).find("tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(searchCriteria) > -1)
+        });
+        var isAllSelected = true;
+        $('#facilities-selector tbody tr:not([style*="display: none"])').each(function () {
+            var chkBox = $(this).find('input[type="checkbox"]')
+            if (!$(chkBox).is(":checked")) {
+                isAllSelected = false;
+            }
+        });
+        if (isAllSelected)
+            $('#header-chb').prop('checked', true)
+        else
+            $('#header-chb').prop('checked', false)
+    });
+    $('#header-chb').off("click").click(function (e) {
+        if ($(this).is(':checked')) {
+            $('table td input[type="checkbox"]').each(function () {
+                if ($(this).parent().parent().css("display") != 'none') {
+                    $(this).prop('checked', true);
+                    $(this).change();
+                }
+            });
+        }
+        else {
+            $('table td input[type="checkbox"]').each(function () {
+                if ($(this).parent().parent().css("display") != 'none') {
+                    $(this).prop('checked', false);
+                    $(this).change();
+                }
+            });
+        }
+    });
+    $("#btn-save-facilities").on("click", function (e) {
+        e.preventDefault();
+        $("#facilityForm").submit();
+    });
+    $("#facilityForm").off("submit").submit(function (e) {
+        e.preventDefault();
+        var url = $(this).attr("action");
+
+        if (selectedFacilities != null && selectedFacilities.length == 0) {
+            $("#all-facilities-error").show();
+        }
+        else {
+            var data = {
+                UserKey: $("#efa-add-userkey").val(),
+                Facilities: selectedFacilities
+            }
+            $("#divModelPopUp").find("input:button, input:submit").disable();
+            $.post(url, data, function (response) {
+                $("#divModelPopUp").find("input:button, input:submit").enable();
+                if (response.success) {
+                    getAssignedFacilities();
+                    $("#divModelPopUp").modal("hide");
+                }
+                else {
+                    $("#divModelPopUp").find("#validationSummary").showBSDangerAlert("", response.data);
+                }
+            });
+        }
+    });
+    function onChange(elem) {
+        try {
+            if ($(elem).is(":checked")) {
+                selectedFacilities.push($(elem).val());
+            }
+            else {
+                selectedFacilities = selectedFacilities.filter(function (val) {
+                    return val != $(elem).val();
+                });
+            }
+        }
+        catch (e) {
+
+        }
+    }
+</script>

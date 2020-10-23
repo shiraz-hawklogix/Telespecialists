@@ -1,0 +1,30 @@
+﻿
+@model TeleSpecialists.BLL.Model.@case
+
+<div class="modal-dialog modal-lg" id="navigatorCasePopupAlert">
+    <div class="modal-content">
+        <input type="hidden" name="cas_key" id="cas_key" value="@Model.cas_key" />
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">
+                @ViewBag.CaseType
+            </h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div>
+                Case #@Model.cas_case_number Not Accepted by Physicians. Would you like to assign the Physician manually?
+            </div>            
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+            <a class="btn btn-link" data-dismiss="modal" >Close</a>
+            <a class="btn btn-dark loadLinkAsync" data-dismiss="modal" href="@Url.Action("Edit","Case", new { id = Model.cas_key })" >Edit</a>
+        </div>
+
+    </div>
+</div>
+

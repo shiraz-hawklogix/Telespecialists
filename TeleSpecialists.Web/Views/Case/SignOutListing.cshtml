@@ -1,0 +1,761 @@
+﻿@using Microsoft.AspNet.Identity;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@{
+    ViewBag.Title = "Sign-Out"; 
+    bool isAllowListing = (bool)ViewBag.AllowListing;
+    string FacilityAdminMessage = (string)ViewBag.FacilityAdminMessage;
+     
+} 
+@if (ViewBag.Message != "" && ViewBag.Message != null)
+{
+    <div class="alert alert-dismissible @((bool)ViewBag.Error ? "alert-danger" : "alert-success")" id="autoclose">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>@((bool)ViewBag.Error ? "Error!" : "Success!")</strong> @ViewBag.Message
+    </div>
+}
+
+    <div id="commentPopup" class="col-12" style="display:none;">
+        <div id="popupModelComments" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg ">
+                <div class="modal-content"> 
+                    <div class="modal-header">
+                        <h4>Comments/Sign-Out</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modelComments"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" style="color:white;background-color:black" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@if (isAllowListing)
+{
+    { Html.RenderAction("_AdvanceSearch", new { @source = PageSource.SignOutListing, @showFollowUp = false }); }
+
+    <div class="row">
+        <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12"> 
+            <div>
+                <form id="frmSearch" method="post" class="row">
+                    <div class="form-row float-right col-lg-12 justify-content-end">
+                        <div class="form-group d-none"></div>
+                        <div class="form-group d-lg-inline-block d-none"></div>
+
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Facility</label>
+                            @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control"})
+                        </div>
+
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Sign Off/ Follow-Up</label>
+                            <select id="cas_billing_visit_type" name="cas_billing_visit_type" data-role="dropdownlist" class="form-control staticDropDown">
+                                <option value="">-- Select --</option>
+                                <option value="@FollowUpTypes.SignOff.ToDescription()">@FollowUpTypes.SignOff.ToDescription() </option>
+                                <option value="@FollowUpTypes.FollowUp.ToDescription()">@FollowUpTypes.FollowUp.ToDescription()</option>
+                            </select>
+
+                        </div>
+
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Billing Code</label>
+                            <select id="cas_billing_bic_key" name="cas_billing_bic_key" class="form-control"></select>
+
+                        </div>
+
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Time Frame</label>
+                            <select id="dateFilter" class="form-control">
+                                <option value="-1">Any</option>
+                                <option value="Today">Today</option>
+                                <option value="Yesterday">Yesterday</option>
+                                <option value="Last24Hours">Last 24 Hours</option>
+                                <option value="Last48Hours">Last 48 Hours</option>
+                                <option value="LastSevenDays">Last 7 Days</option>
+                                <option value="Last30Days">Last 30 Days</option>
+                                <option value="PreviousWeek">Previous Week</option>
+                                <option value="PreviousMonth">Previous Month</option>
+                                <option value="MonthToDate">Month to Date</option>
+                                <option value="SpecificDate">Specific Date</option>
+                                <option value="DateRange">Date Range</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Keyword Search</label>
+                            <input type="search" id="searchBox" class="k-textbox form-control-sm " style="width: 100%;" />
+                        </div>
+                        <div class="form-group col-xl-8 col-lg-6 col-md-6 col-sm-6" id="divDateRange" style="display:none;">
+                            <div class="form-row">
+                                <div class="d-none d-xl-block col-xl-6"></div>
+                                <div class="col-xl-3 col-lg-6 col-md-6">
+                                    <strong>Start Date</strong>
+                                    <input type="text" id="txtStartDate" name="txtStartDate" class="form-control datepicker" />
+                                    <span class="text-danger field-validation-error position-absolute" id="txtStartDateError"
+                                          style="display:none" data-valmsg-for="txtStartDate" data-valmsg-replace="true">
+                                        <span id="txtStartDate-error" class=""></span>
+                                    </span>
+                                </div>
+                                <div class="col-xl-3 col-lg-6 col-md-6">
+                                    <strong>End Date</strong>
+                                    <input type="text" id="txtEndDate" name="txtEndDate" class="form-control datepicker" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-xl-8 col-lg-6 col-md-6 col-sm-6" id="divSpecificDate" style="display:none;">
+                            <div class="form-row">
+                                <div class="d-none d-xl-block col-xl-9"></div>
+                                <div class="col-xl-3 col-lg-12 col-md-12">
+                                    <label class="bold">Date</label>
+                                    <input type="text" id="txtSpecificDate" name="txtSpecificDate" class="form-control datepicker" style="height: auto;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row float-right col-lg-12">
+                        <div class="form-group filter-button-group float-right col-lg-12">
+                            @{
+                                //Roles for Sign-Out
+                                var isOtherRole = User.IsInRole(UserRoles.Physician.ToDescription())
+                                    || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())
+                                    || User.IsInRole(UserRoles.Administrator.ToDescription())
+                                    || User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+                                    || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+                                    || User.IsInRole(UserRoles.RRCManager.ToDescription())
+                                    || User.IsInRole(UserRoles.Navigator.ToDescription())
+                                    || User.IsInRole(UserRoles.AOC.ToDescription());
+
+                                var signoutButtonText = "";
+                            }
+                            @if (User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))
+                            {
+                                signoutButtonText = "Sign Out";
+                            }
+                            else if (isOtherRole)
+                            {
+                                signoutButtonText = "View";
+                            }
+                            <a class="btn btn-dark loadModelPopup singout-btn" href="@Url.Action("Create","EntityNote", new {etn_entity_key = User.Identity.GetUserId(), entity_type = EntityTypes.SignOutNotes })" style="display:none">@signoutButtonText</a>
+
+                            <input class="btn btn-dark margin-b-5" type="button" id="btnSearch" value="Search" />
+                            <a class="btn btn-dark margin-b-5 " href="javascript:;" id="resetSearch" style="display:none;">Clear Search</a>
+                            <a class="btn btn-dark margin-b-5 @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "d-none" : "")" href="javascript:;" data-toggle="modal" data-target="#caseAdvanceSearch" id="caseAdvanceSearch">Advanced</a>
+                            <a class="btn btn-dark margin-b-5 " href="javascript:;" id="btnExportCases">Export</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="pt-1 customGridHeader" id="SignOutListingGridContainer">
+        <div id="kendoDataGrid">
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        $('#Facilities').kendoDropDownList({
+            filter: "contains",
+            change: function (e) { onFacilityChanged(e.sender.value());}
+        });
+
+
+        function onFacilityChanged(fac_key) {
+
+             var url = '@Url.Action("Create", "EntityNote")';
+                var entity_type = '@EntityTypes.SignOutNotes';
+
+                
+                if (fac_key == undefined || fac_key == "") {
+                    $(".singout-btn").hide();
+                    url = "";
+                }
+                else {
+                    $(".singout-btn").show(); 
+                    url = url + "?etn_entity_key=" + fac_key + "&entity_type=" + entity_type; 
+                } 
+                 
+                $(".singout-btn").attr("href", url);
+               
+                $("#btnSearch").click();
+        }
+
+
+         var uclData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.UclData, Newtonsoft.Json.Formatting.Indented));
+      var source = "@(PageSource.SignOutListing.ToInt())";
+    var exportPostData = null;
+    var advanceSearchformData = [];
+        var userInitialList = [];
+        generateUserTypeFilter();
+        generateCaseStatusFilter();
+        var userInitialValue = "";
+
+        var userTypeValue = "";
+        var caseStatusValue = "";
+
+        function generateUserTypeFilter() {
+            $('#userTypeFilter').multiselect({
+                columns: 1,
+                placeholder: 'Select Type',
+                search: false,
+                searchOptions: {
+                    'default': 'Search user type'
+                },
+                selectAll: true,
+            });
+        }
+        function generateCaseStatusFilter() {
+            $('#caseStatusFilter').multiselect({
+                columns: 1,
+                placeholder: 'Select Status',
+                search: false,
+                searchOptions: {
+                    'default': 'Search case status'
+                },
+                selectAll: true,
+            });
+        }
+    clearAutoSaveInterval();
+        $(document).ready(function () { 
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+            refillFilters.applyFilters = 1;
+            refillFilters.resetSearch = false; 
+            isUserInitial = false;
+            isUserType = false;
+            isCaseStatus = false;
+
+         
+
+            $("#cas_billing_bic_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.BillingCode.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+
+            localStorage.setItem('SignOutListing.RecPerPage', 20);
+
+            $("#dateFilter").val('Last24Hours');
+            $("#Facilities").val("");
+
+            $("#kendoDataGrid").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GerForSignOutListing")',
+                            contentType: "application/json",
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            options = KendoKeepState("SignOutListing", options, true);
+                            if ((options.filter !== undefined && options.filter.filters !== undefined) == false) {
+                                if (options.filter === undefined)
+                                    options.filter = {};
+                                if (options.filter.filters === undefined)
+                                    options.filter.filters = [];
+                                if (options.filter.logic === undefined)
+                                    options.filter.logic = "and";
+                                options.filter.filters.push({ field: "date_filter", operator: "eq", "value": $("#dateFilter").val() });
+                                options = KendoKeepState("SignOutListing", options, true);
+                            }
+                            exportPostData = options;
+                            return kendo.stringify(options);
+                        }
+                    },
+                    mobile: "phone",
+                    schema: {
+                        data: "Data",
+                        total: "Total"
+                    },
+                    page: KendoGet("SignOutListing", "page"),
+                    pageSize: GetKendoPageSize("SignOutListing", "RecPerPage", true),
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true
+                },
+                dataBound: function (e) { 
+                    
+                    if (refillFilters.applyFilters != 0) {
+                        refillFilters();
+                    }
+                    refreshData();
+                    this.autoFitColumn('Actions');
+                    //get All records
+                    SetKendoTotalCount("SignOutListing", $('#kendoDataGrid').data("kendoGrid").dataSource.total());
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                },
+                //selectable: true,
+                filterable: false,
+                sortable: true,
+                scrollable: true,
+                resizable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: [10, 20, 30, 40, 50, 'All'],
+                    buttonCount: 5
+                },
+
+                columns: [
+                    { hidden: true, field: "cas_key" },
+                    {
+                        title: "<b>Action</b>", width: '60px',
+                        template: "<a class='btn btn-dark btn-sm py-1 temp loadLinkAsync' title='View Case' href='@Url.Action("Edit", "Case")?id=#=cas_key#&isReadOnly=#= true#&redirectUrl=/Case/SignOutListing'>View</a>"
+                    },
+                    { field: "fac_name", title: "Facility", width: '200px', attributes: { "class": "case-grid-facitlityName" } },
+                    { field: "cas_patient", title: "Patient Name", width: '100px' },
+                    { field: "date_of_birth", title: "Date of Birth", width: '80px' },
+                    { field: "date_of_consult", title: "Date of Consult", width: '80px' },
+                    { field: "case_type", title: "Case Type", width: '80px' },
+                    { field: "billing_code", title: "Billing Code", width: '80px' },
+                    { field: "case_status", title: "Case Status", width: '80px' },
+                    { field: "sign_off_follow_up", title: "Sign Off/Follow-Up", width: '80px' }, 
+                    {
+                        title: "<b>Comments/Sign-Out</b>", width: '80px',
+                        template: "<Button class='btn btn-link' title='Show Comments' onClick='showComments(`#=comments#`)'> Show </Button>"
+                    },
+                ]
+            });
+
+            $("#btnSearch").off("click").click(function () {
+                performSearchOnCases();
+            });
+
+            $(".datepicker").kendoDatePicker({
+                open: function (e) {
+                    onDatePickerOpen(e);
+                }
+            });
+
+            $("#dateFilter").unbind("change").change(function () {
+                $("#divDateRange,#divSpecificDate").hide();
+                var selectedValue = $(this).val();
+                if (selectedValue == "SpecificDate") {
+                    $("#divSpecificDate").show();
+                }
+                else if (selectedValue == "DateRange") {
+                    $("#divDateRange").show();
+                }
+                else {
+                    $("#btnSearch").click();
+                }
+            });
+
+
+            $("#cas_billing_visit_type").unbind("change").change(function () {
+
+                $("#btnSearch").click();
+            })
+
+            $("#cas_billing_bic_key").unbind("change").change(function () {
+
+               $("#btnSearch").click();
+            }) 
+            // frmSearch
+            $("#searchBox").keyup(function (event) {
+                if (event.keyCode == 13) {
+                    $("#btnSearch").click();
+                }
+            });
+
+            $("#userInitialFilter").change(function () {
+                isUserInitial = true;
+            });
+
+            $("#userTypeFilter").change(function () {
+                isUserType = true;
+            });
+
+            $("#caseStatusFilter").change(function () {
+                isCaseStatus = true;
+            });
+
+            $("#frmAdvanceSearch").off("submit").submit(function (e) {
+                e.preventDefault();
+
+                advanceSearchformData = $("#frmAdvanceSearch").find("input:text,select").serializeArray();
+                if (isUserInitial)
+                    userInitialValue = $("#userInitialFilter").val().toString();
+
+                if (isUserType)
+                    userTypeValue = $("#userTypeFilter").val().toString();
+
+                if (isCaseStatus)
+                    caseStatusValue = $("#caseStatusFilter").val().toString();
+
+
+                window.setTimeout(function () {
+                    $("#caseAdvanceSearch").modal("hide");
+                    $("#btnSearch").click();
+                }, 100);
+            });
+
+            $("#btnExportCases").off("click").click(function () {
+                var url = "@Url.Action("ExportSignOutListing")";
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: JSON.stringify(exportPostData),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        if (response.success) {
+                            window.location.href = response.exportedFileUrl;
+                        }
+                    }
+                });
+            });
+
+            $("#resetSearch").off("click").click(function (e) {
+                e.preventDefault();
+                $("#frmAdvanceSearch").trigger('reset');
+                advanceSearchformData = [];
+               
+                $("#frmSearch").trigger('reset');
+                $("#divDateRange,#divSpecificDate").hide();
+
+                var dropdownlist = $("#Facilities").data("kendoDropDownList");
+                if (dropdownlist != undefined) {
+                    dropdownlist.value(""); 
+                } 
+                $("#userTypeFilter").val("");
+                $("#userTypeFilter").multiselect('reload')
+                $("#caseStatusFilter").val("");
+                $("#caseStatusFilter").multiselect('reload')
+                localStorage.clear();
+
+                $("#dateFilter").val('Last24Hours'); 
+                $("#btnSearch").click();
+                $("#resetSearch").hide();
+                refillFilters.applyFilters = 1;
+                refillFilters.resetSearch = true;
+                $(".singout-btn").hide();
+            });
+        });
+
+
+        $("#SignOutListingGridContainer .k-link").off("click").click(function () {
+            StopCaseListingTimer();
+        })
+
+        function StopCaseListingTimer() {
+            if (refreshData.timeout != undefined)
+                window.clearTimeout(refreshData.timeout);
+        }
+         
+
+        function validateForm() {
+            var selectedOption = $("#dateFilter").val();
+            $("#txtStartDateError").hide();
+            if (selectedOption == "DateRange") {
+                var start_date = $("#txtStartDate").val();
+                var end_date = $("#txtEndDate").val();
+                if (start_date != "" && end_date != "") {
+                    var duration = moment.duration(moment(end_date).diff(new Date(start_date)));
+                    if (duration.asMinutes() < 0) {
+                        $("#txtStartDateError").html("Start Date must be less then End Date");
+                        $("#txtStartDateError").show();
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function performSearchOnCases() {
+            if (!validateForm())
+                return;
+
+            var filters = [];
+
+            var selectedValue = $("#dateFilter").val();
+            if (selectedValue == "SpecificDate") {
+                if ($("#txtSpecificDate").val() != "") {
+                    filters.push({
+                        field: "specific_date",
+                        operator: "eq",
+                        value: $("#txtSpecificDate").val()
+                    });
+                }
+            }
+            else if (selectedValue == "DateRange") {
+                if ($("#txtStartDate").val() != "") {
+                    filters.push({
+                        field: "start_date",
+                        operator: "eq",
+                        value: $("#txtStartDate").val()
+                    });
+                }
+
+                if ($("#txtEndDate").val() != "") {
+                    filters.push({
+                        field: "end_date",
+                        operator: "eq",
+                        value: $("#txtEndDate").val()
+                    });
+                }
+            }
+            filters.push({
+                field: "date_filter",
+                operator: "eq",
+                value: selectedValue
+            });
+
+           
+            if ($("#cas_billing_visit_type").val() != "") {
+                filters.push({
+                    field: "cas_billing_visit_type",
+                    operator: "eq",
+                    value: $("#cas_billing_visit_type").val()
+                });
+            }
+
+            if ($("#cas_billing_bic_key").val() != "") {
+                filters.push({
+                    field: "cas_billing_bic_key",
+                    operator: "eq",
+                    value: $("#cas_billing_bic_key").val()
+                });
+            }
+
+            var facilities = $('#Facilities').val();
+
+            if (facilities != "") { 
+                filters.push({
+                    field: "signout_cas_fac_key",
+                    operator: "eq",
+                    value: facilities
+                });
+ 
+            }
+            var searchValue = $('#searchBox').val();
+
+            if (searchValue != "") {
+                filters.push({
+                    field: "search_text",
+                    operator: "eq",
+                    value: searchValue
+                });
+            }  
+
+            // advance search user type
+            if (userTypeValue != "") {
+                var valueUserType = $("#userTypeFilter").val().toString();
+                if (valueUserType && ($("#userTypeFilter option:selected").length != $("#userTypeFilter option").length)) {
+                    filters.push({
+                        field: "multi_cas_ctp_key", //cas_ctp_key
+                        operator: "eq",
+                        value: valueUserType
+                    });
+                }
+            }
+
+            // advance search case status
+            if (caseStatusValue != "") 
+            {
+                var valueCaseStatus = $("#caseStatusFilter").val().toString();
+                if (valueCaseStatus && ($("#caseStatusFilter option:selected").length != $("#caseStatusFilter option").length)) {
+                    filters.push({
+                        field: "cas_status", 
+
+                        operator: "eq",
+                        value: valueCaseStatus
+                    });
+                }
+            }
+            // advance search
+            $.each(advanceSearchformData, function (index, formElement) {
+                if ($.trim(formElement.value) != "" && formElement.value != undefined) {
+                    if (formElement.value != "") {
+                        if (formElement.name.indexOf("advcmp") != -1) {
+                            var field = formElement.name;
+                            var operator = formElement.value;
+                            var value = $("[data-parent='" + field + "']").val();
+
+                            if ($.trim(field) != "" && $.trim(value) != "") {
+                                filters.push({
+                                    field: formElement.name.replace("advcmp_","complex_"),
+                                    operator: operator,
+                                    value: value
+                                });
+                            }
+                        }
+                        else {
+                            filters.push({
+                                field: "advance_" + formElement.name,
+                                operator: "eq",
+                                value: formElement.value
+                                });
+                        }
+                    }
+                }
+            });
+            // Setting the filter of the Grid
+            $("#kendoDataGrid").data("kendoGrid").dataSource.filter({
+                logic: "or",
+                filters: filters
+            });
+            $("#resetSearch").show();  
+        } 
+
+        function refreshData() {
+            var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+            if (currentUrl.indexOf("/case") > -1 || currentUrl.indexOf("/case/index") > -1) {
+
+                if (refreshData.timeout != undefined)
+                    window.clearTimeout(refreshData.timeout);
+
+                refreshData.timeout = window.setTimeout(function () {
+                    $("#hdnDisableLoader").val("1");
+                    var grid = $('#kendoDataGrid').data("kendoGrid");
+                    if (grid != undefined)
+                        grid.dataSource.read();
+                }, 10000);
+            }
+        }
+
+        function isDefaultFiltersSelected() {
+            var defaultSelected = true;
+            if ($("#dateFilter").val() != "Last24Hours") { defaultSelected = false; }
+            if ($("#searchBox").val() != "") { defaultSelected = false; }
+
+            if ($("#Facilities").val() != "") { defaultSelected = false; }
+
+            return defaultSelected;
+        }
+
+        function refillFilters() {
+            if (exportPostData === undefined) { return; }
+            if (exportPostData.filter === undefined) { return; }
+            if (exportPostData.filter.filters === undefined) { return; }
+
+            $.each(exportPostData.filter.filters, function (index, currentFilter) {
+                try {
+                    switch (currentFilter.field) {
+                        /*case 'cas_status': 
+                            $.each($('#divStatusFilter input:checkbox'), function () {
+                                $(this).prop('checked', false);
+                                $(this).parents('li').removeClass('selected');
+
+                                // multiple values will be comma separated
+                                var listOfValues = currentFilter.value.split(',');
+
+                                if ($.inArray($(this).val(), listOfValues) >= 0) {
+                                    $(this).prop('checked', true);
+                                    $(this).parents('li').addClass('selected');
+                                }
+                            });
+
+                            var selectedStatus = [];
+
+                            $.each($('#statusFilter option'), function () {
+                                $(this).removeAttr('selected');
+
+                                // multiple values will be comma separated
+                                var listOfValues = currentFilter.value.split(',');
+
+                                if ($.inArray($(this).val(), listOfValues) >= 0) {
+                                    $(this).attr('selected', true);
+                                    selectedStatus.push($(this).text());
+                                }
+                            });
+
+                            if ($('#statusFilter option').length != $('#statusFilter option:selected').length) {
+                                if (selectedStatus.length > 0) {
+                                    var strSelectedStatus = selectedStatus.join(', ');
+                                    $("#divStatusFilter").find(".ms-options-wrap").find("button>span").html(strSelectedStatus);
+                                    $("#divStatusFilter").find(".ms-options-wrap").find(".ms-selectall").html("select all");
+                                }
+                            }
+
+                            break; */
+                        case 'signout_cas_fac_key': 
+                            var dropdownlist = $("#Facilities").data("kendoDropDownList"); 
+                            if (dropdownlist != undefined) {
+                                dropdownlist.value(currentFilter.value);
+                                dropdownlist.trigger("change");
+                            }
+                           
+                            break
+                        case 'search_text':
+                            $('#searchBox').val(currentFilter.value)
+                            break;
+
+                        case 'date_filter':
+                            $('#dateFilter').val(currentFilter.value)
+
+                            if (currentFilter.value == "SpecificDate") {
+                                $("#divSpecificDate").show();
+                            }
+                            else if (currentFilter.value == "DateRange") {
+                                $("#divDateRange").show();
+                            }
+                            break;
+                        case 'specific_date':
+                            $("#divSpecificDate").show();
+                            $('#txtSpecificDate').val(currentFilter.value)
+                            break;
+                        case 'start_date':
+                            $('#txtStartDate').val(currentFilter.value)
+                            break;
+                        case 'end_date':
+                            $('#txtEndDate').val(currentFilter.value)
+                            break;
+                        case 'advance_cas_case_number':
+                            $('#cas_case_number').val(currentFilter.value)
+                            break;
+                        case 'advance_cas_ctp_key':
+                            $('#cas_ctp_key').val(currentFilter.value)
+                            break;
+                        case 'advance_cas_patient':
+                            $('#cas_patient').val(currentFilter.value)
+                            break;
+                        case 'advance_cas_fac_key':
+                            $('#cas_fac_key').val(currentFilter.value)
+                            break;
+                        case 'cas_is_flagged':
+                            $("#flagFilter").val(currentFilter.value)
+                            break; 
+                    }
+                    
+                    if (!isDefaultFiltersSelected() && !refillFilters.resetSearch) {
+                        $("#resetSearch").show(); 
+                        $(".singout-btn").show(); 
+                    }
+                    else {
+                        $("#dateFilter").val('Last24Hours');
+                    }
+                } catch (e) { }
+            });
+
+            refillFilters.applyFilters = 0;
+            refillFilters.resetSearch = false;
+        }
+
+        function showComments(comments) {  
+            //comments = unescape(comments).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); 
+            $('#commentPopup').show();
+
+            if (comments == undefined || comments == null || comments == "null")
+                comments = "";
+            $("#modelComments").text(comments);
+            $('#popupModelComments').modal({
+                'show': true,
+                backdrop: 'static',
+                keyboard: false
+            });
+        }
+
+    </script>
+}
+else
+{
+    <div class="col-12  SignOutListing-indicators p-2">
+        <label class="font-weight-normal">@FacilityAdminMessage</label>
+    </div>
+}
+ 
+

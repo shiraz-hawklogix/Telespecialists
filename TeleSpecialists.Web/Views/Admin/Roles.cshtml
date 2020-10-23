@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "Roles";    
+}
+
+@if (ViewBag.Message != "" && ViewBag.Message != null)
+{
+    <div class="alert alert-dismissible @((bool)ViewBag.Error ? "alert-danger" : "alert-success")" id="autoclose">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>@((bool)ViewBag.Error ? "Error!" : "Success!")</strong> @ViewBag.Message
+    </div>
+}
+
+@*<div class="row">
+    <div class="col-sm-12">
+        <a class="btn btn-dark loadLinkAsync" href="@Url.Action("AddRole","Admin")">Add Role</a>
+    </div>
+</div>*@
+
+<div class="pt-1 customGridHeader">
+    <div id="roles_grid">
+    </div>
+</div>
+
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+             document.title = $("#title-prefix").val() + '@ViewBag.Title';
+
+            $("#roles_grid").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetRoles", "Admin")',
+                            contentType: "application/json",
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            options = KendoKeepState("Roles", options);
+                            return kendo.stringify(options);
+                        }
+                    },
+                    page: KendoGet("Roles", "page"),
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                    },
+                    pageSize: KendoGet("Roles"),
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true
+                },
+                filterable: true,
+                sortable: true,
+                scrollable: true,
+                resizable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                dataBound: function (e) {
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                },
+                columns: [
+                    { hidden: true, field: "Id" },
+                    { field: "Name", title: "Role Name", width:'45%'},
+                    { field: "Description", title: "Description", width: '45%' },
+                    { title: "Actions", width: '80px', template: "<a class='btn btn-dark btn-sm py-1 loadLinkAsync' title='Edit' href='@Url.Action("EditRole", "Admin")/\#= Id#'>Edit</a>" }
+                ]
+            });
+
+        });
+
+    </script>

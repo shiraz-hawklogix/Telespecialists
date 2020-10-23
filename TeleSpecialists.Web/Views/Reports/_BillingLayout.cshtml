@@ -1,0 +1,100 @@
+﻿
+<style>
+    .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .col, .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm, .col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md, .col-md-auto, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg, .col-lg-auto, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl, .col-xl-auto {
+        width: auto;
+    }
+</style>
+<div class="row">
+    <div class="col-lg-6 col-sm-12">
+        <h2>@ViewBag.Title</h2>
+    </div>
+    <div class="col-lg-6 col-sm-12 text-right" id="CommandButtons">
+        @if (ViewBag.showPrint != null)
+        {
+            <input type="button" class="btn btn-dark" id="btnPrint" Value="Print" />
+        }
+        <input type="button" class="btn btn-dark" id="btnExportExcel" value="Export to Excel" />
+        <input type="button" class="btn btn-dark" id="btnExportPdf" value="Export to PDF" />
+    </div>
+    <hr style="width: 99%;" />
+</div>
+
+<div class="row" id="Reports">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col.xs-12 pt-1 customGridHeader">
+        <div id="divFilters"></div>
+        <div id="kendoDataGrid" class="kendo-ui-grid-control"></div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('#hiddenReportText').val('PhysicianBillingAmount');
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $("#btnExportExcel").click(function () {
+            $("#kendoDataGrid").getKendoGrid().saveAsExcel();
+        });
+        $("#btnExportPdf").click( function () {
+            $("#kendoDataGrid").data("kendoGrid").saveAsPDF();
+        });
+        var panelBar = $(".panelbar").kendoPanelBar().data("kendoPanelBar");
+        function select(position) {
+            if (panelBar) {
+                var ul = panelBar.element;
+                for (var i = 0; i < position.length; i++) {
+                    var item = ul.children().eq(position[i]);
+                    if (i != position.length - 1) {
+                        ul = item.children("ul");
+                        if (!ul[0])
+                            ul = item.children().children("ul");
+                        panelBar.expand(item, false);
+                    } else {
+                        panelBar.select(item);
+                    }
+                }
+            }
+        }
+        if ($('#hiddenReportText').val() != null) {
+            var numbersArray = $('#hiddenReportText').val().split(',');
+            select(numbersArray);
+        }
+    });
+    $("#btnPrint").off("click").click(function () {
+        window.print();
+    });
+    function setWidthOfDropDowns() {
+        window.setTimeout(function () {
+            $(".ms-options-wrap").each(function () {
+                var width = parseFloat($(this).css("width")) - 3;
+                $(this).find(".ms-options").css("width", width);
+            });
+        }, 500);
+    }
+    function resetDropDownOnDeseelect() {
+        $(".ms-selectall").off("click").click(function () {
+            if ($(this).text() == 'Unselect all') {
+                var searchContainer = $(this).siblings(".ms-search");
+                if (typeof (searchContainer) != 'undefined') {
+                    var searchTextBox = $(searchContainer).find("input");
+                    if (typeof (searchTextBox) != 'undefined') {
+                        $(searchTextBox).val("");
+                        $(searchTextBox).keyup();
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+<style type="text/css">
+    .k-autocomplete.k-state-default, .k-dropdown-wrap.k-state-default, .k-multiselect-wrap, .k-numeric-wrap.k-state-default, .k-picker-wrap.k-state-default {
+        border-color: #ccc;
+        height: auto !important;
+    }
+
+    #kendoDataGrid {
+        /*min-height:62vh;*/
+        overflow-y: auto;
+    }
+</style>
+

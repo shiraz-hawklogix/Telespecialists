@@ -1,0 +1,674 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@model @case
+@{
+    #region impression
+    const string subListLevel1 = "&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;";
+    string impressionOptionsText = "";
+    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_impression))
+    {
+        var impressionOptions = Model.case_template_statconsult.ctt_impression.Split(',')
+                                             .Select(m => "<div>" + subListLevel1 + "&nbsp;" + ((AcuteISchemicStatConsult)m.ToInt()).ToDescription() + "</div>");
+        impressionOptionsText = string.Join("", impressionOptions);
+    }
+    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_impression_text))
+    {
+        //impressionOptionsText += "<div>" + subListLevel1 + "&nbsp;" + Model.case_template_statconsult.ctt_impression_text + "</div>";
+
+        // change like that due to TCARE-409
+        Model.case_template_statconsult.ctt_impression_text
+                                            .Split('\n')
+                                            .ToList()
+                                            .ForEach(x =>
+                                            {
+                                                impressionOptionsText += "<div>" + subListLevel1 + "&nbsp;" + x + "</div>";
+                                            });
+    }
+    string MetricsHtml = ViewBag.PhysicianMetrics;
+    #endregion
+
+    var AntiplateletTherapyRecommended = ViewBag.AntiplateletTherapyRecommended as Dictionary<int, string>
+    ;
+    var SignOutNoTpa = ViewBag.SignOutNoTpa as Dictionary<int, string>
+        ;
+    var nihssList = ViewBag.NIHSSList as List<TeleSpecialists.BLL.Model.nih_stroke_scale_question>
+        ;
+    var nihssSelectedOptions = ViewBag.NIHSSSelectedOptions as List<int>
+        ;
+    bool noRecommendation = false;
+    noRecommendation = ((string.IsNullOrEmpty(Model.case_template_statconsult.ctt_antiplatelet_therapy_recommedned)
+    && string.IsNullOrEmpty(Model.case_template_statconsult.ctt_antiplatelet_therapy_recommedned_text))
+    && !Model.case_template_statconsult.ctt_routine_consultation) ? true : false;
+
+    var StatConsultImaging = ViewBag.AntiplateletTherapyRecommendedStatConsult as Dictionary<int, string>
+        ;
+    var StatConsultTherapies = ViewBag.StatConsultTherapies as Dictionary<int, string>
+        ;
+    var StatConsultOtherWork = ViewBag.StatConsultOtherWork as Dictionary<int, string>
+        ;
+
+    var Dispositions = new Dictionary<string, string>();
+    Dispositions.Add("SignOff", "Sign Off");
+    Dispositions.Add("NuerologyFollowUpRecommended", "Neurology Follow Up Recommended");
+
+}
+<div style="font-family:'Open Sans', sans-serif; font-size:13px;">
+    <div>
+        <img src="https://strokealert911.com/Content/images/logo-header.png" alt="TELESPECIALISTS" />
+    </div>
+    <br />
+    <div style="font-size:14px;">
+        <b>TeleSpecialists TeleNeurology Consult Services </b>
+    </div>
+    <br />
+    <div style="font-size:13px;">
+        <b>Stat Consult </b>
+    </div>
+
+    @if (Model.cas_metric_stamp_time_est.HasValue)
+    {
+        <div class="datetime">
+            <br />
+            <b>Date of Service:</b>&nbsp;&nbsp;&nbsp;<span>@(Model.cas_metric_stamp_time_est?.FormatDateTime())</span>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(impressionOptionsText))
+    {
+        <br />
+        <div>
+            <b>Impression:</b>
+            <div>
+                @Html.Raw(impressionOptionsText)
+            </div>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.cas_billing_comments))
+    {
+        <br />
+        <div>
+            <div><b>Comments/Sign-Out:</b></div>
+            <div>@Model.cas_billing_comments</div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_mechanism_stroke) ||
+    !string.IsNullOrEmpty(Model.case_template_statconsult.ctt_mechanism_stroke_text))
+    {
+        <br />
+        <div>
+            <div><b>CT HEAD:</b></div>
+            <div>
+                @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_mechanism_stroke))
+                {
+                    var MechanismofStrokeOptions = Model.case_template_statconsult.ctt_mechanism_stroke.Split(',')
+                    .Select(m => ((StatConsultCTHEAD)m.ToInt()).ToDescription());
+                    @Html.Raw(string.Join("<br />", MechanismofStrokeOptions))
+                }
+                @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_mechanism_stroke_text))
+                {
+                    @*<div>@Model.case_template_statconsult.ctt_mechanism_stroke_text</div>*@
+
+                    var MechanismofStrokeOptionsText = Model.case_template_statconsult.ctt_mechanism_stroke_text.Split('\n');
+                    @Html.Raw("<br />" + string.Join("<br />", MechanismofStrokeOptionsText))
+                }
+            </div>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(MetricsHtml))
+    {
+        <br />
+        <div>
+            <div><b>Metrics:</b></div>
+            <div>
+                @Html.Raw(MetricsHtml)
+            </div>
+        </div>
+    }
+    <br />
+    <div>Our recommendations are outlined below.</div>
+    <br />
+    @if (!noRecommendation)
+    {
+        <div id="recommendations">
+            <b>Recommendations:</b>
+        </div>
+        <div>
+            @*Additional field*@
+            @*<div>@Html.Raw(subListLevel1) Activate Stroke Protocol Admission/Order Set</div>*@
+            @{
+                if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_antiplatelet_therapy_recommedned))
+                {
+                    var selectedvalues = Model.case_template_statconsult?.ctt_antiplatelet_therapy_recommedned?.Split(',').ToList();
+                    foreach (var item in selectedvalues)
+                    {
+                        if (AntiplateletTherapyRecommended.ContainsKey(item.ToInt()))
+                        {
+                            <div>@Html.Raw(subListLevel1) @AntiplateletTherapyRecommended[item.ToInt()]</div>
+                        }
+                    }
+                }
+                if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_antiplatelet_therapy_recommedned_text))
+                {
+                    @*<div>@Html.Raw(subListLevel1) @Model.case_template_statconsult.ctt_antiplatelet_therapy_recommedned_text</div>*@
+
+                    string AntiplateletTherapyRecommendedText = "";
+
+                    Model.case_template_statconsult.ctt_antiplatelet_therapy_recommedned_text
+                    .Split('\n')
+                    .ToList()
+                    .ForEach(x =>
+                    {
+                        if (!string.IsNullOrEmpty(x.Trim()))
+                        {
+                            AntiplateletTherapyRecommendedText += "<div>" + subListLevel1 + "&nbsp;" + x + "</div>";
+                        }
+                    });
+
+                    @Html.Raw(AntiplateletTherapyRecommendedText)
+                }
+            }
+        </div>
+        <div>
+            <br />
+            @{
+                if (Model.case_template_statconsult.ctt_routine_consultation)
+                {
+                    <b>Routine Consultation with Inhouse Neurology for Follow up Care</b>
+                    <br />
+                }
+            }
+        </div>
+    }
+    @{
+        if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_imaging))
+        {
+            <div id="imaging">
+                <b>Imaging Studies:</b>
+            </div>
+            <div>
+                @{
+                    var selectedvalues = Model.case_template_statconsult?.ctt_imaging?.Split(',').ToList();
+                    foreach (var item in selectedvalues)
+                    {
+                        if (StatConsultImaging.ContainsKey(item.ToInt()))
+                        {
+                            <div>@Html.Raw(subListLevel1) @StatConsultImaging[item.ToInt()]</div>
+                        }
+                    }
+                }
+            </div>
+        }
+    }
+    @{
+        if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_therapies))
+        {
+            <br />
+            <div id="therapies">
+                <b>Therapies:</b>
+            </div>
+            <div>
+                @{
+                    var selectedvalues = Model.case_template_statconsult?.ctt_therapies?.Split(',').ToList();
+                    foreach (var item in selectedvalues)
+                    {
+                        if (StatConsultTherapies.ContainsKey(item.ToInt()))
+                        {
+                            <div>@Html.Raw(subListLevel1) @StatConsultTherapies[item.ToInt()]</div>
+                        }
+                    }
+                }
+            </div>
+        }
+    }
+    @{
+        if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_other_workup))
+        {
+            <br />
+            <div id="therapies">
+                <b>Other WorkUp:</b>
+            </div>
+            <div>
+                @{
+                    var selectedvalues = Model.case_template_statconsult?.ctt_other_workup?.Split(',').ToList();
+                    foreach (var item in selectedvalues)
+                    {
+                        if (StatConsultOtherWork.ContainsKey(item.ToInt()))
+                        {
+                            <div>@Html.Raw(subListLevel1) @StatConsultOtherWork[item.ToInt()]</div>
+                        }
+                    }
+                }
+            </div>
+        }
+    }
+    @{
+        if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_disposition))
+        {
+            <br>
+            <div><b>Disposition:</b></div>
+            if (Model.case_template_statconsult.ctt_disposition == "SignOff")
+            {
+                <span>Sign Off</span>
+            }
+            else
+            {
+                <span>Neurology Follow Up Recommended</span>
+            }
+            <br />
+        }
+    }
+    @{
+        if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_sign_out))
+        {
+            var selectedvalues = Model.case_template_statconsult?.ctt_sign_out?.Split(',').ToList();
+            <br />
+            <div>
+                <div><b>Sign Out:</b></div>
+                <div>
+                    @foreach (var item in selectedvalues)
+                    {
+                        if (SignOutNoTpa.ContainsKey(item.ToInt()))
+                        {
+                            <div>@Html.Raw(subListLevel1) @SignOutNoTpa[item.ToInt()]</div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    }
+
+
+    <div>
+        <br />
+        <span>----------------------------------------------------------------------------------------------------</span>
+        <br />
+        <br />
+        <div><b>Chief Complaint:</b></div>
+        <div>
+            @Html.Raw(Model.case_template_statconsult.ctt_cheif_complaints)
+        </div>
+        <br />
+
+        <b>History of Present Illness:</b>
+        @if (Model.cas_billing_dob.HasValue && !string.IsNullOrEmpty(Model.cas_metric_patient_gender))
+        {
+            <div>
+                Patient is a  @DateTime.Now.ToEST().CalculateAge(Model.cas_billing_dob.Value).ToString() year old @(((Gender)Model.cas_metric_patient_gender.ToCharArray().FirstOrDefault()).ToDescription()).
+            </div>
+        }
+
+        @if (ViewBag.IllnessHistory != null)
+        {
+            <div>
+                @Html.Raw(ViewBag.IllnessHistory)
+            </div>
+        }
+    </div>
+    @* Added BY Axim *@
+    @{
+        var divshow = "";
+        if (Model.cas_HTN == null && Model.cas_DM == null && Model.cas_HLD == null && Model.cas_Afib == null && Model.cas_CAD == null && Model.cas_Stroke == null)
+        {
+            divshow = "none";
+        }
+    }
+    <div style="display:@divshow">
+        <br /><b>Past Medical History:</b><br />
+        @if (Model.cas_HTN == true)
+        {
+            @Html.Raw(subListLevel1)<span>Hypertension</span><br />
+        }
+        @if (Model.cas_DM == true)
+        {
+            @Html.Raw(subListLevel1)<span>Diabetes Mellitus</span><br />
+        }
+        @if (Model.cas_HLD == true)
+        {
+            @Html.Raw(subListLevel1)<span>Hyperlipidemia</span><br />
+        }
+        @if (Model.cas_Afib == true)
+        {
+            @Html.Raw(subListLevel1)<span>Atrial Fibrillation</span><br />
+        }
+        @if (Model.cas_CAD == true)
+        {
+            @Html.Raw(subListLevel1)<span>Coronary Artery Disease</span><br />
+        }
+        @if (Model.cas_Stroke == true)
+        {
+            @Html.Raw(subListLevel1)<span>Stroke</span><br />
+        }
+        @if (Model.cas_HTN == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Hypertension</span><br />
+        }
+        @if (Model.cas_DM == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Diabetes Mellitus</span><br />
+        }
+        @if (Model.cas_HLD == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Hyperlipidemia</span><br />
+        }
+        @if (Model.cas_Afib == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Atrial Fibrillation</span><br />
+        }
+        @if (Model.cas_CAD == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Coronary Artery Disease</span><br />
+        }
+        @if (Model.cas_Stroke == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Stroke</span><br />
+        }
+    </div>
+
+    <div>
+        @if (Model.cas_anticoagulant_use != null)
+        {
+            if (Model.cas_anticoagulant_use == true)
+            {
+                <br /> <b> Anticoagulant use:&nbsp; </b><span>@Model.cas_anticoagulant_use_text</span>
+            }
+            else
+            {
+                <br /> <b> Anticoagulant use:&nbsp; </b><span>No</span>
+            }
+        }
+    </div>
+
+    <div>
+        @if (Model.cas_antiplatelet_use != null)
+        {
+            if (Model.cas_antiplatelet_use == true)
+            {
+                <br /> <b> Antiplatelet use:&nbsp;</b><span>@Model.cas_antiplatelet_use_text</span>
+            }
+            else
+            {
+                <br /> <b> Antiplatelet use:&nbsp;</b><span>No</span>
+            }
+        }
+    </div>
+
+    @* Ended By Axim  *@
+
+    @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_bp) || !string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_pulse) || !string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_blood_glucose) || !string.IsNullOrEmpty(ViewBag.NIHSSAssessmentsData))
+    {
+        <div>
+            <div><b>Examination:</b></div>
+            @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_bp) || !string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_pulse) || !string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_blood_glucose))
+            {
+                <div>
+                    @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_bp))
+                    {
+                        <span><b>BP(</b>@Model.case_template_statconsult.ctt_vitals_bp<b>), </b></span>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_pulse))
+                    {
+                        <span><b>Pulse(</b>@Model.case_template_statconsult.ctt_vitals_pulse<b>), </b></span>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_blood_glucose))
+                    {
+                        <span><b>Blood Glucose(</b>@Model.case_template_statconsult.ctt_vitals_blood_glucose<b>)</b></span>
+                    }
+                </div>
+            }
+
+            @{
+                if (Model.case_template_statconsult.ctt_nihss_or_neuro == "NeuroExam")
+                {
+                    <br />
+                    <div id="neuroExam">
+                        <b>Neuro Exam:</b>
+                    </div>
+                    <br />
+                    <div>
+                        @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_neuro_exam))
+                        {
+                            string[] arrResult = Model.case_template_statconsult.ctt_neuro_exam.Split(',');
+                            int[] myInts = arrResult.Select(int.Parse).ToArray();
+                            <div>
+                                <b>General:</b>
+                                @{
+                                    var _arr = Enum.GetValues(typeof(StatGeneral)).Cast<StatGeneral>
+                                        ().ToList().Select(e => (int)e).ToArray();
+                                    var matchedids = _arr.Intersect(myInts);
+                                    var generalStrokeOptions = matchedids
+                                    .Select(m => ((StatGeneral)m.ToInt()).ToDescription());
+                                    var _list = generalStrokeOptions.ToList();
+
+                                    //generalStrokeOptions = generalStrokeOptions.Where(x  => x.IndexOf[1] == "Oriented")
+                                    try
+                                    {
+                                        if (_list[1] == "Oriented" && _list[2] == "Time")
+                                        {
+                                            string value = _list[1] + " to " + _list[2];
+                                            _list[1] = value;
+                                            _list.Remove("Time");
+                                        }
+                                    }
+                                    catch
+                                    {
+
+                                    }
+
+                                    @Html.Raw(string.Join(", ", _list))
+                                }
+                            </div> <br />
+                            <div>
+                                <b>Speech:</b>
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_speech))
+                                    {
+                                        <span>@(((StatSpeech)Model.case_template_statconsult.ctt_speech.ToCharArray().FirstOrDefault()).ToDescription()):</span>
+                                    }
+                                }
+                            </div> <br />
+                            <div>
+                                <b>Language:</b>
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_language))
+                                    {
+                                        <span>@(((StatLanguage)Model.case_template_statconsult.ctt_language.ToCharArray().FirstOrDefault()).ToDescription()):</span>
+                                    }
+                                }
+                            </div> <br />
+                            <div>
+                                <b>Face:</b>
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_face))
+                                    {
+                                        <span>@(((StatFace)Model.case_template_statconsult.ctt_face.ToCharArray().FirstOrDefault()).ToDescription()):</span>
+                                    }
+                                    var _arrFace = Enum.GetValues(typeof(StatConsultFace)).Cast<StatConsultFace>
+                                        ().ToList().Select(e => (int)e).ToArray();
+                                    var matchedFaceids = _arrFace.Intersect(myInts);
+                                    var _Face = matchedFaceids
+                                    .Select(m => ((StatConsultFace)m.ToInt()).ToDescription());
+                                    @Html.Raw(string.Join(", ", _Face))
+                                }
+                            </div> <br />
+                            <div>
+                                <b>Facial Sensation:</b>
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_facial_sensation))
+                                    {
+                                        <span>@(((StatFacialSensation)Model.case_template_statconsult.ctt_facial_sensation.ToCharArray().FirstOrDefault()).ToDescription()):</span>
+                                    }
+                                    var _arrFacial = Enum.GetValues(typeof(StatConsultFacialSensation)).Cast<StatConsultFacialSensation>
+                                        ().ToList().Select(e => (int)e).ToArray();
+                                    var matchedFacialids = _arrFacial.Intersect(myInts);
+                                    var _Facial = matchedFacialids
+                                    .Select(m => ((StatConsultFacialSensation)m.ToInt()).ToDescription());
+                                    @Html.Raw(string.Join(", ", _Facial))
+                                }
+                            </div> <br />
+                            <div>
+                                <b>Visual Fields:</b>
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_visual))
+                                    {
+                                        <span>@(((StatVisual)Model.case_template_statconsult.ctt_visual.ToCharArray().FirstOrDefault()).ToDescription()):</span>
+                                    }
+                                    var _arrVisual = Enum.GetValues(typeof(StatConsultVisual)).Cast<StatConsultVisual>
+                                        ().ToList().Select(e => (int)e).ToArray();
+                                    var matchedVisualids = _arrVisual.Intersect(myInts);
+                                    var _Visual = matchedVisualids
+                                    .Select(m => ((StatConsultVisual)m.ToInt()).ToDescription());
+                                    @Html.Raw(string.Join(", ", _Visual))
+                                }
+                            </div> <br />
+                            <div>
+                                <b>Extraocular Movements:</b>
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_extraocular_movement))
+                                    {
+                                        <span>@(((StatExtraocular)Model.case_template_statconsult.ctt_extraocular_movement.ToCharArray().FirstOrDefault()).ToDescription()):</span>
+                                    }
+                                    var _arrExtra = Enum.GetValues(typeof(StatConsultExtra)).Cast<StatConsultExtra>
+                                        ().ToList().Select(e => (int)e).ToArray();
+                                    var matchedExtraids = _arrExtra.Intersect(myInts);
+                                    var _Extraocular = matchedExtraids
+                                    .Select(m => ((StatConsultExtra)m.ToInt()).ToDescription());
+                                    @Html.Raw(string.Join(", ", _Extraocular))
+                                }
+                            </div> <br />
+                            <div>
+                                <b>Motor Exam:</b>
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_motor))
+                                    {
+                                        <span>@(((StatMotor)Model.case_template_statconsult.ctt_motor.ToCharArray().FirstOrDefault()).ToDescription()):</span>
+                                    }
+                                    var _arrMotor = Enum.GetValues(typeof(StatConsultMotor)).Cast<StatConsultMotor>
+                                        ().ToList().Select(e => (int)e).ToArray();
+                                    var matchedMotorids = _arrMotor.Intersect(myInts);
+                                    var _Motor = matchedMotorids
+                                    .Select(m => ((StatConsultMotor)m.ToInt()).ToDescription());
+                                    @Html.Raw(string.Join(", ", _Motor))
+                                }
+                            </div> <br />
+                            <div>
+                                <b>Sensation:</b>
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_sensation))
+                                    {
+                                        <span>@(((StatSensation)Model.case_template_statconsult.ctt_sensation.ToCharArray().FirstOrDefault()).ToDescription()):</span>
+                                    }
+                                    var _arrSen = Enum.GetValues(typeof(StatConsultSensation)).Cast<StatConsultSensation>
+                                        ().ToList().Select(e => (int)e).ToArray();
+                                    var matchedSenids = _arrSen.Intersect(myInts);
+                                    var _Sensation = matchedSenids
+                                    .Select(m => ((StatConsultSensation)m.ToInt()).ToDescription());
+                                    @Html.Raw(string.Join(", ", _Sensation))
+                                }
+                            </div> <br />
+                            <div>
+                                <b>Coordination:</b>
+                                @{
+                                    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_coordination))
+                                    {
+                                        <span>@(((StatCoordination)Model.case_template_statconsult.ctt_coordination.ToCharArray().FirstOrDefault()).ToDescription()):</span>
+                                    }
+                                    var _arrCo = Enum.GetValues(typeof(StatConsultCoordination)).Cast<StatConsultCoordination>
+                                        ().ToList().Select(e => (int)e).ToArray();
+                                    var matchedCoids = _arrCo.Intersect(myInts);
+                                    var _Coordination = matchedCoids
+                                    .Select(m => ((StatConsultCoordination)m.ToInt()).ToDescription());
+                                    @Html.Raw(string.Join(", ", _Coordination))
+                                }
+                            </div>
+                        }
+                    </div>
+                    <br />
+                    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_exam_free_text))
+                    {
+                        @Html.Raw(Model.case_template_statconsult.ctt_exam_free_text)
+                    }
+                    <br>
+                }
+                else
+                {
+                    if (Model.cas_nihss_cannot_completed)
+                    {
+                        <label class="checkbox-inline">
+                            <b> NIHSS Cannot be Completed Due to Patient Status</b>
+                        </label>
+                       <br />
+                        <label>
+                           <span>@Model.cas_exam_free_text</span>
+                        </label>
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(ViewBag.NIHSSAssessmentsData))
+                        {
+                            <div>@Html.Raw(ViewBag.NIHSSAssessmentsData)</div>
+                        }
+                    }
+
+                }
+
+            }
+
+
+        </div>
+    }
+    @*@if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_nihss_totalscore.ToString()) && !(Model.case_template_statconsult.ctt_ignore_nihss))*@
+    @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_nihss_totalscore.ToString()) && !(Model.cas_nihss_cannot_completed))
+    {
+        if (Model.case_template_statconsult.ctt_nihss_or_neuro != "NeuroExam")
+        {
+            // this hide if neuro exam
+            <br />
+            <div>
+                <b>NIHSS Score: </b> @(Model.case_template_statconsult.ctt_nihss_totalscore.ToString())
+            </div>
+        }
+    }
+    <br />
+
+    @if (Model.case_template_statconsult.ctt_consented_to_tele == "true")
+    {
+        <div>
+            Patient/Family was informed the Neurology Consult would happen via TeleHealth consult by way of interactive audio and video telecommunications and consented to receiving care in this manner.
+        </div>
+    }
+    @*Patient was informed the Neurology Consult would happen via TeleHealth consult by way of interactive audio and video telecommunications and consented to receiving care in this manner.*@
+
+    <br />
+    @if (Model.case_template_statconsult.ctt_critical_care_was_provided.HasValue && Model.case_template_statconsult.ctt_critical_care_was_provided.Value)
+    {
+        var minuts = Model.case_template_statconsult.ctt_critical_care_minutes;
+        <div>
+            Due to the immediate potential for life-threatening deterioration due to underlying acute neurologic illness, I spent @minuts minutes providing critical care. This time includes time for face to face visit via telemedicine, review of medical records, imaging studies and discussion of findings with providers, the patient and/or family.
+        </div>
+    }
+    @*Due to the immediate potential for life-threatening deterioration due to underlying acute neurologic illness, I spent 35 minutes providing critical care. This time includes time for face to face visit via telemedicine, review of medical records, imaging studies and discussion of findings with providers, the patient and/or family.*@
+
+
+    @if (ViewBag.Physician != null)
+    {
+        AspNetUser physician = ViewBag.Physician;
+        <br /><br />
+              <div>
+                  Dr @physician.FirstName @physician.LastName
+              </div>
+    }
+
+    <br />
+    <br />
+    <span>
+        TeleSpecialists <br />
+        (239) 231-1456
+    </span>
+
+    <br />
+    <br />
+    Case @Model.cas_case_number
+</div>
+
+

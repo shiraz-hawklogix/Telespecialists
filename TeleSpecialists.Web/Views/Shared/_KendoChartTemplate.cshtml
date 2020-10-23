@@ -1,0 +1,58 @@
+﻿@model  TeleSpecialists.BLL.Model.ChartDataModel
+
+@{
+    ViewBag.Title = "Cases";
+    var uniqueGuid = Guid.NewGuid().ToString();
+}
+
+<div id="@uniqueGuid">
+
+</div>
+
+@*<script type="text/javascript">
+
+            $("#@uniqueGuid").kendoChart({
+                dataSource: {
+                    data: @Html.Raw(Model.SerializedChartData)
+                },
+                title: {
+                    text: '@Model.ChartTitle'
+                },
+                legend: {
+                    position: "top"
+                },
+                seriesDefaults: {
+                    type: '@Model.ChartStyle',
+                    stack: @Model.ChartStack,
+                    labels: {
+                        visible: true,
+                        background: "transparent",
+                        template: '@Model.ChartLabelTemplate'
+                    }
+                },
+                seriesColors: ['#0077bc', '#00af67'],
+                series:
+                    @Html.Raw(Model.Fields),
+                categoryAxis: {
+                    labels: {
+                        rotation: -45
+                    },
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                valueAxis: {
+                    labels: {
+                        template: '@Model.ChartLabelTemplate'
+                    },
+                    line: {
+                        visible: false
+                    }
+                },
+                tooltip: {
+                    visible: true,
+                    format: '@Model.ChartLabelTemplate'
+                }
+            });
+
+    </script>*@

@@ -1,0 +1,301 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+
+
+@model TeleSpecialists.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Add User";
+    var dicOptions = ViewBag.Roles as Dictionary<string, string>;
+}
+<div class="ajaxForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        if (!ViewData.ModelState.IsValid)
+        {
+            @Html.ShowBootStrapAlert("", Html.ValidationSummary(true, "").ToHtmlString(), BootStrapeAlertType.Danger);
+        }
+
+        @Html.HiddenFor(m => m.Level)
+
+        <div class="row">
+            <div class="col-sm-10 offset-sm-1">
+                <h2>Add New User</h2>
+                <hr />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-10 offset-sm-1">
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">First Name: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.FirstName, new { htmlAttributes = new { @class = "form-control", @placeholder = "First Name" } })
+                        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Last Name: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.LastName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Last Name" } })
+                        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Initials: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.UserInitial, new { htmlAttributes = new { @class = "form-control", @placeholder = "Initials" } })
+                        @Html.ValidationMessageFor(model => model.UserInitial, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Username: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.Username, new { htmlAttributes = new { @class = "form-control", @placeholder = "Username" } })
+                        @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Email: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Email" } })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Password: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.Password, new { htmlAttributes = new { @class = "form-control", @placeholder = "Password" } })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Confirm Password: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.ConfirmPassword, new { htmlAttributes = new { @class = "form-control", @placeholder = "Confirm Password" } })
+                        @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Mobile Phone: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.MobilePhone, new { htmlAttributes = new { @class = "form-control phone_number", @placeholder = "Mobile Phone" } })
+                        @Html.ValidationMessageFor(model => model.MobilePhone, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Other Phone: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.OtherPhone, new { htmlAttributes = new { @class = "form-control phone_number", @placeholder = "Other Phone" } })
+                        @Html.ValidationMessageFor(model => model.OtherPhone, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Role: </label>
+                    <div class="col-md-8 col-sm-12">
+                        <div>
+                            @Html.DropDownListFor(m => m.Role, null, "-- Select --", new { @class = "form-control" })
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Role, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">NPI Number: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.NPINumber, new { htmlAttributes = new { @class = "form-control", @placeholder = "NPI Number", @maxlength = 10 } })
+                        @Html.ValidationMessageFor(model => model.NPINumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Address line 1: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.Address_line1, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address line 1" } })
+                        @Html.ValidationMessageFor(model => model.Address_line1, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Address line 2: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.Address_line2, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address line 2" } })
+                        @Html.ValidationMessageFor(model => model.Address_line2, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">City: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">State:</label>
+                    <div class="col-md-8 col-sm-12">
+                        <select id="State_key" name="State_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.State_key : 0)"></select>
+                        @Html.ValidationMessageFor(model => model.State_key, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">ZIP/Postal Code: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zip" } })
+                        @Html.ValidationMessageFor(model => model.Zip, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Two Factor Enabled: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.CheckBoxFor(x => x.TwoFactorEnabled, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.TwoFactorEnabled, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Enable Five9: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.CheckBoxFor(x => x.EnableFive9, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.EnableFive9, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Case Reviewer: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.CheckBoxFor(x => x.CaseReviewer, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.CaseReviewer, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Read EEG: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.CheckBoxFor(x => x.IsEEG, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.IsEEG, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Active: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.CheckBoxFor(x => x.isActive, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.isActive, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Disable: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.CheckBoxFor(x => x.isDisable, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.isDisable, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row apirole" style="display:none">
+                    <label class="control-label col-md-4 col-sm-12">API Secret Key: </label>
+                    <div class="col-6">
+                        @Html.EditorFor(x => x.APISecretKey, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.APISecretKey, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="text-right col-2">
+                        <input type="button" value="Generate Key" class="btn btn-dark" id="btnGenerateKey" />
+                    </div>
+                </div>
+
+                <div class="form-group row apirole" style="display:none;">
+                    <label class="control-label col-md-4 col-sm-12">API Password: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.APIPassword, new { htmlAttributes = new { @class = "form-control", @readonly = true } })
+                        @Html.ValidationMessageFor(model => model.APIPassword, "", new { @class = "text-danger" })
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-sm-6 offset-sm-5 text-right">
+                <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Users", "Admin", new { level = Model.Level })">Cancel</a>
+                <input type="submit" value="Save" class="btn btn-dark" />
+            </div>
+
+        </div>
+    }
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        maskPhoneNumber();
+        $("#State_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.State.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#FirstName,#LastName").focusout(function () {
+            var initial = generateUserIntial();
+            if (initial != "" && $("#UserInitial").val() == "") {
+                $("#UserInitial").val(initial);
+            }
+        });
+
+    });
+
+    $("#Role").off("change").change(function () {
+        var role = $("#Role option:selected").text();
+        if (role == "@UserRoles.Physician.ToDescription()") {
+            $("#UserInitial").attr('Required', true);
+        }
+        else {
+            $("#UserInitial").removeAttr('Required');
+        }
+        var apirole = "@UserRoles.TeleCareApi.ToDescription()";
+        if (role == apirole) {
+            $(".apirole").show();
+            $(".apirole input[type='text']").removeAttr("disabled");
+        }
+        else {
+            $(".apirole").hide();
+            $(".apirole input[type='text']").attr("disabled", "disabled");
+        }
+    });
+
+    $("#btnGenerateKey").off("click").click(function () {
+        var result = "";
+        $("#mainContentArea").find("#validationSummary").empty();
+        var userName = $.trim($("#Username").val());
+        var password = $("#Password").val();
+        var secretKey = $.trim($("#APISecretKey").val());
+
+        var isValid = $(".ajaxForm form").valid()
+        if (isValid) {
+            if (userName != "" && password != "" && password != undefined && secretKey != "") {
+
+                if (userName.indexOf(":") != -1 || password.indexOf(":") != -1 || secretKey.indexOf(":") != -1) {
+                    $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Colon(:) is not allowed in username, password and api secret key");
+                    return false;
+                }
+                var result = userName + ":" +  password + ":" + secretKey;
+                var url = "@(Url.Action("EncodeString", "Admin"))";
+                $.post(url, { inputString: result }, function (response) {
+                    $("#APIPassword").val(response.data);
+                });
+            }
+            else {
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Enter UserName and Password before generating secret key");
+            }
+        }
+    })
+    function generateUserIntial() {
+        var initial = "";
+        var firstName = $("#FirstName").val().trim();
+        var lastName = $("#LastName").val();
+
+        if (firstName != "" && firstName != undefined && lastName != "" && lastName != undefined) {
+            initial = firstName.charAt(0).toUpperCase();
+            initial += lastName.charAt(0).toUpperCase();
+        }
+
+        return initial;
+    }
+</script>
+
+
+
+

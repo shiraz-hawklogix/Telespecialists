@@ -1,0 +1,534 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@model @case
+@{
+    #region impression
+    const string subListLevel1 = "&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;";
+    string impressionOptionsText = "";
+    if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_impression))
+    {
+        var impressionOptions = Model.case_template_telestroke_notpa.ctt_impression.Split(',')
+                                             .Select(m => "<div>" + subListLevel1 + "&nbsp;" + ((AcuteISchemicStroke)m.ToInt()).ToDescription() + "</div>");
+        impressionOptionsText = string.Join("", impressionOptions);
+    }
+    if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_impression_text))
+    {
+        //impressionOptionsText += "<div>" + subListLevel1 + "&nbsp;" + Model.case_template_telestroke_notpa.ctt_impression_text + "</div>";
+
+        // change like that due to TCARE-409
+        Model.case_template_telestroke_notpa.ctt_impression_text
+                                            .Split('\n')
+                                            .ToList()
+                                            .ForEach(x =>
+                                            {
+                                                impressionOptionsText += "<div>" + subListLevel1 + "&nbsp;" + x + "</div>";
+                                            });
+    }
+    string MetricsHtml = ViewBag.PhysicianMetrics;
+    #endregion
+
+    var AntiplateletTherapyRecommended = ViewBag.AntiplateletTherapyRecommended as Dictionary<int, string>;
+    //var PMH = ViewBag.PMH as Dictionary<int, string>;
+
+    var SignOutNoTpa = ViewBag.SignOutNoTpa as Dictionary<int, string>;
+    var nihssList = ViewBag.NIHSSList as List<TeleSpecialists.BLL.Model.nih_stroke_scale_question>;
+    var nihssSelectedOptions = ViewBag.NIHSSSelectedOptions as List<int>;
+    bool noRecommendation = false;
+    noRecommendation = ((string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_antiplatelet_therapy_recommedned)
+                    && string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_antiplatelet_therapy_recommedned_text))
+                    && !Model.case_template_telestroke_notpa.ctt_routine_consultation) ? true : false;
+}
+<div style="font-family:'Open Sans', sans-serif; font-size:13px;">
+    <div>
+        <img src="https://strokealert911.com/Content/images/logo-header.png" alt="TELESPECIALISTS" />
+    </div>
+    <br />
+    <div style="font-size:14px;">
+        <b>TeleSpecialists TeleNeurology Consult Services </b>
+    </div>
+    <br />
+    @if (Model.cas_metric_stamp_time_est.HasValue)
+    {
+        <div class="datetime">
+            <br />
+            <b>Date of Service:</b>&nbsp;&nbsp;&nbsp;<span>@(Model.cas_metric_stamp_time_est?.FormatDateTime())</span>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(impressionOptionsText))
+    {
+        <br />
+        <div>
+            <b>Impression:</b>
+            <div>
+                @Html.Raw(impressionOptionsText)
+            </div>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.cas_billing_comments))
+    {
+        <br />
+        <div>
+            <div><b>Comments/Sign-Out:</b></div>
+            <div>@Model.cas_billing_comments</div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_mechanism_stroke) ||
+         !string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_mechanism_stroke_text))
+    {
+        <br />
+        <div>
+            <div><b>Mechanism of Stroke:</b></div>
+            <div>
+                @if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_mechanism_stroke))
+                {
+                    var MechanismofStrokeOptions = Model.case_template_telestroke_notpa.ctt_mechanism_stroke.Split(',')
+                                                   .Select(m => ((StrokeMechanism)m.ToInt()).ToDescription());
+                    @Html.Raw(string.Join("<br/>", MechanismofStrokeOptions))
+                }
+                @if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_mechanism_stroke_text))
+                {
+                    @*<div>@Model.case_template_telestroke_notpa.ctt_mechanism_stroke_text</div>*@
+
+                    var MechanismofStrokeOptionsText = Model.case_template_telestroke_notpa.ctt_mechanism_stroke_text.Split('\n');
+                    @Html.Raw("<br/>" + string.Join("<br/>", MechanismofStrokeOptionsText))
+                }
+            </div>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(MetricsHtml))
+    {
+        <br />
+        <div>
+            <div><b>Metrics:</b></div>
+            <div>
+                @Html.Raw(MetricsHtml)
+            </div>
+        </div>
+    }
+    @{
+        var display = "";
+        if (Model.cas_metric_has_time_of_set == 2 && Model.cas_metric_has_ct_head_hemorrhage == 2 &&
+             Model.cas_metric_has_ischemic_stroke == 2 && Model.cas_metric_has_severe_head_trauma == 2 &&
+             Model.cas_metric_has_intracranial_surgery == 2 && Model.cas_metric_has_intracranial_hemorrhage == 2
+             && Model.cas_metric_has_symptoms_SAH == 2 && Model.cas_metric_has_GI_malignancy == 2 &&
+             Model.cas_metric_has_coagulopathy_platelets == 2 && Model.cas_metric_has_treatment_LMWH == 2 &&
+             Model.cas_metric_has_use_NOAC == 2 && Model.cas_metric_has_glycoprotein_IIB == 2 &&
+             Model.cas_metric_has_symptoms_endocarditis == 2 && Model.cas_metric_has_suspected_aortic_arch == 2
+             && Model.cas_metric_has_intracranial_neoplasm == 2)
+        {
+            display = "none";
+        }
+    }
+    <div style="display:@display">
+        <br />
+        <div><b>Alteplase/Activase Contraindications:</b></div><br />
+        @if (Model.cas_metric_has_time_of_set == 1)
+        {
+            <span>Last Known Well > 4.5 hours:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_time_of_set == 0)
+        {
+            <span>Last Known Well > 4.5 hours:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_ct_head_hemorrhage == 1)
+        {
+            <span>CT Head showing hemorrhage:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_ct_head_hemorrhage == 0)
+        {
+            <span>CT Head showing hemorrhage:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_ischemic_stroke == 1)
+        {
+            <span>Ischemic stroke within 3 months:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_ischemic_stroke == 0)
+        {
+            <span>Ischemic stroke within 3 months:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_severe_head_trauma == 1)
+        {
+            <span>Severe head trauma within 3 months:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_severe_head_trauma == 0)
+        {
+            <span>Severe head trauma within 3 months:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_intracranial_surgery == 1)
+        {
+            <span>Intracranial/intraspinal surgery within 3 months:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_intracranial_surgery == 0)
+        {
+            <span>Intracranial/intraspinal surgery within 3 months:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_intracranial_hemorrhage == 1)
+        {
+            <span>History of intracranial hemorrhage:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_intracranial_hemorrhage == 0)
+        {
+            <span>History of intracranial hemorrhage:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_symptoms_SAH == 1)
+        {
+            <span>Symptoms and signs consistent with an SAH:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_symptoms_SAH == 0)
+        {
+            <span>Symptoms and signs consistent with an SAH:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_GI_malignancy == 1)
+        {
+            <span>GI malignancy or GI bleed within 21 days:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_GI_malignancy == 0)
+        {
+            <span>GI malignancy or GI bleed within 21 days:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_coagulopathy_platelets == 1)
+        {
+            <span>Coagulopathy: Platelets <100 000/mm<sup>3</sup>, INR >1.7, aPTT>40 s, or PT >15 s:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_coagulopathy_platelets == 0)
+        {
+            <span>Coagulopathy: Platelets <100 000/mm<sup>3</sup>, INR >1.7, aPTT>40 s, or PT >15 s:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_treatment_LMWH == 1)
+        {
+            <span>Treatment dose of LMWH within the previous 24 hrs:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_treatment_LMWH == 0)
+        {
+            <span>Treatment dose of LMWH within the previous 24 hrs:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_use_NOAC == 1)
+        {
+            <span>Use of NOACs in past 48 hours:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_use_NOAC == 0)
+        {
+            <span>Use of NOACs in past 48 hours:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_glycoprotein_IIB == 1)
+        {
+            <span>Glycoprotein IIb/IIIa receptor inhibitors use:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_glycoprotein_IIB == 0)
+        {
+            <span>Glycoprotein IIb/IIIa receptor inhibitors use:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_symptoms_endocarditis == 1)
+        {
+            <span>Symptoms consistent with infective endocarditis:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_symptoms_endocarditis == 0)
+        {
+            <span>Symptoms consistent with infective endocarditis:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_suspected_aortic_arch == 1)
+        {
+            <span>Suspected aortic arch dissection:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_suspected_aortic_arch == 0)
+        {
+            <span>Suspected aortic arch dissection:&nbsp;<b>No</b></span><br />
+        }
+        @if (Model.cas_metric_has_intracranial_neoplasm == 1)
+        {
+            <span>Intra-axial intracranial neoplasm:&nbsp;<b>Yes</b></span><br />
+        }
+        else if (Model.cas_metric_has_intracranial_neoplasm == 0)
+        {
+            <span>Intra-axial intracranial neoplasm:&nbsp;<b>No</b></span><br />
+        }
+    </div>
+
+    @if (!noRecommendation)
+    {
+        <br />
+        <div>Our recommendations are outlined below.</div>
+        <br />
+        <div id="recommendations">
+            <b>Recommendations:</b>
+        </div>
+        <div>
+            @*Additional field*@
+            <div>@Html.Raw(subListLevel1) Activate Stroke Protocol Admission/Order Set</div>
+            <div>@Html.Raw(subListLevel1) Stroke/Telemetry Floor</div>
+            <div>@Html.Raw(subListLevel1) Neuro Checks</div>
+            <div>@Html.Raw(subListLevel1) Bedside Swallow Eval</div>
+            <div>@Html.Raw(subListLevel1) DVT Prophylaxis</div>
+            <div>@Html.Raw(subListLevel1) IV Fluids, Normal Saline</div>
+            <div>@Html.Raw(subListLevel1) Head of Bed 30 Degrees</div>
+            <div>@Html.Raw(subListLevel1) Euglycemia and Avoid Hyperthermia (PRN Acetaminophen)</div>
+
+            @{
+                if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_antiplatelet_therapy_recommedned))
+                {
+                    var selectedvalues = Model.case_template_telestroke_notpa?.ctt_antiplatelet_therapy_recommedned?.Split(',').ToList();
+                    foreach (var item in selectedvalues)
+                    {
+                        if (AntiplateletTherapyRecommended.ContainsKey(item.ToInt()))
+                        {
+                            <div>@Html.Raw(subListLevel1) @AntiplateletTherapyRecommended[item.ToInt()]</div>
+                        }
+                    }
+                }
+                if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_antiplatelet_therapy_recommedned_text))
+                {
+                    @*<div>@Html.Raw(subListLevel1) @Model.case_template_telestroke_notpa.ctt_antiplatelet_therapy_recommedned_text</div>*@
+
+                    string AntiplateletTherapyRecommendedText = "";
+
+                    Model.case_template_telestroke_notpa.ctt_antiplatelet_therapy_recommedned_text
+                        .Split('\n')
+                        .ToList()
+                        .ForEach(x =>
+                        {
+                            if (!string.IsNullOrEmpty(x.Trim()))
+                            {
+                                AntiplateletTherapyRecommendedText += "<div>" + subListLevel1 + "&nbsp;" + x + "</div>";
+                            }
+                        });
+
+                    @Html.Raw(AntiplateletTherapyRecommendedText)
+                }
+            }
+        </div>
+        <div>
+            <br />
+            @{
+                if (Model.case_template_telestroke_notpa.ctt_routine_consultation)
+                {
+                    <b>Routine Consultation with Inhouse Neurology for Follow up Care</b>
+                    <br />
+                }
+            }
+        </div>
+    }
+    @{
+        if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_sign_out))
+        {
+            var selectedvalues = Model.case_template_telestroke_notpa?.ctt_sign_out?.Split(',').ToList();
+            <br />
+            <div>
+                <div><b>Sign Out:</b></div>
+                <div>
+                    @foreach (var item in selectedvalues)
+                    {
+                        if (SignOutNoTpa.ContainsKey(item.ToInt()))
+                        {
+                            <div>@Html.Raw(subListLevel1) @SignOutNoTpa[item.ToInt()]</div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    }
+    <div>
+        <br /><br /><br />
+        ------------------------------------------------------------------------------
+    </div>
+    <div>
+        <br />
+        <b>History of Present Illness:</b>
+        @if (Model.cas_billing_dob.HasValue && !string.IsNullOrEmpty(Model.cas_metric_patient_gender))
+        {
+            <div>
+                Patient is a  @DateTime.Now.ToEST().CalculateAge(Model.cas_billing_dob.Value).ToString() year old @(((Gender)Model.cas_metric_patient_gender.ToCharArray().FirstOrDefault()).ToDescription()).
+            </div>
+        }
+        @if (ViewBag.IllnessHistory != null)
+        {
+            <div>
+                @Html.Raw(ViewBag.IllnessHistory)
+            </div>
+        }
+    </div>
+    @* Added BY Axim *@
+    @{
+        var divshow = "";
+        if (Model.cas_HTN == null && Model.cas_DM == null && Model.cas_HLD == null && Model.cas_Afib == null && Model.cas_CAD == null && Model.cas_Stroke == null)
+        {
+            divshow = "none";
+        }
+    }
+    <div style="display:@divshow">
+        <br /><b>Past Medical History:</b><br />
+        @if (Model.cas_HTN == true)
+        {
+            @Html.Raw(subListLevel1)<span>Hypertension</span><br />
+        }
+        @if (Model.cas_DM == true)
+        {
+            @Html.Raw(subListLevel1)<span>Diabetes Mellitus</span><br />
+        }
+        @if (Model.cas_HLD == true)
+        {
+            @Html.Raw(subListLevel1)<span>Hyperlipidemia</span><br />
+        }
+        @if (Model.cas_Afib == true)
+        {
+            @Html.Raw(subListLevel1)<span>Atrial Fibrillation</span><br />
+        }
+        @if (Model.cas_CAD == true)
+        {
+            @Html.Raw(subListLevel1)<span>Coronary Artery Disease</span><br />
+        }
+        @if (Model.cas_Stroke == true)
+        {
+            @Html.Raw(subListLevel1)<span>Stroke</span><br />
+        }
+        @if (Model.cas_HTN == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Hypertension</span><br />
+        }
+        @if (Model.cas_DM == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Diabetes Mellitus</span><br />
+        }
+        @if (Model.cas_HLD == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Hyperlipidemia</span><br />
+        }
+        @if (Model.cas_Afib == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Atrial Fibrillation</span><br />
+        }
+        @if (Model.cas_CAD == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Coronary Artery Disease</span><br />
+        }
+        @if (Model.cas_Stroke == false)
+        {
+            @Html.Raw(subListLevel1)<span>There is NO history of Stroke</span><br />
+        }
+    </div>
+
+    <div>
+        @if (Model.cas_anticoagulant_use != null)
+        {
+            if (Model.cas_anticoagulant_use == true)
+            {
+                <br /> <b> Anticoagulant use:&nbsp; </b><span>@Model.cas_anticoagulant_use_text</span>
+            }
+            else
+            {
+                <br /> <b> Anticoagulant use:&nbsp; </b><span>No</span>
+            }
+        }
+    </div>
+
+    <div>
+        @if (Model.cas_antiplatelet_use != null)
+        {
+            if (Model.cas_antiplatelet_use == true)
+            {
+                <br /> <b> Antiplatelet use:&nbsp;</b><span>@Model.cas_antiplatelet_use_text</span>
+            }
+            else
+            {
+                <br /> <b> Antiplatelet use:&nbsp;</b><span>No</span>
+            }
+        }
+    </div>
+
+    @* Ended By Axim  *@
+    @if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_vitals_bp) || !string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_vitals_pulse) || !string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_vitals_blood_glucose) || !string.IsNullOrEmpty(ViewBag.NIHSSAssessmentsData))
+    {
+        <br />
+        <div>
+            <div><b>Examination:</b></div>
+            @if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_vitals_bp) || !string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_vitals_pulse) || !string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_vitals_blood_glucose))
+            {
+                <div>
+                    @if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_vitals_bp))
+                    {
+                        <span><b>BP(</b>@Model.case_template_telestroke_notpa.ctt_vitals_bp<b>), </b></span>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_vitals_pulse))
+                    {
+                        <span><b>Pulse(</b>@Model.case_template_telestroke_notpa.ctt_vitals_pulse<b>), </b></span>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_vitals_blood_glucose))
+                    {
+                        <span><b>Blood Glucose(</b>@Model.case_template_telestroke_notpa.ctt_vitals_blood_glucose<b>)</b></span>
+                    }
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(ViewBag.NIHSSAssessmentsData))
+            {
+                <div>@Html.Raw(ViewBag.NIHSSAssessmentsData)</div>
+            }
+
+        </div>
+    }
+    @if (Model.cas_nihss_cannot_completed)
+    {
+        <br />
+        <label>
+          <span>@Model.cas_exam_free_text</span><br />
+        </label>
+    }
+    @*@if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_nihss_totalscore.ToString()) && !(Model.case_template_telestroke_notpa.ctt_ignore_nihss))*@
+    @if (!string.IsNullOrEmpty(Model.case_template_telestroke_notpa.ctt_nihss_totalscore.ToString()) && !(Model.cas_nihss_cannot_completed))
+    {
+        <br />
+        <div>
+            <b>NIHSS Score: </b> @(Model.case_template_telestroke_notpa.ctt_nihss_totalscore.ToString())
+        </div>
+    }
+    <br />
+
+    @if (Model.case_template_telestroke_notpa.ctt_patient_family_cosulted.HasValue && Model.case_template_telestroke_notpa.ctt_patient_family_cosulted.Value)
+    {
+        <div>
+            Patient/Family was informed the Neurology Consult would happen via TeleHealth consult by way of interactive audio and video telecommunications and consented to receiving care in this manner.
+        </div>
+    }
+    @*Patient was informed the Neurology Consult would happen via TeleHealth consult by way of interactive audio and video telecommunications and consented to receiving care in this manner.*@
+    @* Added By Axim *@
+    <br />
+    @if (Model.case_template_telestroke_notpa.ctt_family_consent_available.HasValue && Model.case_template_telestroke_notpa.ctt_family_consent_available.Value)
+    {
+        <div>
+            Consent could not be obtained due to patient status and family not available.
+        </div>
+    }
+
+    <br />
+    @if (Model.case_template_telestroke_notpa.ctt_critical_care_was_provided.HasValue && Model.case_template_telestroke_notpa.ctt_critical_care_was_provided.Value)
+    {
+        var minuts = Model.case_template_telestroke_notpa.ctt_critical_care_minutes;
+        <div>
+            Due to the immediate potential for life-threatening deterioration due to underlying acute neurologic illness, I spent @minuts minutes providing critical care. This time includes time for face to face visit via telemedicine, review of medical records, imaging studies and discussion of findings with providers, the patient and/or family.
+        </div>
+    }
+    @*Due to the immediate potential for life-threatening deterioration due to underlying acute neurologic illness, I spent 35 minutes providing critical care. This time includes time for face to face visit via telemedicine, review of medical records, imaging studies and discussion of findings with providers, the patient and/or family.*@
+
+
+    @if (ViewBag.Physician != null)
+    {
+        AspNetUser physician = ViewBag.Physician;
+        <br /><br />
+        <div>
+            Dr @physician.FirstName @physician.LastName
+        </div>
+    }
+
+    <br />
+    <br />
+    <span>
+        TeleSpecialists <br />
+        (239) 231-1456
+    </span>
+
+    <br />
+    <br />
+    Case @Model.cas_case_number
+</div>
+

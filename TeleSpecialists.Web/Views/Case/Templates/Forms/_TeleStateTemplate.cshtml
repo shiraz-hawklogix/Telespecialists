@@ -1,0 +1,993 @@
+﻿
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@model TeleSpecialists.BLL.Model.@case
+
+@{
+    /**/
+    var noTpaTable = "NIHSS";
+    if (Model.case_template_statconsult != null)
+    {
+        if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_nihss_or_neuro))
+        {
+            noTpaTable = Model.case_template_statconsult.ctt_nihss_or_neuro.Trim();
+        }
+    }
+
+    var AcuteISchemicStrokeList = Enum.GetValues(typeof(AcuteISchemicStatConsult)).Cast<AcuteISchemicStatConsult>()
+                           .Select(m => new SelectListItem
+                           {
+                               Value = Convert.ToInt32(m).ToString(),
+                               Text = m.ToDescription(),
+                               Selected = (Model?.case_template_statconsult?.ctt_impression != null ? Model.case_template_statconsult.ctt_impression.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                           });
+
+    var StrokeMechanismList = Enum.GetValues(typeof(StatConsultCTHEAD)).Cast<StatConsultCTHEAD>()
+                    .Select(m => new SelectListItem
+                    {
+                        Value = Convert.ToInt32(m).ToString(),
+                        Text = m.ToDescription(),
+                        Selected = (Model?.case_template_statconsult?.ctt_mechanism_stroke != null ? Model.case_template_statconsult.ctt_mechanism_stroke.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                    });
+
+
+
+    var AntiplateletTherapyRecommended = ViewBag.AntiplateletTherapyRecommended as Dictionary<int, string>;
+    var selectedAntiplateletTherapyRecommended = Model?.case_template_statconsult?.ctt_antiplatelet_therapy_recommedned?.Split(',').Select(m => m.ToInt());
+
+    // Get Imaging
+    var AntiplateletTherapyRecommendedStatConsult = ViewBag.AntiplateletTherapyRecommendedStatConsult as Dictionary<int, string>;
+    // add new column in case table for imaging
+    var selectedAntiplateletTherapyRecommendedStateConsult = Model?.case_template_statconsult?.ctt_imaging?.Split(',').Select(m => m.ToInt());
+
+    // Get theraphy
+    var StatConsultTherapies = ViewBag.StatConsultTherapies as Dictionary<int, string>;
+    // add new column in case table for imaging
+    var selectedStateConsultTherapy = Model?.case_template_statconsult?.ctt_therapies?.Split(',').Select(m => m.ToInt());
+
+    // Get Other Work
+    var StatConsultOtherWork = ViewBag.StatConsultOtherWork as Dictionary<int, string>;
+    // add new column in case table for other work
+    var selectedStateConsultOtherWork = Model?.case_template_statconsult?.ctt_other_workup?.Split(',').Select(m => m.ToInt());
+
+    var Dispositions = new Dictionary<string, string>();
+    Dispositions.Add("SignOff", "Sign Off");
+    Dispositions.Add("NuerologyFollowUpRecommended", "Neurology Follow Up Recommended");
+
+    var Telemedicines = new Dictionary<string, string>();
+    Telemedicines.Add("true", "Yes");
+    Telemedicines.Add("false", "No");
+
+    var options = new Dictionary<string, string>();
+    options.Add("NIHSS", "NIHSS");
+    options.Add("NeuroExam", "Neuro Exam");
+
+    var patientGender = Enum.GetValues(typeof(Gender)).Cast<Gender>()
+.Select(m => new
+{
+    Key = Convert.ToChar(m).ToString().Trim(),
+    Value = m.ToDescription()
+}).OrderByDescending(m => m.Key)
+.ToDictionary(m => m.Key, m => m.Value);
+
+    var SignOutNoTpa = ViewBag.SignOutNoTpa as Dictionary<int, string>;
+    var selectedSignOutNoTpa = Model?.case_template_statconsult?.ctt_sign_out?.Split(',').Select(m => m.ToInt());
+
+    var nihssList = ViewBag.NIHSSList as List<TeleSpecialists.BLL.Model.nih_stroke_scale_question>;
+    var nihssSelectedOptions = ViewBag.NIHSSSelectedOptions as List<int>;
+    if (nihssSelectedOptions == null)
+    {
+        nihssSelectedOptions = new List<int>();
+    }
+
+    IDictionary<string, object> dynamicHtmlAttributesTextArea = new Dictionary<string, object>();
+    IDictionary<string, object> dynamicHtmlAttributesTextBox = new Dictionary<string, object>();
+    IDictionary<string, object> dynamicHtmlAttributes = new Dictionary<string, object>();
+    IDictionary<string, object> dynamicHtmlAttributesForComment = new Dictionary<string, object>();
+
+    dynamicHtmlAttributesTextArea.Add("style", "width:100%");
+    dynamicHtmlAttributesTextBox.Add("style", "width:60px");
+    dynamicHtmlAttributes.Add("class", "form-control");
+    dynamicHtmlAttributes.Add("maxlength", "50");
+    dynamicHtmlAttributesForComment.Add("style", "width:100%; height:100px;");
+
+    string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+    if (Model.facility != null)
+    {
+        if (!string.IsNullOrEmpty(Model.facility.fac_timezone))
+        {
+            facilityTimeZone = Model.facility.fac_timezone;
+        }
+    }
+
+    //Getting timezone abbrivation.
+    var timeZone = Functions.GetTimeZoneAbbreviation(facilityTimeZone);
+
+    #region Call Check Box List
+    var StatGeneralList = Enum.GetValues(typeof(StatGeneral)).Cast<StatGeneral>()
+                   .Select(m => new SelectListItem
+                   {
+                       Value = Convert.ToInt32(m).ToString(),
+                       Text = m.ToDescription(),
+                       Selected = (Model?.case_template_statconsult?.ctt_neuro_exam != null ? Model.case_template_statconsult.ctt_neuro_exam.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                   });
+    var StatConsultFaceList = Enum.GetValues(typeof(StatConsultFace)).Cast<StatConsultFace>()
+                   .Select(m => new SelectListItem
+                   {
+                       Value = Convert.ToInt32(m).ToString(),
+                       Text = m.ToDescription(),
+                       Selected = (Model?.case_template_statconsult?.ctt_neuro_exam != null ? Model.case_template_statconsult.ctt_neuro_exam.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                   });
+    var StatConsultFacialSensationList = Enum.GetValues(typeof(StatConsultFacialSensation)).Cast<StatConsultFacialSensation>()
+                   .Select(m => new SelectListItem
+                   {
+                       Value = Convert.ToInt32(m).ToString(),
+                       Text = m.ToDescription(),
+                       Selected = (Model?.case_template_statconsult?.ctt_neuro_exam != null ? Model.case_template_statconsult.ctt_neuro_exam.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                   });
+    var StatConsultVisuaList = Enum.GetValues(typeof(StatConsultVisual)).Cast<StatConsultVisual>()
+                   .Select(m => new SelectListItem
+                   {
+                       Value = Convert.ToInt32(m).ToString(),
+                       Text = m.ToDescription(),
+                       Selected = (Model?.case_template_statconsult?.ctt_neuro_exam != null ? Model.case_template_statconsult.ctt_neuro_exam.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                   });
+    var StatConsultExtraList = Enum.GetValues(typeof(StatConsultExtra)).Cast<StatConsultExtra>()
+                   .Select(m => new SelectListItem
+                   {
+                       Value = Convert.ToInt32(m).ToString(),
+                       Text = m.ToDescription(),
+                       Selected = (Model?.case_template_statconsult?.ctt_neuro_exam != null ? Model.case_template_statconsult.ctt_neuro_exam.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                   });
+    var StatConsultSensationList = Enum.GetValues(typeof(StatConsultSensation)).Cast<StatConsultSensation>()
+                   .Select(m => new SelectListItem
+                   {
+                       Value = Convert.ToInt32(m).ToString(),
+                       Text = m.ToDescription(),
+                       Selected = (Model?.case_template_statconsult?.ctt_neuro_exam != null ? Model.case_template_statconsult.ctt_neuro_exam.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                   });
+    var StatConsultCoordinationList = Enum.GetValues(typeof(StatConsultCoordination)).Cast<StatConsultCoordination>()
+                   .Select(m => new SelectListItem
+                   {
+                       Value = Convert.ToInt32(m).ToString(),
+                       Text = m.ToDescription(),
+                       Selected = (Model?.case_template_statconsult?.ctt_neuro_exam != null ? Model.case_template_statconsult.ctt_neuro_exam.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                   });
+    var StatConsultMotorList = Enum.GetValues(typeof(StatConsultMotor)).Cast<StatConsultMotor>()
+.Select(m => new SelectListItem
+{
+    Value = Convert.ToInt32(m).ToString(),
+    Text = m.ToDescription(),
+    Selected = (Model?.case_template_statconsult?.ctt_neuro_exam != null ? Model.case_template_statconsult.ctt_neuro_exam.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+});
+    #endregion
+    #region Call Radio Button List
+    var StatSpeechList = Enum.GetValues(typeof(StatSpeech)).Cast<StatSpeech>()
+        .Select(m => new
+        {
+            Key = Convert.ToChar(m).ToString().Trim(),
+            Value = m.ToDescription()
+        }).OrderByDescending(m => m.Key).ToDictionary(m => m.Key, m => m.Value);
+
+    var StatLanguageList = Enum.GetValues(typeof(StatLanguage)).Cast<StatLanguage>()
+       .Select(m => new
+       {
+           Key = Convert.ToChar(m).ToString().Trim(),
+           Value = m.ToDescription()
+       }).OrderByDescending(m => m.Key).ToDictionary(m => m.Key, m => m.Value);
+
+    var StatFaceList = Enum.GetValues(typeof(StatFace)).Cast<StatFace>()
+       .Select(m => new
+       {
+           Key = Convert.ToChar(m).ToString().Trim(),
+           Value = m.ToDescription()
+       }).OrderByDescending(m => m.Key).ToDictionary(m => m.Key, m => m.Value);
+
+    var StatFacialSensationList = Enum.GetValues(typeof(StatFacialSensation)).Cast<StatFacialSensation>()
+           .Select(m => new
+           {
+               Key = Convert.ToChar(m).ToString().Trim(),
+               Value = m.ToDescription()
+           }).ToDictionary(m => m.Key, m => m.Value);
+    var StatVisualList = Enum.GetValues(typeof(StatVisual)).Cast<StatVisual>()
+           .Select(m => new
+           {
+               Key = Convert.ToChar(m).ToString().Trim(),
+               Value = m.ToDescription()
+           }).OrderByDescending(m => m.Key).ToDictionary(m => m.Key, m => m.Value);
+
+    var StatExtraocularList = Enum.GetValues(typeof(StatExtraocular)).Cast<StatExtraocular>()
+           .Select(m => new
+           {
+               Key = Convert.ToChar(m).ToString().Trim(),
+               Value = m.ToDescription()
+           }).OrderByDescending(m => m.Key).ToDictionary(m => m.Key, m => m.Value);
+    var StatMotorList = Enum.GetValues(typeof(StatMotor)).Cast<StatMotor>()
+           .Select(m => new
+           {
+               Key = Convert.ToChar(m).ToString().Trim(),
+               Value = m.ToDescription()
+           }).ToDictionary(m => m.Key, m => m.Value);
+    var StatSensationList = Enum.GetValues(typeof(StatSensation)).Cast<StatSensation>()
+           .Select(m => new
+           {
+               Key = Convert.ToChar(m).ToString().Trim(),
+               Value = m.ToDescription()
+           }).ToDictionary(m => m.Key, m => m.Value);
+
+    var StatCoordinationList = Enum.GetValues(typeof(StatCoordination)).Cast<StatCoordination>()
+      .Select(m => new
+      {
+          Key = Convert.ToChar(m).ToString().Trim(),
+          Value = m.ToDescription()
+      }).OrderByDescending(x => x.Key).ToDictionary(m => m.Key, m => m.Value);
+    #endregion
+
+    var yesNoOptions = new Dictionary<string, string>();
+    yesNoOptions.Add("true", "Yes");
+    yesNoOptions.Add("false", "No");
+
+    DateTime examdate = Convert.ToDateTime("09/22/2020");
+    var examtext = "false";
+    var classdanger = "";
+    if (Model.cas_created_date > examdate)
+    {
+        examtext = "true";
+        classdanger = "text-danger";
+    }
+}
+
+
+@Html.HiddenFor(m => m.case_template_statconsult.ctt_nihss_totalscore)
+@Html.HiddenFor(m => m.SelectedNIHSQuestionResponse)
+
+
+@if (Model.case_template_statconsult != null)
+{
+    <input type="hidden" name="TemplateKey" id="TemplateKey" value="@Model.case_template_statconsult.ctt_cas_key" />
+}
+<input type="hidden" name="TemplateKeyName" id="TemplateKeyName" value="ctt_cas_key" />
+
+<input type="hidden" name="case_template_statconsult.ctt_cas_key" id="case_template_statconsult_ctt_cas_key" value="@Model.cas_key" />
+<div class="form-group row case-template-tab">
+
+    <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+        <div class="form-group row">
+            <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Patient Is: </label>
+            <div class="col-sm-8" id="divPatient">
+                @Html.RadioButtonListFor(m => m.cas_metric_patient_gender, patientGender)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.cas_metric_patient_gender, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Chief Complaint: </label>
+            <div class="col-xl-12 col-sm-8 col-lg-12" id="divComplaint">
+                @Html.TextAreaFor(m => m.case_template_statconsult.ctt_cheif_complaints, new { @class = "form-control" })
+                <div id="ctt_cheif_complaints-error" class="error_msg" style="display:none;">
+                    <label for="ctt_cheif_complaints">This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">HPI: </label>
+            <div class="col-xl-12 col-sm-8 col-lg-12" id="divHPI">
+                @Html.TextAreaFor(m => m.cas_metric_hpi, new { @class = "form-control", @style = "height:300px" })
+                <div id="cas_metric_hpi-error" class="error_msg" style="display:none;">
+                    <label for="cas_metric_hpi">This field is required</label>
+                </div>
+            </div>
+        </div>
+        @* Added By Axim *@
+
+        <div class="container">
+            <label class="control-label col-xl-4 col-sm-4 col-lg-6">Past Medical History: </label>
+            <div class="form-group row">
+                <div class="col-6">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-6">HTN: </label>
+                    @Html.RadioButtonListFor(m => m.cas_HTN, yesNoOptions, new { @class = "cas_HTN" })
+                </div>
+                <div class="col-6">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-6">DM: </label>
+                    @Html.RadioButtonListFor(m => m.cas_DM, yesNoOptions, new { @class = "cas_DM" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-6">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">HLD: </label>
+                    @Html.RadioButtonListFor(m => m.cas_HLD, yesNoOptions, new { @class = "cas_HLD" })
+                </div>
+                <div class="col-6">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">Afib: </label>
+                    @Html.RadioButtonListFor(m => m.cas_Afib, yesNoOptions, new { @class = "cas_Afib" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-6">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">CAD: </label>
+                    @Html.RadioButtonListFor(m => m.cas_CAD, yesNoOptions, new { @class = "cas_CAD" })
+                </div>
+
+                <div class="col-6">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">Stroke: </label>
+                    @Html.RadioButtonListFor(m => m.cas_Stroke, yesNoOptions, new { @class = "cas_Stroke" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-sm-4 col-lg-12">Antiplatelet use: </label>
+                <div class="col-sm-8" id="divantiplateletuse">
+                    @Html.RadioButtonListFor(m => m.cas_antiplatelet_use, yesNoOptions, new { @class = "cas_antiplatelet_use" })
+                </div>
+            </div>
+
+            <div class="form-group row" id="antiplateletusediv" style="display:none">
+                <label class="control-label col-xl-4 col-sm-4 col-lg-12"></label>
+                <div class="form-group col-xl-7 col-sm-6 col-lg-12">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.cas_antiplatelet_use_text, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-sm-4 col-lg-12">Anticoagulant use: </label>
+                <div class="col-sm-8" id="divanticoagulantuse">
+                    @Html.RadioButtonListFor(m => m.cas_anticoagulant_use, yesNoOptions, new { @class = "cas_anticoagulant_use" })
+                </div>
+            </div>
+
+            <div class="form-group row" id="anticoagulantusediv" style="display:none">
+                <label class="control-label col-xl-4 col-sm-4 col-lg-12"></label>
+                <div class="form-group col-xl-7 col-sm-6 col-lg-12">
+                    <div class="input-group">
+                        @Html.TextBoxFor(m => m.cas_anticoagulant_use_text, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        @* Ended By Axim *@
+
+        <div class="form-group row" id="divImpression">
+            <label class="control-label col-12 text-danger">Impression: </label>
+            <div class="col-10 col-offset-2">
+                @Html.HiddenFor(m => m.case_template_statconsult.ctt_impression)
+                @foreach (var item in AcuteISchemicStrokeList)
+                {
+                    <div class="checkbox">
+                        <input type="checkbox" data-IgnoreAutoSave="true" class="track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")><label>&nbsp;@item.Text</label>
+                    </div>
+                }
+            </div>
+            <div class="col-10">
+                @Html.TextAreaFor(m => m.case_template_statconsult.ctt_impression_text, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+
+        @*<div class="form-group row">
+            <label class="control-label col-12 text-danger">Comments:</label>
+            <div class="col-10" id="divComment">
+                @Html.TextAreaFor(m => m.case_template_statconsult.ctt_comment, dynamicHtmlAttributesForComment)
+                <div class="text-danger">
+                    <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label>
+                </div>
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>*@
+        @{
+            var templateTypes = new List<int>()
+            {
+                EntityTypes.StrokeAlertTemplateTpa.ToInt(),
+                EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt(),
+                EntityTypes.StrokeAlertTemplateNoTpa.ToInt(),
+                EntityTypes.StrokeAlertTemplateNoTpaTeleStroke.ToInt(),
+                EntityTypes.StateAlertTemplate.ToInt()
+            };
+
+            if (Model.TemplateEntityType.HasValue && templateTypes.Contains(Model.TemplateEntityType.Value))
+            {
+                <div class="form-group row">
+                    <label class="control-label col-12 text-danger">Comments/Sign-Out:</label>
+                    <div class="col-10" id="divComment">
+                        @Html.TextAreaFor(m => m.cas_billing_comments, dynamicHtmlAttributesForComment)
+                        <div class="text-danger">
+                            <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label>
+                        </div>
+                        <div class="error_msg" style="display:none;">
+                            <label>This field is required</label>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        }
+        <div class="form-group row">
+            <label class="control-label col-12 ">CT HEAD: </label>
+            <div class="col-10 col-offset-2">
+                @Html.HiddenFor(m => m.case_template_statconsult.ctt_mechanism_stroke)
+                @foreach (var item in StrokeMechanismList)
+                {
+                    <div class="form-check mb-1 ctt_mechanism_stroke">
+                        <input type="checkbox" data-IgnoreAutoSave="true" class="form-check-input track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")>
+                        <label>&nbsp;@item.Text</label>
+                    </div>
+                }
+                <div id="case_template_statconsult.ctt_mechanism_stroke_freeText">
+                    @Html.TextAreaFor(m => m.case_template_statconsult.ctt_mechanism_stroke_text, new { @class = "form-control mechanism_stroke_text", style = "width: 100%" }) @*, placeholder = "Max text limit 2000." })*@
+                    @Html.ValidationMessageFor(model => model.case_template_statconsult.ctt_mechanism_stroke_text, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        @*<div class="form-group row">
+            <div class="col-12">
+                <label class="control-label text-danger">BP: </label> &nbsp;
+                @Html.TextBoxFor(m => m.case_template_statconsult.ctt_vitals_bp, dynamicHtmlAttributesTextBox)&nbsp;
+                <label class="control-label text-danger">Pulse: </label> &nbsp;
+                @Html.TextBoxFor(m => m.case_template_statconsult.ctt_vitals_pulse, dynamicHtmlAttributesTextBox)&nbsp;
+                <label class="control-label text-danger">Blood Glucose: </label> &nbsp;
+                @Html.TextBoxFor(m => m.case_template_statconsult.ctt_vitals_blood_glucose, dynamicHtmlAttributesTextBox)
+            </div>
+        </div>*@
+        <div class="form-group row">
+            <label class="control-label col-12 @classdanger">BP: </label>
+            <div class="col-10" id="divBP">
+                @Html.TextAreaFor(m => m.case_template_statconsult.ctt_vitals_bp, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12 @classdanger">Pulse: </label>
+            <div class="col-10" id="divpulse">
+                @Html.TextAreaFor(m => m.case_template_statconsult.ctt_vitals_pulse, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12 @classdanger">Blood Glucose: </label>
+            <div class="col-10" id="divBloodGlucose">
+                @Html.TextAreaFor(m => m.case_template_statconsult.ctt_vitals_blood_glucose, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class=" row">
+            <label class="control-label col-12">Patient/family consented to Telemedicine:</label>
+            <div class="col-12">
+                @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_consented_to_tele, Telemedicines)
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="control-label col-12 text-danger">Critical Care was Provided: </label>
+            <div class="col-12" id="divcriticalCare">
+                @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_critical_care_was_provided, yesNoOptions)
+                <div class="error_msg" style="display:none">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row" id="criticalcareTimeDiv">
+            <div class="col-8">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.case_template_statconsult.ctt_critical_care_minutes, new { @class = "form-control minutes", @type = "number" })
+                    <div class="input-group-append">
+                        <span class="input-group-text">Minutes</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="error_msg" style="display:none">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+
+        <div class=" row">
+            <label class="control-label col-12">Recommendations:</label>
+            <div class="col-12">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-10 col-offset-2 ctt_antiplatelet_therapy_recommedned" id="divAntiplateletTherapyRecommended">
+                @Html.HiddenFor(m => m.case_template_statconsult.ctt_antiplatelet_therapy_recommedned)
+                @foreach (var item in AntiplateletTherapyRecommended)
+                {
+                    var isExists = selectedAntiplateletTherapyRecommended != null ? selectedAntiplateletTherapyRecommended.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input data-IgnoreAutoSave="true" class="form-check-input track_change" id="SA_@item.Key" type="checkbox" value="@item.Key" @(isExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+            <div class="col-10" id="case_template_statconsult.ctt_antiplatelet_therapy_recommedned_freeText">
+                @Html.TextAreaFor(m => m.case_template_statconsult.ctt_antiplatelet_therapy_recommedned_text, dynamicHtmlAttributesTextArea)
+                @Html.ValidationMessageFor(model => model.case_template_statconsult.ctt_antiplatelet_therapy_recommedned_text, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class=" row">
+            <label class="control-label col-12">Imaging Studies Recommended:</label>
+            <div class="col-12">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-10 col-offset-2 ctt_imaging" id="divAntiplateletTherapyRecommended">
+                @*change column for imaging in below line*@
+                @Html.HiddenFor(m => m.case_template_statconsult.ctt_imaging)
+                @foreach (var item in AntiplateletTherapyRecommendedStatConsult)
+                {
+                    var _isExists = selectedAntiplateletTherapyRecommendedStateConsult != null ? selectedAntiplateletTherapyRecommendedStateConsult.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input data-IgnoreAutoSave="true" class="form-check-input track_change" id="SA_@item.Key" type="checkbox" value="@item.Key" @(_isExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class=" row">
+            <label class="control-label col-12">Therapies:</label>
+            <div class="col-12">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-10 col-offset-2 ctt_therapies" id="divAntiplateletTherapyRecommended">
+                @*change column for imaging in below line*@
+                @Html.HiddenFor(m => m.case_template_statconsult.ctt_therapies)
+                @foreach (var item in StatConsultTherapies)
+                {
+                    var _isExists = selectedStateConsultTherapy != null ? selectedStateConsultTherapy.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input data-IgnoreAutoSave="true" class="form-check-input track_change" id="SA_@item.Key" type="checkbox" value="@item.Key" @(_isExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class=" row">
+            <label class="control-label col-12">Other Workup:</label>
+            <div class="col-12">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-10 col-offset-2 ctt_other_workup" id="divAntiplateletTherapyRecommended">
+                @*change column for other workup in below line*@
+                @Html.HiddenFor(m => m.case_template_statconsult.ctt_other_workup)
+                @foreach (var item in StatConsultOtherWork)
+                {
+                    var _isotherExists = selectedStateConsultOtherWork != null ? selectedStateConsultOtherWork.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input data-IgnoreAutoSave="true" class="form-check-input track_change" id="SA_@item.Key" type="checkbox" value="@item.Key" @(_isotherExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class=" row">
+            <label class="control-label col-12">Disposition:</label>
+            <div class="col-12">
+                @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_disposition, Dispositions)
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12">Sign Out: </label>
+            <div class="col-10 col-offset-2 ctt_sign_out" id="divSignOutNoTpa">
+                @Html.HiddenFor(m => m.case_template_statconsult.ctt_sign_out)
+                @foreach (var item in SignOutNoTpa)
+                {
+                    var isExists = selectedSignOutNoTpa != null ? selectedSignOutNoTpa.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input data-IgnoreAutoSave="true" class="form-check-input track_change" id="SA_@item.Key" type="checkbox" value="@item.Key" @(isExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+    <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+        <div class="form-group row">
+            <div class="col-12">
+                @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_nihss_or_neuro, options, new { @class = "rdOption" })
+            </div>
+        </div>
+        <div id="divNIHSS">
+            <div class="form-group row">
+                <div class="col-12">
+                    @*@Html.CheckBoxFor(m => m.case_template_statconsult.ctt_ignore_nihss)*@
+                    @Html.CheckBoxFor(m => m.cas_nihss_cannot_completed)
+                    <label class="checkbox-inline">
+                        <b> NIHSS Cannot be Completed Due to Patient Status</b>
+                    </label>
+                    <div id="case_template_statconsult_ctt_ignore_nihss-error" class="error_msg" style="display:none;">
+                        <label for="case_template_statconsult.ctt_ignore_nihss">This field is required</label>
+                    </div>
+                </div>
+            </div>
+            @* Added BY axim 10-09-2020 *@
+            <div class="form-group row" id="divexamTextFree" style="display:none">
+                <label class="control-label col-12 @classdanger">Exam Free Text: </label>
+                <div class="col-12" id="divexamFree">
+                    @Html.TextAreaFor(m => m.cas_exam_free_text, new { @class = "form-control" })
+                    <div class="text-danger">
+                        <label class="error">50 characters minimum (<span class="Counter">0</span>)</label>
+                    </div>
+                    <div class="error_msg" id="cas_exam_free_text-error" style="display:none;">
+                        <label>This field is required</label>
+                    </div>
+                </div>
+            </div>
+            @* Ended by Axim 10-09-2020 *@
+            <div class="form-group row">
+                <label id="tsNoTPALabel" class="control-label col-12">NIH Stroke Scale/Score: </label>
+                <div class="col-12" id="divTotalScore">
+                </div>
+            </div>
+            <div id="tsNoTPADiv">
+                @foreach (var item in nihssList)
+                {
+                    <div class="form-group row">
+                        <label class="control-label col-12">@(item.nsq_title): </label>
+                        <div class="col-12 nihss-empty d-none">
+                            @Html.DropDownList("parent", Enumerable.Empty<SelectListItem>(), "", new { @class = "form-control" })
+                        </div>
+                        <div class="col-12 nihss">
+                            @{
+                                var defaultZero = item.nih_stroke_scale.Where(m => m.nss_score == 0).FirstOrDefault();
+                                var selectItemList = item.nih_stroke_scale.Select(m => new SelectListItem
+                                {
+                                    Text = m.nss_title + (m.nss_score > 0 ? " +" : " ") + m.nss_score,
+                                    Value = m.nss_key.ToString(),
+                                    Selected = nihssSelectedOptions.Contains(m.nss_key) ? true : (nihssSelectedOptions.Count() == 0 ? (m.nss_key == defaultZero?.nss_key) : false)
+                                });
+                                var name = "case_template_statconsult.ctt_nihss_" + item.nsq_key;
+                            }
+                            @Html.DropDownList(name, selectItemList, new { @style = "Width: 100%", @class = "form-control", @data_IgnoreAutoSave = true })
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div id="divNeuroExam">
+            <div class="form-group row">
+                <div class="col-12">
+                    @*@Html.CheckBoxFor(m => m.case_template_statconsult.ctt_ignore_nihss)*@
+                    <input type="checkbox" id="ckBoxNeuroExam" />
+                    <label class="checkbox-inline">
+                        <b> Precheck Normal Neuro Exam</b>
+                    </label>
+                    <div id="case_template_statconsult_ctt_ignore_nihss-error" class="error_msg" style="display:none;">
+                        <label for="case_template_statconsult.ctt_ignore_nihss">This field is required</label>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-12 headerDiv">
+                    <strong>General</strong>
+                </div>
+                <div class="col-12 margin-temp">
+                    <div class="ctt_neuro_exam" style="margin-left:7px">
+                        @Html.HiddenFor(m => m.case_template_statconsult.ctt_neuro_exam)
+                        @foreach (var item in StatGeneralList)
+                        {
+                            var id = "generalCkBox" + item.Value;
+                            <div class="float-left" style="width:120px">
+                                <input type="checkbox" data-IgnoreAutoSave="true" class="form-check-input track_change" id="@id" value="@item.Value" @(item.Selected ? "checked='checked'" : "")>
+                                <label>&nbsp;@item.Text</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 headerDiv">
+                    <strong>Speech</strong>
+                </div>
+                <div class="col-12 margin-temp reduce-margin-left ">
+                    @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_speech, StatSpeechList, new { @id = "rdSpeech" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 headerDiv">
+                    <strong>Language</strong>
+                </div>
+                <div class="col-12 margin-temp reduce-margin-left">
+                    @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_language, StatLanguageList, new { @id = "rdLanguage" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 headerDiv">
+                    <strong>Face</strong>
+                </div>
+                <div class="col-12 margin-temp reduce-margin-left">
+                    @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_face, StatFaceList, new { @id = "rdFace" })
+                </div>
+                <div class="col-12 add-margin-left ctt_neuro_exam">
+                    @foreach (var item in StatConsultFaceList)
+                    {
+                        <div class="float-left" style="width:90px">
+                            <input type="checkbox" data-IgnoreAutoSave="true" class="form-check-input track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")>
+                            <label>&nbsp;@item.Text</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 headerDiv">
+                    <strong>Facial Sensation</strong>
+                </div>
+                <div class="col-12 margin-temp reduce-margin-left">
+                    @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_facial_sensation, StatFacialSensationList, new { @id = "rdFacial" })
+                </div>
+                <div class="col-12 add-margin-left ctt_neuro_exam">
+                    @foreach (var item in StatConsultFacialSensationList)
+                    {
+                        <div class="float-left" style="width:90px">
+                            <input type="checkbox" data-IgnoreAutoSave="true" class="form-check-input track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")>
+                            <label>&nbsp;@item.Text</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 headerDiv">
+                    <strong>Visual Fields</strong>
+                </div>
+                <div class="col-12 margin-temp reduce-margin-left">
+                    @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_visual, StatVisualList, new { @id = "rdVisual" })
+                </div>
+                <div class="col-12 add-margin-left ctt_neuro_exam">
+                    @foreach (var item in StatConsultVisuaList)
+                    {
+                        <div class="float-left" style="width:90px">
+                            <input type="checkbox" data-IgnoreAutoSave="true" class="form-check-input track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")>
+                            <label>&nbsp;@item.Text</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 headerDiv">
+                    <strong>Extraocular Movements</strong>
+                </div>
+                <div class="col-12 margin-temp reduce-margin-left">
+                    @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_extraocular_movement, StatExtraocularList, new { @id = "rdExtra" })
+                </div>
+                <div class="col-12 add-margin-left ctt_neuro_exam">
+                    @foreach (var item in StatConsultExtraList)
+                    {
+                        <div class="float-left" style="width:90px">
+                            <input type="checkbox" data-IgnoreAutoSave="true" class="form-check-input track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")>
+                            <label>&nbsp;@item.Text</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 headerDiv">
+                    <strong>Motor Exam</strong>
+                </div>
+                <div class="col-12 margin-temp reduce-margin-left">
+                    @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_motor, StatMotorList, new { @id = "rdMotor" })
+                </div>
+                <div class="col-12 add-margin-left ctt_neuro_exam">
+                    @foreach (var item in StatConsultMotorList)
+                    {
+                        <div class="float-left" style="width:90px">
+                            <input type="checkbox" data-IgnoreAutoSave="true" class="form-check-input track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")>
+                            <label>&nbsp;@item.Text</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 headerDiv">
+                    <strong>Sensation</strong>
+                </div>
+                <div class="col-12 margin-temp reduce-margin-left">
+                    @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_sensation, StatSensationList, new { @id = "rdSensation" })
+                </div>
+                <div class="col-12 add-margin-left ctt_neuro_exam">
+                    @foreach (var item in StatConsultSensationList)
+                    {
+                        <div class="float-left" style="width:90px">
+                            <input type="checkbox" data-IgnoreAutoSave="true" class="form-check-input track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")>
+                            <label>&nbsp;@item.Text</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 headerDiv">
+                    <strong>Coordination</strong>
+                </div>
+                <div class="col-12 margin-temp reduce-margin-left">
+                    @Html.RadioButtonListFor(m => m.case_template_statconsult.ctt_coordination, StatCoordinationList, new { @id = "rdCoordination" })
+                </div>
+                <div class="col-12 add-margin-left ctt_neuro_exam">
+                    @foreach (var item in StatConsultCoordinationList)
+                    {
+                        <div class="float-left" style="width:90px">
+                            <input type="checkbox" data-IgnoreAutoSave="true" class="form-check-input track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")>
+                            <label>&nbsp;@item.Text</label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <strong>Exam Free Text</strong>
+                </div>
+                <div class="col-12">
+                    @Html.TextAreaFor(x => x.case_template_statconsult.ctt_exam_free_text, dynamicHtmlAttributesForComment)
+                </div>
+            </div>
+        </div>
+        <div id="case_template_statconsult_ctt_nihss_1" class="error_msg" style="display:none;">
+            <label for="case_template_statconsult_ctt_nihss_1-error">This field is required</label>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var statusValue = "@noTpaTable";
+        if (statusValue === "NIHSS") {
+            $('#divNeuroExam').hide();
+        }
+        else {
+            $('#divNIHSS').hide();
+        }
+
+        // Added By Axim 10-09-2020
+        var existingText = $("#cas_exam_free_text").val();
+        if (existingText != undefined) {
+            var charactersTyped = existingText.replace(/\s/g, '').length;
+            $(".Counter").html(charactersTyped);
+
+            $("#cas_exam_free_text").keyup(function () {
+                var text = $(this).val();
+                var charactersTyped = text.replace(/\s/g, '').length;
+                $(".Counter").html(charactersTyped)
+            });
+        }
+        onCriticalOptionsChanged();
+        setCriticalCareDefaults();
+        $(".ctt_disposition .form-check-inline").addClass("col-12");
+        calculateScore("#case_template_statconsult_ctt_nihss_totalscore");
+
+        //if ($("#case_template_statconsult_ctt_ignore_nihss").is(':checked')) {
+        if ($("#cas_nihss_cannot_completed").is(':checked')) {
+            $(".nihss-empty").removeClass("d-none");
+            $(".nihss").addClass("d-none");
+            $("#divTotalScore").addClass("d-none");
+            $("#divexamTextFree").show();
+            @*if (@examtext) {
+                $("#cas_exam_free_text").attr('required', true);
+            }*@
+        }
+        else {
+            $(".nihss-empty").addClass("d-none");
+            $(".nihss").removeClass("d-none");
+            $("#divTotalScore").removeClass("d-none");
+            $("#divexamTextFree").hide();
+           // $("#cas_exam_free_text").removeAttr('required');
+        }
+        $('')
+    });
+    $(".nihss select").off("change").change(function () {
+        calculateScore("#case_template_statconsult_ctt_nihss_totalscore");
+    });
+    //$('#case_template_statconsult_ctt_ignore_nihss').change(function () {
+    $('#cas_nihss_cannot_completed').change(function () {
+        if ($(this).is(":checked")) {
+            $(".nihss-empty").removeClass("d-none");
+            $(".nihss").addClass("d-none");
+            $("#divTotalScore").addClass("d-none");
+            $("#divexamTextFree").show();
+            @*if (@examtext) {
+            $("#cas_exam_free_text").attr('required', true);
+        }*@
+        }
+        else {
+            $(".nihss-empty").addClass("d-none");
+            $(".nihss").removeClass("d-none");
+            $("#divTotalScore").removeClass("d-none");
+            $("#divexamTextFree").hide();
+            //$("#cas_exam_free_text").removeAttr('required');
+        }
+
+    });
+    $('#ckBoxNeuroExam').change(function () {
+
+        if ($(this).is(":checked")) {
+            CheckedGeneral();
+            RadioButtonChecked();
+        }
+        else {
+            UncheckedGeneral();
+            UncheckedRdList();
+        }
+    });
+
+    function CheckedGeneral() {
+        for (var i = 0; i <= 4; i++) {
+            var _id = 'generalCkBox' + i;
+            document.getElementById(_id).checked = true;
+        }
+    }
+    function RadioButtonChecked() {
+        $("#rdSpeech").prop("checked", true);
+        $("#rdFace").prop("checked", true);
+        $("#rdLanguage").prop("checked", true);
+        $("#rdFacial").prop("checked", true);
+        $("#rdVisual").prop("checked", true);
+        $("#rdExtra").prop("checked", true);
+        $("#rdMotor").prop("checked", true);
+        $("#rdSensation").prop("checked", true);
+        $("#rdCoordination").prop("checked", true);
+    }
+    function UncheckedGeneral() {
+        for (var i = 0; i <= 4; i++) {
+            var _id = 'generalCkBox' + i;
+            document.getElementById(_id).checked = false;
+        }
+    }
+    function UncheckedRdList() {
+        $("#rdSpeech").prop("checked", false);
+        $("#rdFace").prop("checked", false);
+        $("#rdLanguage").prop("checked", false);
+        $("#rdFacial").prop("checked", false);
+        $("#rdVisual").prop("checked", false);
+        $("#rdExtra").prop("checked", false);
+        $("#rdMotor").prop("checked", false);
+        $("#rdSensation").prop("checked", false);
+        $("#rdCoordination").prop("checked", false);
+    }
+
+    function caseTemplateBeforeSubmit() {
+        setQuestionResponse();
+        setTemplateFieldData('#divImpression', '#case_template_statconsult_ctt_impression');
+        setTemplateFieldData('.ctt_mechanism_stroke', '#case_template_statconsult_ctt_mechanism_stroke');
+        setTemplateFieldData('.ctt_sign_out', '#case_template_statconsult_ctt_sign_out');
+        setTemplateFieldData('.ctt_antiplatelet_therapy_recommedned', '#case_template_statconsult_ctt_antiplatelet_therapy_recommedned');
+
+        setTemplateFieldData('.ctt_imaging', '#case_template_statconsult_ctt_imaging');
+        setTemplateFieldData('.ctt_therapies', '#case_template_statconsult_ctt_therapies');
+        setTemplateFieldData('.ctt_other_workup', '#case_template_statconsult_ctt_other_workup');
+        setTemplateFieldData('.ctt_neuro_exam', '#case_template_statconsult_ctt_neuro_exam');
+
+    }
+    $(".rdOption").click(function () {
+        var rdVal = $(this).val();
+        if (rdVal === 'NIHSS') {
+            $('#divNeuroExam').hide();
+            $('#divNIHSS').show();
+        }
+        else {
+            $('#divNIHSS').hide();
+            $('#divNeuroExam').show();
+        }
+
+    });
+</script>
+
+

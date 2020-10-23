@@ -1,0 +1,1289 @@
+﻿
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@{
+    ViewBag.Title = "Cases";
+    var list = ViewBag.StatusFilter as List<ucl_data>;
+    bool isAllowListing = (bool)ViewBag.AllowListing;
+    string FacilityAdminMessage = (string)ViewBag.FacilityAdminMessage;
+    bool isPacPhysician = false;
+
+    // Case Status
+    var caseStatus = Enum.GetValues(typeof(PacStatus)).Cast<PacStatus>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList CaseStatuslist = new SelectList(caseStatus, "key", "title");
+    var currentDate = DateTime.Now.ToEST();
+    var isPhysicianOrPatnerPhysician = false;
+    var isCall = ViewBag.iscalculateBill;
+    if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+    {
+        isPhysicianOrPatnerPhysician = true;
+    }
+    var isSleepAllow = ViewBag.isSleepAllow;
+}
+
+
+@if (ViewBag.Message != "" && ViewBag.Message != null)
+{
+    <div class="alert alert-dismissible @((bool)ViewBag.Error ? "alert-danger" : "alert-success")" id="autoclose">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>@((bool)ViewBag.Error ? "Error!" : "Success!")</strong> @ViewBag.Message
+    </div>
+}
+
+@if (isAllowListing)
+{
+    ///IF Listing for cases is allowed.
+    { Html.RenderAction("_AdvanceSearch", new { @source = PageSource.CaseListing }); }
+
+    <div class="row">
+        <div class="col-lg-3 col-xl-3 col-sm-3 col-md-3">
+            @{
+                var hideToolTip = User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) ? "d-none" : "";
+            }
+            <div class="border @hideToolTip" id="divToolTip">
+                <div class="text-danger"><strong>*Tool Tip</strong></div>
+                <div>
+                    <div>3 Minutes - Yellow (Assignment overdue)</div>
+                    <div>6 Minutes - Orange (Physician blast)</div>
+                    <div>8 Minutes - Red (Physician blast tier2)</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9 col-xl-9 col-sm-9 col-md-9">
+            <div id="divSearch">
+                <form id="frmSearch" method="post" class="row">
+                    <div class="form-row float-right col-lg-12 justify-content-end">
+                        <div class="form-group d-none "></div>
+                        <div class="form-group d-lg-inline-block d-none"></div>
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6 @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "d-none" : "")">
+                            <label class="bold">Status</label>
+                            <div id="divStatusFilter">
+                                <select id="statusFilter" class="form-control active" multiple="multiple">
+                                    @foreach (var item in list)
+                                    {
+                                        <option value="@item.ucd_key">@item.ucd_title</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Follow-Up</label>
+                            <select id="cas_billing_visit_type" name="cas_billing_visit_type" data-role="dropdownlist" class="form-control staticDropDown">
+                                <option value="">All</option>
+                                <option value="@FollowUpTypes.SignOff.ToDescription()" @(Model?.cas_billing_visit_type == FollowUpTypes.SignOff.ToDescription() ? "selected" : "")> @FollowUpTypes.SignOff.ToDescription() </option>
+                                <option value="@FollowUpTypes.FollowUp.ToDescription()" @(Model?.cas_billing_visit_type == FollowUpTypes.FollowUp.ToDescription() ? "selected" : "")> @FollowUpTypes.FollowUp.ToDescription()</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Time Frame</label>
+                            <select id="dateFilter" class="form-control">
+                                <option value="-1">Any</option>
+                                <option value="Today">Today</option>
+                                <option value="Yesterday">Yesterday</option>
+                                <option value="Last48Hours">Last 48 Hours</option>
+                                <option value="LastSevenDays">Last 7 Days</option>
+                                <option value="Last30Days">Last 30 Days</option>
+                                <option value="PreviousWeek">Previous Week</option>
+                                <option value="PreviousMonth">Previous Month</option>
+                                <option value="MonthToDate">Month to Date</option>
+                                <option value="SpecificDate">Specific Date</option>
+                                <option value="DateRange">Date Range</option>
+                            </select>
+                        </div>
+                        @if (User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()))
+                        {
+                            <div class="form-group col-xl-1 col-lg-2 col-md-6 col-sm-6">
+                                <label class="bold">Flag</label>
+                                <select id="flagFilter" class="form-control">
+                                    <option value="">All</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        }
+                        @* Added by Ahmad 09-09-2020 12:01 PM *@
+                        @if (User.IsInRole(UserRoles.Physician.ToDescription()))
+                        {
+                            <div class="form-group col-xl-1 col-lg-2 col-md-6 col-sm-6">
+                                <label class="bold">Flag</label>
+                                <select id="physicianflagFilter" class="form-control">
+                                    <option value="">All</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        }
+                        @* Ended by Ahmad 09-09-2020 12:01 PM *@
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Keyword Search</label>
+                            <input type="search" id="searchBox" class="k-textbox form-control-sm " style="width: 100%;" />
+                        </div>
+                        <div class="form-group col-xl-8 col-lg-6 col-md-6 col-sm-6" id="divDateRange" style="display:none;">
+                            <div class="form-row">
+                                <div class="d-none d-xl-block col-xl-6"></div>
+                                <div class="col-xl-3 col-lg-6 col-md-6">
+                                    <strong>Start Date</strong>
+                                    <input type="text" id="txtStartDate" name="txtStartDate" class="form-control datepicker" />
+                                    <span class="text-danger field-validation-error position-absolute" id="txtStartDateError"
+                                          style="display:none" data-valmsg-for="txtStartDate" data-valmsg-replace="true">
+                                        <span id="txtStartDate-error" class=""></span>
+                                    </span>
+                                </div>
+                                <div class="col-xl-3 col-lg-6 col-md-6">
+                                    <strong>End Date</strong>
+                                    <input type="text" id="txtEndDate" name="txtEndDate" class="form-control datepicker" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-xl-8 col-lg-6 col-md-6 col-sm-6" id="divSpecificDate" style="display:none;">
+                            <div class="form-row">
+                                <div class="d-none d-xl-block col-xl-9"></div>
+                                <div class="col-xl-3 col-lg-12 col-md-12">
+                                    <label class="bold">Date</label>
+                                    <input type="text" id="txtSpecificDate" name="txtSpecificDate" class="form-control datepicker" style="height: auto;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row float-right col-lg-12">
+                        <div class="form-group filter-button-group float-right col-lg-12">
+                            <input class="btn btn-dark margin-b-5" type="button" id="btnSearch" value="Search" />
+                            <a class="btn btn-dark margin-b-5 " href="javascript:;" id="resetSearch" style="display:none;">Clear Search</a>
+                            <a class="btn btn-dark margin-b-5 @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "d-none" : "")" href="javascript:;" data-toggle="modal" data-target="#caseAdvanceSearch" id="caseAdvanceSearch">Advanced</a>
+                            <a class="btn btn-dark margin-b-5 " href="javascript:;" id="btnExportCases">Export</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="PACdivSearch" class="d-none">
+                <form id="pacfrmSearch" method="post" class="row">
+                    <div class="form-row float-right col-lg-12 justify-content-end">
+                        <div class="form-group d-none "></div>
+                        <div class="form-group d-lg-inline-block d-none"></div>
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Status</label>
+                            <div id="pacdivStatusFilter">
+                                @Html.DropDownList("pac_cst_key", CaseStatuslist, new { @class = "case_status_id form-control active", @id = "pacstatusFilter", @multiple = "multiple" })
+                            </div>
+                        </div>
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Time Frame</label>
+                            <select id="pacdateFilter" class="form-control">
+                                <option value="-1">Any</option>
+                                <option value="Today">Today</option>
+                                <option value="Yesterday">Yesterday</option>
+                                <option value="Last48Hours">Last 48 Hours</option>
+                                <option value="LastSevenDays">Last 7 Days</option>
+                                <option value="Last30Days">Last 30 Days</option>
+                                <option value="PreviousWeek">Previous Week</option>
+                                <option value="PreviousMonth">Previous Month</option>
+                                <option value="MonthToDate">Month to Date</option>
+                                <option value="SpecificDate">Specific Date</option>
+                                <option value="DateRange">Date Range</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                            <label class="bold">Keyword Search</label>
+                            <input type="search" id="pacsearchBox" class="k-textbox form-control-sm " style="width: 100%;" />
+                        </div>
+                        <div class="form-group col-xl-8 col-lg-6 col-md-6 col-sm-6" id="pacdivDateRange" style="display:none;">
+                            <div class="form-row">
+                                <div class="d-none d-xl-block col-xl-6"></div>
+                                <div class="col-xl-3 col-lg-6 col-md-6">
+                                    <strong>Start Date</strong>
+                                    <input type="text" id="pactxtStartDate" name="txtStartDate" class="form-control datepicker" />
+                                    <span class="text-danger field-validation-error position-absolute" id="pactxtStartDateError"
+                                          style="display:none" data-valmsg-for="pactxtStartDate" data-valmsg-replace="true">
+                                        <span id="pactxtStartDate-error" class=""></span>
+                                    </span>
+                                </div>
+                                <div class="col-xl-3 col-lg-6 col-md-6">
+                                    <strong>End Date</strong>
+                                    <input type="text" id="pactxtEndDate" name="txtEndDate" class="form-control datepicker" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-xl-8 col-lg-6 col-md-6 col-sm-6" id="pacdivSpecificDate" style="display:none;">
+                            <div class="form-row">
+                                <div class="d-none d-xl-block col-xl-9"></div>
+                                <div class="col-xl-3 col-lg-12 col-md-12">
+                                    <label class="bold">Date</label>
+                                    <input type="text" id="pactxtSpecificDate" name="pactxtSpecificDate" class="form-control datepicker" style="height: auto;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row float-right col-lg-12">
+                        <div class="form-group filter-button-group float-right col-lg-12">
+                            <input class="btn btn-dark margin-b-5  float-right" type="button" id="pacbtnSearch" value="Search" />
+                            @*<a class="btn btn-dark margin-b-5 " href="javascript:;" id="pacresetSearch" style="display:none;">Clear Search</a>*@
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <ul class="nav nav-tabs" id="caseListTabs" role="tablist">
+        @{ string cls = ""; string _cls = "";}
+        @{
+            _cls = "show active";
+            isPacPhysician = true;
+        }
+        <li class="nav-item ">
+            <a class="nav-link bold font-md active" onclick="onTabClicked('emergentTab'), showthisTab()" id="emergentTabLinkt" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="emergentTab" aria-selected="true">Emergent Consults</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link bold font-md" onclick="onTabClicked('routineTab'), showthisTab()" id="routineTabLink" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="routineTab" aria-selected="false">Routine Consults</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link bold font-md" onclick="onTabClicked('eegsTab'), showthisTab()" id="eegsTabLink" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="eegsTab" aria-selected="false">EEGs</a>
+        </li>
+        @if (isSleepAllow || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription())@*|| User.IsInRole(UserRoles.FacilityAdmin.ToDescription())*@ /**/
+                                                                                                                                                                                                                                        /**/
+                                                                                                                                                                                                                                        || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription())
+                                             || User.IsInRole(UserRoles.AOC.ToDescription())
+                                              || User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
+                                               || User.IsInRole(UserRoles.Finance.ToDescription())
+                                                || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
+                                                 || User.IsInRole(UserRoles.QPS.ToDescription())
+                                                  || User.IsInRole(UserRoles.QualityDirector.ToDescription())
+                                                   || User.IsInRole(UserRoles.VPQuality.ToDescription())
+                                                || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())
+                                                || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+                                                || User.IsInRole(UserRoles.RRCManager.ToDescription()))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Sleep</span></a>
+                            </li>
+                        }
+                        @*@if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
+                                </li>
+                            }*@
+                        @*@if (User.IsInRole(UserRoles.PACPhysician.ToDescription()))
+                            {
+                                cls = "show active";
+                                <li class="nav-item">
+                                    <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
+                                </li>
+                            }*@
+
+    </ul>
+    <div class="tab-content" id="caseListTabsContent">
+        <div class="tab-pane fade  @(_cls)" id="emergentTab" role="tabpanel" aria-labelledby="home-tab">
+            <div class="row">
+                <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 text-center m-2">
+
+                    @if (!User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) && !User.IsInRole(UserRoles.QPS.ToDescription()) && !User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) && !User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) && !User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) && !User.IsInRole(UserRoles.MedicalStaff.ToDescription()) && !User.IsInRole(UserRoles.Finance.ToDescription()) && !User.IsInRole(UserRoles.VPQuality.ToDescription()))
+                    {
+                        if (!User.IsInRole(UserRoles.Physician.ToDescription()))
+                        {
+                            <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create")">Create Case</a>
+                        }
+                        <a class="btn btn-dark loadLinkAsync" href="@Url.Action("CreateMultipleCases")">Create Consults</a>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade " id="routineTab" role="tabpanel" aria-labelledby="profile-tab"></div>
+        <div class="tab-pane fade " id="eegsTab" role="tabpanel" aria-labelledby="contact-tab"></div>
+        <div class="tab-pane fade @(cls)" id="homehealthTab" role="tabpanel" aria-labelledby="contact-tab">
+            <div class="row">
+                <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 text-center m-2">
+                    @if (User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.PACNavigator.ToDescription()))
+                    {
+                        <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create","PACPhysician")">Create Sleep Case</a>
+                    }
+                </div>
+            </div>
+            <div id="divPacPhysician">
+                @Html.Partial("_homehealth")
+            </div>
+        </div>
+    </div>
+
+
+    <div class="customGridHeader">
+        <div id="kendoDataGrid">
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        function hideOtherTabs() {
+            localStorage.clickfromcase = "homehealthtab";
+            $("#kendoDataGrid").hide();
+            $('#divSearch').hide();
+            $("#divToolTip").hide();
+            $('#PACdivSearch').removeClass("d-none");
+
+        }
+        function showthisTab() {
+            $('#PACdivSearch').addClass("d-none");
+            $("#kendoDataGrid").show();
+            $('#divSearch').show();
+            $("#divToolTip").show();
+        }
+
+
+        function onTabClicked(tab) {
+            localStorage.setItem('clickfromcase', null);
+            // Change reverted back in Ticket 505
+            //if ($("#caseListActiveTab").val() != tab)
+            //    $("#resetSearch").click(); // resetting case type filter on tab changed
+            // End of Change
+
+            $("#caseListActiveTab").val(tab);
+
+            var tabLink = tab + "Link";
+            $("#" + tabLink).tab("show");
+
+            var existingFilters = [];
+
+            var dataGrid = $("#kendoDataGrid").data("kendoGrid");
+
+            if (dataGrid != undefined && dataGrid != null) {
+                var dataSource = dataGrid.dataSource;
+                if (dataSource != undefined && dataSource != null) {
+
+                    var filter = dataSource.filter();
+
+                    if (filter != undefined && filter != null) {
+
+                        existingFilters = filter.filters;
+                    }
+                }
+            }
+
+            if (existingFilters == undefined || existingFilters == null)
+                existingFilters = [];
+
+            existingFilters.map(function(item, index)  {
+
+                if (item.field == "multi_cas_ctp_key") {
+
+                    // Removing multi_cas_ctp_key filter if already exists. the onGridFilter function will handle this filter.
+                    existingFilters.splice(index);
+                }
+            });
+            var isPac = "@(isPacPhysician)";
+            if (tab == "homehealthTab") {
+                $("#homehealthTabLink").trigger("click");
+                $("#divToolTip").hide();
+                $('#divSearch').hide();
+                $('#PACdivSearch').removeClass("d-none");
+            } else if (isPac === 'True') {
+                onGridFilter(tab, existingFilters);
+                //$("#emergentTabLinkt").trigger("click");
+            }
+            //else
+            //{
+            //    $("#homehealthTabLink").trigger("click");
+            //    $("#divToolTip").hide();
+            //    $('#divSearch').hide();
+            //    $('#PACdivSearch').removeClass("d-none");
+            //}
+        }
+
+        function FilterAdvanceTypes(types,show) {
+
+            $("#userTypeFilter").val("");
+
+            $("#userTypeFilter").siblings(".ms-options-wrap").find("li").map(function(i, e)   {
+                var val = $(e).find("label").find("input").val();
+
+                if (show) {
+                    if (!(types.indexOf(val) != -1)) {
+
+                        $(e).hide();
+                    }
+                    else {
+
+                        $(e).show();
+                    }
+                }
+                else {
+
+                    if (types.indexOf(val) != -1) {
+
+                        $(e).hide();
+                    }
+                    else {
+
+                        $(e).show();
+                    }
+                }
+            });
+        }
+
+        function getCaseTypesBasedOnTab() {
+            var multi_cas_ctp_key = null;
+
+            var routineValues = '@CaseType.RoutineConsultNew.ToInt(),@CaseType.RoutineConsultFollowUp.ToInt()';
+            var eegsValues = '@CaseType.StatEEG.ToInt(),@CaseType.LongTermEEG.ToInt(),@CaseType.RoutineEEG.ToInt()';
+            var emergentValues = routineValues + "," + eegsValues;
+            var multi_cas_ctp_key = null;
+
+            var tab = $("#caseListActiveTab").val();
+
+            if (tab == 'emergentTab') {
+
+                /* Summary
+                   In this tab all the case types will be shown except the case types which are shown in the below routine and eegs tab.
+                   so we will use not operator "neq".
+             */
+
+                multi_cas_ctp_key = { field: "multi_cas_ctp_key", operator: "neq", "value": emergentValues };
+
+            }
+            else if (tab == 'routineTab') {
+                multi_cas_ctp_key = { field: "multi_cas_ctp_key", operator: "eq", "value": routineValues };
+            }
+            else if (tab == 'eegsTab') {
+                multi_cas_ctp_key = { field: "multi_cas_ctp_key", operator: "eq", "value": eegsValues };
+            }
+
+            return multi_cas_ctp_key;
+        }
+
+        function onGridFilter(tab,filters) {
+            if (filters == undefined || filters == null)
+                filters = [];
+
+            var routineValues = '@CaseType.RoutineConsultNew.ToInt(),@CaseType.RoutineConsultFollowUp.ToInt()';
+            var eegsValues = '@CaseType.StatEEG.ToInt(),@CaseType.LongTermEEG.ToInt(),@CaseType.RoutineEEG.ToInt()';
+            var emergentValues = routineValues + "," + eegsValues;
+            if (tab == 'emergentTab') {
+
+                /* Summary
+                   In this tab all the case types will be shown except the case types which are shown in the below routine and eegs tab.
+                   so we will use not operator "neq".
+             */
+               FilterAdvanceTypes(emergentValues.split(","),false);
+            }
+            else if (tab == 'routineTab') {
+                    FilterAdvanceTypes(routineValues.split(","),true);
+            }
+            else if (tab == 'eegsTab') {
+                FilterAdvanceTypes(eegsValues.split(","),true);
+            }
+
+
+            filters.push({ field: "date_filter", operator: "eq", "value": $("#dateFilter").val() });
+            if ($("#kendoDataGrid").data("kendoGrid") == undefined || $("#kendoDataGrid").data("kendoGrid") == null) {
+                @{
+
+                    var actionButtonText = User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || /*User.IsInRole(UserRoles.VPQuality.ToDescription()) ||*/ User.IsInRole(UserRoles.MedicalStaff.ToDescription()) ? "View" : "Edit";
+                }
+                $("#kendoDataGrid").kendoGrid({
+                    dataSource: {
+                        transport: {
+                            read: {
+                                url: '@Url.Action("GetAll")',
+                                contentType: "application/json",
+                                type: "POST"
+                            },
+                            parameterMap: function (options) {
+                                options = KendoKeepState("Case", options, true);
+                                if ((options.filter !== undefined && options.filter.filters !== undefined) == false) {
+                                    if (options.filter === undefined)
+                                        options.filter = {};
+                                    if (options.filter.filters === undefined)
+                                        options.filter.filters = [];
+                                    if (options.filter.logic === undefined)
+                                        options.filter.logic = "and";
+                                    options.filter.filters.push({ field: "date_filter", operator: "eq", "value": $("#dateFilter").val() });
+                                    options = KendoKeepState("Case", options, true);
+
+                                }
+
+                                options.filter.filters.push(getCaseTypesBasedOnTab());
+                                exportPostData = options;
+                                return kendo.stringify(options);
+                            }
+                        },
+                        mobile: "phone",
+                        schema: {
+                            data: "Data",
+                            total: "Total"
+                        },
+                        page: KendoGet("Case", "page"),
+                        pageSize: GetKendoPageSize("Case", "RecPerPage", true),
+                        serverPaging: true,
+                        serverFiltering: true,
+                        serverSorting: true
+                    },
+                    dataBound: function (e) {
+                        formatPhysicianInitials("#kendoDataGrid", 14);
+
+                        applyColors();
+                        if (refillFilters.applyFilters != 0) {
+                            refillFilters();
+                        }
+                        refreshData();
+                        this.autoFitColumn('Actions');
+                        //get All records
+                        SetKendoTotalCount("Case", $('#kendoDataGrid').data("kendoGrid").dataSource.total());
+                        // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                        $('[data-role="dropdownlist"]').each(function () {
+                            var kendoDropDown = $(this).data("kendoDropDownList");
+                            if (kendoDropDown)
+                                kendoDropDown.bind("open", onDropdDownOpen);
+                        });
+                    },
+                    //selectable: true,
+                    filterable: false,
+                    sortable: true,
+                    scrollable: true,
+                    resizable: true,
+                    pageable: {
+                        refresh: true,
+                        pageSizes: true,
+                        buttonCount: 5
+                    },
+                    columns: [
+                        { hidden: true, field: "cas_key" },
+                        { hidden: true, field: "cas_status_assign_date" },
+                        { hidden: true, field: "cas_cst_key" },
+                        { hidden: true, field: "cas_case_number", title: "Case Number" },
+                        {
+                            title: "Actions", width: '80px',
+                            template: "<a class='btn btn-dark btn-sm py-1 temp loadLinkAsync' title='@actionButtonText Case' onClick='StopCaseListingTimer()' href='@Url.Action("Edit")/\@(User.IsInRole(UserRoles.QPS.ToDescription()) @*|| User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) *@ || User.IsInRole(UserRoles.MedicalStaff.ToDescription()) ? "?id=#=cas_key#&isReadOnly=#= true#" : "#= cas_key#?showPopupOnLoad=true")'>@actionButtonText</a>"//&isReadOnly=#= true#
+                        },
+                        {
+                            title: "<b>Flag</b>", width: '55px', hidden: @(User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) ? "false" : "true"),
+                            template: "#= setFlagged(kendo.toString(cas_is_flagged), kendo.toString(cas_key)) #"
+                        },
+                        {
+                            title: "<b>Flag</b>", width: '55px', hidden: @(User.IsInRole(UserRoles.Physician.ToDescription()) ? "false" : "true"),
+                            template: "#= setPhysicianFlagged(kendo.toString(cas_is_flagged_physician), kendo.toString(cas_key)) #"
+                        },
+                        {
+                            field: "cas_response_ts_notification", title: "Start Time", width: '135px'
+                        },
+                        {
+                            field: "cas_metric_stamp_time_est", title: "Stamp Time", width: '135px'
+                        },
+                        {
+                            field: "date_of_consult", title: "Date of Consult", width: '150px'
+                        },
+                        {
+                            field: "ctp_name", title: "Type", width: '155px',
+                            template: "#= checkEAlertTypeCase(kendo.toString(ctp_name), kendo.toString(cas_is_ealert)) #"
+                        },
+                        {
+                            field: "fac_name", title: "Facility", width: '200px',
+                            attributes: { "class": "case-grid-facitlityName" }
+                        },
+                        {
+                            field: "cas_patient", title: "Patient Name", width: '135px'
+                        },
+                        {
+                            field: "cas_cart", title: "Cart", width: '110px',
+                            attributes: { "class": "case-grid-cart" }
+                        },
+                        {
+                            field: "phy_name", title: "Physician", width: '100px',
+                            attributes: { "class": "case-grid-physician wrapWord" }, hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) ? "true" : "false"),
+                        },
+                        {
+                            field: "cst_name", title: "Status", width: '100px', hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "true" : "false"),
+                        },
+                        {
+                            field: "Navigator", title: "Navigator", width: '120px', hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "true" : "false"),
+                        },
+                        {
+                            field: "cas_billing_visit_type", title: "Follow-Up", width: '110px',
+                            attributes: { "class": "case-grid-followUp" }
+                        },
+                        {
+                            field: "IsPhysicianBlast", title: "Blast", width: '70px', hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "true" : "false"),
+                        },
+                        {
+                            field: "BillingCode", title: "Billing Code", width: '120px',
+                        },
+                        {
+                            field: "cas_callback", title: "Callback", width: '135px',
+                            template: "#= formatPhoneNumber(kendo.toString(cas_callback)) #"
+                        }
+                    ]
+                });
+            }
+            else {
+
+                if (filters.length == 0)
+                    return;
+
+                $("#kendoDataGrid").data("kendoGrid").dataSource.filter({
+                    logic: "or",
+                    filters: filters
+                });
+            }
+
+
+        }
+
+    var exportPostData = null;
+    var advanceSearchformData = [];
+    var userInitialList = [];
+    var userInitialValue = "";
+    var userTypeValue = "";
+
+    clearAutoSaveInterval();
+        $(document).ready(function () {
+
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        refillFilters.applyFilters = 1;
+        refillFilters.resetSearch = false;
+        generateStatusFilter();
+        generateUserInitialFilter();
+        generateUserTypeFilter();
+        generateEAlertFilter();
+        generateTpaFilter()
+        isUserInitial = false;
+        isUserType = false;
+        $("#dateFilter").val('Last48Hours');
+        $("#cas_billing_visit_type").off("change").change(function() {
+            $("#cas_billing_visit_type_form").val($(this).val())
+            $("#btnSearch").click();
+                        });
+        $("#flagFilter").off("change").change(function() {
+            $("#btnSearch").click();
+        });
+            ///Added by Ahmad 09-09-2020 12:01 PM
+
+            $("#physicianflagFilter").off("change").change(function () {
+
+                $("#btnSearch").click();
+            });
+
+            ///Ended by Ahmad 09-09-2020 12:01 PM
+            var tab = $("#caseListActiveTab").val()
+            var clickfromcase = localStorage.getItem("clickfromcase");
+            if (clickfromcase === "homehealthtab") {
+                localStorage.setItem('clickfromcase', null);
+                tab = "homehealthTab";
+                hideOtherTabs();
+            }
+            onTabClicked(tab);
+        //onTabClicked($("#caseListActiveTab").val());
+
+        $("#kendoDataGrid").kendoTooltip({
+                            filter: "td:nth-child(6)", //this filter selects the second column's cells
+            position: "right",
+            content: function(e) {
+                                var isFlagged = $(e.target).find("img").data("flagged");
+                                if (isFlagged) {
+                                    return "<div style='color: white;'><span>Click to turn off flag.</span></div>";
+                                }
+                                else {
+                                    return "<div style='color: white;'><span>Click to turn on flag.</span></div>";
+                                }
+                            }
+                        }).data("kendoTooltip");
+            $("#kendoDataGrid").kendoTooltip({
+                filter: "td:nth-child(7)", //this filter selects the second column's cells
+                position: "right",
+                content: function (e) {
+                    var isFlagged = $(e.target).find("img").data("flagged");
+                    if (isFlagged) {
+                        return "<div style='color: white;'><span>Click to turn off flag.</span></div>";
+                    }
+                    else {
+                        return "<div style='color: white;'><span>Click to turn on flag.</span></div>";
+                    }
+                }
+            }).data("kendoTooltip");
+        $("#btnSearch").off("click").click(function() {
+                            performSearchOnCases();
+                        });
+        $(".datepicker").kendoDatePicker({
+                            open: function(e) {
+                                onDatePickerOpen(e);
+                            }
+                        });
+        $("#dateFilter").unbind("change").change(function() {
+            $("#divDateRange,#divSpecificDate").hide();
+                            var selectedValue = $(this).val();
+                            if (selectedValue == "SpecificDate") {
+                $("#divSpecificDate").show();
+                            }
+                            else if (selectedValue == "DateRange") {
+                $("#divDateRange").show();
+                            }
+                            else {
+                $("#btnSearch").click();
+                            }
+                        });
+        // frmSearch
+        $("#searchBox").keyup(function(event) {
+                    if (event.keyCode == 13) {
+                $("#btnSearch").click();
+                }
+                });
+        $("#userInitialFilter").change(function () {
+                    isUserInitial = true;
+                });
+        $("#userTypeFilter").change(function () {
+                    isUserType = true;
+                });
+        $("#frmAdvanceSearch").off("submit").submit(function (e) {
+                    e.preventDefault();
+            $("#cas_billing_visit_type").val($("#cas_billing_visit_type_form").val());
+            timerControlChange(".timerMask");
+
+            advanceSearchformData = $("#frmAdvanceSearch").find("input:text,select").serializeArray();
+
+
+                    if (isUserInitial)
+                        userInitialValue = $("#userInitialFilter").val().toString();
+
+                    if (isUserType)
+                        userTypeValue = $("#userTypeFilter").val().toString();
+
+                    window.setTimeout(function() {
+                $("#caseAdvanceSearch").modal("hide");
+                $("#btnSearch").click();
+                    }, 100);
+                });
+        $("#btnExportCases").off("click").click(function () {
+                    var url = "@Url.Action("Export")";
+            $.ajax({
+                        url: url,
+                type: "POST",
+                data: JSON.stringify(exportPostData),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function(response) {
+                            if (response.success) {
+                                window.location.href = response.exportedFileUrl;
+                            }
+                        }
+                    });
+                });
+        $("#resetSearch").off("click").click(function (e) {
+                    e.preventDefault();
+            $("#frmAdvanceSearch").trigger('reset');
+                    advanceSearchformData = [];
+            $("#userInitialFilter").val("");
+            $("#userTypeFilter").val("");
+            $("#eAlertFilter").val("");
+            $("#frmSearch").trigger('reset');
+            $("#divStatusFilter").find(".ms-options-wrap").find("button>span").html("Select Status");
+            $("#divuserTypeFilter").find(".ms-options-wrap").find("button>span").html("Select Type");
+            $("#diveAlertFilter").find(".ms-options-wrap").find("button>span").html("eAlert");
+            $("#divTpaFilter").find(".ms-options-wrap").find("button>span").html("Select tPA");
+            $("#divDateRange,#divSpecificDate").hide();
+
+                    localStorage.clear();
+
+            $("#dateFilter").val('Last48Hours');
+            $("#divuserInitialFilter").find(".ms-options-wrap").find("button>span").html("Select Physician");
+            $("#btnSearch").click();
+            $("#resetSearch").hide();
+                    refillFilters.applyFilters = 1;
+                    refillFilters.resetSearch = true;
+            });
+            // code for get today bill for physician
+            if (@isPhysicianOrPatnerPhysician.ToString().ToLower() && @isCall.ToString().ToLower()) {
+                // call rate function
+                var physcian = "";
+                var startDate = "@(new DateTime(currentDate.Year, currentDate.Month, currentDate.Day).ToString())";
+                var endDate = "@(new DateTime(currentDate.Year, currentDate.Month, currentDate.Day).ToString())";
+                GetTodayBill(startDate, endDate, physcian);
+                // end
+            }
+            //end
+        });
+
+    function StopCaseListingTimer() {
+        if(refreshData.timeout != undefined)
+            window.clearTimeout(refreshData.timeout);
+    }
+    function generateStatusFilter() {
+        $('#statusFilter').multiselect({
+            columns: 1,
+            placeholder: 'Select Status',
+            search: true,
+            searchOptions: {
+                'default': 'Search Status'
+            },
+            selectAll: true,
+            onOptionClick: function () {
+                $("#btnSearch").click();
+            },
+            onSelectAll: function () {
+                performSearchOnCases();
+            }
+        });
+    }
+    function generateUserInitialFilter() {
+        $('#userInitialFilter').multiselect({
+            columns: 1,
+            placeholder: 'Select Physician',
+            search: false,
+            searchOptions: {
+                'default': 'Search user initials'
+            },
+            selectAll: true,
+        });
+    }
+    function generateEAlertFilter() {
+            $('#eAlertFilter').multiselect({
+                columns: 1,
+                placeholder: 'eAlert',
+                search: false,
+                searchOptions: {
+                    'default': 'eAlert'
+                },
+                selectAll: true,
+            });
+    }
+    function generateTpaFilter() {
+            $('#TpaFilter').multiselect({
+                columns: 1,
+                placeholder: 'Select tPA',
+                search: false,
+                selectAll: true,
+            });
+        }
+    function generateUserTypeFilter() {
+        $('#userTypeFilter').multiselect({
+            columns: 1,
+            placeholder: 'Select Type',
+            search: false,
+            searchOptions: {
+                'default': 'Search user type'
+            },
+            selectAll: true,
+        });
+    }
+    function validateForm() {
+        var selectedOption = $("#dateFilter").val();
+        $("#txtStartDateError").hide();
+        if (selectedOption == "DateRange") {
+            var start_date = $("#txtStartDate").val();
+            var end_date = $("#txtEndDate").val();
+            if (start_date != "" && end_date != "") {
+                var duration = moment.duration(moment(end_date).diff(new Date(start_date)));
+                if (duration.asMinutes() < 0) {
+                    $("#txtStartDateError").html("Start Date must be less then End Date");
+                    $("#txtStartDateError").show();
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    function performSearchOnCases() {
+        if (!validateForm())
+            return;
+
+        var filters = [];
+
+        var selectedValue = $("#dateFilter").val();
+        if (selectedValue == "SpecificDate") {
+            if ($("#txtSpecificDate").val() != "") {
+                filters.push({
+                    field: "specific_date",
+                    operator: "eq",
+                    value: $("#txtSpecificDate").val()
+                });
+            }
+        }
+        else if (selectedValue == "DateRange") {
+            if ($("#txtStartDate").val() != "") {
+                filters.push({
+                    field: "start_date",
+                    operator: "eq",
+                    value: $("#txtStartDate").val()
+                });
+            }
+
+            if ($("#txtEndDate").val() != "") {
+                filters.push({
+                    field: "end_date",
+                    operator: "eq",
+                    value: $("#txtEndDate").val()
+                });
+            }
+        }
+        // if ($("#dateFilter").val() != "") {
+        filters.push({
+            field: "date_filter",
+            operator: "eq",
+            value: selectedValue
+        });
+        // }
+        var searchValue = $('#searchBox').val();
+
+        if (searchValue != "") {
+            filters.push({
+                field: "search_text",
+                operator: "eq",
+                value: searchValue
+            });
+        }
+        var statusFilter = $("#statusFilter").val().toString();
+        if (statusFilter !== "") {
+            filters.push({
+                field: "cas_status",
+                operator: "eq",
+                value: statusFilter
+            });
+        }
+        // follow up check
+        var followUp = $.trim($("#cas_billing_visit_type").val());
+        if (followUp) {
+            filters.push({
+                field: "advance_cas_billing_visit_type",
+                operator: "eq",
+                value: followUp
+            });
+        }
+
+        var flagValue = $.trim($("#flagFilter").val());
+        if (flagValue != undefined && flagValue != null && flagValue != "") {
+            filters.push({
+                field: "cas_is_flagged",
+                operator: "eq",
+                value: flagValue
+            });
+        }
+        ///Added by Ahmad 09-09-2020 12:01 PM
+
+        var physicianflagValue = $.trim($("#physicianflagFilter").val());
+        if (physicianflagValue != undefined && physicianflagValue != null && physicianflagValue != "") {
+            filters.push({
+                field: "cas_is_flagged_physician",
+                operator: "eq",
+                value: physicianflagValue
+            });
+        }
+
+        ///Endded by Ahmad 09-09-2020 12:01 PM
+        // advance search user intials
+        if (userInitialValue != "") {
+            var valueUserInit = $("#userInitialFilter").val().toString();
+            if (valueUserInit && ($("#userInitialFilter option:selected").length != $("#userInitialFilter option").length)) {
+                filters.push({
+                    field: "cas_history_physician_initial_cal",
+                    operator: "eq",
+                    value: valueUserInit
+                });
+            }
+        }
+        // advance search user type
+        if (userTypeValue != "") {
+            var valueUserType = $("#userTypeFilter").val().toString();
+            if (valueUserType && ($("#userTypeFilter option:selected").length != $("#userTypeFilter option").length)) {
+                filters.push({ //
+                    field: "cas_ctp_key_selected", /*multi_cas_ctp_key*/
+                    operator: "eq",
+                    value: valueUserType
+                });
+            }
+        }
+
+        // eAlert Check
+        var eAlert = $.trim($("#eAlertFilter").val());
+        if (eAlert) {
+            filters.push({
+                field: "cas_is_ealert",
+                operator: "eq",
+                value: eAlert
+            });
+        }
+
+         var tpaFilter = $.trim($("#TpaFilter").val());
+        if (tpaFilter) {
+            filters.push({
+                field: "cas_metric_tpa_consult_filter",
+                operator: "eq",
+                value: tpaFilter
+            });
+        }
+
+
+        // advance search
+        $.each(advanceSearchformData, function (index, formElement) {
+            if ($.trim(formElement.value) != "" && formElement.value != undefined) {
+
+                filters.push({
+                    field: "advance_" + formElement.name,
+                    operator: "eq",
+                    value: formElement.value
+                });
+            }
+        });
+        // Setting the filter of the Grid
+
+        onGridFilter($("#caseListActiveTab").val(), filters);
+
+        $("#resetSearch").show();
+    }
+    function applyColors() {
+        $("#kendoDataGrid tr").each(function (index, element) {
+            var open = caseStatusEnum.Open;
+            var waiting_to_accept = caseStatusEnum.WaitingToAccept;
+            var row = $(element);
+            var defaultTimeZoneOffset = @Functions.GetTimeZoneOffset(TeleSpecialists.BLL.Settings.DefaultTimeZone);
+            var status = row.find("td:nth-child(3)").text().toInt();
+            if (status == open || status == waiting_to_accept) {
+                var currentDateTime = moment(moment().utcOffset(defaultTimeZoneOffset, false).format("YYYY-MM-DD HH:mm:ss"));
+                var cas_status_assign_date = moment(row.find("td:nth-child(2)").text());
+                if ($.trim(cas_status_assign_date) == "") {
+                    cas_status_assign_date = moment(row.find("td:nth-child(7)").text());
+                }
+
+                var duration = moment.duration(currentDateTime.diff(cas_status_assign_date.format("YYYY-MM-DD HH:mm:ss")));
+                if ((status == open || status == waiting_to_accept) && (duration.asMinutes() >= 3 && duration.asMinutes() <= 6)) {
+                    row.children("td").addClass("text-yellow font-weight-bold");
+                }
+               else  if ((status == open || status == waiting_to_accept)  && ( duration.asMinutes() >= 6 && duration.asMinutes() <= 8)) {
+                    row.children("td").addClass("text-orange font-weight-bold");
+                }
+                else if ((status == open || status == waiting_to_accept) && duration.asMinutes() >= 8) {
+
+                    row.children("td").addClass("text-danger font-weight-bold");
+                }
+            }
+        });
+
+        if (applyColors.To != undefined)
+            window.clearTimeout(applyColors.To);
+
+        applyColors.To = window.setTimeout(applyColors, 2000);
+    }
+    function refreshData() {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl.indexOf("/case") > -1 || currentUrl.indexOf("/case/index") > -1) {
+
+        if (refreshData.timeout != undefined)
+            window.clearTimeout(refreshData.timeout);
+
+            refreshData.timeout = window.setTimeout(function () {
+                $("#hdnDisableLoader").val("1");
+                var grid = $('#kendoDataGrid').data("kendoGrid");
+                if (grid != undefined)
+                    grid.dataSource.read();
+            }, 5000);
+        }
+    }
+    function isDefaultFiltersSelected() {
+        var defaultSelected = true;
+        if ($("#divStatusFilter").find(".ms-options-wrap").find("button>span").html() != "Select Status") { defaultSelected = false; }
+        if ($("#cas_billing_visit_type").val() != "") { defaultSelected = false; }
+        if ($("#dateFilter").val() != "Last48Hours") { defaultSelected = false; }
+        if ($("#searchBox").val() != "") { defaultSelected = false; }
+
+        return defaultSelected;
+    }
+    function refillFilters() {
+        if (exportPostData === undefined) { return; }
+        if (exportPostData.filter === undefined) { return; }
+        if (exportPostData.filter.filters === undefined) { return; }
+
+        $.each(exportPostData.filter.filters, function (index, currentFilter) {
+            try {
+                switch (currentFilter.field) {
+                    case 'cas_status':
+
+                        $.each($('#divStatusFilter input:checkbox'), function () {
+                            $(this).prop('checked', false);
+                            $(this).parents('li').removeClass('selected');
+
+                            // multiple values will be comma separated
+                            var listOfValues = currentFilter.value.split(',');
+
+                            if ($.inArray($(this).val(), listOfValues) >= 0) {
+                                $(this).prop('checked', true);
+                                $(this).parents('li').addClass('selected');
+                            }
+                        });
+
+                        var selectedStatus = [];
+
+                        $.each($('#statusFilter option'), function () {
+                            $(this).removeAttr('selected');
+
+                            // multiple values will be comma separated
+                            var listOfValues = currentFilter.value.split(',');
+
+                            if ($.inArray($(this).val(), listOfValues) >= 0) {
+                                $(this).attr('selected', true);
+                                selectedStatus.push($(this).text());
+                            }
+                        });
+
+                        if ($('#statusFilter option').length != $('#statusFilter option:selected').length) {
+                            if (selectedStatus.length > 0) {
+                                var strSelectedStatus = selectedStatus.join(', ');
+                                $("#divStatusFilter").find(".ms-options-wrap").find("button>span").html(strSelectedStatus);
+                                $("#divStatusFilter").find(".ms-options-wrap").find(".ms-selectall").html("select all");
+                            }
+                        }
+
+                        break;
+                    case 'search_text':
+                        $('#searchBox').val(currentFilter.value)
+                        break;
+                    case 'advance_cas_billing_visit_type':
+                        $('#cas_billing_visit_type').val(currentFilter.value)
+                        break;
+                    case 'date_filter':
+                        $('#dateFilter').val(currentFilter.value)
+
+                        if (currentFilter.value == "SpecificDate") {
+                            $("#divSpecificDate").show();
+                        }
+                        else if (currentFilter.value == "DateRange") {
+                            $("#divDateRange").show();
+                        }
+                        break;
+                    case 'specific_date':
+                        $("#divSpecificDate").show();
+                        $('#txtSpecificDate').val(currentFilter.value)
+                        break;
+                    case 'start_date':
+                        $('#txtStartDate').val(currentFilter.value)
+                        break;
+                    case 'end_date':
+                        $('#txtEndDate').val(currentFilter.value)
+                        break;
+                    case 'advance_cas_case_number':
+                        $('#cas_case_number').val(currentFilter.value)
+                        break;
+                    case 'advance_cas_ctp_key':
+                        $('#cas_ctp_key').val(currentFilter.value)
+                        break;
+                    case 'advance_cas_patient':
+                        $('#cas_patient').val(currentFilter.value)
+                        break;
+                    case 'advance_cas_fac_key':
+                        $('#cas_fac_key').val(currentFilter.value)
+                        break;
+                    case 'cas_is_flagged':
+                        $("#flagFilter").val(currentFilter.value)
+                        break;
+                    case 'cas_is_flagged_physician':
+                        $("#physicianflagFilter").val(currentFilter.value)
+                        break;
+                }
+
+                if (!isDefaultFiltersSelected() && !refillFilters.resetSearch) {
+                    $("#resetSearch").show();
+                }
+                else {
+                    $("#dateFilter").val('Last48Hours');
+                }
+            } catch (e) { }
+        });
+
+        refillFilters.applyFilters = 0;
+        refillFilters.resetSearch = false;
+    }
+    function checkEAlertTypeCase(type, isEAlertCase) {
+        if (isEAlertCase) {
+            var html = '<div class="float-left sm-dot-warning"><img src="/Content/images/iconfinder_warning.png" alt="eAlert" class="warning-alert-icon"/></div> ';
+            html += '<div class="float-left pl-2">'+type+'<span></span></div>'
+            return html;
+        }
+        else {
+            return type;
+        }
+    }
+    function setFlagged(isEAlertFlagged, cas_key) {
+        if (isEAlertFlagged) {
+            return '<div id=flag-' + cas_key + '><img width="32" Height="32" src="/Content/images/red-flag-filled-48.png" alt="Yes"  data-flagged="true" data-caseKey=' + cas_key + ' onClick="chagneFlag(this)"/></div>';
+        }
+        else {
+            return '<div id=flag-' + cas_key +'><img width="32" Height="32" src="/Content/images/icons8-empty-flag-48.png" alt="No" data-flagged="false" data-caseKey=' + cas_key + ' onClick="chagneFlag(this)" /></div>';
+        }
+    }
+    function chagneFlag(el) {
+        var caseKey = $(el).attr("data-casekey");
+        var isFlagged = $(el).attr("data-flagged");
+
+        if (caseKey != null && caseKey != undefined && caseKey != "") {
+            if (isFlagged != null && isFlagged != undefined && isFlagged != "") {
+                var url = "/Case/UpdateCaseFlag?caskey=" + caseKey + "&isFlagged=" + isFlagged
+                $.post(url, function (response) {
+                    if (response.success) {
+                        if (isFlagged == true) {
+                            $("#flag-" + caseKey).html("");
+                            $("#flag-" + caseKey).html('<img width="32" Height="32" src="/Content/images/icons8-empty-flag-48.png" alt="No" data-flagged="false" data-caseKey=' + caseKey + ' onClick="chagneFlag(this)" />');
+                        }
+                        else {
+                            $("#flag-" + caseKey).html("");
+                            $("#flag-" + caseKey).html('<img width="32" Height="32" src="/Content/images/red-flag-filled-48.png" alt="Yes"  data-flagged="true" data-caseKey=' + caseKey + ' onClick="chagneFlag(this)"/>');
+                        }
+                    }
+                    else {
+                        $(".k-edit-form-container, .km-scroll-container").find("#validationSummary").empty().showBSDangerAlert("", "Error! Please try again.");
+                    }
+                });
+            }
+        }
+        }
+
+        /////Added by Ahmad 11-09-2020
+        function setPhysicianFlagged(isEAlertFlagged, cas_key) {
+            if (isEAlertFlagged) {
+                return '<div id=flag-' + cas_key + '><img width="32" Height="32" src="/Content/images/red-flag-filled-48.png" alt="Yes"  data-flagged="true" data-caseKey=' + cas_key + ' onClick="chagnePhysicianFlag(this)"/></div>';
+            }
+            else {
+                return '<div id=flag-' + cas_key + '><img width="32" Height="32" src="/Content/images/icons8-empty-flag-48.png" alt="No" data-flagged="false" data-caseKey=' + cas_key + ' onClick="chagnePhysicianFlag(this)" /></div>';
+            }
+        }
+        function chagnePhysicianFlag(el) {
+            var caseKey = parseInt($(el).attr("data-casekey"));
+            var isFlagged = $(el).attr("data-flagged");
+
+            if (caseKey != null && caseKey != undefined && caseKey != "") {
+                if (isFlagged != null && isFlagged != undefined && isFlagged != "") {
+                    var url = "/Case/UpdateCasePhysicianFlag?caskey=" + caseKey + "&isFlagged=" + isFlagged
+                    $.post(url, function (response) {
+                        if (response.success) {
+                            if (isFlagged == "true") {
+                                $("#flag-" + caseKey + " > img").attr('src', '/Content/images/icons8-empty-flag-48.png');
+                                $("#flag-" + caseKey + " > img").attr('alt', 'No');
+                                $("#flag-" + caseKey + " > img").attr('data-flagged', 'false'); 
+                                //$("#flag-" + caseKey).html("");
+                               // $("#flag-" + caseKey).html('<img width="32" Height="32" src="/Content/images/icons8-empty-flag-48.png" alt="No" data-flagged="false" data-caseKey=' + caseKey + ' onClick="chagnePhysicianFlag(this)" />');
+                            }
+                            else {
+                                $("#flag-" + caseKey + " > img").attr('src', '/Content/images/red-flag-filled-48.png');
+                                $("#flag-" + caseKey + " > img").attr('alt', 'Yes');
+                                $("#flag-" + caseKey + " > img").attr('data-flagged', 'true'); 
+                               // $("#flag-" + caseKey).html("");
+                               // $("#flag-" + caseKey).html('<img width="32" Height="32" src="/Content/images/red-flag-filled-48.png" alt="Yes"  data-flagged="true" data-caseKey=' + caseKey + ' onClick="chagnePhysicianFlag(this)"/>');
+                            }
+                        }
+                        else {
+                            $(".k-edit-form-container, .km-scroll-container").find("#validationSummary").empty().showBSDangerAlert("", "Error! Please try again.");
+                        }
+                    });
+                }
+            }
+        }
+        /////Endded by Ahmad 11-09-2020
+    </script>
+}
+else
+{
+    <div class="col-12  dashboard-indicators p-2">
+        <label class="font-weight-normal">@FacilityAdminMessage</label>
+    </div>
+}
+
+
+
+
+
+
+

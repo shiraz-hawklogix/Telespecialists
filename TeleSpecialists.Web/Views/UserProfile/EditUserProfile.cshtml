@@ -1,0 +1,115 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+
+
+@model TeleSpecialists.Models.EditProfileViewModel
+@{
+    ViewBag.Title = "Edit User Profile";
+}
+
+<input type="hidden" name="edit-user-id" id="edit-user-id" value="@Model.Id" />
+<input type="hidden" name="edit-user-fullname" id="edit-user-id" value="@Model.FirstName @Model.LastName" />
+<div class="alert case-info">
+    <div class="row">
+        <div class="col-9">
+            <div class="row">
+                <div class="d-inline-block">
+                    <strong>User:</strong> <span id="edit-user-name"> @Model.FirstName @Model.LastName </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="alert alert-success removestyle" role="alert" style="display:none!important">
+    User Profile Successfully Edited.
+</div>
+<ul class="nav nav-tabs" role="tablist" id="myTab">
+    <li class="nav-item"><a data-toggle="tab" class="nav-link active" href="#physician">General</a></li>
+    @if (Model.Role== UserRoles.Physician.ToDescription() || Model.Role == UserRoles.SuperAdmin.ToDescription())
+    {
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#license">Licenses</a></li>
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" id="facilityli" href="#facility">Credentials</a></li>
+    }
+</ul>
+
+<div class="tab-content mt-2">
+
+    <div id="physician" role="tabpanel" class="tab-pane fade in active show">
+        @Html.Partial("_UserProfileForm", Model)
+    </div>
+
+    <div id="license" role="tabpanel" class="tab-pane fade">
+        @Html.Partial("_PhysicianLicense", null, new ViewDataDictionary { { "phy_key", Model.Id } })
+    </div>
+
+    <div id="facility" role="tabpanel" class="tab-pane fade in">
+        <div class="onboarderdmaindiv">
+            <div class="row">
+                <div class="col-lg-6 col-md-12 col-xs-12">
+                </div>
+                <div class="col-lg-6 col-md-12 col-xs-12">
+                    <form id="frmSearch" method="post" class="float-lg-right mr-3">
+                        <div class="row pl-3">
+                            <div>
+                                <strong>Search</strong><br />
+                                <input type="search" id="searchBox" class="k-textbox form-control-sm " />
+                            </div>
+                            <div style="margin-left: 2px;">
+                                <strong>Onboarded</strong><br />
+                                <select id="FacilityOnboardedFilter" class="form-control active">
+                                    <option value="" selected="selected">All</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                            <div class="pl-1" style="max-width:275px;">
+                                <br />
+                                <input type="button" id="btnSearch" class="btn btn-dark" value="Search" />
+                                <a href="javascript:;" class="btn btn-dark clearLS" id="resetSearch" style="display:none;">Clear Search</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @Html.Partial("_ListPhysicianFacilities", null, new ViewDataDictionary { { "phy_key", Model.Id } })
+        </div>
+        <div class="ondboardeddiv d-none">
+
+        </div>
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+        $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+            localStorage.setItem('activeTab', $(e.target).attr('href'));
+        });
+        var activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            $('#myTab a[href="' + activeTab + '"]').tab('show');
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        maskPhoneNumber();
+                $("#State_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.State.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+    });
+    $("#facilityli").off('click').click(function () {
+        $(".onboarderdmaindiv").show();
+        $(".ondboardeddiv").empty();
+        $(".ondboardeddiv").addClass('d-none');
+    })
+</script>
+
+
+
+
+
+
+
+
+
+

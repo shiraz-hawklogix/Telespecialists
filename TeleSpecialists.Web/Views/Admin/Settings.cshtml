@@ -1,0 +1,827 @@
+﻿@model TeleSpecialists.BLL.Model.application_setting
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+
+@{
+    ViewBag.Title = "App Settings";
+    @Html.HiddenFor(model => model.aps_key)
+    List<alarm_tunes> alarm_tune_list = ViewBag.NotificationTunes;
+
+    Model.aps_rapids_password = "**********";
+}
+<input type="hidden" name="edit-user-id" id="edit-user-id" value="@Model.aps_key" />
+<ul class="nav nav-tabs" role="tablist" id="settingtablist">
+    <li class="nav-item"><a data-toggle="tab" class="nav-link active" href="#MDStaff">MD Staff</a></li>
+    <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#five9">Five9</a></li>
+    <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#security">Security</a></li>
+    <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#other">Other</a></li>
+    <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#AlarmSettings">Alarm</a></li>
+    @if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()))
+    {
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#rapids">Rapids</a></li>
+    }
+</ul>
+
+<div class="ajaxForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.aps_key)
+
+        <div class="tab-content mt-5">
+
+            <div id="MDStaff" role="tabpanel" class="tab-pane fade  in active show">
+                <h3>MD Staff </h3>
+                <hr />
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-lg-3 col-sm-12">Login: </label>
+                            <div class="col-md-8 col-lg-7 col-sm-12">
+                                @Html.TextBoxFor(x => x.aps_md_login, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.aps_md_login, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-lg-3 col-sm-12">Password: </label>
+                            <div class="col-md-8 col-lg-7 col-sm-12">
+                                @Html.TextBoxFor(x => x.aps_md_password, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.aps_md_password, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-lg-3 col-sm-12">Instance: </label>
+                            <div class="col-md-8 col-lg-7 col-sm-12">
+                                @Html.TextBoxFor(x => x.aps_md_instance, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.aps_md_instance, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-lg-3 col-sm-12">Facility: </label>
+                            <div class="col-md-8 col-lg-7 col-sm-12">
+                                @Html.TextBoxFor(x => x.aps_md_facility, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.aps_md_facility, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-lg-3 col-sm-12">Grant Type: </label>
+                            <div class="col-md-8 col-lg-7 col-sm-12">
+                                @Html.TextBoxFor(x => x.aps_md_grant_type, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.aps_md_grant_type, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-lg-3 col-sm-12">Base URL: </label>
+                            <div class="col-md-8 col-lg-7 col-sm-12">
+                                @Html.TextBoxFor(x => x.aps_md_base_url, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.aps_md_base_url, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-lg-3 col-sm-12">Token URL: </label>
+                            <div class="col-md-8 col-lg-7 col-sm-12">
+                                @Html.TextBoxFor(x => x.aps_md_token_url, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.aps_md_token_url, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-lg-3 col-sm-12">Disable Data Import Service: </label>
+                            <div class="col-md-8 col-lg-7 col-sm-12">
+                                @Html.CheckBoxFor(x => x.aps_is_md_staff_active)
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-lg-3 col-sm-12">Data Import Service Last Updated: </label>
+                            <div class="col-md-8 col-lg-7 col-sm-12">
+                                @Html.TextBoxFor(x => x.aps_md_staff_last_run, new { @class = "form-control", @readonly = "true" })
+                                @Html.ValidationMessageFor(model => model.aps_md_staff_last_run, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="five9" role="tabpanel" class="tab-pane fade">
+                <h3>Five9 Settings </h3>
+                <hr />
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label class="control-label col-3">Five9 Domain: </label>
+                            <div class="col-7">
+                                @Html.TextBoxFor(x => x.aps_five9_domain, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.aps_five9_domain, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label class="control-label col-3">Five9 List Name: </label>
+                            <div class="col-7">
+                                @Html.TextBoxFor(x => x.aps_five9_list, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.aps_five9_list, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label class="control-label col-3">eAlert Number to Dial: </label>
+                            <div class="col-7">
+                                @Html.TextBoxFor(x => x.aps_five9_number_to_dial, new { @class = "form-control phone_number" })
+                                @Html.ValidationMessageFor(model => model.aps_five9_number_to_dial, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="security" role="tabpanel" class="tab-pane fade">
+                <h3>Security Settings </h3>
+                <hr />
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+
+                        <p class="security-head-margin">PASSWORD COMPLEXITY</p>
+                        <div class="form-group row">
+                            <label class="checkbox-inline control-label" for="aps_security_is_lowercase_required">
+                                @Html.CheckBoxFor(x => x.aps_security_is_lowercase_required)
+                                @Html.DisplayNameFor(m => m.aps_security_is_lowercase_required)
+                            </label>
+                            @Html.ValidationMessageFor(model => model.aps_security_is_lowercase_required, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group row">
+                            <label class="checkbox-inline control-label" for="aps_security_is_uppercase_required">
+                                @Html.CheckBoxFor(x => x.aps_security_is_uppercase_required)
+                                @Html.DisplayNameFor(m => m.aps_security_is_uppercase_required)
+                            </label>
+                            @Html.ValidationMessageFor(model => model.aps_security_is_uppercase_required, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group row">
+                            <label class="checkbox-inline control-label" for="aps_security_is_number_required">
+                                @Html.CheckBoxFor(x => x.aps_security_is_number_required)
+                                @Html.DisplayNameFor(m => m.aps_security_is_number_required)
+                            </label>
+                            @Html.ValidationMessageFor(model => model.aps_security_is_number_required, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group row">
+                            <label class="checkbox-inline control-label" for="aps_security_is_non_alphanumeric_required">
+                                @Html.CheckBoxFor(x => x.aps_security_is_non_alphanumeric_required)
+                                @Html.DisplayNameFor(m => m.aps_security_is_non_alphanumeric_required)
+                            </label>
+                            @Html.ValidationMessageFor(model => model.aps_security_is_non_alphanumeric_required, "", new { @class = "text-danger" })
+                        </div>
+                        <br />
+                        <p class="security-head-margin">MFA SECURITY</p>
+                        <div class="form-group row">
+
+                            <label class="checkbox-inline control-label" for="aps_secuirty_is_multi_factor_authentication_required">
+                                @Html.CheckBoxFor(x => x.aps_secuirty_is_multi_factor_authentication_required)
+                                @Html.DisplayNameFor(m => m.aps_secuirty_is_multi_factor_authentication_required)
+                            </label>
+                            <div class="col-12 pl-0">
+                                <label class="control-label mr-2">Two Factor Code Expiry Time in Minutes</label>
+                                @Html.TextBoxFor(x => x.aps_two_factor_code_expiry_timeout_in_minutes, new { @id = "aps_two_factor_code_expiry_timeout_in_minutes", autocomplete = "off", onkeypress = "return isNumber(event)" })
+                            </div>
+                        </div>
+
+                        <p class="security-head-margin">Session Timeout</p>
+                        <div class="form-group row">
+
+                            <label class="control-label  mr-2">Session Timeout in Minutes</label>
+                            @Html.TextBoxFor(x => x.aps_session_timeout_in_minutes, new { @id = "aps_session_timeout_in_minutes", autocomplete = "off", onkeypress = "return isNumber(event)" })
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <p>PASSWORD POLICIES</p>
+
+                        <div class="form-group row">
+                            <span class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                @Html.Label("Password Length", new { @class = "control-label" })
+                                <p>Minimum amount of characters needed</p>
+                            </span>
+                            <span class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                @Html.TextBoxFor(m => m.aps_security_password_length_value, new { @class = "security-numField-length", type = "number", min = "8", max = "16", step = "1", value = "8", @onkeydown = "javascript: return event.keyCode == 69 ? false : true", @onkeypress = "return event.charCode >= 48 && event.charCode <= 57" })
+                                <br />@Html.ValidationMessageFor(model => model.aps_security_password_length_value, "", new { @class = "text-danger" })
+                            </span>
+                        </div>
+
+                        <div class="form-group row">
+                            <span class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+
+                                @Html.CheckBox("isPasswordAge", false, new { @class = "checkbox-inline", @Id = "isPasswordAge" })
+                                @Html.Label("Enable Password Age", new { @class = "control-label" })
+                                <p>Amount of days password is valid for</p>
+                            </span>
+                            <span class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                @Html.TextBoxFor(m => m.aps_security_password_age_value, new { @class = "security-numField-length", type = "number", min = "1", max = "365", step = "1", @id = "passwordAgeValue", @onkeydown = "javascript: return event.keyCode == 69 ? false : true", @onkeypress = "return event.charCode >= 48 && event.charCode <= 57" })
+                                <br />@Html.ValidationMessageFor(model => model.aps_security_password_age_value, "", new { @class = "text-danger" })
+                            </span>
+                        </div>
+
+                        <div class="form-group row">
+                            <span class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                @Html.CheckBox("isEnableHistory", false, new { @class = "checkbox-inline", @Id = "isEnableHistory" })
+                                @Html.Label("Enable Password History", new { @class = "control-label" })
+                                <p>Number of passwords remembered</p>
+                            </span>
+                            <span class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                @Html.TextBoxFor(m => m.aps_security_password_history_value, new { @class = "security-numField-length", type = "number", min = "1", max = "100", step = "1", @id = "rememberHistoryValue", @onkeydown = "javascript: return event.keyCode == 69 ? false : true", @onkeypress = "return event.charCode >= 48 && event.charCode <= 57" })
+                                <br />@Html.ValidationMessageFor(model => model.aps_security_password_history_value, "", new { @class = "text-danger" })
+                            </span>
+                            <span class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                @Html.CheckBoxFor(x => x.aps_secuirty_is_reset_password_required, new { @class = "checkbox-inline" })
+                                @Html.LabelFor(x => x.aps_secuirty_is_reset_password_required, new { @class = "control-label" })
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div id="other" role="tabpanel" class="tab-pane fade">
+                <h3>Other Settings </h3>
+                <hr />
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label class="control-label col-3">Physician Auto Assign Process: </label>
+                            <div class="col-7">
+                                @Html.CheckBoxFor(x => x.aps_enable_auto_assign_process, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.aps_enable_auto_assign_process, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label class="control-label col-3">Enable Facility Notes Popup: </label>
+                            <div class="col-7">
+                                @Html.CheckBoxFor(x => x.aps_cas_facility_popup_on_load, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.aps_cas_facility_popup_on_load, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label class="control-label col-3">Enable Case Auto Save: </label>
+                            <div class="col-7">
+                                @Html.CheckBoxFor(x => x.aps_enable_case_auto_save, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.aps_enable_case_auto_save, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label class="control-label col-3">Case Duplicate Popup Timer (Hours):</label>
+                            <div class="col-7">
+                                @Html.TextBoxFor(x => x.aps_duplicate_popup_timer, new { @class = "form-control col-3" })
+                                @Html.ValidationMessageFor(model => model.aps_duplicate_popup_timer, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label class="control-label col-3">Physician Status Grid Filter Start Time:</label>
+                            <div class="col-7">
+                                @Html.TextBoxFor(x => x.aps_statusgrid_filter_start_time, new { @class = "form-control col-3 time_control", @data_format = "HH:mm:ss", @data_template = "HH : mm" })
+                                @Html.ValidationMessageFor(model => model.aps_statusgrid_filter_start_time, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-10">
+                        <div class="form-group row">
+                            <label class="control-label col-3">Physician Status Grid Filter End Time:</label>
+                            <div class="col-7">
+                                @Html.TextBoxFor(x => x.aps_statusgrid_filter_endtime, new { @class = "form-control col-3 time_control", @data_format = "HH:mm:ss", @data_template = "HH : mm" })
+                                @Html.ValidationMessageFor(model => model.aps_statusgrid_filter_endtime, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()))
+                {
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label class="control-label col-3">
+                                    <a href="#" onClick="deletePhysicianPendingCases(1);">Clear Physician Pending Cases</a>
+                                </label>
+                                <div class="col-7">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label class="control-label col-3">
+                                    <a href="#" onClick="deletePhysicianCTAPendingCases(1);"> Clear Physician CTA/P Cases</a>
+                                </label>
+                                <div class="col-7">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label class="control-label col-3">
+                                    <a href="#" onClick="deletePhysicianPendingOnboardingCases(1);">Clear Physician Pending Onboarding Facilities</a>
+                                </label>
+                                <div class="col-7">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+            <div id="AlarmSettings" role="tabpanel" class="tab-pane fade">
+                <input type="hidden" name="audio_name" id="filename" />
+                <div class="text-right" style="margin-top:-40px">
+                    <label class="btn btn-dark"><input type="checkbox" class="addnewtune" />Add New Tune</label>
+                </div>
+                <div id="showaddnewtune">
+                    <div class="row">
+                        <div class="col-md-1">
+                            @Html.Label("Audio Title:", htmlAttributes: new { @class = "control-label" })
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="alt_file_name" id="alt_file_name" placeholder="Add Title of tune" class="form-control" />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-1">
+                            @Html.Label("Upload file:", htmlAttributes: new { @class = "control-label" })
+                        </div>
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <div class="input-group-prepend" style="min-width:35px;">
+                                    <span class="input-group-text" id="inputGroupFileAddon01">Audio</span>
+                                </div>
+                                <div class="custom-file" style="min-width:150px;">
+                                    <input type="file" class="custom-file-input " id="fileUpload" name="fileUpload" aria-describedby="inputGroupFileAddon01" onchange="$('.custom-file-label').html(this.files[0].name)" accept="audio/*" />
+                                    <label class="custom-file-label" for="postedfile">Choose file</label>
+                                </div>
+                                <div style="margin-left:5px">
+                                    <input type="button" value="Upload Audio" id="saveaudiofile" class="btn btn-dark sm-div-seperator" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="text-left">
+                        <h3>Set Default Notification Tune For Physicians </h3>
+                    </div>
+
+                </div>
+                <hr />
+                <div class="col-sm-10">
+                    <div class="form-group row">
+                        <label class="control-label col-3">Enable Alarm Settings: </label>
+                        <div class="col-7">
+                            @Html.CheckBoxFor(x => x.aps_enable_alarm_setting, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.aps_enable_alarm_setting, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="overflow-y:auto; height:350px;">
+
+                    <div class="col-sm-10">
+                        <table width="100%" id="alarmtunetable">
+                            @foreach (var item in alarm_tune_list)
+                            {
+                                string _val = item.alt_audio_path + "," + item.alt_selected_audio;
+                                <tr>
+                                    <td>
+                                        @{
+                                            if (Model.aps_selected_audio == null)
+                                            {
+                                                @Html.RadioButtonFor(m => item.alt_selected_audio, "", new { @Value = _val, @class = "cls_file_name" })
+
+                                            }
+                                            else
+                                            {
+                                                @Html.RadioButtonFor(m => item.alt_selected_audio, Model.aps_selected_audio, new { @Value = _val, @class = "cls_file_name" })
+                                            }
+                                        }
+                                        <a href="#">@item.alt_file_name</a>
+                                    </td>
+                                    <td>
+                                        <div class="player">
+                                            <audio controls preload="none" class="audiostyle">
+                                                <source src="@item.alt_audio_path" type="audio/mp3" />
+                                            </audio>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm showModal" data-id="@item.alt_key" data-tunename="@item.alt_file_name" data-toggle="modal" data-target="#DeleteModal">
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()))
+            {
+                <div id="rapids" role="tabpanel" class="tab-pane fade">
+                    <h3>Rapids Settings </h3>
+                    <hr />
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label class="control-label col-3">Email:</label>
+                                <div class="col-7">
+                                    @Html.TextBoxFor(x => x.aps_rapids_email, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.aps_rapids_email, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label class="control-label col-3">Password:</label>
+                                <div class="col-7">
+                                    @Html.TextBoxFor(x => x.aps_rapids_password, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.aps_rapids_password, "", new { @class = "text-danger" })
+                                    @*</div>
+                                        <div class="col-1 text-right">*@
+                                    <a href="#" onclick="ShowHideRapidsPin(this)" class="a-fa-overlap"><span class="fa fa-eye fa-2x1 pull-right" /></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label class="control-label col-3">Email Service URL:</label>
+                                <div class="col-7">
+                                    @Html.TextBoxFor(x => x.aps_rapids_service, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.aps_rapids_service, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div class="form-group row">
+                                <label class="control-label col-3">Retention Period:</label>
+                                <div class="col-4">
+                                    @Html.TextBoxFor(x => x.aps_rapids_retention, new { @class = "form-control1" })
+                                    @Html.ValidationMessageFor(model => model.aps_rapids_retention, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="form-group row">
+                <div class="col-sm-10">
+                    <div class="row">
+                        @*<div class="col-3" >
+                                <a href="#" class="btn btn-link">Run MD Staff Manually</a>
+                            </div>*@
+                        <div class="col-7 text-right offset-3">
+                            <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index", "Home")">Cancel</a>
+                            <input type="submit" value="Save" class="btn btn-dark" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<div class="ViewModal"></div>
+<script>
+    function isNumber(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+    }
+    function deletePhysicianPendingCases(id) {
+        var setDateUrl = '@Url.Action("UpdatePhysicianPendingCasesClearanceDate", "Physician")';
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+            "<span>Are you sure you want to clear the current pending cases?</span>",
+            function () {
+                $.ajax({
+                    url: setDateUrl,
+                    success: function (response) {
+                        if (response == 1)
+                        {
+                            var urlNew = '@Url.Action("GetCTACaseslist", "Physician")';
+                            urlNew = urlNew + "?" + Math.floor(Math.random() * 10000) + 1,
+                            $.get(urlNew, function (response) {
+                                if ($.trim(response) == "")
+                                {
+                                    $("#divModelPopUp").modal("hide");
+                                    console.log("Cleared successfully");
+                                }
+                                else {
+                                    console.log("pending cases are not removed..");
+                                    $("#divModelPopUp").modal("hide");
+                                    }
+                            });
+                        }
+                        else {
+                            console.log("pending cases are not removed..");
+                            $("#divModelPopUp").modal("hide");
+                        }
+                    }
+                });
+            });
+    }
+
+
+    function deletePhysicianCTAPendingCases(id) {
+        var setDateUrl = '@Url.Action("UpdatePhysicianCTAPendingCasesClearanceDate", "Physician")';
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+            "<span>Are you sure you want to clear the current pending cases?</span>",
+            function () {
+                $.ajax({
+                    url: setDateUrl,
+                    success: function (response) {
+                        if (response == 1)
+                        {
+                            var urlNew = '@Url.Action("GetCTACaseslist", "Physician")';
+                            urlNew = urlNew + "?" + Math.floor(Math.random() * 10000) + 1,
+                            $.get(urlNew, function (response) {
+                                if ($.trim(response) == "")
+                                {
+                                    $("#divModelPopUp").modal("hide");
+                                    console.log("Cleared successfully");
+                                }
+                                else {
+                                    console.log("pending cases are not removed..");
+                                    $("#divModelPopUp").modal("hide");
+                                    }
+                            });
+                        }
+                        else {
+                            console.log("pending cases are not removed..");
+                            $("#divModelPopUp").modal("hide");
+                        }
+                    }
+                });
+            });
+    }
+
+    function deletePhysicianPendingOnboardingCases(id) {
+        var setDateUrl = '@Url.Action("SetPhyPendingOnboardindFacDate", "FacilityPhysician")';
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+            "<span>Are you sure you want to clear the current pending cases?</span>",
+            function () {
+                $("#divModelPopUp").modal("hide");
+                $.ajax({
+                    url: setDateUrl,
+                    success: function (response) {
+                        if (response == 1) {
+
+                            console.log("Cleared successfully");
+                        }
+                        else {
+                            console.log("pending cases are not removed..");
+                            $("#divModelPopUp").modal("hide");
+                        }
+                    }
+                });
+            });
+    }
+
+    $(document).ready(function () {
+        $('#showaddnewtune').hide(200);
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $(".datepicker").kendoDateTimePicker({});
+        initComboDate('.time_control');
+
+        $(".ajaxForm").find("form").off("submit").submit(function (e) {
+            timerControlChange('.time_control');
+        });
+
+        maskPhoneNumber();
+        //// This is for setting security page.....
+        //For security tab -- Start
+        if ($("#passwordAgeValue").val() != 0 && $("#passwordAgeValue").val() != "0") {
+            $('#isPasswordAge').prop('checked', true)
+            $("#passwordAgeValue").prop('disabled', false);
+        }
+        else {
+            $('#isPasswordAge').prop('checked', false)
+            $("#passwordAgeValue").prop('disabled', true);
+        }
+
+        $('#isPasswordAge').click(function () {
+            if ($('#isPasswordAge').is(':checked')) {
+                $("#passwordAgeValue").prop('disabled', false);
+            }
+            else {
+                $("#passwordAgeValue-error").text("")
+                $('#passwordAgeValue').val('');
+                $("#passwordAgeValue").prop('disabled', true);
+            }
+        });
+
+        if ($("#rememberHistoryValue").val() != null && $("#rememberHistoryValue").val() != "") {
+            $('#isEnableHistory').prop('checked', true)
+            $("#rememberHistoryValue").prop('disabled', false);
+        }
+        else {
+            $('#isEnableHistory').prop('checked', false)
+            $("#rememberHistoryValue").prop('disabled', true);
+        }
+
+        $('#isEnableHistory').click(function () {
+            if ($('#isEnableHistory').is(':checked')) {
+                $("#rememberHistoryValue").prop('disabled', false);
+            }
+            else {
+                $("#rememberHistoryValue-error").text("")
+                $('#rememberHistoryValue').val('');
+                $("#rememberHistoryValue").prop('disabled', true);
+            }
+        });
+        //For security tab -- Start
+
+        $("audio").on("play", function () {
+            $("audio").not(this).each(function (index, audio) {
+                audio.pause();
+            });
+        });
+
+        $("#aps_rapids_retention").kendoTimePicker({
+            dateInput: true,
+            format: "HH:mm:ss"
+        });
+    });
+
+    $(document).on('change', '.cls_file_name', function () {
+        var test = $("#alarmtunetable input[type='radio']:checked");
+        var count = test.length;
+        for (var i = 0; i < test.length; i++) {
+            if (count > 1) {
+                $(test[i]).prop('checked', false);
+            }
+        }
+        $(this).prop('checked', true);
+        var audio_name = $(this).val();
+        $('#filename').val(audio_name);
+    });
+
+    function refresh() {
+        $.get("/alarm/_refreshAlarm", function (data) {
+            $('.refreshAlarm').html(data);
+        });
+    }
+    $(document).on('click', '.showModal',function () {
+        var id = $(this).data('id');
+        var name = $(this).data('tunename');
+        var whichtr = $(this).closest("tr");
+        deletealarmtune(id, name, whichtr);
+    });
+    function LoadPartialView() {
+        $("#divContentArea").load('@Url.Action("settings","admin")');
+    }
+
+    function deletealarmtune(id, name, whichtr) {
+        var DeletetuneUrl = '/Alarm/DeleteAlarmFromApp?id=' + id;
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+            "<span>Are you sure you want to remove " + name + "from the list?</span>",
+            function (e) {
+                $.ajax({
+                    url: DeletetuneUrl,
+                    success: function (response) {
+                        if (response == "success")
+                        {
+                            whichtr.remove();
+                            $("#divModelPopUp").modal("hide");
+                        }
+                        else {
+                            $("#divModelPopUp").modal("hide");
+                        }
+                    }
+                });
+            });
+    }
+    $('#saveaudiofile').click(function (e) {
+        e.preventDefault();
+        $(this).disable();
+        var fdata = new FormData();
+        var filename = $("#alt_file_name").val();
+        var files = $("#fileUpload")[0].files;
+        if (filename != "" && files.length > 0) {
+            for (var i = 0; i < files.length; i++) {
+                fdata.append("fileUpload", files[i]);
+            }
+            fdata.append("fileName", $("#alt_file_name").val());
+            //var frmUrl = $(this).attr('action');
+            $.ajax({
+                type: 'post',
+                url: '/Alarm/AddAlarmTune',
+                data: fdata,
+                processData: false,
+                contentType: false,
+                success: function (dat) {
+                    if (dat.message === 'success') {
+                        $('#alt_file_name').val('');
+                        $('.custom-file-label').html('Choose File');
+                        $('.custom-file-input').val('');
+                        var html = '';
+                        html += '<tr>';
+                        html += '<td><input value="' + dat.data.alt_audio_path + "," + dat.data.alt_selected_audio + '" class="cls_file_name" id="item_alt_selected_audio" name="' + dat.data.alt_selected_audio + '" type="radio" /><a href="#">' + dat.data.alt_file_name + '</a></td>';
+                        html += '<td><div class="player"><audio controls preload="none" class="audiostyle"><source src="' + dat.data.alt_audio_path + '" type="audio/mp3" /></audio></div></td>'
+                        html += '<td><button type="button" class="btn btn-danger btn-sm showModal" data-id="' + dat.data.alt_key + '" data-tunename="' + dat.data.alt_file_name + '" data-toggle="modal" data-target="#DeleteModal">Remove</button></td>';
+                        html += '</tr>';
+                        $('#alarmtunetable').append(html);
+                        $("#mainContentArea").find("#validationSummary").empty().showBSSuccessAlert("", "Tune saved Successfully.");
+                        $('#saveaudiofile').enable();
+                    }
+                    else if (dat.message === 'exist') {
+                        $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "File already Exist.Please Try another.");
+                        $('#saveaudiofile').enable();
+                    }
+                    else if (dat.message === 'error') {
+                        $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Record Not saved successfully.Please Try again with correct Data.");
+                        $('#saveaudiofile').enable();
+                    }
+
+                }
+            });
+        } else {
+            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Select audio File and Name.");
+            $('#saveaudiofile').enable();
+        }
+    });
+
+    var countClick = 0;
+    $('.addnewtune').click(function () {
+        countClick += 1;
+        console.log(countClick);
+        $('#showaddnewtune').toggle(200);
+    });
+
+    function ShowHideRapidsPin(sender) {
+        console.log('in ShowHideRapidsPin');
+
+        // get span
+        var span = $(sender).find('span');
+
+        // encrypt|decrypt based on icon
+        if (span.hasClass('fa-eye')) {
+            span.removeClass('fa-eye');
+            span.addClass('fa-eye-slash');
+
+            // get password
+            $.ajax({
+                url: '/Admin/GetRapidsPassword',
+                type: 'POST',
+                    success: function (response) {
+                        if (response.success == true) {
+                            $('#aps_rapids_password').val(response.data)
+                        }
+                    }
+                });
+        }
+        else {
+            span.removeClass('fa-eye-slash');
+            span.addClass('fa-eye');
+            $('#aps_rapids_password').val('**********')
+        }
+    }
+
+</script>
+
+
+

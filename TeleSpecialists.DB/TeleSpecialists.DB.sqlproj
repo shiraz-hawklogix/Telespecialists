@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>TeleSpecialists.DB</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{22cd583b-a14f-424e-983a-3c0965c5b121}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>TeleSpecialists.DB</RootNamespace>
+    <AssemblyName>TeleSpecialists.DB</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <SccProjectName>
+    </SccProjectName>
+    <SccProvider>
+    </SccProvider>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccLocalPath>
+    </SccLocalPath>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="Security\" />
+    <Folder Include="dbo\User Defined Types\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\case.sql" />
+    <Build Include="dbo\Tables\nih_stroke_scale_answer.sql" />
+    <Build Include="dbo\Tables\physician_license.sql" />
+    <Build Include="dbo\Tables\call_history.sql" />
+    <Build Include="dbo\Tables\physician_status_log.sql" />
+    <Build Include="dbo\Tables\AspNetUserRoles.sql" />
+    <Build Include="dbo\Tables\AspNetRoles.sql" />
+    <Build Include="dbo\Tables\entity_type.sql" />
+    <Build Include="dbo\Tables\case_assign_history.sql" />
+    <Build Include="dbo\Tables\MDStaffFacility.sql" />
+    <Build Include="dbo\Tables\entity_note.sql" />
+    <Build Include="dbo\Tables\facility_physician.sql" />
+    <Build Include="dbo\Tables\ELMAH_Error.sql" />
+    <Build Include="dbo\Tables\AspNetUserClaims.sql" />
+    <Build Include="dbo\Tables\AspNetUserLogins.sql" />
+    <Build Include="dbo\Tables\ucl.sql" />
+    <Build Include="dbo\Tables\ucl_data.sql" />
+    <Build Include="dbo\Tables\physician_status_snooze.sql" />
+    <Build Include="dbo\Tables\alarm_setting.sql" />
+    <Build Include="dbo\Tables\contact.sql" />
+    <Build Include="dbo\Tables\case_generated_template.sql" />
+    <Build Include="dbo\Tables\case_copy_log.sql" />
+    <Build Include="dbo\Tables\case_template_stroke_tpa.sql" />
+    <Build Include="dbo\Tables\case_template_stroke_neuro_tpa.sql" />
+    <Build Include="dbo\Tables\Timezone.sql" />
+    <Build Include="dbo\Tables\TimezoneAdjustmentRule.sql" />
+    <Build Include="dbo\Tables\physician_status_snooze_option.sql" />
+    <Build Include="dbo\Tables\facility_contract.sql" />
+    <Build Include="dbo\Tables\physician_status.sql" />
+    <Build Include="dbo\Tables\case_template_telestroke_notpa.sql" />
+    <Build Include="dbo\Tables\application_setting.sql" />
+    <Build Include="dbo\Tables\case_template_stroke_notpa.sql" />
+    <Build Include="dbo\Tables\ealert_user_facility.sql" />
+    <Build Include="dbo\Tables\data_import_log.sql" />
+    <Build Include="dbo\Tables\entity_change_log.sql" />
+    <Build Include="dbo\Tables\system_log.sql" />
+    <Build Include="dbo\Tables\AspNetUsers_Log.sql" />
+    <Build Include="dbo\Tables\AspNetUser_Detail.sql" />
+    <Build Include="dbo\Tables\AspNetUsers.sql" />
+    <Build Include="dbo\Tables\user_schedule.sql" />
+    <Build Include="dbo\Tables\nih_stroke_scale_question.sql" />
+    <Build Include="dbo\Tables\facility_contract_service.sql" />
+    <Build Include="dbo\Tables\facility.sql" />
+    <Build Include="dbo\Tables\nih_stroke_scale.sql" />
+    <Build Include="dbo\Tables\AspNetUsers_PasswordReset.sql" />
+    <Build Include="dbo\Tables\ealert_user_case_type.sql" />
+    <Build Include="dbo\Functions\UDF_ConvertLocalToLocalByTimezoneIdentifier.sql" />
+    <Build Include="dbo\Functions\GetRoleName.sql" />
+    <Build Include="dbo\Functions\GetUserFullName.sql" />
+    <Build Include="dbo\Functions\fs_PascalCase.sql" />
+    <Build Include="dbo\Functions\FormatSeconds.sql" />
+    <Build Include="dbo\Functions\FormatDateTime.sql" />
+    <Build Include="dbo\Functions\FormatPhysiciansInitial.sql" />
+    <Build Include="dbo\Functions\FormatSeconds_v2.sql" />
+    <Build Include="dbo\Functions\DiffSeconds.sql" />
+    <Build Include="dbo\Functions\UDF_ConvertUtcToLocalByTimezoneIdentifier.sql" />
+    <Build Include="dbo\Functions\UDF_GetLastWeekdayInMonth.sql" />
+    <Build Include="dbo\Functions\GetPhysiciansInitialsCount.sql" />
+    <Build Include="dbo\Functions\UDF_GetFirstWeekdayInMonth.sql" />
+    <Build Include="dbo\Functions\GetInitials.sql" />
+    <Build Include="dbo\Functions\CheckPhysBlastOnShift.sql" />
+    <Build Include="dbo\Functions\AddTicksToDateTime.sql" />
+    <Build Include="dbo\Functions\GetFacilityContractServices.sql" />
+    <Build Include="dbo\Functions\GetPhysiciansInitial.sql" />
+    <Build Include="dbo\Functions\UDF_ConvertLocalToUtcByTimezoneIdentifier.sql" />
+    <Build Include="dbo\Functions\SplitData.sql" />
+    <Build Include="dbo\Stored Procedures\usp_update_users_password_expiration.sql" />
+    <Build Include="dbo\Stored Procedures\usp_api_physician_credentials.sql" />
+    <Build Include="dbo\Stored Procedures\usp_api_physician_license.sql" />
+    <Build Include="dbo\Stored Procedures\usp_api_physician_schedule.sql" />
+    <Build Include="dbo\Stored Procedures\GetPhysicianCaseGridStats.sql" />
+    <Build Include="dbo\Stored Procedures\ELMAH_GetErrorXml.sql" />
+    <Build Include="dbo\Stored Procedures\ELMAH_GetErrorsXml.sql" />
+    <Build Include="dbo\Stored Procedures\ELMAH_LogError.sql" />
+    <Build Include="dbo\Stored Procedures\usp_api_consults_summary.sql" />
+    <Build Include="dbo\Stored Procedures\usp_api_consults_by_day.sql" />
+    <Build Include="dbo\Stored Procedures\usp_api_stroke_alert_summary.sql" />
+    <Build Include="dbo\Stored Procedures\usp_GetAllPhysiciansByFacility.sql" />
+    <Build Include="dbo\Stored Procedures\usp_api_stroke_alert_by_day.sql" />
+    <Build Include="dbo\Stored Procedures\usp_update_nihss_score.sql" />
+    <Build Include="dbo\Stored Procedures\usp_dashboard_cases_by_status.sql" />
+    <Build Include="dbo\Stored Procedures\usp_dashboard_physician_by_status.sql" />
+    <Build Include="dbo\Stored Procedures\usp_dashboard_cases_by_type.sql" />
+    <Build Include="dbo\Stored Procedures\usp_dashboard_stats.sql" />
+    <Build Include="dbo\Stored Procedures\usp_api_stroke_alert_by_day_detail.sql" />
+    <Build Include="dbo\Stored Procedures\data_import_log_insert.sql" />
+    <Build Include="dbo\Stored Procedures\system_log_insert.sql" />
+    <Build Include="dbo\Stored Procedures\data_import_log_get.sql" />
+    <Build Include="dbo\Stored Procedures\usp_api_teleneuro_facilities.sql" />
+    <Build Include="dbo\Stored Procedures\sp_chart_for_dashboard.sql" />
+    <Build Include="dbo\Tables\default_notification_tune.sql" />
+    <Build Include="dbo\Tables\alarm_tunes.sql" />
+    <Build Include="dbo\Tables\web2campaign_log.sql" />
+    <Build Include="dbo\Tables\rapids_mailbox.sql" />
+    <Build Include="dbo\Tables\rca_counter_measure.sql" />
+    <Build Include="dbo\Tables\physician_holiday_rate.sql" />
+    <Build Include="dbo\Tables\physician_percentage_rate.sql" />
+    <Build Include="dbo\Tables\physician_rate.sql" />
+    <Build Include="dbo\Tables\physician_shift_rate.sql" />
+    <Build Include="dbo\Tables\case_timestamp.sql" />
+    <Build Include="dbo\Tables\case_review_template.sql" />
+    <Build Include="dbo\Functions\ConvertTimeToMinutes.sql" />
+    <Build Include="dbo\Stored Procedures\usp_job_status_unavailable.sql" />
+    <Build Include="dbo\Stored Procedures\usp_job_status_mover.sql" />
+    <Build Include="dbo\Stored Procedures\usp_job_status_available.sql" />
+    <Build Include="dbo\Stored Procedures\usp_case_timestamp_calc_update.sql" />
+    <Build Include="dbo\Stored Procedures\usp_case_listing.sql" />
+    <Build Include="dbo\Stored Procedures\usp_case_dashboard.sql" />
+    <Build Include="dbo\Tables\physician_case_temp.sql" />
+    <Build Include="dbo\Functions\ConvertTimeToSeconds.sql" />
+    <Build Include="dbo\Stored Procedures\usp_physician_case_temp_save.sql" />
+    <Build Include="dbo\Stored Procedures\usp_job_update_email.sql" />
+    <Build Include="dbo\Stored Procedures\usp_job_update_ealert_resender.sql" />
+    <Build Include="dbo\Stored Procedures\usp_ealert_send_email.sql" />
+    <Build Include="dbo\Stored Procedures\usp_ealert_resend.sql" />
+    <Build Include="dbo\Stored Procedures\usp_case_timestamp_history_update.sql" />
+    <Build Include="dbo\Stored Procedures\usp_case_number_get.sql" />
+    <Build Include="dbo\Stored Procedures\usp_case_listing_export.sql" />
+    <Build Include="dbo\User Defined Types\EAlertReSender.sql" />
+    <Build Include="dbo\Tables\audit_records.sql" />
+    <Build Include="dbo\Tables\post_acute_care.sql" />
+    <Build Include="dbo\Stored Procedures\usp_pac_listing.sql" />
+    <Build Include="dbo\Tables\pac_case_template.sql" />
+    <Build Include="dbo\Stored Procedures\usp_template_old_delete.sql" />
+    <Build Include="dbo\Functions\DiffMinutes.sql" />
+    <Build Include="dbo\Tables\goals_data.sql" />
+    <Build Include="dbo\Tables\quality_goals.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dbo\Tables\QueryfornewRoles.sql" />
+  </ItemGroup>
+</Project>

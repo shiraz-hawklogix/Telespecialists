@@ -1,0 +1,234 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@model TeleSpecialists.Models.EditProfileViewModel
+
+<div>
+    @using (Html.BeginForm("EditUserProfile", "UserProfile", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "regForm", enctype = "multipart/form-data" }))
+    {
+
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.CreatedBy)
+        @Html.HiddenFor(m => m.CreatedByName)
+        @Html.HiddenFor(m => m.CreatedDate)
+        @Html.HiddenFor(m => m.isActive)
+        @Html.HiddenFor(m => m.PasswordHash)
+        @Html.HiddenFor(m => m.SecurityStamp)
+        @Html.HiddenFor(m => m.NPINumber)
+        @Html.HiddenFor(m => m.ModifiedBy)
+        @Html.HiddenFor(m => m.ModifiedByName)
+        @Html.HiddenFor(m => m.Gender)
+        @Html.HiddenFor(m => m.ModifiedDate)
+        @Html.HiddenFor(m => m.PasswordExpirationDate)
+        @Html.HiddenFor(m => m.RequirePasswordReset)
+        @Html.HiddenFor(m => m.EnableFive9)
+        @Html.HiddenFor(m => m.CaseReviewer)
+        @Html.HiddenFor(m => m.CredentialIndex)
+        @Html.HiddenFor(m => m.IsEEG)
+        @Html.HiddenFor(m => m.IsStrokeAlert)
+        @Html.HiddenFor(m => m.isDisable)
+        @Html.HiddenFor(m => m.NHAlert)
+        @Html.HiddenFor(m => m.TwoFactorEnabled)
+        @Html.HiddenFor(m => m.IsSleep)
+        @Html.HiddenFor(m => m.LockoutEndDateUtc)
+        @Html.HiddenFor(m => m.LockoutEnabled)
+        @Html.HiddenFor(m => m.AccessFailedCount)
+        @Html.HiddenFor(m => m.status_key)
+        @Html.HiddenFor(m => m.status_change_cas_key)
+        @Html.HiddenFor(m => m.APIPassword)
+        @Html.HiddenFor(m => m.CredentialCount)
+        @Html.HiddenFor(m => m.status_change_date)
+        @Html.HiddenFor(m => m.AddressBlock)
+        @Html.HiddenFor(m => m.PhoneNumberConfirmed)
+        @Html.HiddenFor(m => m.EmailConfirmed)
+        @Html.HiddenFor(m => m.status_change_date_forAll)
+        @Html.HiddenFor(m => m.IsDeleted)
+        @Html.HiddenFor(m => m.ContractDate)
+        @Html.HiddenFor(m => m.IsTwoFactVerified)
+        @Html.HiddenFor(m => m.TwoFactVerifyCode)
+        @Html.HiddenFor(m => m.CodeExpiryTime)
+        <div class="row">
+            <div class="col-xl-5  col-lg-5 col-md-12 col-sm-12 ">
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">First Name: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.FirstName, new { htmlAttributes = new { @class = "form-control", @placeholder = "First Name", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Last Name: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.LastName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Last Name", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Initials: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.UserInitial, new { htmlAttributes = new { @class = "form-control", @placeholder = "Initials", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.UserInitial, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Username: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.Username, new { htmlAttributes = new { @class = "form-control", @placeholder = "Username", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Email: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Email" } })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Mobile Phone: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.MobilePhone, new { htmlAttributes = new { @class = "form-control phone_number", @placeholder = "Mobile Phone" } })
+                        @Html.ValidationMessageFor(model => model.MobilePhone, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Other Phone: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.OtherPhone, new { htmlAttributes = new { @class = "form-control phone_number", @placeholder = "Other Phone" } })
+                        @Html.ValidationMessageFor(model => model.OtherPhone, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Role: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        <div>
+                            @Html.DropDownListFor(m => m.Role, null, "--select--", new { @class = "form-control", @disabled = "disabled" })
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Role, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6  col-lg-6 col-md-12 col-sm-12)">
+
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">NPI Number: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.NPINumber, new { htmlAttributes = new { @class = "form-control", @placeholder = "NPI Number", @maxlength = 10, @disabled = "disabled" } })
+                        @Html.ValidationMessageFor(model => model.NPINumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Address line 1: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.Address_line1, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address line 1", @maxlength = "100" } })
+                        @Html.ValidationMessageFor(model => model.Address_line1, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Address line 2: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.Address_line2, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address line 2", @maxlength = "100" } })
+                        @Html.ValidationMessageFor(model => model.Address_line2, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">City: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City", @id = "city", @maxlength = "40" } })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">State: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        <select id="State_key" name="State_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.State_key : 0)"></select>
+                        @Html.ValidationMessageFor(model => model.State_key, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">ZIP/Postal Code: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zip", @maxlength = "9", @id = "Zips", onkeypress = "return isNumber(event)", @onpaste = "return false" } })
+                        <div ParameterName-error> <span id="message"></span></div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Upload Image: </label>
+                    <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                        <input type="file" class="form-control" id="fileUpload" name="fileUpload" style="width: 313px;" accept="image/*" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-sm-6 offset-sm-7 offset-md-5 offset-lg-5 text-right">
+                <input type="submit" value="Save" class="btn btn-dark" onclick="PostForm('regForm');" id="savebtn" />
+            </div>
+
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        PostForm("regForm");
+    });
+    function PostForm(FomId) {
+        if ($("#regForm").valid()) {
+            $("#" + FomId).on("submit", function (event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+                var frmUrl = $(this).attr('action');
+                $.ajax({
+                    type: 'post',
+                    url: frmUrl,
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (e) {
+
+                        hidedivs();
+                        getimageid();
+                    }
+                });
+
+            });
+        }
+    }
+    function hidedivs() {
+        $('.removestyle').removeAttr('style');
+        $('.removestyle').delay(2000).hide(1000);
+    }
+    //$("#Zips").on('keypress', function () {
+    //    if ($(this).val().length > 8) {
+    //        $('#savebtn').prop('disabled', true);
+    //        message.css("color", "red");
+    //        message.html("Zip code cannot execced from 9");
+
+    //    }
+    //});
+    function isNumber(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+    }
+</script>
+
+<script>
+    window.setInterval(function () {
+        var zpl = $('#Zips').val().length;
+        if ( zpl < 10) {
+            $('#savebtn').prop('disabled', false);
+        }
+    }, 1000);
+</script>

@@ -1,0 +1,435 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+
+@model post_acute_care
+
+@{
+    var PACAppears = Enum.GetValues(typeof(PACAppears)).Cast<PACAppears>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACHeentFirst = Enum.GetValues(typeof(PACHeentFirst)).Cast<PACHeentFirst>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACHeentSecond = Enum.GetValues(typeof(PACHeentSecond)).Cast<PACHeentSecond>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACPresentAbsent = Enum.GetValues(typeof(PACPresentAbsent)).Cast<PACPresentAbsent>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACGI = Enum.GetValues(typeof(PACGI)).Cast<PACGI>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACRaneofMotion = Enum.GetValues(typeof(PACRaneofMotion)).Cast<PACRaneofMotion>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACNeuroFace = Enum.GetValues(typeof(PACNeuroFace)).Cast<PACNeuroFace>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+    var PACNeuroSpeech = Enum.GetValues(typeof(PACNeuroSpeech)).Cast<PACNeuroSpeech>()
+        .Select(m => new
+        {
+            Key = m.ToInt().ToString(),
+            Value = m.ToDescription()
+        }).OrderBy(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+}
+
+<!-- #region Header -->
+<div>
+    <div>
+        <img src='/Content/case/pdf/logo-header.png' alt='TELESPECIALISTS' />
+    </div>
+    <br />
+    <div style='font-size:14px;'>
+        <b>TeleSpecialists Post Acute Care Service</b>
+    </div>
+    <br />
+    <b>Date of consult @DateTime.Now.ToEST().Date.ToString("MM/dd/yyyy")</b>
+    <br />
+    <br />
+    <br />
+    <br />
+</div>
+<!-- #region Header -->
+<div>
+    @{
+        if (Model.pac_primary_discharge_diagnosis != null)
+        {
+            <span><b>Primary Discharge Diagnosis:</b> @Model.pac_primary_discharge_diagnosis</span><br /><br />
+        }
+
+        if (Model.pac_chief_complaint != null)
+        {
+            <span><b>Chief Complaint:</b> @Model.pac_chief_complaint</span><br /><br /><br />
+        }
+        if (Model.pac_hpi != null)
+        {
+            <span><b>History of Presenting Illness:</b> @Model.pac_hpi</span><br /><br /><br />
+        }
+        if (Model.pac_pmh != null)
+        {
+            <span><b>Past Medical History:</b> @Model.pac_pmh</span><br /><br /><br />
+        }
+        if (Model.pac_ros != null)
+        {
+            <span><b>Review of Systems:</b> @Model.pac_ros</span><br /><br />
+        }
+    }
+</div>
+<div>
+    @{
+        string bptr = "";
+        if (Model.pac_pb != null)
+        {
+            bptr += "BP: " + Model.pac_pb + ", ";
+        }
+        if (Model.pac_pulse != null)
+        {
+            bptr += "Pulse: " + Model.pac_pulse + ", ";
+        }
+        if (Model.pac_temp != null)
+        {
+            bptr += "Temp: " + Model.pac_temp + ", ";
+        }
+        if (Model.pac_respirations != null)
+        {
+            bptr += "Respirations: " + Model.pac_respirations + ", ";
+        }
+        bptr = bptr.TrimEnd(',', ' ');
+        if (bptr != "")
+        {
+            <h3>Exam:</h3>
+            <p>@bptr</p>
+        }
+    }
+</div>
+<div>
+    @{
+        string alertawake = "";
+        if (Model.pac_awake == 1)
+        {
+            alertawake += "Alert - Awake, ";
+        }
+        if (Model.pac_acute_distress == 1)
+        {
+            alertawake += "In no acute distress,";
+        }
+        alertawake = alertawake.TrimEnd(',', ' ');
+        if (alertawake != "" || Model.pac_appears_age != null)
+        {
+            <h3>General:</h3>
+        }
+        if (alertawake != "")
+        {
+            <p>@alertawake</p>
+        }
+
+        if (Model.pac_appears_age != null)
+        {
+            var apear = PACAppears.Where(x => x.Key.ToInt() == Model.pac_appears_age).FirstOrDefault();
+            <p>Appears: @apear.Value</p><br />
+        }
+    }
+</div>
+<div>
+    @{
+        string heent = "";
+        if (Model.pac_normocephalic == 1)
+        {
+            heent += "Normocephalic, ";
+        }
+        if (Model.pac_atraumatic == 1)
+        {
+            heent += "Atraumatic,";
+        }
+        heent = heent.TrimEnd(',', ' ');
+        if (heent != "" || Model.pac_perrl_or_unequalpupils != null || Model.pac_intact_or_impaired != null)
+        {
+            <h3>HEENT:</h3>
+        }
+        if (heent != "")
+        {
+            <p>@heent</p>
+        }
+
+        if (Model.pac_perrl_or_unequalpupils != null)
+        {
+            var pacfirst = PACHeentFirst.Where(x => x.Key.ToInt() == Model.pac_perrl_or_unequalpupils).FirstOrDefault();
+            <p>@pacfirst.Value</p>
+        }
+        if (Model.pac_intact_or_impaired != null)
+        {
+            var pacsec = PACHeentSecond.Where(x => x.Key.ToInt() == Model.pac_intact_or_impaired).FirstOrDefault();
+            <p>@pacsec.Value</p>
+        }
+    }
+</div>
+<div>
+    @{
+        if (Model.pac_trachea_midline == 1 || Model.pac_neck_jvd != null || Model.pac_neck_masses != null)
+        {
+            <h3>Neck:</h3>
+        }
+        if (Model.pac_trachea_midline == 1)
+        {
+            <p>Trachea Midline:</p>
+        }
+        if (Model.pac_neck_jvd != null)
+        {
+            var jvd = PACPresentAbsent.Where(x => x.Key.ToInt() == Model.pac_neck_jvd).FirstOrDefault();
+            <p>JVD: @jvd.Value</p>
+        }
+        if (Model.pac_neck_masses != null)
+        {
+            var masses = PACPresentAbsent.Where(x => x.Key.ToInt() == Model.pac_neck_masses).FirstOrDefault();
+            <p>Masses: @masses.Value</p>
+        }
+    }
+</div>
+<div>
+    @{
+        if (Model.pac_gi_abdomen != null)
+        {
+            <h3>GI:</h3>
+            var abdomen = PACGI.Where(x => x.Key.ToInt() == Model.pac_gi_abdomen).FirstOrDefault();
+            <p>Abdomen: @abdomen.Value</p>
+        }
+    }
+</div>
+<div>
+    @{
+        if (Model.pac_extremities_spontaneously == 1 || Model.pac_range_of_motion != null || Model.pac_clubbing != null || Model.pac_cyanosis != null)
+        {
+            <h3>Musculoskeletal:</h3>
+        }
+        if (Model.pac_extremities_spontaneously == 1)
+        {
+            <p>Moves all extremities spontaneously</p>
+        }
+        if (Model.pac_range_of_motion != null)
+        {
+            var rangeofmotion = PACRaneofMotion.Where(x => x.Key.ToInt() == Model.pac_range_of_motion).FirstOrDefault();
+            <p>Range of Motion: @rangeofmotion.Value</p>
+        }
+        if (Model.pac_clubbing != null)
+        {
+            var clubbing = PACPresentAbsent.Where(x => x.Key.ToInt() == Model.pac_clubbing).FirstOrDefault();
+            <p>Clubbing: @clubbing.Value</p>
+        }
+        if (Model.pac_cyanosis != null)
+        {
+            var cyanosis = PACPresentAbsent.Where(x => x.Key.ToInt() == Model.pac_cyanosis).FirstOrDefault();
+            <p>Cyanosis: @cyanosis.Value</p>
+        }
+    }
+</div>
+<div>
+    @{
+        if (Model.pac_swelling_or_edema != null || Model.pac_varicosities != null)
+        {
+            <h3>Cardiovascular:</h3>
+        }
+        if (Model.pac_swelling_or_edema != null)
+        {
+            var swelling = PACPresentAbsent.Where(x => x.Key.ToInt() == Model.pac_swelling_or_edema).FirstOrDefault();
+            <p>Swelling/Edema: @swelling.Value</p>
+        }
+        if (Model.pac_varicosities != null)
+        {
+            var varicosities = PACPresentAbsent.Where(x => x.Key.ToInt() == Model.pac_varicosities).FirstOrDefault();
+            <p>Varicosities: @varicosities.Value</p>
+        }
+    }
+</div>
+<div>
+    @{
+        if (Model.pac_neuro_oriented == 1 || Model.pac_neuro_time == 1 || Model.pac_neuro_place == 1 || Model.pac_neuro_person == 1 || Model.pac_neuro_cn != null || Model.pac_neuro_cn_right == 1 || Model.pac_neuro_cn_left == 1 || Model.pac_speech != null || Model.pac_tongue_midline == 1)
+        {
+            <h3>Neuro:</h3>
+        }
+        var showstring = "";
+        if (Model.pac_neuro_time == 1 || Model.pac_neuro_place == 1 || Model.pac_neuro_person == 1)
+        {
+            if (Model.pac_neuro_time == 1 && Model.pac_neuro_place == 1 && Model.pac_neuro_person == 1)
+            {
+                showstring = "Oriented to Time, Place and Person";
+            }
+            if (Model.pac_neuro_time == 1 && Model.pac_neuro_place == 1 && Model.pac_neuro_person != 1)
+            {
+                showstring = "Oriented to Time and Place";
+            }
+            if (Model.pac_neuro_time == 1 && Model.pac_neuro_place != 1 && Model.pac_neuro_person == 1)
+            {
+                showstring = "Oriented to Time and Person";
+            }
+            if (Model.pac_neuro_time != 1 && Model.pac_neuro_place == 1 && Model.pac_neuro_person == 1)
+            {
+                showstring = "Oriented to Place and Person";
+            }
+            if (Model.pac_neuro_time == 1 && Model.pac_neuro_place != 1 && Model.pac_neuro_person != 1)
+            {
+                showstring = "Oriented to Time";
+            }
+            if (Model.pac_neuro_time != 1 && Model.pac_neuro_place == 1 && Model.pac_neuro_person != 1)
+            {
+                showstring = "Oriented to Place";
+            }
+            if (Model.pac_neuro_time != 1 && Model.pac_neuro_place != 1 && Model.pac_neuro_person == 1)
+            {
+                showstring = "Oriented to Person";
+            }
+            <p>@showstring</p>
+        }
+        else if (Model.pac_neuro_oriented == 1)
+        {
+            <p>Oriented&nbsp;&nbsp;&nbsp;</p>
+        }
+
+        if (Model.pac_neuro_cn != null)
+        {
+            var right = "";
+            var left = "";
+            var neurocn = PACNeuroFace.Where(x => x.Key.ToInt() == Model.pac_neuro_cn).FirstOrDefault();
+            if (Model.pac_neuro_cn_right == 1)
+            {
+                right = "Right";
+            }
+            if (Model.pac_neuro_cn_left == 1)
+            {
+                left = "Left";
+            }
+
+            <p>CN:&nbsp;&nbsp;Face: @right @left @neurocn.Value</p>
+
+        }
+
+
+        if (Model.pac_speech != null)
+        {
+            var speech = PACNeuroSpeech.Where(x => x.Key.ToInt() == Model.pac_speech).FirstOrDefault();
+            <p>Speech: @speech.Value</p>
+        }
+        if (Model.pac_tongue_midline == 1)
+        {
+            <p>Tongue Midline</p>
+        }
+    }
+</div>
+<div>
+    @{
+        if (Model.pac_exam_free_text != null)
+        {
+            <span>@Model.pac_exam_free_text</span><br /><br /><br />
+        }
+    }
+</div>
+<div>
+    @{
+        if (Model.pac_billing_diagnosis != null)
+        {
+            <span><b>Primary Diagnosis: </b>@Model.pac_billing_diagnosis</span><br /><br />
+        }
+    }
+</div>
+<div>
+    @{
+        if (Model.pac_impression != null)
+        {
+            <span><b>Impression: </b>@Model.pac_impression</span><br /><br /><br />
+        }
+        if (Model.pac_plan != null)
+        {
+            <span><b>Plan: </b>@Model.pac_plan</span><br /><br /><br />
+        }
+    }
+</div>
+<div>
+    @{
+        if (Model.pac_home_healthplan == 1)
+        {
+            <p>This patient was discussed with the home health nurse providing direct services under a home health plan of care.</p>
+        }
+        if (Model.pac_home_healthnurse == 1)
+        {
+            <p>This patient's discharge summary and consultation reports were accessed and reviewed with the patient and the participating home health nurse.</p>
+        }
+        if (Model.pac_patients_laboratory == 1)
+        {
+            <p>The patients laboratory results were reviewed and discussed with the patient and HH nurse.</p>
+        }
+        if (Model.pac_patients_imaging == 1)
+        {
+            <p>The patient imaging studies were reviewed and discussed with the HH nurse.</p>
+        }
+        if (Model.pac_patients_medicationlist == 1)
+        {
+            <p>The patient's medication list was reconciled and reviewed with the patient and HH nurse. Necessary changes are documented in the plan above.</p>
+        }
+        if (Model.pac_patients_treatmentplan == 1)
+        {
+            <p>The patient's treatment plan was reviewed and adjusted according to the new documented plan above.</p>
+        }
+        if (Model.pac_reviewing_patientdata == 1)
+        {
+            <p>More than 30 minutes were spent reviewing above data, examining the patient discussing the case with the HH nurse, patient and family.</p>
+        }
+    }
+</div>
+<div>
+    @{
+
+        if (ViewBag.PhysicianName != null)
+        {
+            <br /><br />
+            <div>
+                Dr @ViewBag.PhysicianName
+            </div>
+        }
+        <br />
+        <br />
+        <span>
+            TeleSpecialists <br />
+            (239) 231-1456
+        </span>
+
+        <br />
+        <br />
+        <span>Case @Model.pac_key</span>
+    }
+</div>

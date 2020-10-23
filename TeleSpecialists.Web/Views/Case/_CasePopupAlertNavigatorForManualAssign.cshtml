@@ -1,0 +1,44 @@
+﻿
+@using TeleSpecialists.BLL.Helpers;
+@model TeleSpecialists.BLL.Model.@case
+
+@{ 
+    PhysicianCaseAssignQueue status = ViewBag.status;
+}
+
+<div class="modal-dialog modal-lg" id="navigatorCasePopupAlert">
+    <div class="modal-content">
+        <input type="hidden" name="cas_key" id="cas_key" value="@Model.cas_key" />
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">
+                @ViewBag.CaseType
+            </h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+            @if (status == PhysicianCaseAssignQueue.Rejected)
+            {
+                <div> Case #@Model.cas_case_number was not accepted by a physician. Please manually assign the case. </div>
+            }
+            else
+            {
+                <div>
+                    Physician did not respond to case #@Model.cas_case_number, please send zinc message or manually assign the case.                    
+                </div>
+            }
+
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">            
+            <input class="btn btn-dark" data-dismiss="modal" value="OK" style="width:100px" />
+        </div>
+
+    </div>
+</div>
+
+
+

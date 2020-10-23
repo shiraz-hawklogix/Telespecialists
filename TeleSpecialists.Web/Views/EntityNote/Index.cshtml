@@ -1,0 +1,144 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@{
+    ViewBag.Title = "Notes";
+    bool canDelete = User.IsInRole(UserRoles.Administrator.ToDescription()) ? true : User.IsInRole(UserRoles.SuperAdmin.ToDescription()) ? true : false;
+}
+ 
+<div class="pt-1 customGridHeader">
+    <div id="notesGrid" class="kendo-ui-grid-control">
+    </div>
+</div>
+
+
+
+
+    <script type="text/javascript">
+        var contactGrid = null;
+        var id = "@(ViewBag.etn_entity_key)";
+        var entityType = @(ViewBag.ent_key);
+        var canDelete = @canDelete.ToString().ToLowerInvariant();
+        $(document).ready(function () {
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+            getNotes();
+        });
+
+        function getNotes() {
+            $("#notesGrid").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetAll")',
+                            contentType: "application/json",
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            if (id !== "") {
+                                if (options.filter === undefined)
+                                    options.filter = {};
+
+                                if (options.filter.filters === undefined)
+                                    options.filter.filters = [];
+
+                                if (options.filter.logic === undefined)
+                                    options.filter.logic = "and";
+
+                                options.filter.filters.push({ field: "etn_entity_key", operator: "eq", "value": id });
+                                options.filter.filters.push({ field: "etn_ent_key", operator: "eq", "value": entityType });
+                            }
+                            options = KendoKeepState("Note", options);
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                    },
+                    page: KendoGet("Note", "page"),
+                    pageSize: GetKendoPageSize("Note", "RecPerPage", true),
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true
+                },
+                filterable: true,
+                sortable: true,
+                scrollable: true,
+                resizable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                dataBound: function (e) {
+                    SetKendoTotalCount("Note", $('#notesGrid').data("kendoGrid").dataSource.total());
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                },
+                columns: [
+                    { hidden: true, field: "etn_key" },
+                    {
+                        field: "etn_created_date", title: "Date/Time", width: '130px',
+                        template: "#= kendo.toString(kendo.parseDate(etn_created_date), 'MM/dd/yyyy HH:mm:ss') #", filterable: false
+                    },
+                    {
+                        field: "etn_ntt_type", title: "Type", width: '110px',
+                    },
+                    {
+                        field: "etn_notes", title: "Note", encoded: false, width: '150px',
+                        template: "#= truncateNote( kendo.toString(etn_notes)) #"
+                    },
+                    {
+                        field: "etn_first_name", title: "Created By", width: '110px',
+                        template: "#= formatName(kendo.toString(etn_first_name), kendo.toString(etn_last_name)) #", filterable: false
+                    },
+                    {
+                        field: "etn_display_on_open", title: "Display On Open", width: '135px',
+                        template: '<input type="checkbox" #= etn_display_on_open ? "checked=checked" : "" # disabled="disabled" ></input>'
+                    },
+                    {
+                        title: "Actions", width: '135px',
+                        template: "<a class='btn btn-dark btn-sm py-1 loadModelPopup' title='Edit' href='@Url.Action("Edit")/\#= etn_key#'>Edit</a>"
+                            + (canDelete ? "<a class='btn btn-dark btn-sm ml-1 py-1 removeNotes' onclick='removeNotes(#= etn_key#)' title='Remove' href='javascript:;'>Remove</a>" : "")
+                    }
+                ]
+            });
+        }
+
+
+        function truncateNote(message) {
+            var div = $("<div/>").append(message);
+            var notes = div.text();
+            if (notes.length > 30) {
+                notes = notes.substring(0, 30) + "....";
+            }
+            return notes;
+        }
+
+      
+
+        function removeNotes(notes_key) {           
+            var url = "@Url.Action("Remove")";
+            $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+                "<span>Are you sure you want to remove this Note from the list?</span>",
+                function () {
+                    $.get(url, {id: notes_key}, function (response) {
+                        if (response.success) {
+                            getNotes();
+                            $("#divModelPopUp").modal("hide");
+                        }
+                        else {
+                            $("#divModelPopUp").find("#validationSummary").showBSDangerAlert("", response.data);
+                        }
+                    })
+                });
+
+        }
+
+    </script>
+
+
+

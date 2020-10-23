@@ -1,0 +1,101 @@
+﻿@model TeleSpecialists.BLL.Model.@case
+
+@{
+    bool btn = false;
+    var nhis = ViewBag.NIHS;
+    var videoStartTime = ViewBag.videoStartTime;
+    var needleTime = ViewBag.needleTime;
+    var arival = ViewBag.arivalTime;
+    var btnStatus = ViewBag.isFoundIds;
+    if (!string.IsNullOrEmpty(btnStatus))
+    {
+        btn = true;
+    }
+}
+
+<div class="row triage">
+    <div class="col-md-12">
+        @{
+            if (btn)
+            {
+                <input type="button" id="btnShow" class="btn btn-dark" value="RCA Initiated" />
+            }
+            else
+            {
+                <input type="button" id="btnShow" class="btn btn-dark" value="RCA Initiate" />
+            }
+        }
+        <span id="messagealert" style="color:red;font-weight:bolder;"></span>
+        <div class="parent" style="margin-top:10px">
+            <div class="child" id="div">
+                <ul>
+                    <li>
+                        <label class="Greencolor"><input type="checkbox" class="gotVal gotVal_rad" value="100" id="100" />Arrival to start time delay <i class="fa fa-arrow-right"></i></label>
+                        <ul class="dropdown hideShowUl">
+                            <li>
+                                <label class="Bluecolor">
+                                    <input type="checkbox" class="gotVal childhideShowUl checkRecognition" value="101" id="101" /> Triage Recognition <i class="fa fa-arrow-right"></i>
+                                </label>
+                                <ul class="dropdown grandChild endChild childRecognition">
+                                    <li> <label><input type="checkbox" class="gotVal" value="102" id="102" />Delays related to identification by Kiosk (Defect) </label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="103" id="103" />Pt ID defects- tool usage (Defect)</label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="104" id="104" />Poor design or training of questions that would trigger tool usage (Defect)</label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="105" id="105" />Inadequate skill set of front line staff </label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="106" id="106" />Poor design of the triage area (unnecessary wait) </label></li>
+                                    <li>
+                                        <input type="text" class="form-control" name="cas_triage_recognition" value="@Model.cas_triage_recognition" id="cas_triage_recognition" data-inputid="1003" data-oldval="@Model.cas_triage_recognition" placeholder="Add other detail.." />
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <label class="Bluecolor">
+                                    <input type="checkbox" class="gotVal childhideShowUl checkTrigger" value="107" id="107" /> Stroke Alert Trigger <i class="fa fa-arrow-right"></i>
+                                </label>
+                                <ul class="dropdown grandChild endChild childTrigger">
+                                    <li> <label><input type="checkbox" class="gotVal" value="108" id="108" />Triage unable to trigger stroke alert timely (Unnecessary wait) </label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="109" id="109" />EDMD needs to be notified before SA is triggered (Extra processing)</label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="110" id="110" />Absence of clear process for notification of TS when SA is triggered</label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="111" id="111" />NIHSS done before activation of TS (Extra processing) </label></li>
+                                    <li>
+                                        <input type="text" class="form-control" name="cas_triage_strokealertrigger" value="@Model.cas_triage_strokealertrigger" id="cas_triage_strokealertrigger" data-inputid="1004" data-oldval="@Model.cas_triage_strokealertrigger" placeholder="Add other detail.." />
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <label class="Bluecolor">
+                                    <input type="checkbox" class="gotVal childhideShowUl checkRooming" value="112" id="112" /> Transport and Rooming <i class="fa fa-arrow-right"></i>
+                                </label>
+                                <ul class="dropdown grandChild endChild childRooming">
+                                    <li> <label><input type="checkbox" class="gotVal" value="113" id="113" />Position of the cart unclear when stroke alert is called (Unnecessary wait)</label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="114" id="114" />Position of the cart when teleneurologist on the screen (Unnecessary wait)</label></li>
+                                    <li> <label><input type="checkbox" class="gotVal" value="115" id="115" />Transport to Room while the patient is at CT (Transportation)</label></li>
+                                    <li>
+                                        <input type="text" class="form-control" name="cas_triage_transportandrooming" value="@Model.cas_triage_transportandrooming" id="cas_triage_transportandrooming" data-inputid="1005" data-oldval="@Model.cas_triage_transportandrooming" placeholder="Add other detail.." />
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="endChild">
+                                <input type="text" class="form-control" name="cas_triage_arivalstarttodelay" value="@Model.cas_triage_arivalstarttodelay" id="cas_triage_arivalstarttodelay" data-inputid="1006" data-oldval="@Model.cas_triage_arivalstarttodelay" placeholder="Blank to fill in text .." style="margin-top:5px" />
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                @Html.Partial("_others")
+                <ul>
+                    <li class="endChild">
+                        <input type="text" class="form-control" name="cas_rca_primarydetail" value="@Model.cas_rca_primarydetail" id="cas_rca_primarydetail" data-inputid="611" data-oldval="@Model.cas_rca_primarydetail" placeholder="Add Primary Detail.." />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <input type="button" id="countermeasureEndChild" class="btn btn-dark" value="Countermeasure(s)" />
+    </div>
+</div>
+<input type="hidden" id="work-flow-ids" name="cas_work_flow_ids" value="@Model.cas_work_flow_ids" />
+<link href="~/Content/case/rca.css" rel="stylesheet" />
+<script src="~/Scripts/Case_File/TriageWorkFlow.js"></script>
+<script src="~/Scripts/Case_File/OtherWorkFlow.js"></script>
+
+

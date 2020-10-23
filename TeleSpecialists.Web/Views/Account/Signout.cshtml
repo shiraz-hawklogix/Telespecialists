@@ -1,0 +1,18 @@
+﻿
+@{
+    Layout = null;
+}
+<html>
+<body onload="onload();">
+    <a style="visibility:hidden" id="logoff" href="@Url.Action("Index","Signout")">Singout</a>
+</body>
+</html>
+<script>
+    function onload() {
+        document.getElementById("logoff").click();
+    }
+</script>
+
+
+
+

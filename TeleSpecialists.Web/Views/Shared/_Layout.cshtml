@@ -1,0 +1,1178 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@using TeleSpecialists.Models; 
+@using Microsoft.AspNet.Identity;
+@using TeleSpecialists.BLL.Model;
+@{
+    /**/
+
+    var loggedInUser = ViewBag.loggedInUser as ApplicationUser;
+    var role = User.IsInRole(UserRoles.SuperAdmin.ToDescription()) ? "SuperAdmin" : "";
+    var currentDate = DateTime.Now.ToEST();
+    bool checktune = false;
+    var _tune = ViewBag.checkTune;
+    if (_tune != null)
+    {
+        checktune = _tune;
+    }
+
+  //  var settings = ViewBag.ApplicationSetting as application_setting;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="~/telerCare.ico" />
+    <title>TeleSpecialists - @ViewBag.Title</title>
+    <!-- Enum Collections -->
+    <script type="text/javascript">
+        var caseTypeEnum = @Html.Raw(TeleSpecialists.BLL.Helpers.Functions.ConvertToJson(typeof(CaseType)));
+        var caseStatusEnum = @Html.Raw(TeleSpecialists.BLL.Helpers.Functions.ConvertToJson(typeof(CaseStatus)));
+        var pacStatusEnum =  @Html.Raw(TeleSpecialists.BLL.Helpers.Functions.ConvertToJson(typeof(PacStatus)));
+        var enableJSLogging = "true";@*@(Settings.EnableJavascriptConsoleLogging.ToString().ToLower());*@
+    </script>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/Content/kendo/css")
+    @Scripts.Render("~/bundles/jquery")
+    @if (Settings.RPCMode == RPCMode.SignalR)
+    {
+        <script src="~/signalr/hubs"></script>
+    }
+    @if (!Request.IsAjaxRequest())
+    {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/kendo")
+    @Scripts.Render("~/bundles/five9")
+    <script src="~/Scripts/ckeditor/ckeditor.js"></script>
+    <link href="~/Content/ckeditor-custom.css" rel="stylesheet" />
+</head>
+<body class="body_bg">
+    <input type="hidden" id="is_super_admin" value="@role" />
+    <input type="hidden" id="is_five9_enable" value="@(loggedInUser?.EnableFive9.ToString())" />
+    <input type="hidden" id="IsOnlyPhysician" value="@(User.IsInRole(UserRoles.Physician.ToDescription()) ? 1 : 0)" />
+    <input type="hidden" id="IsPhysician" value="@(User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()) ? 1 : 0)" />
+    <input type="hidden" value='@Html.Raw(Scripts.Render("~/bundles/jqueryval").ToHtmlString().Replace("\n", ""))' id="hdnJQueryValidations" />
+    <input type="hidden" id="activetab" value="">
+    <input type="hidden" id="caseListActiveTab" value="emergentTab">
+    <input type="hidden" id="title-prefix" value="TeleSpecialist - ">
+    <input type="hidden" id="hiddenReportText" />
+    <input type="hidden" id="hdnUser" value="@(loggedInUser?.Id)" />
+    <input type="hidden" id="hdnSystemDateTime" value="@DateTime.Now.ToEST().ToString()" />
+    <input type="hidden" id="TwoFactorAuthUser" value="" />   
+    @*<input type="hidden" id="IsCredentialingTeamorSuperAdmin" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()) ? 1 : 0)" />
+        <input type="hidden" id="IsQPSQualityDirectororVPQuality" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) ? 1 : 0)" />*@
+
+    <div class="refreshAlarm">
+    </div>
+    <nav class=" row navbar main-menu navbar-expand-lg navbar-light bg-light mr-1">
+        <div class="navbar-brand col-2">
+            <a class="navbar-brand loadLinkAsync" href="@Url.Action("Index", "Home")">
+                <img class="img-responsive img-sm-resp teleCareLog" src="~/Content/images/logo-header.png" />
+            </a>
+        </div>
+        @*
+            For small devices / screens
+        *@
+        <div class="col small-devices-user-loginStats">
+            <div class="row">
+
+                <div class="col-3 ">
+                    @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+                    {
+                        <a href="/Physician/ChangeStatusPopup/@User.Identity.GetUserId()" class="loadModelPopup physicianCurrentStatus">
+
+                            @{Html.RenderAction("_CurrentStatus", "Physician"); }
+                        </a>
+                    }
+
+
+                </div>
+                <div class="col-8 align-self-center">
+                    <div class="welcome_text">Welcome </div>
+
+                    <div class="welcome_text">@(loggedInUser?.FirstName) @(loggedInUser?.LastName)</div>
+
+                    <div class="datetime">Date: <span class="SystemDate" id="SystemDate">@DateTime.Now.ToEST().ToString("MMM dd,yyyy")</span></div>
+                    <div class="datetime">Time: <span class="SystemTime" id="SystemTime">@DateTime.Now.ToEST().ToString("HH:mm:ss")</span> ET</div>
+                </div>
+            </div>
+        </div>
+        <button class="navbar-toggler collapsed col-xs-2" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse col-8" id="navbarNavDropdown" style="">
+            <ul class="navbar-nav">
+                @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+                {
+                    <li class="nav-item active ">
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Dashboard", "Physician")">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    
+                }
+                else if (!User.IsInRole(UserRoles.Finance.ToDescription()) && !User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) && !User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) && !User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) && !User.IsInRole(UserRoles.AOC.ToDescription()) && !User.IsInRole(UserRoles.CapacityResearcher.ToDescription()) && !User.IsInRole(UserRoles.AOC.ToDescription()))
+                {
+                    <li class="nav-item active">
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Home")">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                }
+
+                @if (User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+                    || User.IsInRole(UserRoles.Physician.ToDescription())
+                    || User.IsInRole(UserRoles.Navigator.ToDescription())
+                    || User.IsInRole(UserRoles.FacilityAdmin.ToDescription())
+                    || User.IsInRole(UserRoles.FacilityPhysician.ToDescription())
+                    || User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
+                    || User.IsInRole(UserRoles.QPS.ToDescription())
+                    || User.IsInRole(UserRoles.RRCManager.ToDescription())
+                    || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())
+                    || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+                    || User.IsInRole(UserRoles.VPQuality.ToDescription())
+                    || User.IsInRole(UserRoles.QualityDirector.ToDescription())
+                    || User.IsInRole(UserRoles.Finance.ToDescription())
+                    || User.IsInRole(UserRoles.AOC.ToDescription())
+                    || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
+                    || User.IsInRole(UserRoles.Administrator.ToDescription()))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Case" )">Cases</a>
+                    </li>
+                }
+
+
+                @if (User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.AOC.ToDescription()))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Dashboard", "Case")">Dashboard</a>
+                    </li>
+                }
+                @if (User.IsInRole(UserRoles.Administrator.ToDescription())
+                    || User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+                    || User.IsInRole(UserRoles.QPS.ToDescription())
+                    || User.IsInRole(UserRoles.VPQuality.ToDescription())
+                    || User.IsInRole(UserRoles.QualityDirector.ToDescription())
+                    || User.IsInRole(UserRoles.QualityTeam.ToDescription()))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("FacilityPI", "FacilityPI")">Facility-PI</a>
+                    </li>
+                }
+
+                @if (User.IsInRole(UserRoles.Physician.ToDescription())
+                    || User.IsInRole(UserRoles.FacilityPhysician.ToDescription())
+                    || User.IsInRole(UserRoles.Administrator.ToDescription())
+                    || User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+                    || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())
+                    || User.IsInRole(UserRoles.RRCManager.ToDescription())
+                    || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+                    || User.IsInRole(UserRoles.Navigator.ToDescription())
+                    || User.IsInRole(UserRoles.AOC.ToDescription()))
+                {
+                    <li class="nav-item nowrap">
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("SignOutListing", "Case")">Sign-Out</a>
+                    </li>
+                }
+
+                @if (!User.IsInRole(UserRoles.Physician.ToDescription())
+                    && !User.IsInRole(UserRoles.CapacityResearcher.ToDescription())
+                    && !User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
+                    && !User.IsInRole(UserRoles.FacilityAdmin.ToDescription())
+                    && !User.IsInRole(UserRoles.FacilityPhysician.ToDescription())
+                    && !User.IsInRole(UserRoles.QualityTeam.ToDescription())
+                    && !User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())
+                    && !User.IsInRole(UserRoles.QPS.ToDescription())
+                    && !User.IsInRole(UserRoles.VPQuality.ToDescription())
+                    && !User.IsInRole(UserRoles.QualityDirector.ToDescription())
+                    && !User.IsInRole(UserRoles.Finance.ToDescription()))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Status", "Physician")">Status</a>
+                    </li>
+                }
+                @if (User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+                    || User.IsInRole(UserRoles.Administrator.ToDescription())
+                    || User.IsInRole(UserRoles.Physician.ToDescription())
+                    || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())
+                    || User.IsInRole(UserRoles.Navigator.ToDescription())
+                    || User.IsInRole(UserRoles.AOC.ToDescription())
+                    || User.IsInRole(UserRoles.RRCManager.ToDescription())
+                    || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+                    || User.IsInRole(UserRoles.Finance.ToDescription())
+
+                    || User.IsInRole(UserRoles.CapacityResearcher.ToDescription())
+             || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
+             || User.IsInRole(UserRoles.QPS.ToDescription())
+             || User.IsInRole(UserRoles.QualityDirector.ToDescription())
+             || User.IsInRole(UserRoles.QualityTeam.ToDescription())
+             || User.IsInRole(UserRoles.VPQuality.ToDescription())
+             || User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
+                    )
+                {
+                    <li class="nav-item">
+                        <a id="ScheduleMId" class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("main", "Schedule")">Schedule</a>
+                    </li>
+                    if (User.IsInRole(UserRoles.Physician.ToDescription()))
+                    {
+                        <li>
+                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Facility")">Protocols</a>
+                        </li>
+                    }
+                }
+                @if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.CapacityResearcher.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.Finance.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
+                {
+
+                    string RedirectUrl = User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) ? "QualityMetricReport" : "Index";
+                    <li class="nav-item">
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action(RedirectUrl, "Reports")">Report</a>
+                    </li>
+                }
+                @if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()))
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle topbarLinks nav-link loadLinkAsync clearLS nowrap" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Administration
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            @if (!User.IsInRole(UserRoles.Administrator.ToDescription()))
+                            {
+                                <li>
+                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("ErrorConsole", "Admin")">Error Console</a>
+                                </li>
+                            }
+
+                            <li class="dropdown  dropdown dropright dropdown-submenu">
+                                <a class="nav-link dropdown-toggle  topbarLinks nav-link loadLinkAsync clearL hideLink cursor" id="facilitytManagment" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Facility Management</a>
+                                <ul class="dropdown-menu" aria-labelledby="facilitytManagment">
+                                    @if (User.IsInRole(UserRoles.Administrator.ToDescription()))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Facility")">Facilities</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL", new { @id = UclTypes.ContactRole.ToInt() })">@UclTypes.ContactRole.ToDescription()</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL", new { @id = UclTypes.CoverageType.ToInt() })">Coverage Type</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL", new { @id = UclTypes.EMR.ToInt() })">EMR Type</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Facility")">Facilities</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL", new { @id = UclTypes.FacilityType.ToInt() })">Facility Type</a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL", new { @id = UclTypes.NoteType.ToInt() })">Note Type</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL", new { @id = UclTypes.ServiceType.ToInt() })">Service Type</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL", new { @id = UclTypes.StrokeDesignation.ToInt() })">Stroke Designation</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL", new { @id = UclTypes.System.ToInt() })">System</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL", new { @id = UclTypes.Regional.ToInt() })">Regional</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL", new { @id = UclTypes.FacilityAI.ToInt() })">Facility AI</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" id="confirmationofid" href="javascript:; ">Physician Passwords</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+
+                            @if (!User.IsInRole(UserRoles.Administrator.ToDescription()))
+                            {
+                                <li class="dropdown  dropdown dropright dropdown-submenu">
+                                    <a class="nav-link dropdown-toggle  topbarLinks nav-link loadLinkAsync clearLS hideLink cursor" id="importManagment" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Import Schedule</a>
+                                    <ul class="dropdown-menu" aria-labelledby="importManagment">
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Import", "Schedule" )">Stroke Physician Schedule</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Imp", "Schedule" )">PAOC Schedule</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Slp", "Schedule" )">Sleep Schedule</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("NH", "Schedule" )">NH Schedule</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="dropdown  dropdown dropright dropdown-submenu">
+                                    <a class="nav-link dropdown-toggle  topbarLinks nav-link loadLinkAsync clearLS hideLink cursor" id="listManagement" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        List Management
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="listManagement">
+                                        <li class="dropdown  dropdown dropright dropdown-submenu">
+                                            <a class="nav-link dropdown-toggle  topbarLinks nav-link loadLinkAsync clearL hideLink cursor nowrap" id="caseManagment" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Case Management</a>
+                                            <ul class="dropdown-menu" aria-labelledby="caseManagment">
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.BillingCode.ToInt() })">Billing Codes</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.CartLocation.ToInt() })">@UclTypes.CartLocation.ToDescription()</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.CallerSource.ToInt() })">Caller Source</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.IdentificationType.ToInt() })">@UclTypes.IdentificationType.ToDescription()</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.LoginDelay.ToInt() })">Login Delays</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.NonTPACandidate.ToInt() })">@UclTypes.NonTPACandidate.ToDescription()</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.TpaDelay.ToInt() })">@UclTypes.TpaDelay.ToDescription()</a>
+                                                </li>
+                                            </ul>
+
+                                        </li>
+
+                                        <li class="dropdown  dropdown dropright dropdown-submenu ">
+                                            <a class="nav-link dropdown-toggle  topbarLinks nav-link loadLinkAsync clearL hideLink cursor" id="general" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">General</a>
+                                            <ul class="dropdown-menu" aria-labelledby="general">
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.CaseStatus.ToInt() })">Case Statuses</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.CaseType.ToInt() })"> Case Types</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.LicenseType.ToInt() })">License Type</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.State.ToInt() })">States</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UserPresence" )">User Presence</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Cancelled", "casetype" )">Case Cancelled Type</a>
+                                                </li>
+                                            </ul>
+                                        <li class="dropdown  dropdown dropright dropdown-submenu ">
+                                            <a class="nav-link dropdown-toggle  topbarLinks nav-link loadLinkAsync clearL hideLink cursor" id="general" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sleep</a>
+                                            <ul class="dropdown-menu" aria-labelledby="paccase">
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.SleepCodes.ToInt() })"> Sleep Codes </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.PacStatus.ToInt() })">Case Statuses</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "UCL" , new { @id=UclTypes.PacCaseType.ToInt() })"> Case Types</a>
+                                                </li>
+
+                                            </ul>
+
+                                        </li>
+                                    </ul>
+
+                                </li>
+                                <li>
+                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("users", "Rate")">Physicians Rates</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "FacilityRate")">Facility Rates</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Roles", "Admin")">Roles</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Settings", "Admin")">Settings</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Users", "Admin")">Users</a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+                @*Added By Axim 24-09-2020*@
+                @if (User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()))
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle topbarLinks nav-link loadLinkAsync clearLS nowrap" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Administration
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li class="dropdown  dropdown dropright dropdown-submenu">
+                                <a class="nav-link dropdown-toggle  topbarLinks nav-link loadLinkAsync clearL hideLink cursor" id="facilitytManagment" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Facility Management</a>
+                                <ul class="dropdown-menu" aria-labelledby="facilitytManagment">
+                                    <li>
+                                        <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Facility")">Facilities</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                @* Ended By Axim 24-09-2020*@
+                @if (User.IsInRole(UserRoles.QPS.ToDescription()))
+                {
+                    <li>
+                        <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Facility")">Facilities</a>
+                    </li>
+                }
+                @if (User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()))
+                {
+                    <li>
+                        <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Facility")">Facilities</a>
+                    </li>
+                }
+                @if (User.IsInRole(UserRoles.Finance.ToDescription()))
+                {
+                    <li>
+                        <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("users", "Rate")">Physicians Rates</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        @*
+            For normal devices / screens
+        *@
+        <div class="text-right normal-device-user-loginStats col-2">
+            <div class="row">
+                <div class="col-4 ">
+                    @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+                    {
+                        <a href="/Physician/ChangeStatusPopup/@User.Identity.GetUserId()" class="loadModelPopup physicianCurrentStatus">
+
+                            @{Html.RenderAction("_CurrentStatus", "Physician"); }
+                        </a>
+                    }
+
+                </div>
+
+                <div class="col-8 align-self-center">
+                    @*Shiraz Code start*@
+
+                    <div id="hideimagediv" class="hideimagediv">
+                        @{
+                            <a href="/UserProfile/EditUserProfile" class="loadLinkAsync">
+                                <img src="" id="putimageurl" style="vertical-align:middle;width: 50px;height: 50px;border-radius: 50%;" />
+                            </a>
+                        }
+                    </div>
+                    <div class="welcome_text">Welcome</div>
+                    <a href="/UserProfile/EditUserProfile" class="loadLinkAsync">
+                        <div class="welcome_text" style="color: black;">@(loggedInUser?.FirstName) @(loggedInUser?.LastName)</div>
+                    </a>
+                    @*End*@
+                    <div class="datetime">Date: <span class="SystemDate" id="SystemDate">@DateTime.Now.ToEST().ToString("MMM dd,yyyy")</span></div>
+                    <div class="datetime">Time: <span class="SystemTime" id="SystemTime">@DateTime.Now.ToEST().ToString("HH:mm:ss")</span> ET</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="navbar navbar-expand-sm header_bottom">
+        <div class="col-lg-7 col-md-4">
+            <div class="nav-item">
+                <!-- breadcrumb here-->
+            </div>
+        </div>
+        <div class="col-md-8 col-lg-5 text-right">
+            <div class="nav-item nav-item-login">
+                @if ((User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())))
+                {
+                    <img src='~/Content/images/five-dollar.png' id="uploadImg" />
+                    <a href="@Url.Action("PhysicianBillingAmountDetail", "reports")" class="btn-sm font_11px loadLinkAsync lblamaount"></a>
+                    if (checktune)
+                    {
+                        <a href="@Url.Action("alarmsetting", "alarm")" class="btn-sm font_11px loadLinkAsync clearLS"><span class="alarm_setting"></span>Alarm Setting</a>
+                    }
+                }
+
+                @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription()))
+                {
+                    <a href="@Url.Action("Index", "Home")" class="btn-sm font_12px loadLinkAsync"><span class="fa fa-envelope-o rapids-inbox"></span>Inbox</a>
+                }
+                <a href="@Url.Action("ChangePassword", "Manage")" class="btn-sm font_11px loadLinkAsync"><span class="change_pp"></span>Change Password</a>
+
+                <a href="@Url.Action("Signout", "Account")" class="btn-sm font_11px" id="signout"><span class="signout"></span>Sign Out</a>
+            </div>
+        </div>
+    </div>
+    <div id="divModelPopUp" class="modal" data-backdrop="static" data-keyboard="false" style="z-index:100000000000000000"></div>
+    <div id="divModelLessPopup" data-reload="1" data-backdrop="false"></div>
+    <div id="divCaseAssignPopup" class="modal" data-backdrop="static" data-keyboard="false" style="z-index:100000000000000000000000000"></div>
+    <div class="container-fluid h-100" id="mainContentArea">
+        @*mb-3*@
+        <div class="row mr-0" style="width:100%;margin:auto">
+            @{
+                var colWidthClass = "col-sm-12";
+                var style = "";
+                if (loggedInUser != null)
+                {
+                    if (loggedInUser.EnableFive9)
+                    {
+                        <div id="five-9-nav-container">
+                            @{Html.RenderAction("_index", "Phonebar"); }
+                        </div>
+                    }
+                    if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+                    {
+                        colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+                        <div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3" id="phycisian-listing-container">
+                        </div>
+                        <div class="modal onboardingmodal d-none" id="onboardingmodal">
+                            <div class="modal-dialog modal-lg" style=" max-width:1532px; ">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4><b>Onboarding</b></h4>
+                                        <button type="button" id="btnclosemodal" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div id="showonboardingdata">
+
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a class="btn btn-sm btn-dark text-white closeboardingmodal" data-dismiss="modal">Close</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @*<div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3">
+                    @{
+                        if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
+                        {
+                            colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+                            <div id="Credentials-Expiring-container">
+                            </div>
+                        }
+                        if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()))
+                        {
+                            colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+                             <div id="cases-pending-review-container">
+                             </div>
+                            }
+                        }
+
+                </div>*@
+                }
+                <div class="@colWidthClass" style="@style" id="async-content-container">
+                    <br />  @*class="d-none d-xl-block d-lg-block"*@
+                    <div id="validationSummary">
+                    </div>
+                    <input type="hidden" value="@Request.RawUrl" id="hdnCurrentUrl" />
+                    <input type="hidden" value="0" id="hdnDisableLoader" />
+                    <div id="divContentArea">
+                        @RenderBody()
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <footer class="footer" id="AddNewClass">
+        <span class="text-muted">Copyright @DateTime.Now.Year TeleSpecialists, LLC. All rights reserved.</span>
+    </footer>
+    @*@{
+            var s = "../Content/UserProfileImg/" + loggedInUser.User_Image;
+            <img src="@s" style="height: 100px;width:80px;border: 5px solid #555;" />
+
+        }*@
+
+    <div id="AllowToNavigateId" class="modal fade" tabindex="-1" role="dialog" style="height:500px;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="card-header pl-3 font-weight-bold" style="background-color:black;color:white;">
+                    <h5><span style="color:white" class="font-weight-bold" id=""></span>Unpublished Schedule</h5>
+                    <span data-dismiss="modal" class="fa fa-close" style="float: right;margin-top: -23px;color: white;cursor: pointer;">
+                        <span></span>
+                    </span>
+                </div>
+                <div class="modal-body" style="max-height:350px;overflow-y:auto">
+                    <div class="form-group row">
+                        <div class="col-md-12" id="">
+                            Stroke physician schedule of this month is not published. Do you want to leave the page?
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" style="color:white;background-color:black" id="NavigateYes">Yes</button>
+                    <button type="button" class="btn btn-default" style="color:white;background-color:black" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="physicianpasswordcheck" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="card-header pl-3 font-weight-bold" style="background-color:black;color:white;">
+                    <h5><span style="color:white" class="font-weight-bold" id=""></span>User Confirmation</h5>
+                    @*<span data-dismiss="modal" class="fa fa-close" style="float: right;margin-top: -23px;color: white;cursor: pointer;">
+                        <span></span>
+                    </span>*@
+                </div>
+                <div class="modal-body" style="overflow-y:auto">
+
+                    <div class="col-md-12">
+                        <div class="form-group row">
+                            <input class="form-control" id="checkUsername" placeholder="Username" type="text" value="@loggedInUser.Email" disabled>
+                        </div>
+                        <div class="form-group row">
+                            <input class="form-control" id="checkPassword" placeholder="Password" type="text" value="" autocomplete="off">
+                            <span id="errormessage" class="text-danger" style="display:none;">Password is not Correct</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" style="color:white;background-color:black" id="confirmedpassword">Ok</button>
+                    <button type="button" class="btn btn-default" style="color:white;background-color:black" id="hideconfirmedpassword" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript">
+
+        var timeoutInMiliseconds;
+        var timeoutId;
+
+        function resetTimer() {
+            window.clearTimeout(timeoutId)
+            startTimer();
+        }
+
+        function startTimer() {
+            // window.setTimeout returns an Id that can be used to start and stop a timer
+            timeoutId = window.setTimeout(doInactive, timeoutInMiliseconds)
+        }
+
+        function doInactive() {
+            window.location.href = "/Account/Signout";
+        }
+
+        function setupTimers() {
+            document.addEventListener("mousemove", resetTimer, false);
+            document.addEventListener("mousedown", resetTimer, false);
+            document.addEventListener("keypress", resetTimer, false);
+            document.addEventListener("touchmove", resetTimer, false);
+
+            startTimer();
+        }
+
+        function checkUserLoggedInStatus() {
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: "/Account/CheckLogoutUser",
+                success: function (response) {
+                    debugger;
+                    try {
+                        if (response.Status == true) {
+                            window.location.href = "/Account/Signout"
+                        }
+                    }
+                    catch (e) {
+
+                    }
+                }
+            });
+        }
+
+        function getSessionTimeOutValue() {
+            $.ajax({
+                cache: false,
+                async: true,
+                type: "POST",
+                url: "/Account/getSessionTimeOutValue",
+                success: function (e) {
+                    timeoutInMiliseconds = e.result * 60 * 1000;
+                    setupTimers();
+                },
+                error: function (data) {
+                }
+            });
+        }
+
+         $("#confirmationofid").off('click').click(function () {
+            $('#checkPassword').val('');
+            $("#physicianpasswordcheck").modal('show');
+        });
+
+        $("#confirmedpassword").off('click').click(function () {
+            ShowLoading();
+            var password = $("#checkPassword").val();
+            var username = '@loggedInUser.Email';
+            var url = '/Account/PasswordConfirmation';
+            $.post(url, { Username: username, Password: password}, function (response) {
+                if (response) {
+                    if (response == "Success") {
+                        $("#physicianpasswordcheck").modal("hide");
+                        var url = "/FacilityPhysician/PhysicianPassword";
+                        loadPageAsync(url);
+                        HideLoading();
+                    }
+                    else {
+                        HideLoading();
+                        $("#errormessage").show();
+                        setTimeout(function () {
+                            $("#errormessage").hide()
+                        }, 3000);
+                    }
+                }
+            });
+        })
+
+        function getUserMachineInfo() {
+            $.ajax({
+                cache: false,
+                async: true,
+                type: "GET",
+                url: "/Account/GetMachineName",
+                success: function (e) {
+
+                    $('#TwoFactorAuthUser').val(e.result)
+                },
+                error: function (data) {
+                }
+            });
+        }
+
+        $(document).ready(function () {
+
+            var token = $('input[name="__RequestVerificationToken"]').val();
+            $.ajaxSetup({
+                headers: {
+                    '__RequestVerificationToken': token
+                }
+            });
+
+            checkUserLoggedInStatus()
+            getSessionTimeOutValue();
+            $('#hideimagediv').delay(2000).fadeIn();
+            ScheduleCheckLoad();
+            getUserMachineInfo();
+            getimageid();
+            $('.hideLink').mouseleave(function () {
+                $(this).attr('aria-expanded', 'false');
+                $(this).closest('li').removeClass('show')
+                $(this).siblings('.dropdown-menu').removeClass('show')
+            });
+
+        });
+
+           function getimageid()
+        {
+            $.get('@Url.Action("GetImage","Home",new { User_Id =loggedInUser?.Id })',
+                function (data) {
+                    if (data == "")
+                    {
+                        $("#putimageurl").attr("src", "https://uatresources.blob.core.windows.net/profileimage/defaultimage.png");
+                    }
+                    else if (data=="2")
+                    {
+                        $("#putimageurl").attr("src", "https://uatresources.blob.core.windows.net/profileimage/defaultimage.png");
+                    }
+                    else {
+                        $("#putimageurl").attr("src", data);
+                    }
+
+
+                });
+        }
+        $('#five-9-nav-container').BootSideMenu({
+            side: "left",
+            width: '18%',
+            closeOnClick: false,
+            onOpen: function () {
+                var physciainListCotainer = $("#phycisian-listing-container").html();
+                if (physciainListCotainer != null && physciainListCotainer != undefined) {
+                    if (physciainListCotainer.trim() != "") {
+                        $("#async-content-container").attr("class", "col-sm-12 col-xl-10 col-lg-9 col-md-12");
+                    }
+                    else {
+                        $("#async-content-container").attr("class", "col-12");
+                    }
+                }
+                else {
+                    $("#async-content-container").attr("class", "col-12");
+                }
+
+                var scheduler = $("#scheduler")[0];
+                if (scheduler != null && scheduler != undefined) {
+                    // Method listed in scheduler script.
+                    refreshScheduler();
+                }
+                adjustCaseHeaderColWidth();
+            },
+            onClose: function () {
+                var physciainListCotainer = $("#phycisian-listing-container").html();
+                if (physciainListCotainer != null && physciainListCotainer != undefined) {
+                    if (physciainListCotainer.trim() != "") {
+                        $("#async-content-container").attr("class", "col-sm-12 col-xl-10 col-lg-9 col-md-12");
+                    }
+                    else {
+                        $("#async-content-container").attr("class", "col-12");
+                    }
+                }
+                else {
+                    $("#async-content-container").attr("class", "col-12");
+                }
+
+                var scheduler = $("#scheduler")[0];
+                if (scheduler != null && scheduler != undefined) {
+                    // Method listed in scheduler script.
+                    refreshScheduler();
+                    //$("#teststyle").html("");
+                }
+                adjustCaseHeaderColWidth();
+            }
+        });
+        showSystemTime();
+        if ($("#is_five9_enable").val().toLowerCase() == "false") {
+            $("#async-content-container").attr("class", "col-sm-12");
+        }
+        $("#phycisian-listing-container").addClass("d-none");
+        if ($("#IsPhysician").val() == "1") {
+            refreshCTACaseList();
+        }
+        ////credentials expiring
+        //$("#Credentials-Expiring-container").addClass("d-none");
+        //if ($("#IsCredentialingTeamorSuperAdmin").val() == "1") {
+        //    refreshCredentialsExpiringCaseList(); //temp
+        //}
+        /////
+        /////Cases Pending Review
+
+        //$("#cases-pending-review-container").addClass("d-none");
+        //if ($("#IsQPSQualityDirectororVPQuality").val() == "1") {
+        //    refreshCasesPendingReviewList(); //temp
+        //}
+        //////
+
+
+        $('.main-menu.navbar a').on('click', function () {
+            if ($('.navbar-toggler').css('display') != 'none') {
+                $('.navbar-toggler').trigger("click");
+            }
+        });
+        function showSystemTime() {
+            var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(TeleSpecialists.BLL.Settings.DefaultTimeZone));
+            $(".SystemTime").html(currentDateTime.format("HH:mm:ss"));
+            $(".SystemDate").html(currentDateTime.format("MMM DD,YYYY"));
+            $("#hdnSystemDateTime").val(currentDateTime.format("MMM DD,YYYY HH:mm:ss"));
+            if (showSystemTime.To != undefined)
+            window.clearTimeout(showSystemTime.To);
+            showSystemTime.To = window.setTimeout(showSystemTime, 1000);
+        }
+        function parseDateTime(pDateTime) {
+             var dateTime = moment(pDateTime).utcOffset(@Functions.GetTimeZoneOffset(TeleSpecialists.BLL.Settings.DefaultTimeZone));
+            return dateTime;
+        }
+        function formattedDateTime(pDateTime) {
+            var dateTime = kendo.toString(kendo.parseDate(pDateTime), "MM/dd/yyyy HH:mm:ss");
+            return dateTime;
+        }
+        function refreshCTACaseList() {
+            var url = '@Url.Action("GetCTACasesList", "Physician")';
+            var isFive9User = $("#is_five9_enable").val().toLowerCase();
+            var ctaCases = $("#cta-P-cases-listing");
+            var queueCases = $("#queue-cases-listing");
+            var facilityList = $("#cta-P-onboarding-listing");
+            if (ctaCases) {
+                var vartical_ctaScroll = $("#cta-P-cases-listing").scrollTop();
+            }
+            if (queueCases)
+            {
+                var vartical_queueScroll = $("#queue-cases-listing").scrollTop();
+                var horizental_queueScroll = $("#queue-cases-listing").scrollLeft();
+            }
+            if (facilityList) {
+                var vartical_onboardingScroll = $("#cta-P-onboarding-listing").scrollTop();
+            }
+            $.ajax({
+                url: url + "?"+ Math.floor(Math.random() * 10000) + 1,
+                success: function (response) {
+                    if (response != null && response.trim() != "" && response != undefined) {
+                        $("#phycisian-listing-container").removeClass("d-none");
+                        $("#phycisian-listing-container").html(response);
+                        $("#async-content-container").attr("class", "col-sm-12 col-xl-10 col-lg-9 col-md-12");
+
+                        if (ctaCases) {
+                            $("#cta-P-cases-listing").scrollTop(vartical_ctaScroll);
+                        }
+                        if (queueCases) {
+                            $("#queue-cases-listing").scrollTop(vartical_queueScroll);
+                            $("#queue-cases-listing").scrollLeft(horizental_queueScroll);
+                        }
+                        if (vartical_onboardingScroll) {
+                            $("#cta-P-onboarding-listing").scrollTop(vartical_onboardingScroll);
+                        }
+                    }
+                    else {
+                        $("#async-content-container").attr("class", "col-12");
+                        $("#phycisian-listing-container").html("");
+                        $("#phycisian-listing-container").addClass("d-none");
+
+                    }
+                },
+                complete: function () {
+                    if (refreshCTACaseList.loadTimeout != undefined)
+                        window.clearTimeout(refreshCTACaseList.loadTimeout);
+
+                   refreshCTACaseList.loadTimeout =  window.setTimeout(function () { refreshCTACaseList() }, 5000);
+                },
+                global: false
+            });
+        }
+
+        @*//credentialing expiring
+
+        function refreshCredentialsExpiringCaseList() {
+            var url = '@Url.Action("GetCredentialsExpiringCasesList", "Reports")';
+            var cacCases = $("#cac-P-cases-listing");
+            if (cacCases) {
+                var vartical_ctaScroll = $("#cac-P-cases-listing").scrollTop();
+            }
+            $.ajax({
+                url: url + "?"+ Math.floor(Math.random() * 10000) + 1,
+                success: function (response) {
+                    if (response != null && response.trim() != "" && response != undefined) {
+                        $("#Credentials-Expiring-container").removeClass("d-none");
+                        $("#Credentials-Expiring-container").html(response);
+                        $("#async-content-container").attr("class", "col-sm-12 col-xl-10 col-lg-9 col-md-12");
+
+                        if (cacCases) {
+                            $("#cac-P-cases-listing").scrollTop(vartical_ctaScroll);
+                        }
+                    }
+                    else {
+                        //$("#async-content-container").attr("class", "col-12");
+                        $("#Credentials-Expiring-container").html("");
+                        //$("#Credentials-Expiring-container").addClass("d-none");
+
+                    }
+                },
+                complete: function () {
+                    if (refreshCredentialsExpiringCaseList.loadTimeout != undefined)
+                        window.clearTimeout(refreshCredentialsExpiringCaseList.loadTimeout);
+
+                    refreshCredentialsExpiringCaseList.loadTimeout = window.setTimeout(function () { refreshCredentialsExpiringCaseList() }, 5000);
+                },
+                global: false
+            });
+        }
+
+        ////
+
+        ////cases pending review
+
+        function refreshCasesPendingReviewList() {
+            var url = '@Url.Action("GetCasesPendingReviewList", "Reports")';
+            var cacPCases = $("#cac-Pending-cases-listing");
+            if (cacPCases) {
+                var vartical_ctaScroll = $("#cac-Pending-cases-listing").scrollTop();
+            }
+            $.ajax({
+                url: url + "?"+ Math.floor(Math.random() * 10000) + 1,
+                success: function (response) {
+                    if (response != null && response.trim() != "" && response != undefined) {
+                        $("#cases-pending-review-container").removeClass("d-none");
+                        $("#cases-pending-review-container").html(response);
+                        $("#async-content-container").attr("class", "col-sm-12 col-xl-10 col-lg-9 col-md-12");
+
+                        if (cacPCases) {
+                            $("#cac-Pending-cases-listing").scrollTop(vartical_ctaScroll);
+                        }
+                    }
+                    else {
+                        $("#cases-pending-review-container").html('');
+                        //$("#async-content-container").attr("class", "col-12");
+                        //$("#cases-pending-review-container").html("");
+                        //$("#cases-pending-review-container").addClass("d-none");
+
+                    }
+                },
+                complete: function () {
+                    if (refreshCasesPendingReviewList.loadTimeout != undefined)
+                        window.clearTimeout(refreshCasesPendingReviewList.loadTimeout);
+
+                    refreshCasesPendingReviewList.loadTimeout = window.setTimeout(function () { refreshCasesPendingReviewList() }, 5000);
+                },
+                global: false
+            });
+        }
+
+        ///*@
+        
+        function OnBoardingData(id, url) {
+            var Id = parseInt(id);
+
+            ShowLoading();
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: 'json',
+                data: { Id: Id },
+                error: function (xhr, error) {
+
+                },
+                success: function (response) {
+
+
+                    $("#showonboardingdata").empty();
+                    $("#showonboardingdata").html(response.data);
+                    $(".showhideattest").removeClass('d-none');
+                    $(".cancelattest").hide();
+                    $(".onboardingmodal").removeClass('d-none');
+                    $("#onboardingmodal").modal('show');
+
+
+                    HideLoading();
+                }
+
+            });
+        }
+
+        $("#btnclosemodal").off('click').click(function () {
+
+            $(".cancelattest").show();
+            $(".showhideattest").addClass('d-none');
+            $("#showonboardingdata").empty();
+
+        });
+        $(".closeboardingmodal").off('click').click(function () {
+
+            $(".cancelattest").show();
+            $(".showhideattest").addClass('d-none');
+            $("#showonboardingdata").empty();
+
+        });
+
+        $(document).ready(function () {
+            $('#onboardingmodal').modal({ backdrop: 'static', keyboard: false, hide: true });
+
+            $("#onboardingmodal").modal('hide');
+        })
+    
+    </script>
+
+    @if (Settings.RPCMode != RPCMode.Disabled)
+    {
+        @Scripts.Render("~/bundles/hubs")
+    }
+    <div id="processing" class="loading" style="display:none"></div>
+    @*<script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-messaging.js"></script>*@
+    <script>
+        // const userObject;
+        //const config = {
+        //    apiKey: "AIzaSyDHC8RJ-uUoWIo3tYa9zzhVhvTxv5NuZF0",
+        //    authDomain: "telecare-3724e.firebaseapp.com",
+        //    databaseURL: "https://telecare-3724e.firebaseio.com",
+        //    projectId: "telecare-3724e",
+        //    storageBucket: "telecare-3724e.appspot.com",
+        //    messagingSenderId: "922280291570",
+        //    appId: "1:922280291570:web:6ce723cfaeeed0f7c8b46b",
+        //    measurementId: "G-8TWCZJP852"
+        //};
+       
+
+        // firebase config production
+        //const config = {
+        //    apiKey: "AIzaSyD78t_u3xK5eFQZyD95NL3-XGubH6z4XCo",
+        //    authDomain: "telecare-c852b.firebaseapp.com",
+        //    databaseURL: "https://telecare-c852b.firebaseio.com",
+        //    projectId: "telecare-c852b",
+        //    storageBucket: "telecare-c852b.appspot.com",
+        //    messagingSenderId: "945324237265",
+        //    appId: "1:945324237265:web:4ea74b5e9f81f1789f40f0",
+        //    measurementId: "G-5WF4NMKNWZ"
+        //};
+
+
+        //firebase.initializeApp(config);
+        //firebase.analytics();
+
+    </script>
+    @*<script src="~/Scripts/firebase/js/custome.js"></script>*@
+    @*@Scripts.Render("~/bundles/firebase")*@
+</body>
+</html>
+
+<style>
+    .Un-publish-sch {
+        color: red !important;
+    }
+    #checkPassword {
+        -webkit-text-security: disc;
+    }
+</style>
+@{
+    if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+    {
+        <script>
+            $.get("/Alarm/_refreshAlarm", function (data) {
+                $('.refreshAlarm').html(data);
+            });
+    var physcian = "";
+            var tune;
+    var startDate = "@(new DateTime(currentDate.Year, currentDate.Month, currentDate.Day).ToString())";
+    var endDate = "@(new DateTime(currentDate.Year, currentDate.Month, currentDate.Day).ToString())";
+            GetTodayBill(startDate, endDate, physcian);
+            //setInterval(function () {
+            //    GetTodayBill(startDate, endDate, physcian);
+            //}, 40000);
+            function GetTodayBill(startDate, endDate, physcian) {
+                $("#hdnDisableLoader").val('1');
+                $.get("/Billing/_getBill", { startDate: startDate, endDate: endDate, physcians: physcian, rqst: 'true' }, function (data) {
+                    var _val = "<i class='fa fa-dollar'></i> <span>" + data + "</span>";
+                    $('.lblamaount').html(_val);
+                    var src;
+                    if (data <= 1000) {
+                        src = '/Content/images/one-dollar.png'
+                    }
+                    else if (data <= 1500) {
+                        src = '/Content/images/two-dollar.png'
+                    }
+                    else if (data <= 2000) {
+                        src = '/Content/images/three-dollar.png'
+                    }
+                    else if (data <= 2500) {
+                        src = '/Content/images/four-dollar.png'
+                    }
+                    else if (data > 2500) {
+                        src = '/Content/images/five-dollar.png'
+                    }
+                    document.getElementById("uploadImg").src = src;
+                });
+            }
+        </script>
+    }
+}
+
+
+
+
+

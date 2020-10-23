@@ -1,0 +1,228 @@
+﻿@{
+    ViewBag.Title = "Facilities";
+}
+
+<div class="pt-1 customGridHeader">
+    <div id="FacilitiesGrid" class="kendo-ui-grid-control">
+    </div>
+</div> 
+<script type="text/javascript">
+    var contactGrid = null;
+    var phy_key = '@(ViewBag.phy_key)';
+    $(document).ready(function () {
+        getFacilities();
+        $("#btnSearch").off("click").click(function () {
+
+            var searchValue = $('#searchBox').val();
+            if (searchValue !== "")
+                $("#resetSearch").show();
+
+            getFacilities();
+        });
+        $("#resetSearch").off("click").click(function (e) {
+
+            e.preventDefault();
+            $("#frmSearch").trigger('reset');
+            $(".ms-options input:checkbox").each(function () {
+                $(this).prop("checked", true);
+            })
+
+            $("#divRoleFilter").find(".ms-options-wrap").find("button>span").html("All");
+            if ($("#divRoleFilter").find(".ms-options-wrap").find(".ms-selectall").text().toLowerCase() == "select all") { // unselect all // select all
+                $("#divRoleFilter").find(".ms-options-wrap").find(".ms-selectall").click();
+            }
+
+            localStorage.clear();
+
+            $("#btnSearch").click();
+            $("#resetSearch").hide();
+
+        });
+        $("#frmSearch").off("submit").submit(function (e) {
+            e.preventDefault();
+            $("#btnSearch").click();
+
+        });
+        $("#FacilityOnboardedFilter").off("change").change(function () {
+            getFacilities();
+        });
+    });
+
+    function getFacilities() {
+        $("#FacilitiesGrid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetAllPhysicianFacilities")',
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        options = KendoKeepState("Credentials", options, true);
+                        if (phy_key !== "") {
+                            if (options.filter === undefined)
+                                options.filter = {};
+                            if (options.filter.filters === undefined)
+                                options.filter.filters = [];
+                            if (options.filter.logic === undefined)
+                                options.filter.logic = "and";
+                            options.filter.filters.push({ field: "fap_user_key", operator: "eq", "value": phy_key });
+                            //Onboarded Filter
+                            var currentPhyIsOnboard = $("#FacilityOnboardedFilter").val();
+                            if (currentPhyIsOnboard != "") {
+                                options.filter.filters.push({ field: "fap_is_on_boarded", operator: "eq", "value": currentPhyIsOnboard == "1" ? true : false });
+                            }
+                            // textbox search
+                            var searchValue = $('#searchBox').val();
+                            if (searchValue !== "") {
+                                options.filter.filters.push({ field: "fac_name", operator: "contains", "value": searchValue });
+                            }
+                        }
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                },
+                pageSize: GetKendoPageSize("Credentials", "RecPerPage", true),
+                page: KendoGet("Credentials", "page"),
+                serverPaging: true,
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            filterable: true,
+            sortable: true,
+            scrollable: true,
+            resizable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            dataBound: function (e) {
+                SetKendoTotalCount("Credentials", $('#FacilitiesGrid').data("kendoGrid").dataSource.total());
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                }); 
+
+                var items = e.sender.items();
+                items.each(function (idx, item) {
+                    if ((e.sender.dataItem(item).fap_hide))
+                        $(item).addClass('row-disabled');  
+                });
+
+            },
+            columns: [
+                { hidden: true, field: "fap_key" },
+                { field: "fac_name", title: "Facility Name", width: '200px' },
+                {
+                    field: "fap_start_date", title: "Start Date", width:'100px',
+                    template: "#= kendo.toString(kendo.parseDate(fap_start_date), 'MM/dd/yyyy') #", filterable: false
+                },
+                {
+                    field: "fap_end_date", title: "End Date", width: '100px',
+                    template: '<span> #= fap_end_date ? kendo.toString(kendo.parseDate(fap_end_date), "MM/dd/yyyy") : ""# </span>', filterable: false
+                },
+              
+                {
+                    field: "fap_is_on_boarded", width: '100px', title: "Onboarded",
+                    template: '<input type="checkbox" #= fap_is_on_boarded ? "checked=checked" : "" # disabled="disabled" ></input>'
+                },
+               {
+                   field: "fap_onboarded_date", title: "Onboarding Date",width: '150px' ,
+                   template: '<span> #= fap_onboarded_date && fap_is_on_boarded ? kendo.toString(kendo.parseDate(fap_onboarded_date), "MM/dd/yyyy") + " " +  fap_onboarded_by_name : ""# </span>',
+                    filterable: false
+                },
+
+
+                {
+                   title: "Actions", width: '40px',
+                    template: "<a href='javascript:; ' class='btn btn-dark btn-sm py-1' title='Select' onclick='GoToOnboarding(#=fap_key#)'>Select</a>"
+                }
+            ]
+        });
+    }
+
+    function onEditClick(btn) { 
+
+        alert("defd");
+    }
+
+    function onfapHide(btn,id) { 
+        var url = '@Url.Action("ToggleHide", "FacilityPhysician")';
+
+        $.post(url,{
+                id: id
+            },
+            function (response) {
+                var changed = response.changed;
+                if (changed) {
+
+                    var editbtn = $(btn).siblings(".btnedit").first(); 
+
+                    if ($(editbtn).hasClass("disable")) {
+                        $(editbtn).removeClass("disable")
+                        $(editbtn).removeAttr("disabled");
+                        $(btn).html("Hide");
+                        $(btn).parents("tr").removeClass("row-disabled");
+                    }
+                    else {
+                        $(editbtn).addClass("disable")
+                        $(editbtn).attr("disabled", true);
+                        $(btn).html("Unhide"); 
+                        $(btn).parents("tr").addClass("row-disabled"); 
+                    }
+                }
+            }
+        );
+    }
+
+    function removeFacility(id) {
+        var url = "@Url.Action("Remove")";
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+            "<span>Are you sure you want to remove this facility from the list?</span>",
+            function () {
+                $.get(url, {id: id},  function (response) {
+                    if (response.success) {
+                        getFacilities();
+                        $("#divModelPopUp").modal("hide");
+                    }
+                    else {
+                        $("#divModelPopUp").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                    }
+                })
+            });
+    }
+
+    function GoToOnboarding(id) {
+        var Id = parseInt(id);
+        var url = "/Facility/Onboarded/";
+        ShowLoading();
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: 'json',
+            data: { Id: Id },
+            error: function (xhr, error) {
+
+            },
+            success: function (response) {
+
+                $(".onboarderdmaindiv").hide();
+                $(".ondboardeddiv").empty();
+                $(".ondboardeddiv").html(response.data);
+                $(".showhideattest").removeClass('d-none');
+                $(".ondboardeddiv").removeClass('d-none');
+                HideLoading();
+            }
+
+        });
+    }
+</script>
+
+

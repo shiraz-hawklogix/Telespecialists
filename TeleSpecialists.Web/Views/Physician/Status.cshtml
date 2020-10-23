@@ -1,0 +1,271 @@
+﻿@using TeleSpecialists.BLL.ViewModels;
+@model IEnumerable<PhysicianDashboardViewModel>
+@{
+    ViewBag.Title = "Status";
+    int statusInterval = ViewBag.statusInteral;
+}
+
+<div class="row physician-status">
+    <div class="col-lg-3 col-md-12 col-sm-12">
+        <h4>Stroke Physician Status</h4>
+    </div>
+    <div class="col-lg-9 col-md-12 col-sm-12">
+        <div class="status-filters mr-lg-5">
+            <div class="row">
+                <div class="d-inline-block ml-3 mr-3">
+                    <label class="form-check-label">
+                        <strong>Show Only Logged In Users:</strong>
+                    </label>&nbsp;
+                    <input type="checkbox" class="form-check-inline" id="chkFilterLoggedinUser">
+                </div>
+                <div class="row ml-3">
+                    <label class="pr-2"><strong>Sort By:</strong></label>
+                    <select class="col-9 form-control" id="SortOrder">
+                        <option value="">Select:</option>
+                        <option value="status asc">Status</option>
+                        <option value="physician asc">Physician - Ascending</option>
+                        <option value="physician desc">Physician - Descending</option>
+                        <option value="elapsedtime asc">Elapsed Time - Ascending</option>
+                        <option value="elapsedtime desc">Elapsed Time - Descending</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4" id="StatusDashboard">
+
+</div>
+
+<div class="row physician-status">
+    <div class="col-lg-3 col-md-12 col-sm-12">
+        <h4>NH Status</h4>
+    </div>
+</div>
+<div class="mt-4" id="NHStatusDashboard"></div>
+
+<div class="row physician-status">
+    <div class="col-lg-3 col-md-12 col-sm-12">
+        <h4>PAOC Status</h4>
+    </div>
+</div>
+<div class="mt-4" id="PacStatusDashboard"></div>
+
+@*<div class="row physician-status">
+        <div class="col-lg-3 col-md-12 col-sm-12">
+            <h4>Sleep Status</h4>
+        </div>
+    </div>
+    <div class="mt-4" id="SleepStatusDashboard"></div>*@
+<script>
+    var statusInterval = @statusInterval;
+    $("#SortOrder").off("change").change(function () {
+        fetchData();
+        fetchNHData();
+    });
+    $("#chkFilterLoggedinUser").off("change").change(function () {
+        fetchData();
+        fetchNHData();
+    });
+    function fetchData(callBack) {
+        var url = "@Url.Action("_StatusList")";
+        var sortOrder = $("#SortOrder").val();
+        var showOnlyLoggedInUsers = $("#chkFilterLoggedinUser").prop("checked");
+        $.post(url, { sortOrder: sortOrder,showOnlyLoggedInUsers: showOnlyLoggedInUsers }, function (response) {
+            $("#StatusDashboard").html(response);
+        });
+    }
+
+    $(document).ready(function () {
+        pageLoadPac();
+        pageLoad();
+        //pageLoadSleep();
+        pageLoadNH();
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+    });
+
+    function pageLoad() {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl.indexOf("/physician/status") > -1) {
+            var url = "@Url.Action("_StatusList")";
+            var sortOrder = $("#SortOrder").val();
+            var showOnlyLoggedInUsers = $("#chkFilterLoggedinUser").prop("checked");
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { sortOrder: sortOrder, showOnlyLoggedInUsers: showOnlyLoggedInUsers },
+                error: function (xhr, error) {
+                    if (pageLoad.loadTimeout != undefined)
+                        window.clearTimeout(pageLoad.loadTimeout);
+
+                    pageLoad.loadTimeout = window.setTimeout(function () { pageLoad(); }, statusInterval);
+                },
+                success: function (response) {
+
+                    try {
+                        $("#hdnDisableLoader").val("1");
+                        $("#StatusDashboard").html(response);
+                        if (pageLoad.loadTimeout != undefined)
+                            window.clearTimeout(pageLoad.loadTimeout);
+
+                        pageLoad.loadTimeout = window.setTimeout(function () { pageLoad(); }, statusInterval);
+                    }
+                    catch (e) {
+                        if (pageLoad.loadTimeout != undefined)
+                            window.clearTimeout(pageLoad.loadTimeout);
+
+                        pageLoad.loadTimeout = window.setTimeout(function () { pageLoad(); }, statusInterval);
+
+                    }
+                }
+            });
+
+        }
+    }
+
+    @*function pageLoadSleep() {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl.indexOf("/physician/status") > -1) {
+            var url = "@Url.Action("_SleepStatusList")";
+            var sortOrder = $("#SortOrder").val();
+            var showOnlyLoggedInUsers = $("#chkFilterLoggedinUser").prop("checked");
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { sortOrder: sortOrder, showOnlyLoggedInUsers: showOnlyLoggedInUsers },
+                error: function (xhr, error) {
+                    if (pageLoadSleep.loadTimeout != undefined)
+                        window.clearTimeout(pageLoadSleep.loadTimeout);
+
+                    pageLoadSleep.loadTimeout = window.setTimeout(function () { pageLoadSleep(); }, statusInterval);
+                },
+                success: function (response) {
+
+                    try {
+                        $("#hdnDisableLoader").val("1");
+                        $("#SleepStatusDashboard").html(response);
+                        if (pageLoadSleep.loadTimeout != undefined)
+                            window.clearTimeout(pageLoadSleep.loadTimeout);
+
+                        pageLoadSleep.loadTimeout = window.setTimeout(function () { pageLoadSleep(); }, statusInterval);
+                    }
+                    catch (e) {
+                        if (pageLoadSleep.loadTimeout != undefined)
+                            window.clearTimeout(pageLoadSleep.loadTimeout);
+
+                        pageLoadSleep.loadTimeout = window.setTimeout(function () { pageLoadSleep(); }, statusInterval);
+
+                    }
+                }
+            });
+
+        }
+    }*@
+</script>
+
+<script>
+    function fetchPacData(callBack) {
+        var url = "@Url.Action("_PacStatusList")";
+        var sortOrder = $("#SortOrder").val();
+        var showOnlyLoggedInUsers = $("#chkFilterLoggedinUser").prop("checked");
+        $.post(url, { sortOrder: sortOrder,showOnlyLoggedInUsers: showOnlyLoggedInUsers }, function (response) {
+            $("#PacStatusDashboard").html(response);
+        });
+    }
+
+    function pageLoadPac() {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl.indexOf("/physician/status") > -1) {
+            var url = "@Url.Action("_PacStatusList")";
+            var sortOrder = $("#SortOrder").val();
+            var showOnlyLoggedInUsers = $("#chkFilterLoggedinUser").prop("checked");
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { sortOrder: sortOrder, showOnlyLoggedInUsers: showOnlyLoggedInUsers },
+                error: function (xhr, error) {
+                    if (pageLoadPac.loadTimeout != undefined)
+                        window.clearTimeout(pageLoadPac.loadTimeout);
+
+                    pageLoadPac.loadTimeout = window.setTimeout(function () { pageLoadPac(); }, statusInterval);
+                },
+                success: function (response) {
+
+                    try {
+                        $("#hdnDisableLoader").val("1");
+                        $("#PacStatusDashboard").html(response);
+                        if (pageLoadPac.loadTimeout != undefined)
+                            window.clearTimeout(pageLoadPac.loadTimeout);
+
+                        pageLoadPac.loadTimeout = window.setTimeout(function () { pageLoadPac(); }, statusInterval);
+                    }
+                    catch (e) {
+                        if (pageLoadPac.loadTimeout != undefined)
+                            window.clearTimeout(pageLoadPac.loadTimeout);
+
+                        pageLoadPac.loadTimeout = window.setTimeout(function () { pageLoadPac(); }, statusInterval);
+
+                    }
+                }
+            });
+
+        }
+    }
+</script>
+
+<script>
+    function fetchNHData(callBack) {
+        var url = "@Url.Action("_NHStatusList")";
+        var sortOrder = $("#SortOrder").val();
+        var showOnlyLoggedInUsers = $("#chkFilterLoggedinUser").prop("checked");
+        $.post(url, { sortOrder: sortOrder,showOnlyLoggedInUsers: showOnlyLoggedInUsers }, function (response) {
+            $("#NHStatusDashboard").html(response);
+        });
+    }
+
+    function pageLoadNH() {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl.indexOf("/physician/status") > -1) {
+            var url = "@Url.Action("_NHStatusList")";
+            var sortOrder = $("#SortOrder").val();
+            var showOnlyLoggedInUsers = $("#chkFilterLoggedinUser").prop("checked");
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { sortOrder: sortOrder, showOnlyLoggedInUsers: showOnlyLoggedInUsers },
+                error: function (xhr, error) {
+                    if (pageLoadPac.loadTimeout != undefined)
+                        window.clearTimeout(pageLoadPac.loadTimeout);
+
+                    pageLoadNH.loadTimeout = window.setTimeout(function () { pageLoadNH(); }, statusInterval);
+                },
+                success: function (response) {
+
+                    try {
+                        $("#hdnDisableLoader").val("1");
+                        $("#NHStatusDashboard").html(response);
+                        if (pageLoadNH.loadTimeout != undefined)
+                            window.clearTimeout(pageLoadNH.loadTimeout);
+
+                        pageLoadNH.loadTimeout = window.setTimeout(function () { pageLoadNH(); }, statusInterval);
+                    }
+                    catch (e) {
+                        if (pageLoadNH.loadTimeout != undefined)
+                            window.clearTimeout(pageLoadNH.loadTimeout);
+
+                        pageLoadNH.loadTimeout = window.setTimeout(function () { pageLoadNH(); }, statusInterval);
+
+                    }
+                }
+            });
+
+        }
+    }
+</script>
+
+
+

@@ -1,0 +1,411 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@*@using TeleSpecialists.BLL.Model;*@
+
+@{
+    ViewBag.Title = "Schedule";
+    var physiciansList = ViewBag.Physicians as List<Tuple<string, string, string, string, string, string>>;
+    //List<physician_holiday_rate> listRate = ViewBag.Rates;
+
+    var ShiftList = Enum.GetValues(typeof(PhysicianShifts)).Cast<PhysicianShifts>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList shifts = new SelectList(ShiftList, "key", "title");
+    shifts = new SelectList(shifts.Where(x => x.Text != "Blast").ToList(), "Value", "Text");
+    var rdValue = ViewBag.typeforPhy;
+    var rdSuperAdmin = ViewBag.SuperAdmin;
+}
+
+@*<div id="teststyle"></div>*@
+<input type="hidden" value="@rdValue" id="rdValueId" />
+<input type="hidden" value="@rdSuperAdmin" id="rdSuperAdminValueId" />
+<input type="hidden" value="" id="navigateUrl" />
+<input type="hidden" value="" id="navigateTarget" />
+<div id="fewerphyId" class="modal fade" tabindex="-1" role="dialog" style="height:500px;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="card-header pl-3 font-weight-bold" style="background-color:black">
+                <h5><span style="color:white" class="font-weight-bold" id="fewerphyHeadId"></span></h5>
+                <span data-dismiss="modal" class="fa fa-close" style="float: right;margin-top: -23px;color: white;cursor: pointer;">
+                    <span></span>
+                </span>
+            </div>
+            <div class="modal-body" style="max-height:350px;overflow-y:auto">
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <label class="control-label" id="fewPhylblId"></label>
+                        <label class="control-label" style="float:right;" id="facCountlblId"></label>
+                    </div>
+                    <div class="col-md-12" id="fewerphyIdList">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" style="color:white;background-color:black" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="scheduler-container">
+    <input type="text" id="comboBox" name="comboBox" />
+    <br />
+    <div id="bAlertId" class="alert" style="display:none">
+        <a class="close" id="CloseId" onclick="CloseAlert();">&times;</a>
+        <p style="margin-bottom:5px;" id="alertMessage"></p>
+    </div>
+    <div id="scheduler"></div>
+</div>
+
+@*----------==========Create/Edit Window For normal devices==========----------*@
+<script id="customEditorTemplate" type="text/x-kendo-template">
+    <div id="validationSummary">
+    </div>
+
+    <div id="schedulerValidator" style="width:95%;margin: 0 auto;">
+
+        <div class="k-edit-label text-left">
+            <label class="control-label text-left">Owner:</label>
+        </div>
+        <div data-container-for="ownerId" class="k-edit-field">
+            <select id="ownerId" name="ownerId" data-bind="value:ownerId" data-role="dropdownlist" data-value-field="value" data-text-field="text"></select>
+        </div>
+        <div class="k-edit-label text-left">
+            <label for="scheduleDate" class="control-label">Date:</label>
+        </div>
+        <div data-container-for="scheduleDate" class="k-edit-field">
+            <input type="text"
+                   id="scheduleDate"
+                   data-role="datepicker"
+                   data-type="date"
+                   data-bind="value:start"
+                   name="ScheduleDate" style="display:block" />
+        </div>
+        <div class="k-edit-label text-left">
+            <label for="start" class="control-label">Start:</label>
+        </div>
+        <div data-container-for="start" class="k-edit-field">
+            <input type="text"
+                   data-role="timepicker"
+                   data-interval="15"
+                   data-type="date"
+                   data-bind="value:start"
+                   name="Start" id="txt-schedule-strattime" style="display:block" />
+            <span data-bind="text: startTimezone"></span>
+        </div>
+        <div class="k-edit-label text-left">
+            <label for="end" class="control-label">End:</label>
+        </div>
+        <div data-container-for="end" class="k-edit-field">
+            <input type="text"
+                   data-type="date"
+                   data-role="timepicker"
+                   data-bind="value:end"
+                   name="End" id="txt-schedule-endtime" style="display:block" />
+        </div>
+        <div class="k-edit-label text-left">
+            <label for="description" class="control-label">Description:</label>
+        </div>
+        <div data-container-for="description" class="k-edit-field">
+            <textarea name="description" id="description" class="k-textbox p-2" data-bind="value:description"></textarea>
+        </div>
+        @*Added by Axim*@
+        <div class="k-edit-label text-left">
+            <label for="rate" class="control-label">Rate:</label>
+        </div>
+        <div data-container-for="rate" class="k-edit-field">
+            <input type="number" for="rate" min="0" name="Rate" class="k-textbox p-2 rate" data-bind="value:rate" />
+        </div>
+
+        <div class="k-edit-label text-left">
+            <label for="ShiftId" class="control-label">Shift:</label>
+        </div>
+        <div data-container-for="ShiftId" class="k-edit-field ">
+            @*<select id="ShiftId" name="ShiftId" data-bind="value:ShiftId" data-role="dropdownlist" data-value-field="value" data-text-field="text"></select>*@
+            @Html.DropDownList("ShiftId", shifts, "-- Select --", new { @class = "form-control", @id = "ShiftId", @name = "ShiftId", @style = "width:350px;height:32px" })
+        </div>
+        @*ended by Axim*@
+    </div>
+</script>
+@*----------==========Create/Edit Window For mobile devices==========----------*@
+<script id="customEditorMobileTemplate" type="text/x-kendo-template">
+    <div id="validationSummary">
+    </div>
+    <div id="schedulerValidator" style="width:95%;margin: 0 auto;">
+
+        <div class="k-edit-label">
+            <label class="control-label text-left">Owner:</label>
+        </div>
+        <div data-container-for="ownerId" class="k-edit-field">
+            <select id="ownerId" name="ownerId" data-bind="value:ownerId" data-role="dropdownlist" data-value-field="value" data-text-field="text"></select>
+        </div>
+        <div class="k-edit-label text-left">
+            <label for="scheduleDate" class="control-label">Date:</label>
+        </div>
+        <div data-container-for="scheduleDate" class="k-edit-field">
+            <input type="text"
+                   id="scheduleDate"
+                   data-role="datepicker"
+                   data-type="date"
+                   data-bind="value:start"
+                   name="ScheduleDate" style="display:block" />
+        </div>
+        <div class="k-edit-label text-left">
+            <label for="start" class="control-label">Start:</label>
+        </div>
+        <div data-container-for="start" class="k-edit-field">
+            <input type="text"
+                   data-role="timepicker"
+                   data-interval="15"
+                   data-type="date"
+                   data-bind="value:start"
+                   name="Start" id="txt-schedule-strattime" style="display:block" />
+            <span data-bind="text: startTimezone"></span>
+        </div>
+        <div class="k-edit-label text-left">
+            <label for="end" class="control-label">End:</label>
+        </div>
+        <div data-container-for="end" class="k-edit-field">
+            <input type="text"
+                   data-type="date"
+                   data-role="timepicker"
+                   data-bind="value:end"
+                   name="End" id="txt-schedule-endtime" style="display:block" />
+        </div>
+        <div data-container-for="description" class="k-edit-field">
+            <label for="description" class="control-label" style="width: 100%;padding: .5em 0 .5em 1em;">Description:</label>
+            <textarea name="description" id="description" class="k-textbox p-2" data-bind="value:description"></textarea>
+        </div>
+        @*Added by Axim*@
+        <div class="k-edit-label text-left">
+            <label for="rate" class="control-label">Rate:</label>
+        </div>
+        <div data-container-for="rate" class="k-edit-field">
+            <input type="text" data-type="number" for="rate" name="Rate" class="k-textbox p-2 rate" min="0" data-bind="value:rate" />
+        </div>
+        <div class="k-edit-label text-left">
+            <label for="ShiftId" class="control-label">Shift:</label>
+        </div>
+        <div data-container-for="ShiftId" class="k-edit-field">
+            @*<select id="ShiftId" name="ShiftId" data-bind="value:ShiftId" data-role="dropdownlist" data-value-field="value" data-text-field="text"></select>*@
+            @Html.DropDownList("ShiftId", shifts, "-- Select --", new { @class = "form-control", @id = "ShiftId", @name = "ShiftId", @style = "width:350px;height:32px" })
+        </div>
+        @*ended by Axim*@
+    </div>
+</script>
+@*----------==========Jquery Kendo Scheduler Script==========----------*@
+<script>
+
+</script>
+@*<script src="~/Scripts/Custom/Scheduler/physician_scheduler.js"></script>*@
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        var type = "@rdValue";
+        console.log('type is :' + type);
+        var head = document.getElementsByTagName('head')[0];
+        var js = document.createElement("script");
+        js.type = "text/javascript";
+
+        if (type === 'sleep') {
+            js.src = "/Scripts/Custom/Scheduler/physician_scheduler_sleep.js";
+        }
+        else if (type === 'nhAlert') {
+            $('.rdIsNhAlert').prop("checked", true);
+            js.src = "/Scripts/Custom/Scheduler/physician_scheduler_nh.js";
+        }
+        else {
+            js.src = "/Scripts/Custom/Scheduler/physician_scheduler.js";
+        }
+        head.appendChild(js);
+    });
+    $(function () {
+        @*var offset = @Functions.GetTimeZoneOffset(TeleSpecialists.BLL.Settings.DefaultTimeZone);
+        var currentDateEST = moment().utcOffset(offset).format('YYYY-MM-DD hh:mm:ss');
+        var currentDate = new Date(currentDateEST);
+        currentDate.setHours(0, 0, 0, 0);*@
+        var currentDateEST = '@(DateTime.Now.ToEST())';
+        // Check current device is mobile or else.
+        var isMobileDevice = checkMobileDevice();
+        var height = isMobileDevice == true ? 600 : 800;
+        var isAdmin = '@((User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription())))';
+
+        ShowLoading();
+        setTimeout(function () {
+             // Intialize scheduler instance
+            initScheduler(isAdmin, currentDateEST, isMobileDevice, height);
+            debugger;
+            $("#comboBox").kendoMultiSelect({
+                dataTextField: "text",
+                dataValueField: "value",
+                filter: "contains",
+                placeholder: "Click here to filter",
+                change: function (e) {
+                    var value = this.value();
+                    var scheduler = $("#scheduler").data("kendoScheduler");
+                    scheduler.dataSource.read();
+                    updateHref();
+                },
+                dataSource: getPhysicians(true),
+                footerTemplate: 'Total #: instance.dataSource.total() # items found',
+                itemTemplate: '<span class="k-state-default" style="background-image: url(\'/schedule/RenderImage/#:data.value#\')"></span>' +
+                    '<span class="k-state-default physician-color" style="margin-top: 10px; background-color: #:data.color#"></span>' +
+                    '<span class="k-state-default"><h3>#: data.fullName #</h3><p>#: data.NPINumber #</p></span>',
+                tagTemplate: '<span class="selected-value" style="background-image: url(\'/schedule/RenderImage/#:data.value#\')"></span><span>#:data.fullName#</span>',
+                height: 400
+            });
+            var customers = $("#comboBox").data("kendoMultiSelect");
+            customers.wrapper.attr("id", "comboBox-wrapper");
+            $("#scheduler").kendoTooltip({
+                filter: ".k-event:not(.k-event-drag-hint) > div, .k-task",
+                position: "top",
+                width: 250,
+                content: kendo.template($('#template').html())
+            });
+        }, 1000);
+
+    });
+</script>
+<script id="template" type="text/x-kendo-template">
+    #var element = target.is(".k-task") ? target : target.parent();#
+    #var uid = element.attr("data-uid");#
+    #var scheduler = target.closest("[data-role=scheduler]").data("kendoScheduler");#
+    #var model = scheduler.occurrenceByUid(uid);#
+
+    #if(model) {#
+    <strong>Physician:</strong> #=model.fullName#
+    <br />
+    <strong>Shift Start:</strong> #=kendo.format('{0:g}',model.start)#
+    <br />
+    <strong>Shift End:</strong> #=kendo.format('{0:g}',model.end)#
+    <br />
+    #if(model.rate!=null){#
+    <strong>Custom Floor Rate:</strong> #=kendo.format('{0:c}',model.rate)#
+    <br />#}#
+
+    #} else {#
+    <strong>No shift data is available</strong>
+    #}#
+</script>
+
+@*Need to check this for custom color selection*@
+@*http://dojo.telerik.com/UTezI/6*@
+<style>
+    .k-nav-current > .k-link span + span {
+        max-width: 200px;
+    }
+
+    #team-schedule {
+        background: url('/content/images/team-schedule.png') transparent no-repeat;
+        height: 115px;
+        position: relative;
+    }
+</style>
+<style>
+    .dropdown-header {
+        border-width: 0 0 1px 0;
+        text-transform: uppercase;
+    }
+
+        .dropdown-header > span {
+            display: inline-block;
+            padding: 10px;
+        }
+
+            .dropdown-header > span:first-child {
+                width: 50px;
+            }
+
+    .k-list-container > .k-footer {
+        padding: 10px;
+    }
+
+    .selected-value {
+        display: inline-block;
+        vertical-align: middle;
+        width: 18px;
+        height: 18px;
+        background-size: 100%;
+        margin-right: 5px;
+        border-radius: 50%;
+    }
+
+    #comboBox-list .k-item {
+        line-height: 1em;
+        min-width: 300px;
+    }
+
+    /* Material Theme padding adjustment*/
+
+    .k-material #comboBox-list .k-item,
+    .k-material #comboBox-list .k-item.k-state-hover,
+    .k-materialblack #comboBox-list .k-item,
+    .k-materialblack #comboBox-list .k-item.k-state-hover {
+        padding-left: 5px;
+        border-left: 0;
+    }
+
+    #comboBox-list .k-item > span {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block;
+        vertical-align: top;
+        margin: 15px 10px 10px 5px;
+    }
+
+        #comboBox-list .k-item > span:first-child {
+            -moz-box-shadow: inset 0 0 30px rgba(0,0,0,.3);
+            -webkit-box-shadow: inset 0 0 30px rgba(0,0,0,.3);
+            box-shadow: inset 0 0 30px rgba(0,0,0,.3);
+            margin: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+    #comboBox-list h3 {
+        font-size: 1.2em;
+        font-weight: normal;
+        margin: 0 0 1px 0;
+        padding: 0;
+    }
+
+    #comboBox-list p {
+        margin: 0;
+        padding: 0;
+        font-size: .8em;
+    }
+
+    .physician-color {
+        display: inline-block;
+        width: 20px;
+        height: 50px;
+    }
+
+    .demo-hint {
+        line-height: 22px;
+        color: #aaa;
+        font-style: italic;
+        font-size: .9em;
+        padding-top: 1em;
+    }
+</style>
+<style>
+    /*increase the height of the month view cells*/
+    .k-scheduler-monthview .k-scheduler-table td {
+        height: 10.5em;
+    }
+
+    .btn-published {
+        color: white !important;
+        background-color: green !important;
+        background-image: none;
+    }
+
+    .btn-un-published {
+        color: white !important;
+        background-color: red !important;
+        background-image: none;
+    }
+</style>

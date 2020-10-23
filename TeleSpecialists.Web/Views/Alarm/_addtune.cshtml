@@ -1,0 +1,54 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.alarm_tunes
+
+<div>
+    @using (Html.BeginForm("Addalarmtune", "Alarm", FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "regForm", enctype = "multipart/form-data" }))
+    {
+        @*@Html.AntiForgeryToken()*@
+
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-md-10 offset-sm-1">
+                    <h2>Add Notification Tune</h2>
+                    <hr />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1 offset-sm-1">
+                    @Html.Label("Audio Title:", htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-4">
+                    @Html.EditorFor(model => model.alt_file_name, new { htmlAttributes = new { @class = "form-control", placeholder = "Add Title of tune", @id = "filename" } })
+                    @Html.ValidationMessageFor(model => model.alt_file_name, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-1 offset-sm-1">
+                    @Html.Label("Upload file:", htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <div class="input-group-prepend" style="min-width:35px;">
+                            <span class="input-group-text" id="inputGroupFileAddon01">Audio</span>
+                        </div>
+                        <div class="custom-file" style="min-width:150px;">
+                            <input type="file" class="custom-file-input " id="fileUpload" name="fileUpload" aria-describedby="inputGroupFileAddon01" onchange="$('.custom-file-label').html(this.files[0].name)" required accept="audio/*" />
+                            <label class="custom-file-label" for="postedfile">Choose file</label>
+                        </div>
+                        <div style="margin-left:5px">
+                            <input type="submit" value="Upload Audio" class="btn btn-dark sm-div-seperator" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-lg-6 col-sm-6 offset-md-6 offset-xl-6 offset-lg-6 offset-sm-6">
+                    <a class="btn btn-link loadLinkAsync" href="@Url.Action("settings", "admin")">Cancel</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,20 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.AspNetUser
+
+@if (Model?.physician_status != null)
+{
+    <input type="hidden" class="PhyscianStatusUpdateTime" value="@Model.status_change_date.Value.ToUniversalTimeZone().ToString("MMM,dd,yyyy,HH:mm:ss")" />
+    <button class="round-button current-status-button" style="background-color: @Model.physician_status.phs_color_code">
+        <span class="currentStatus" id="currentStatus">@(Model?.physician_status?.phs_name)</span>
+        <br />
+        <span class="physicianStatusTimer" style="display:none"><span id="hours"></span>:<span id="minutes"></span>:<span id="seconds"></span> </span>
+    </button>
+}
+else
+{
+    <button class="round-button current-status-button d-none">
+        <span  class="currentStatus" id="currentStatus"></span>
+        <br />
+        <span class="physicianStatusTimer" style="display:none"><span id="hours"></span>:<span id="minutes"></span>:<span id="seconds"></span> </span>
+    </button>
+}

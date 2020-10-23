@@ -1,0 +1,569 @@
+﻿<script src="~/Scripts/flot/jquery.flot.min.js"></script>
+<script src="~/Scripts/curvedLines.js"></script>
+<script src="~/Scripts/Chart.js"></script>
+
+<link rel="stylesheet" href="~/Content/chartlist.css" />
+<link rel="stylesheet" href="/Content/dashboard.css">
+<link rel="stylesheet" href="/Content/simple-line-icons/simple-line-icons.css" />
+
+@*<div class="row">
+    <div class="col-12">
+        <img src="~/Content/images/TS_By_Timezone.jpg" class="img-fluid" alt="" />
+        <br /><br />
+    </div>
+</div>*@
+
+
+
+<div class="row">
+    <div class="col-12 text-right">
+        <div class="nav-wrapper d-inline-block mt-4 mt-lg-0 stats_Indicator">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnWeek">Week</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnMonth">Month</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnYear">Year</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" id="btnToday">Today</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="card overflow-hidden dashboard-curved-chart" style="display: none;">
+    <div class="card-body mx-3">
+        <h2 class="card-title border-bottom-none">Case Types</h2>
+        <div class="align-items-center mb-5 justify-content-between d-lg-flex d-xl-flex d-md-block d-block">
+            <div id="chartLegend"></div>
+        </div>
+    </div>
+    <div id="curved-line-chart" style="height: 200px;"></div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card performance-cards">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                        <div class="wrapper icon-circle bg-success">
+                            <i class="icon-chart icons"></i>
+                        </div>
+                        <div class="wrapper text-wrapper">
+                            <p class="text-dark" id="lblTotalCases">0</p>
+                            <p>Total Cases</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                        <div class="wrapper icon-circle bg-danger">
+                            <i class="icon-clock icons"></i>
+                        </div>
+                        <div class="wrapper text-wrapper">
+                            <p class="text-dark" id="lblStrokeAlerts">0</p>
+                            <p>Stroke Alerts</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                        <div class="wrapper icon-circle bg-warning">
+                            <i class="icon-umbrella icons"></i>
+                        </div>
+                        <div class="wrapper text-wrapper">
+                            <p class="text-dark" id="lblRoutineConsultsNew">0</p>
+                            <p>Routine Consults New</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                        <div class="wrapper icon-circle bg-warning">
+                            <i class="icon-umbrella icons"></i>
+                        </div>
+                        <div class="wrapper text-wrapper">
+                            <p class="text-dark" id="lblRoutineConsultsFollowup">0</p>
+                            <p>Routine Consults Follow-Up</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                        <div class="wrapper icon-circle bg-primary">
+                            <i class="icon-check icons"></i>
+                        </div>
+                        <div class="wrapper text-wrapper">
+                            <p class="text-dark" id="lblOthers">0</p>
+                            <p>Others</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                        <div class="wrapper icon-circle bg-dark">
+                            <i class="icon-phone icons"></i>
+                        </div>
+                        <div class="wrapper text-wrapper">
+                            <p class="text-dark" id="lblAverageStartToStamp">00:00:00</p>
+                            <p>Average Start to Stamp Time</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                        <div class="wrapper icon-circle bg-info">
+                            <i class="icon-call-out icons"></i>
+                        </div>
+                        <div class="wrapper text-wrapper">
+                            <p class="text-dark" id="lblAverageStartToAcceptance">00:00:00</p>
+                            <p>Average Start to Acceptance Time</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                        <div class="wrapper icon-circle bg-success">
+                            <i class="icon-call-end icons"></i>
+                        </div>
+                        <div class="wrapper text-wrapper">
+                            <p class="text-dark" id="lblAverageStartToFirstLogin">00:00:00</p>
+                            <p>Average Start to First Login</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                        <div class="wrapper icon-circle bg-secondary" @*style="display: none !important;"*@>
+                            <i class="icon-call-in icons"></i>
+                        </div>
+                        <div class="wrapper text-wrapper" @*style="display: none !important;"*@>
+                            <p class="text-dark" id="lblAverageConsultTime">00:00:00</p>
+                            <p>Average Consult  Time</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card performance-cards">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chartjs-wrapper">
+                            <div id="StrokeAlertchart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h3 class="card-title p-3">Case Status Summary</h3>
+                        <div class="chartjs-wrapper">
+                            <canvas id="chartCaseStatus" width="400" height="100"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="divPhysicianStatusSummaryRow">
+                    <div class="col-12">
+                        <h3 class="card-title p-3">Physician Status Summary</h3>
+                        <div class="chartjs-wrapper">
+                            <canvas id="chartPhysicianStatus" width="400" height="100"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="0" id="currentCount" />
+<script>
+    var caseSummaryChart;
+    var PhySummaryChart;
+
+    refreshAllSummary('Today');
+    @*
+    refreshCaseStatsGraphs('Today');
+    refreshCaseSummaryGraphs('Today');
+    refreshPhySummaryGraphs('Today');
+    *@
+
+    $('.stats_Indicator .nav-link').off("click").click(function (e) {
+        e.preventDefault();
+
+        if (refreshAllSummary.loadAllTimeout != undefined)
+            window.clearTimeout(refreshAllSummary.loadAllTimeout);
+        @*
+        if (refreshCaseStatsGraphs.loadStatsTimeout != undefined)
+            window.clearTimeout(refreshCaseStatsGraphs.loadStatsTimeout);
+        if (refreshCaseSummaryGraphs.loadStatsTimeout != undefined)
+            window.clearTimeout(refreshCaseSummaryGraphs.loadStatsTimeout);
+        if (refreshPhySummaryGraphs.loadStatsTimeout != undefined)
+            window.clearTimeout(refreshPhySummaryGraphs.loadStatsTimeout);
+        *@
+
+        $('.nav.nav-pills>li>a').removeClass('active');
+        $(this).addClass('active');
+        refreshAllSummary($(this).text());
+
+        @*
+        refreshCaseStatsGraphs($(this).text());
+        refreshCaseSummaryGraphs($(this).text());
+        refreshPhySummaryGraphs($(this).text());
+        *@
+    });
+
+
+    @*loadStrokeAlertBarChart();
+     function loadStrokeAlertBarChart() {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl == "/" || currentUrl == "/home" || currentUrl == "/home/index" || currentUrl.indexOf("/?rnd") == 0) {
+            $.ajax({
+                url: '@Url.Action("GetStrokeAlertChartStats")' + "?" + Math.floor(Math.random() * 10000) + 1,
+                type: 'get',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data != undefined && data != null) {
+                        var hours = [];
+                        var counts = [];
+                        var maxCount = Math.max.apply(Math, data.map(function (i) { return parseInt(i.Count); }));
+                        for (var i = 0; i < data.length; i++) {
+                            hours.push(data[i].Hour);
+                            counts.push(data[i].Count);
+                        }
+                        $("#StrokeAlertchart").kendoChart({
+                            title: {
+                                text: "Total Cases",
+                                font: "bold 14px  Arial,Helvetica,sans-serif"
+                            },
+                            legend: {
+                                position: "top"
+                            },
+                            seriesDefaults: {
+                                type: "column",
+                                labels: {
+                                    visible: false,
+                                    background: "transparent"
+                                }
+                            },
+                            series: [{
+                                name: "Stroke Alerts",
+                                data: counts,
+                                color: "#1391b9"
+                            }],
+                            categoryAxis: {
+                                categories: hours,
+                                line: {
+                                    visible: true
+                                },
+                                labels: {
+                                    padding: { top: 10 }
+                                },
+                                majorGridLines: {
+                                    visible: false
+                                },
+                                title: {
+                                    text: "Time of Day",
+                                    color: "#1391b9"
+                                }
+                            },
+                            valueAxis: {
+                                min: 0,
+                                max: Math.ceil(maxCount / 10) * 10,
+                                labels: {
+                                    format: "{0}"
+                                },
+                                line: {
+                                    visible: true
+                                },
+                            },
+                            tooltip: {
+                                visible: true,
+                                format: "{0}%",
+                                template: "#= series.name #: #= value #"
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, error) {
+                    if (loadStrokeAlertBarChart.loadTimeout != undefined)
+                        window.clearTimeout(loadStrokeAlertBarChart.loadTimeout);
+
+                    loadStrokeAlertBarChart.loadTimeout = window.setTimeout(function () { loadStrokeAlertBarChart(); }, 5000);
+                },
+                complete: function () {
+                    if (loadStrokeAlertBarChart.loadTimeout != undefined)
+                        window.clearTimeout(loadStrokeAlertBarChart.loadTimeout);
+
+                    loadStrokeAlertBarChart.loadTimeout = window.setTimeout(function () { loadStrokeAlertBarChart() }, 5000);
+                },
+                global: false
+            });
+        }
+    }
+
+    function refreshCaseStatsGraphs(period) {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl == "/" || currentUrl == "/home" || currentUrl == "/home/index" || currentUrl.indexOf("/?rnd") == 0) {
+            if (period != undefined && period != null && period != "") {
+                $.ajax({
+                    url: '@Url.Action("LoadCaseStats")?filter=' + period,
+                    type: 'get',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    async: false,
+                    success: function (data) {
+                        $('#lblTotalCases').text(data[0].TotalCases);
+                        $('#lblStrokeAlerts').text(data[0].TotalStrokeAlert);
+                        $('#lblRoutineConsultsNew').text(data[0].TotalRoutineConsultsNew);
+                        $('#lblRoutineConsultsFollowup').text(data[0].TotalRoutineConsultsFollowup);
+                        $('#lblOthers').text(data[0].TotalOthers);
+
+                        $('#lblAverageStartToStamp').text(data[0].AverageStartToStamp);
+                        $('#lblAverageStartToAcceptance').text(data[0].AverageStartToAcceptance);
+                        $('#lblAverageStartToFirstLogin').text(data[0].AverageStartToFirstLogin);
+                        $('#lblAverageConsultTime').text(data[0].AverageConsultTime);
+                    },
+                    complete: function () {
+                        if (refreshCaseStatsGraphs.loadStatsTimeout != undefined)
+                            window.clearTimeout(refreshCaseStatsGraphs.loadStatsTimeout);
+
+                        refreshCaseStatsGraphs.loadStatsTimeout = window.setTimeout(function () { refreshCaseStatsGraphs($('.stats_Indicator .nav-link.active').text()) }, 5000);
+                    }
+                });
+            }
+        }
+    }
+
+    function refreshCaseSummaryGraphs(period) {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl == "/" || currentUrl == "/home" || currentUrl == "/home/index" || currentUrl.indexOf("/?rnd") == 0) {
+            if (period != undefined && period != null && period != "") {
+                $.ajax({
+                    url: '@Url.Action("LoadCaseStatusSummary")?filter=' + period,
+                    type: 'get',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    async: false,
+                    success: function (data) {
+                        if (caseSummaryChart !== undefined) caseSummaryChart.destroy();
+                        caseSummaryChart = new Chart(
+                            document.getElementById("chartCaseStatus"), {
+                                type: "bar",
+                                data: data,
+                                options: {
+                                    legend: { display: false },
+                                    scales: { yAxes: [{ ticks: { beginAtZero: true, precision: 0 } }] },
+                                    title: {
+                                        display: true,
+                                        text: 'Case Status',
+                                        position: 'bottom',
+                                        fontStyle: 'bold',
+                                        fontSize: '18'
+                                    }
+                                }
+                            });
+                    },
+                    complete: function () {
+                        if (refreshCaseSummaryGraphs.loadStatsTimeout != undefined)
+                            window.clearTimeout(refreshCaseSummaryGraphs.loadStatsTimeout);
+
+                        refreshCaseSummaryGraphs.loadStatsTimeout = window.setTimeout(function () { refreshCaseSummaryGraphs($('.stats_Indicator .nav-link.active').text()) }, 5000);
+                    }
+                });
+            }
+        }
+    }
+
+    function refreshPhySummaryGraphs(period) {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl == "/" || currentUrl == "/home" || currentUrl == "/home/index" || currentUrl.indexOf("/?rnd") == 0) {
+            if (period != undefined && period != null && period != "") {
+                $('#divPhysicianStatusSummaryRow').css('display', '');
+                $.ajax({
+                    url: '@Url.Action("LoadPhysicianStatusSummary")?filter=' + period,
+                    type: 'get',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    async: false,
+                    success: function (data) {
+                        if (PhySummaryChart !== undefined) PhySummaryChart.destroy();
+                        PhySummaryChart = new Chart(
+                            document.getElementById("chartPhysicianStatus"), {
+                                type: "bar",
+                                data: data,
+                                options: {
+                                    legend: { display: false },
+                                    scales: { yAxes: [{ ticks: { beginAtZero: true, precision: 0 } }] },
+                                    title: {
+                                        display: true,
+                                        text: 'Physician Status',
+                                        position: 'bottom',
+                                        fontStyle: 'bold',
+                                        fontSize: '18'
+                                    }
+                                }
+                            });
+                    },
+                    complete: function () {
+                        if (refreshPhySummaryGraphs.loadStatsTimeout != undefined)
+                            window.clearTimeout(refreshPhySummaryGraphs.loadStatsTimeout);
+
+                        refreshPhySummaryGraphs.loadStatsTimeout = window.setTimeout(function () { refreshPhySummaryGraphs($('.stats_Indicator .nav-link.active').text()) }, 5000);
+                    }
+                });
+            }
+            else {
+                $('#divPhysicianStatusSummaryRow').css('display', 'none');
+            }
+        }
+    }*@
+
+
+     function refreshAllSummary(period) {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl == "/" || currentUrl == "/home" || currentUrl == "/home/index" || currentUrl.indexOf("/?rnd") == 0) {
+            if (period != undefined && period != null && period != "") {
+                $('#divPhysicianStatusSummaryRow').css('display', '');
+                $.ajax({
+                    url: '@Url.Action("GetAllSummaries")?filter=' + period + "&currentCount=" + $("#currentCount").val(),
+                    type: 'get',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    async: false,
+                    success: function (data) {
+                        if (data != undefined) { 
+                            //caseStatusChart, physicianStatusChart, caseStats, strokeAlertStats
+                            caseSummaryBarChart(data.caseStatusChart);
+                            physicianChart(data.physicianStatusChart);
+                            caseStats(data.caseStats);
+                            strokeAlertChart(data.strokeAlertStats);
+                        }
+                       
+                    },
+                    complete: function () {
+                        if (refreshAllSummary.loadAllTimeout != undefined)
+                            window.clearTimeout(refreshAllSummary.loadAllTimeout); 
+                        refreshAllSummary.loadAllTimeout = window.setTimeout(function () { refreshAllSummary($('.stats_Indicator .nav-link.active').text()) }, 5000);
+                    }
+                });
+            }
+            else {
+                 $('#divPhysicianStatusSummaryRow').css('display', 'none');
+            }
+        }
+    }
+
+
+    function physicianChart (data) {
+        if (PhySummaryChart !== undefined) PhySummaryChart.destroy();
+        PhySummaryChart = new Chart(
+            document.getElementById("chartPhysicianStatus"), {
+                type: "bar",
+                data: data,
+                options: {
+                    legend: { display: false },
+                    scales: { yAxes: [{ ticks: { beginAtZero: true, precision: 0 } }] },
+                    title: {
+                        display: true,
+                        text: 'Physician Status',
+                        position: 'bottom',
+                        fontStyle: 'bold',
+                        fontSize: '18'
+                    }
+                }
+            });
+    }
+    function caseSummaryBarChart(data) {
+        if (caseSummaryChart !== undefined) caseSummaryChart.destroy();
+        caseSummaryChart = new Chart(
+            document.getElementById("chartCaseStatus"), {
+                type: "bar",
+                data: data,
+                options: {
+                    legend: { display: false },
+                    scales: { yAxes: [{ ticks: { beginAtZero: true, precision: 0 } }] },
+                    title: {
+                        display: true,
+                        text: 'Case Status',
+                        position: 'bottom',
+                        fontStyle: 'bold',
+                        fontSize: '18'
+                    }
+                }
+            });
+    }
+    function caseStats(data) {
+        var totalCases = data[0].TotalCases;
+        $('#lblTotalCases').text(totalCases);
+        $('#lblStrokeAlerts').text(data[0].TotalStrokeAlert);
+        $('#lblRoutineConsultsNew').text(data[0].TotalRoutineConsultsNew);
+        $('#lblRoutineConsultsFollowup').text(data[0].TotalRoutineConsultsFollowup);
+        $('#lblOthers').text(data[0].TotalOthers);
+
+        $('#lblAverageStartToStamp').text(data[0].AverageStartToStamp);
+        $('#lblAverageStartToAcceptance').text(data[0].AverageStartToAcceptance);
+        $('#lblAverageStartToFirstLogin').text(data[0].AverageStartToFirstLogin);
+        $('#lblAverageConsultTime').text(data[0].AverageConsultTime);
+
+        $("#currentCount").val(totalCases);
+    }
+    function strokeAlertChart(data) {
+        if (data != undefined && data != null) {
+            var hours = [];
+            var counts = [];
+            var maxCount = Math.max.apply(Math, data.map(function (i) { return parseInt(i.Count); }));
+            for (var i = 0; i < data.length; i++) {
+                hours.push(data[i].Hour);
+                counts.push(data[i].Count);
+            }
+            $("#StrokeAlertchart").kendoChart({
+                title: {
+                    text: "Total Cases",
+                    font: "bold 14px  Arial,Helvetica,sans-serif"
+                },
+                legend: {
+                    position: "top"
+                },
+                seriesDefaults: {
+                    type: "column",
+                    labels: {
+                        visible: false,
+                        background: "transparent"
+                    }
+                },
+                series: [{
+                    name: "Stroke Alerts",
+                    data: counts,
+                    color: "#1391b9"
+                }],
+                categoryAxis: {
+                    categories: hours,
+                    line: {
+                        visible: true
+                    },
+                    labels: {
+                        padding: { top: 10 }
+                    },
+                    majorGridLines: {
+                        visible: false
+                    },
+                    title: {
+                        text: "Time of Day",
+                        color: "#1391b9"
+                    }
+                },
+                valueAxis: {
+                    min: 0,
+                    max: Math.ceil(maxCount / 10) * 10,
+                    labels: {
+                        format: "{0}"
+                    },
+                    line: {
+                        visible: true
+                    },
+                },
+                tooltip: {
+                    visible: true,
+                    format: "{0}%",
+                    template: "#= series.name #: #= value #"
+                }
+            });
+        }
+    }
+</script>
+
+

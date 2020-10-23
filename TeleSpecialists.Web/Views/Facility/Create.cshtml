@@ -1,0 +1,64 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.facility
+@{
+    ViewBag.Title = "Add Facility";
+    ViewBag.Edit = false;
+}
+
+<h4>Create Facility</h4>
+<hr />
+
+@Html.Partial("_Form", Model)
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $("#fac_stt_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.State.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#fac_timezone").fillKendoDropDown("/LookUp/GetAllTimeZones", "tmz_name", "tmz_key", "-- Select --");
+
+
+        $("#fac_cst_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.EMR.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#fac_sct_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.StrokeDesignation.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#fac_ai_software_ddl").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.FacilityAI.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        $("#fac_ucd_key_system").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.System.ToInt())", "ucd_title", "ucd_key", "-- Select --", function () {
+            // functionn on_facility_type_change is dependent on ucd_key_system as well that's why calling it after the system dropdown is popuplated
+            $("#fac_fct_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.FacilityType.ToInt())", "ucd_title", "ucd_key", "-- Select --", function () {
+                on_facility_type_change();
+            });
+        });
+        $("#fac_ucd_region_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.Regional.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+      $("#fac_ucd_bed_size").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.BedSize.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+    });
+
+
+   
+
+    
+
+   $("#fac_is_active").off("click").click(function (e) {
+        var checked = $("#fac_go_live:checked").length > 0;
+        var ischecked = $(this).prop('checked');
+        if (checked || ischecked) {
+            $(this).prop("checked", true);
+             $("#fac_go_live").prop('disabled', false);
+        }       
+        else if(ischecked==false){
+            $("#fac_go_live").prop('checked', false);
+            $("#fac_go_live").prop('disabled', true);
+        }        
+   });
+
+     $('#fac_go_live').off("click").click(function () {
+        var isCheckedActive = $("#fac_is_active").is(':checked');
+        if (isCheckedActive == false) {
+            $(this).prop('checked', false);
+            $(this).prop('disabled', true);
+        }
+    });
+</script>
+
+
+

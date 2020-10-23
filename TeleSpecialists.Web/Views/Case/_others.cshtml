@@ -1,0 +1,261 @@
+﻿@model TeleSpecialists.BLL.Model.@case
+
+@{
+    var nhis = ViewBag.NIHS;
+    var videoStartTime = ViewBag.videoStartTime;
+    var needleTime = ViewBag.needleTime;
+}
+<div class="other">
+    <ul>
+        <li>
+            <label class="Greencolor"><input type="checkbox" class="gotVal timeFirst " value="1" id="1" />Time First Log in attempt to NIHSS Start time delay <i class="fa fa-arrow-right"></i></label>
+            <ul class="dropdown childtimefirst endChild">
+
+                <li><label class="Bluecolor"><input type="checkbox" class="gotVal" value="11" id="11" />Delays related to imaging </label></li>
+                <li><label class="Bluecolor"><input type="checkbox" class="gotVal" value="12" id="12" />Patient needed to be stabilized, examination was delayed</label></li>
+                <li><label class="Bluecolor"><input type="checkbox" class="gotVal" value="13" id="13" />Patient away from physician view for prolonged period of time</label></li>
+                <li><label class="Bluecolor"><input type="checkbox" class="gotVal" value="14" id="14" />Cart left in room and not taken to CT scanner</label></li>
+                <li>
+                    <input type="text" class="form-control" name="cas_inpatient_timefirstlogintonhssstartitme" value="@Model.cas_inpatient_timefirstlogintonhssstartitme" id="cas_inpatient_timefirstlogintonhssstartitme" data-inputid="15" data-oldval="@Model.cas_inpatient_timefirstlogintonhssstartitme" placeholder="Add other detail.." />
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <ul>
+        <li>
+            <label class="Greencolor"><input type="checkbox" class="gotVal videostart" value="2" id="2" />Time First log in attempt to Video start time delay <i class="fa fa-arrow-right"></i></label>
+            <ul class="dropdown childVideoStrt endChild">
+                <li><label class="Bluecolor"><input type="checkbox" class="gotVal" value="21" id="21" />Physician unable to log in to cart</label></li>
+                <li><label class="Bluecolor"><input type="checkbox" class="gotVal" value="22" id="22" />Hospital network issue</label></li>
+                <li><label class="Bluecolor"><input type="checkbox" class="gotVal" value="23" id="23" />No one responding to SA at the cart</label></li>
+                <li><label class="Bluecolor"><input type="checkbox" class="gotVal" value="24" id="24" />Cart not on auto-answer</label></li>
+                <li><label class="Bluecolor"><input type="checkbox" class="gotVal" value="25" id="25" />Physician station down</label></li>
+                <li><label class="Bluecolor"><input type="checkbox" class="gotVal" value="26" id="26" />Cart hardware malfunction</label></li>
+                <li>
+                    <input type="text" class="form-control" name="cas_inpatient_timefirstlogintovideostart" value="@Model.cas_inpatient_timefirstlogintovideostart" id="cas_inpatient_timefirstlogintovideostart" data-inputid="27" data-oldval="@Model.cas_inpatient_timefirstlogintovideostart" placeholder="Add other detail.." />
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <ul>
+        <li>
+            <label class="Greencolor"><input type="checkbox" class="gotVal needleTime" value="3" id="3" />Arrival to Needle time delay <i class="fa fa-arrow-right"></i></label>
+            <ul class="dropdown childarrivalneedle">
+                <li class="endChild">
+                    <label class="Bluecolor"><input type="checkbox" class="gotVal" value="31" id="31" />Activation Delay</label>
+                </li>
+                <li>
+                    <label class="Bluecolor"><input type="checkbox" class="gotVal" value="10" id="10" />Delays Related to lab <i class="fa fa-arrow-right"></i></label>
+                    <ul class="dropdown childrelatedlab">
+                        <li class="endChild"><label><input type="checkbox" class="gotVal" value="1000" id="1000" />Reporting of labs </label></li>
+                        <li>
+                            <label><input type="checkbox" class="gotVal" value="1001" id="1001" />Delays in lab draw & delivery <i class="fa fa-arrow-right"></i></label>
+                            <ul class="dropdown Grandchildtimefirst childlabdrawanddelivery endChild">
+                                <li><label><input type="checkbox" class="gotVal" value="10011" id="10011" />No phlebotomist available at bedside</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="10012" id="10012" />Poor IV access</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="10013" id="10013" />Poor skillset / knowledge deficit</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="10014" id="10014" />Order not received</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="10015" id="10015" />Tube system delay</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="10016" id="10016" />Poor hand-off / delivery</label></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" class="gotVal" value="1002" id="1002" />Delays in lab processing <i class="fa fa-arrow-right"></i></label>
+                            <ul class="dropdown Grandchildtimefirst childlabprocessing endChild">
+                                <li><label><input type="checkbox" class="gotVal" value="10020" id="10020" />Knowledge deficit of lab staff of priority</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="10021" id="10021" />Poor identification as STAT</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="10022" id="10022" />Poor equipment</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="10023" id="10023" />Poor Stroke alert communication</label></li>
+                            </ul>
+                        </li>
+                        <li class="endChild"><label><input type="checkbox" class="gotVal" value="1003" id="1003" />Delays in Reporting </label></li>
+                    </ul>
+                </li>
+                <li>
+                    <label class="Bluecolor"><input type="checkbox" class="gotVal" value="4" id="4" />Delays related to imaging <i class="fa fa-arrow-right"></i></label>
+                    <ul class="dropdown needleGrandchild childdelaysimaging">
+                        <li>
+                            <label><input type="checkbox" class="gotVal" value="40" id="40" />Waste related to unenhanced CT <i class="fa fa-arrow-right"></i></label>
+                            <ul class="dropdown endChild childwastect">
+                                <li><label><input type="checkbox" class="gotVal" value="41" id="41" />Delays in transport to CT (Rooming before the CT or early prolonged exam time before at EMS entrance area) (Unnecessary Wait)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="42" id="42" />CT table not ready (poor early activation and clearing of the table) (Defect)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="43" id="43" />Long distance to CT (Non-value added but necessary)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="44" id="44" />Technologist not ready for CT</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="45" id="45" />No order for the CT, delay in early order (Unnecessary Wait)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="46" id="46" />Attempting to examine patient on the CT table by telemedicine, impossible and leads to increased wait</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="47" id="47" />Unavailable scaled stretcher to transport the patient to- after the CT (Unnecessary Wait)</label></li>
+                                <li>
+                                    <input type="text" class="form-control" name="cas_inpatient_unenhancedct" value="@Model.cas_inpatient_unenhancedct" id="cas_inpatient_unenhancedct" data-inputid="48" data-oldval="@Model.cas_inpatient_unenhancedct" placeholder="Add other detail.." />
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" class="gotVal" value="5" id="5" />Waste related to advanced imaging <i class="fa fa-arrow-right"></i></label>
+                            <ul class="dropdown childadvancedimg">
+                                <li class="endChild"><label><input type="checkbox" class="gotVal" value="50" id="50" />Delays related to IV site placement</label></li>
+                                <li class="endChild"><label><input type="checkbox" class="gotVal" value="51" id="51" />TPA delayed due to staff request until second IV site placed  (Unnecessary wait)</label></li>
+                                <li>
+                                    <label><input type="checkbox" class="gotVal" value="52" id="52" />Delays with telemedicine assessment in room (teleneurology not taken to scanner) <i class="fa fa-arrow-right"></i></label>
+                                    <ul class="dropdown childassmntinroom endChild">
+                                        <li><label><input type="checkbox" class="gotVal" value="53" id="53" />Teleneurologist not taken to scanner and prolonged wait at the scanner for advanced imaging</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="54" id="54" />Patient taken to advanced imaging prior to activation or presence of teleneurologist (Wait)</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="55" id="55" />Neurologist has no access to EMS</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="56" id="56" />Neurologist has no preliminary exam</label></li>
+                                        <li>
+                                            <input type="text" class="form-control" name="cas_inpatient_telemedicineassessmentroom" value="@Model.cas_inpatient_telemedicineassessmentroom" id="cas_inpatient_telemedicineassessmentroom" data-inputid="57" data-oldval="@Model.cas_inpatient_telemedicineassessmentroom" placeholder="Add other detail.." />
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" class="gotVal" value="57" id="57" />Delays with telemedicine assessment in CT <i class="fa fa-arrow-right"></i></label>
+                                    <ul class="dropdown childassmentinct  endChild">
+                                        <li><label><input type="checkbox" class="gotVal" value="58" id="58" />Unavailable family for history and / or consent  (Unnecessary wait)</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="59" id="59" />Unavailable ED physician  (Unnecessary wait)</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="500" id="500" />Centralized pharmacy challenges  (Unnecessary wait)</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="501" id="501" />Teleneurologist exam  delayed until after imaging is completed due to staff request  (Unnecessary wait)</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="502" id="502" />Teleneurologist exam delayed until after imaging is completed due to neurologist request  (Unnecessary wait)</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="503" id="503" />Teleneurologist exam delayed until after imaging is completed due to patient condition  (Unnecessary wait)</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="504" id="504" />Teleneurologist taken to scanner and no tPA available at the scanner- bedside mixing and administration cannot be done until after all imaging is completed (Unnecessary wait)</label></li>
+                                        <li>
+                                            <input type="text" class="form-control" name="cas_inpatient_telemedicineasesmentinct" value="@Model.cas_inpatient_telemedicineasesmentinct" id="cas_inpatient_telemedicineasesmentinct" data-inputid="505" data-oldval="@Model.cas_inpatient_telemedicineasesmentinct" placeholder="Add other detail.." />
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="endChild">
+                                    <input type="text" class="form-control" name="cas_inpatient_related_imaging" value="@Model.cas_inpatient_related_imaging" id="cas_inpatient_related_imaging" data-inputid="506" data-oldval="@Model.cas_inpatient_related_imaging" placeholder="Add other detail.." />
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="endChild"><label><input type="checkbox" class="gotVal" value="60" id="60" />Waste related to CTA, chest abdomen pelvis to rule out dissection </label></li>
+                        <li class="endChild">
+                            <input type="text" class="form-control" name="cas_inpatient_delaysrelated_imaging" value="@Model.cas_inpatient_delaysrelated_imaging" id="cas_inpatient_delaysrelated_imaging" data-inputid="507" data-oldval="@Model.cas_inpatient_delaysrelated_imaging" placeholder="Add other detail.." />
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <label class="Bluecolor"><input type="checkbox" class="gotVal" value="6" id="6" />BP management related delays <i class="fa fa-arrow-right"></i></label>
+                    <ul class="dropdown needleGrandchild childbpmanamement">
+                        <li>
+                            <label><input type="checkbox" class="gotVal" value="61" id="61" />Delayed detection of hypertension <i class="fa fa-arrow-right"></i></label>
+                            <ul class="dropdown childdetection endChild">
+                                <li><label><input type="checkbox" class="gotVal" value="62" id="62" />BP not available from EMS (Defect)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="63" id="63" />BP not repeated upon presentation to the ED by triage, or primary nurse (defect)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="65" id="65" />BP not repeated at door upon EMS arrival (defect)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="66" id="66" />No activation of early Labetalol or hydralazine order : staff waiting for clear orders from physician  (Unnecessary wait)</label></li>
+                                <li>
+                                    <input type="text" class="form-control" name="cas_inpatient_detection_hypertension" value="@Model.cas_inpatient_detection_hypertension" id="cas_inpatient_detection_hypertension" data-inputid="95" data-oldval="@Model.cas_inpatient_detection_hypertension" placeholder="Add other detail.." />
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" class="gotVal" value="67" id="67" />Poor management of hypertension <i class="fa fa-arrow-right"></i></label>
+                            <ul class="dropdown childpoormngmnt endChild">
+                                <li><label><input type="checkbox" class="gotVal" value="68" id="68" />Antihypertensives not readily available (Defect)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="69" id="69" />Poor communication of shortage of medicines to the team (Unnecessary Wait)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="600" id="600" />Staff searching for materials, e.g. infusion pump for cardene drip (Unnecessary Wait)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="64" id="64" />Poor communication of hypertension early on (defect)</label></li>
+                                <li>
+                                    <input type="text" class="form-control" name="cas_inpatient_poormanagement_hypertension" value="@Model.cas_inpatient_poormanagement_hypertension" id="cas_inpatient_poormanagement_hypertension" data-inputid="601" data-oldval="@Model.cas_inpatient_poormanagement_hypertension" placeholder="Add other detail.." />
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="endChild"><input type="text" class="form-control" name="cas_inpatient_bpmanagemntrelated" value="@Model.cas_inpatient_bpmanagemntrelated" id="cas_inpatient_bpmanagemntrelated" data-inputid="602" data-oldval="@Model.cas_inpatient_bpmanagemntrelated" placeholder="Add other detail.." /></li>
+                    </ul>
+                </li>
+                <li>
+                    <label class="Bluecolor"><input type="checkbox" class="gotVal" value="7" id="7" />tPA administration delays <i class="fa fa-arrow-right"></i></label>
+                    <ul class="dropdown needleGrandchild childtpaadministration">
+                        <li>
+                            <label><input type="checkbox" class="gotVal" value="70" id="70" />Delays in workflow before mixing <i class="fa fa-arrow-right"></i></label>
+                            <ul class="dropdown childworkflowmixing">
+                                <li>
+                                    <label><input type="checkbox" class="gotVal" value="71" id="71" />System <i class="fa fa-arrow-right"></i></label>
+                                    <ul class="dropdown childsystem endChild">
+                                        <li><label><input type="checkbox" class="gotVal" value="72" id="72" />Lack of Alteplase Early mixing / "pre-mixing"</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="73" id="73" />Poor Buy-in of the pharmacy leadership</label></li>
+                                        <li>
+                                            <input type="text" class="form-control" name="cas_inpatient_system" value="@Model.cas_inpatient_system" id="cas_inpatient_system" data-inputid="603" data-oldval="@Model.cas_inpatient_system" placeholder="Add other detail.." />
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" class="gotVal" value="900" id="900" />Delay in obtaining weight <i class="fa fa-arrow-right"></i></label>
+                                    <ul class="dropdown childobtainingweight endChild">
+                                        <li><label><input type="checkbox" class="gotVal" value="901" id="901" />Lack of weighted beds/equipment</label></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" class="gotVal" value="74" id="74" />Physician related <i class="fa fa-arrow-right"></i></label>
+                                    <ul class="dropdown childphysicianrelated endChild">
+                                        <li><label><input type="checkbox" class="gotVal" value="75" id="75" />Poor Understanding / practice habit of the physician</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="76" id="76" />No use of LB2S2 for patient selection for early mix</label></li>
+                                        <li>
+                                            <input type="text" class="form-control" name="cas_inpatient_physician_related" value="@Model.cas_inpatient_physician_related" id="cas_inpatient_physician_related" data-inputid="604" data-oldval="@Model.cas_inpatient_physician_related" placeholder="Add other detail.." />
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" class="gotVal" value="77" id="77" />Centralized pharmacy delivery model waste <i class="fa fa-arrow-right"></i></label>
+                                    <ul class="dropdown childcentralized endChild">
+                                        <li><label><input type="checkbox" class="gotVal" value="78" id="78" />Poor communication weight, dose, early mix (Defects)</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="79" id="79" />Delays related to delivery of the medicine (Transportation)</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="80" id="80" />Misunderstanding of pharmacist on the actual order ("premix" vs "verbal)</label></li>
+                                        <li><label><input type="checkbox" class="gotVal" value="81" id="81" />Pharmacist/ RN insisting on CPOE order to mix/ pulling (Unnecessary Wait)</label></li>
+                                        <li>
+                                            <input type="text" class="form-control" name="cas_inpatient_centralizedpharmacy_delivery" value="@Model.cas_inpatient_centralizedpharmacy_delivery" id="cas_inpatient_centralizedpharmacy_delivery" data-inputid="605" data-oldval="@Model.cas_inpatient_centralizedpharmacy_delivery" placeholder="Add other detail.." />
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="endChild"><label><input type="checkbox" class="gotVal" value="82" id="82" />Late Initiation of mixing the medicine at bedside or centralized pharmacy</label></li>
+                                <li class="endChild"><label><input type="checkbox" class="gotVal" value="83" id="83" />Utilization of consent (Unnecessary Wait)</label></li>
+                                <li class="endChild"><label><input type="checkbox" class="gotVal" value="84" id="84" />Pharmacist/ bed side RN consenting the patient again after consent already obtained by physician</label></li>
+                                <li class="endChild">
+                                    <input type="text" class="form-control" name="cas_inpatient_workflowbeforemixing" value="@Model.cas_inpatient_workflowbeforemixing" id="cas_inpatient_workflowbeforemixing" data-oldval="@Model.cas_inpatient_workflowbeforemixing" data-inputid="606" placeholder="Add other detail.." />
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" class="gotVal" value="85" id="85" />Delays in mixing <i class="fa fa-arrow-right"></i></label>
+                            <ul class="dropdown childdelaysinmixing endChild">
+                                <li><label><input type="checkbox" class="gotVal" value="86" id="86" />Poor education and technique related to mixing (Defect)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="87" id="87" />Turn over of nursing with poor orientation</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="88" id="88" />Delays in mixing related to poor staffing</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="89" id="89" />Centralized pharmacy model: poor staffing (esp after hours) one pharmacist to cover large scope particularly at night leading to extra queue time until staff available to mix tPA (Unnecessary Wait)</label></li>
+                                <li>
+                                    <input type="text" class="form-control" name="cas_inpatientdelays_mixing" value="@Model.cas_inpatientdelays_mixing" id="cas_inpatientdelays_mixing" data-inputid="607" data-oldval="@Model.cas_inpatientdelays_mixing" placeholder="Add other detail.." />
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <label><input type="checkbox" class="gotVal" value="9" id="9" />Delays in workflow after mixing <i class="fa fa-arrow-right"></i></label>
+                            <ul class="dropdown childaftermixing endChild">
+                                <li><label><input type="checkbox" class="gotVal" value="91" id="91" />Administration of bolus through the pump- (requires availability of the pump to administer bolus vs. drawing up bolus and administering it separately) (Unnecessary Wait)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="92" id="92" />Delays in setting up tPA infusion (Unnecessary Wait)</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="93" id="93" />Delays in starting bolus related to unnecessary processes such as insertion of urinary catheter or second IV site prior to tPA bolus (Unnecessary Wait)- best practices</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="94" id="94" />Delay related to placement of second IV site</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="95" id="95" />Transport and Rooming</label></li>
+                                <li><label><input type="checkbox" class="gotVal" value="96" id="96" />Primary IV Access Issues</label></li>
+                                <li>
+                                    <input type="text" class="form-control" name="cas_inpatient_workflowaftermixing" value="@Model.cas_inpatient_workflowaftermixing" id="cas_inpatient_workflowaftermixing" data-inputid="608" data-oldval="@Model.cas_inpatient_workflowaftermixing" placeholder="Add other detail.." />
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="endChild">
+                            <input type="text" class="form-control" name="cas_inpatient_tpaadministration_delays" value="@Model.cas_inpatient_tpaadministration_delays" id="cas_inpatient_tpaadministration_delays" data-inputid="609" data-oldval="@Model.cas_inpatient_tpaadministration_delays" placeholder="Add other detail.." />
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <label class="Bluecolor"><input type="checkbox" class="gotVal" value="8" id="8" />Medical Decision Making Delays <i class="fa fa-arrow-right"></i></label>
+                    <ul class="dropdown needleGrandchild endChild childmedicaldecisionmaking">
+                        <li><label><input type="checkbox" class="gotVal" value="800" id="800" />Family not available / patient non-verbal</label></li>
+                        <li><label><input type="checkbox" class="gotVal" value="801" id="801" />Family/patient unsure of decision</label></li>
+                    </ul>
+                </li>
+                <li class="endChild">
+                    <input type="text" class="form-control" name="cas_inpatient_arivaltoneedletime" value="@Model.cas_inpatient_arivaltoneedletime" id="cas_inpatient_arivaltoneedletime" data-inputid="610" data-oldval="@Model.cas_inpatient_arivaltoneedletime" placeholder="Add other detail.." />
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,172 @@
+﻿@model TeleSpecialists.BLL.ViewModels.user_alarm_setting
+@{
+    ViewBag.title = "Alarm Setting";
+}
+
+<style>
+    .player {
+        position: relative;
+        top: 10px;
+        width: 230px;
+        overflow: hidden;
+        direction: ltl;
+        border-top-right-radius: 0.5em 0.5em;
+        border-bottom-right-radius: 1em 0.7em;
+    }
+
+    .audiostyle {
+        width: 318px;
+    }
+</style>
+<input type="hidden" name="file_name" id="lbl_file_name" />
+@Html.AntiForgeryToken()
+<div class="row">
+    <div class="col-md-6 offset-sm-1">
+        <h2>Default Notification Tune For Physicians</h2>
+    </div>
+    <div class="col-md-4 offset-sm-1">
+        <div style="float:right">
+            <a class="btn btn-dark loadLinkAsync" href="@Url.Action("AddAlarmTune")">Add New Tune</a>
+        </div>
+    </div>
+    <div class="col-sm-10 offset-sm-1">
+        <hr />
+    </div>
+</div>
+<div class="row" style="overflow-y:auto; height:350px;">
+    <div class="col-sm-10 offset-sm-1">
+        <table width="100%">
+            @foreach (var item in Model.alarm_list)
+            {
+                string _val = item.alt_audio_path + "," + item.alt_selected_audio;
+                <tr>
+                    <td>
+                        @{
+                            if (Model.obj_default_tune.dnt_selected_tune == null)
+                            {
+                                @Html.RadioButtonFor(m => item.alt_selected_audio, "", new { @Value = _val, @class = "cls_file_name" })
+                            }
+                            else
+                            {
+                                @Html.RadioButtonFor(m => item.alt_selected_audio, Model.obj_default_tune.dnt_selected_tune, new { @Value = _val, @class = "cls_file_name" })
+                            }
+                        }
+
+                        <a href="#">@item.alt_file_name</a>
+                    </td>
+                    <td>
+                        <div class="player">
+                            <audio controls preload="none" class="audiostyle">
+                                <source src="@item.alt_audio_path" type="audio/mp3" />
+                            </audio>
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-dark btn-sm showModal" data-id="@item.alt_key" data-toggle="modal" data-target="#DeleteModal">
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+<div class="ViewModal"></div>
+<script>
+    $(document).on('click', '#removealarm', function () {
+        var id = $(this).data('recordid');
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/Alarm/DeleteAlarm?id=' + id,
+            success: function (data) {
+                if (data == 'success') {
+                    $('#DeleteModal').modal('hide');
+                    LoadPartialView();
+                    //location.reload();
+                }
+            },
+            error: function () {
+
+            }
+        });
+    });
+    $('.showModal').click(function () {
+        var id = $(this).data('id');
+        var html = '';
+        html += '<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">';
+        html += '<div class="modal-dialog modal-sm" role="document">';
+        html += '<div class="modal-content">';
+        html += '<div class="modal-header">';
+        html += '<h5 class="modal-title" id="exampleModalLabel">Are you Sure!</h5>';
+        html += '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+        html += '<span aria-hidden="true">&times;</span>';
+        html += '</button>';
+        html += '</div>';
+        html += '<div class="modal-body">';
+        html += '<p>You Want to Delete this Record.</p > ';
+        html += '</div>';
+        html += '<div class="modal-footer">';
+        html += '<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>';
+        html += '<button type="button" data-recordid="' + id + '" id="removealarm" class="btn btn-primary">Delete</button>';
+        html += '</div></div></div></div>';
+        $('.ViewModal').empty();
+        $('.ViewModal').append(html);
+        $('#DeleteModal').modal('show');
+    });
+    function LoadPartialView() {
+        $("#divContentArea").load('@Url.Action("DefaultTuneSetting","Alarm")');
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $("audio").on("play", function () {
+            $("audio").not(this).each(function (index, audio) {
+                audio.pause();
+            });
+        });
+        //PostFormRegister("regForm", "Informatrion saved successfully. Please wait for admin approval.", "Oops, something went wrong. Please try again later...", function () { });
+    });
+    function PostFormRegister(FomId, SuccessMsg, FailureMessage, CallBack) {
+        $("#" + FomId).on("submit", function (event) {
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                cache: false,
+                async: true,
+                type: "POST",
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function (data) {
+                    refresh();
+                    //location.reload();
+                },
+                error: function (data) {
+                }
+            });
+        });
+    }
+
+    function refresh() {
+        $.get("/alarm/_refreshAlarm", function (data) {
+            $('.refreshAlarm').html(data);
+        });
+    }
+    $('.cls_file_name').on('change', function () {
+        var audio_name = $(this).val();
+        $('#lbl_file_name').val(audio_name);
+        event.preventDefault();
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: "/alarm/DefaultTuneSetting",
+            data: { audio_name: audio_name },
+            success: function (data) {
+                refresh();
+            }
+        });
+    });
+</script> 

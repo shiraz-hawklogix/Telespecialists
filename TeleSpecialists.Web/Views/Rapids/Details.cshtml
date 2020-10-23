@@ -1,0 +1,59 @@
+﻿@model  TeleSpecialists.BLL.Model.rapids_mailbox
+
+@{
+    ViewBag.Title = "Details";
+}
+@functions{
+    /// <summary>
+    /// Remove style from html as it was impacting design in telecare system
+    /// </summary>
+    /// <param name="html"></param>
+    /// <returns></returns>
+    private string getBody(string html)
+    {
+
+        // Populate the html string here
+
+        var options = System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.Singleline;
+        var regx = new System.Text.RegularExpressions.Regex("<body.*?>(.*?)</body>.*?", options);
+
+        var match = regx.Match(html);
+
+        if (match.Success)
+        {
+            return match.Groups[0].Value;
+        }
+
+        return "";
+    }
+
+}
+
+@*<h2>
+        Details
+        @Html.ActionLink("Back", "Index", null, new { @class = "btn btn-link loadLinkAsync pull-right" })
+    </h2>*@
+
+@if (Model != null)
+{
+    @Html.Raw(getBody(Model.rpd_body))
+    if (!string.IsNullOrEmpty(Model.rpd_attachment_html))
+    {
+        @Html.Raw(Model.rpd_attachment_html)
+    }
+
+    @*
+        var allImages = Directory.EnumerateFiles(Server.MapPath("/RapidsAttachments") + $"/{Model.rpd_key}/Others/")
+                                 .Select(fn => $"/RapidsAttachments/{Model.rpd_key}/Others/{Path.GetFileName(fn)}");
+
+        // display attachments which were not inline to email
+        foreach (var image in allImages)
+        {
+            <div style="text-align: center; display: block; padding: 10px;">
+                <img src="@Url.Content(image)" alt="Attachment" />
+            </div>
+        }
+    *@
+}
+
+

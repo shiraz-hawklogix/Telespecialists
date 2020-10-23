@@ -1,0 +1,147 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@using TeleSpecialists.Models;
+@using Microsoft.AspNet.Identity;
+@{
+                /**/
+
+                var loggedInUser = ViewBag.loggedInUser as ApplicationUser;
+                var facility = ViewBag.facilities;
+                ViewBag.Facility = facility;
+                var physicians = ViewBag.physician;
+                ViewBag.physicianss = physicians;
+                var qpslist = ViewBag.QPSLIST;
+                ViewBag.listqps = qpslist;
+}
+@*<input type="hidden" id="IsCredentialingTeamorSuperAdmin" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()) ? 1 : 0)" />*@
+@*<input type="hidden" id="IsQPSQualityDirectororVPQuality" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) ? 1 : 0)" />*@
+
+
+@if (loggedInUser != null)
+{
+    if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
+    {
+        //colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+        @Html.Partial("_CredentialsExpiringCasesList")
+    }
+
+    if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()))
+    {
+        //colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+        @Html.Partial("_CasesPendingReviewList")
+    }
+
+    if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()))
+    {
+        @Html.Partial("_operationsoutliers")
+    }
+}
+
+<script>
+    //credentials expiring
+    //$("#Credentials-Expiring-container").addClass("d-none");
+    //if ($("#IsCredentialingTeamorSuperAdmin").val() == "1") {
+    //    refreshCredentialsExpiringCaseList();
+    //}
+    ///
+    ///Cases Pending Review
+
+    //$("#cases-pending-review-container").addClass("d-none");
+    //if ($("#IsQPSQualityDirectororVPQuality").val() == "1") {
+    //    var QPS = $("#ddlQPSlist").val();
+    //    if (QPS == undefined) {
+    //        QPS = "";
+    //    }
+    //    refreshCasesPendingReviewList(QPS);
+    //}
+        ////
+
+    //credentialing expiring
+
+        @*function refreshCredentialsExpiringCaseList() {
+            var url = '@Url.Action("GetCredentialsExpiringCasesList", "Reports")';
+            var cacCases = $("#cac-P-cases-listing");
+            if (cacCases) {
+                var vartical_ctaScroll = $("#cac-P-cases-listing").scrollTop();
+            }
+            $.ajax({
+                url: url + "?"+ Math.floor(Math.random() * 10000) + 1,
+                success: function (response) {
+                    if (response != null && response.trim() != "" && response != undefined) {
+                        $("#Credentials-Expiring-container").removeClass("d-none");
+                        $("#Credentials-Expiring-container").html(response);
+                        $("#async-content-container").attr("class", "col-sm-12 col-xl-12 col-lg-12 col-md-12");
+
+                        if (cacCases) {
+                            $("#cac-P-cases-listing").scrollTop(vartical_ctaScroll);
+                        }
+                    }
+                    else {
+                        //$("#async-content-container").attr("class", "col-12");
+                        $("#Credentials-Expiring-container").html("");
+                        //$("#Credentials-Expiring-container").addClass("d-none");
+
+                    }
+                },
+                complete: function () {
+                    if (refreshCredentialsExpiringCaseList.loadTimeout != undefined)
+                        window.clearTimeout(refreshCredentialsExpiringCaseList.loadTimeout);
+
+                    refreshCredentialsExpiringCaseList.loadTimeout = window.setTimeout(function () { refreshCredentialsExpiringCaseList() }, 5000);
+                },
+                global: false
+            });
+        }*@
+
+        ////
+
+        ////cases pending review
+
+    @*function refreshCasesPendingReviewList(QPS) {
+        if (QPS == undefined) {
+            QPS = "";
+        }
+        var url = '@Url.Action("GetCasesPendingReviewList", "Reports")?QPS_Key=' + QPS + '';
+            var cacPCases = $("#cac-Pending-cases-listing");
+            if (cacPCases) {
+                var vartical_ctaScroll = $("#cac-Pending-cases-listing").scrollTop();
+            }
+            $.ajax({
+                url: url /*+ "?" + Math.floor(Math.random() * 10000) + 1*/,
+                success: function (response) {
+                    if (response != null && response.trim() != "" && response != undefined) {
+                        $("#cases-pending-review-container").removeClass("d-none");
+                        $("#cases-pending-review-container").html(response);
+                        $("#async-content-container").attr("class", "col-sm-12 col-xl-12 col-lg-12 col-md-12");
+
+                        if (cacPCases) {
+                            $("#cac-Pending-cases-listing").scrollTop(vartical_ctaScroll);
+                        }
+                    }
+                    else {
+                        //$("#async-content-container").attr("class", "col-12");
+                        $("#cases-pending-review-container").html("");
+                        //$("#cases-pending-review-container").addClass("d-none");
+
+                    }
+                },
+                complete: function () {
+                    if (refreshCasesPendingReviewList.loadTimeout != undefined)
+                        window.clearTimeout(refreshCasesPendingReviewList.loadTimeout);
+
+                    refreshCasesPendingReviewList.loadTimeout = window.setTimeout(function () { refreshCasesPendingReviewList(QPS) }, 5000);
+                },
+                global: false
+            });
+        }*@
+
+        ///
+
+    //$("#ddlQPSlist").off('change').change(function () {
+    //    var QPS = $("#ddlQPSlist").val();
+    //    refreshCasesPendingReviewList(QPS);
+    //})
+
+
+</script>

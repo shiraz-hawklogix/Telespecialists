@@ -1,0 +1,45 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL;
+@using System;
+@model TeleSpecialists.BLL.Model.@case
+
+<div id="toolTipCancel">
+    <div id="popupModelCaseCancel" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg ">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="card-header pl-1 font-weight-bold" style="background-color:black">
+                        <h5><span style="color:white" class="font-weight-bold">Add Case Cancellation Reason(Optional)</span></h5>
+                    </div>
+                    <div class="form-group row" style="margin-top:20px;">
+                        <div class="col-md-12">
+                            <label class="control-label">Cancellation Type:</label>
+                        </div>
+                        <div class="col-md-12">
+                            <select id="cas_cancelled_list" name="cas_cancelled_type" class='form-control cas_cancelled_list'></select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <label class="control-label">Cancellation Reason:</label>
+                        </div>
+                        <div class="col-md-12">
+                            @Html.TextAreaFor(x => x.cas_cancelled_text, new { @class = "form-control" , @id = "cas_cancelled_text" })
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="SaveCaseCancel" class="btn btn-default" style="color:white;background-color:black" >Save</button>
+                    <button type="button" class="btn btn-default" style="color:white;background-color:black" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#cas_cancelled_list").fillKendoDropDown("/LookUp/GetCancellCasTypes", "Name", "Id", "-- Select --");
+    });
+</script>
+    

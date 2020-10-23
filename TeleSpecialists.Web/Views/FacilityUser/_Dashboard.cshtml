@@ -1,0 +1,67 @@
+﻿@model IEnumerable<TeleSpecialists.BLL.ViewModels.FacilityUser.GetCaeTypeViewModel>
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@{
+    Layout = "";
+    var _consultType = ViewBag._types;
+
+}
+<div class="facility-navigator-dashbord mb-4" id="facility-navigator-dashbord">
+    <div class="row">
+        <div class="col-md-9 col-12 offset-md-1">
+            <h3>Consult Type</h3>
+            <hr />
+        </div>
+    </div>
+    <div class="row col-md-4 col-md-7 col-lg-5 col-xl-4 p-2 mx-auto">
+        @{
+            if (Model != null && Model.Any())
+            {
+                <div class="col-12  dashboard-indicators p-2">
+                    <label class="font-weight-normal">Please select one of the following consult types:</label>
+                </div>
+                foreach (var consultType in Model)
+                {
+                    <div class="col-6  dashboard-indicators p-2">
+                        <button type="button" class="btn @(consultType.CaseTypeName.Equals(CaseType.StrokeAlert.ToDescription()) || consultType.CaseTypeName.Equals(CaseType.StatConsult.ToDescription())? "btn-danger" : "") bold"
+                                data-type="@consultType.CaseTypeName" data-case-type-key="@consultType.CaseTypeKey" data-id="@consultType.CaseTypeKey" data-ucl="@consultType.CaseUCLKey">
+                            @consultType.CaseTypeName
+                        </button>
+                    </div>
+                }
+                
+            }
+            else
+            {
+                <div class="col-12  dashboard-indicators p-2">
+                    <label class="font-weight-normal">No consult type assigned to the user. Please contact your system administrator.</label>
+                </div>
+            }
+        }
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".facility-navigator-dashbord button").on("click", function () {
+            var id = $(this).data("id");
+            var ucl = $(this).data("ucl");
+            var caseType = $(this).data("type");
+            var caseTypeKey = $(this).data("case-type-key");
+            var className = "";
+            if ($(this).hasClass("btn-danger"))
+                className = "text-danger";
+            else
+                className = "color-lightgray";
+
+            //if (id === 334)
+            if (ucl === 37)
+                navigateToFacilityInfoHomeHealth(caseType, className, caseTypeKey);
+            else 
+                navigateToFacilityInfo(caseType, className, caseTypeKey);
+                
+            
+
+        });
+       
+    });
+</script>

@@ -1,0 +1,113 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@model IEnumerable<Hospital_Protocols>
+@{
+    List<Hospital_Protocols> Protocolsdataforpopups = Model.ToList();
+}
+<style>
+    .topnav {
+        overflow: hidden;
+        background-color: #333;
+    }
+
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+            .topnav a:hover {
+                background-color: #ddd;
+                color: black;
+            }
+
+            .topnav a.active {
+                background-color: #4CAF50;
+                color: white;
+            }
+
+    .box-item {
+        border: 5px solid #555
+    }
+</style>
+<div class="modal" id="graphmodal">
+    <div class="modal-dialog modal-lg" style=" max-width:1532px; ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4><b>Hospital Protocols</b></h4>
+            </div>
+            <div class="modal-body">
+                @if (Protocolsdataforpopups.Count > 0)
+                {
+                    <div class="topnav" style="margin-bottom: 12px;margin-top: 12px;">
+                        @foreach (var item in Protocolsdataforpopups)
+                        {
+                            <a href="javascript:void(0)">@item.ParameterName</a>
+                        }
+                        <a href="javascript:void(0)"><span id="submittername"></span></a>
+                    </div>
+
+                    foreach (var item in Protocolsdataforpopups)
+                    {
+                        <div style="padding-bottom: 55px;" id="@item.ParameterName">
+                            <h2><b>@item.ParameterName</b></h2>
+                            @{
+                                var info_value = Protocolsdataforpopups.Where(x => x.ID == item.ID).Select(k => k.ParameterName_Info).FirstOrDefault();
+
+                                @Html.Raw(info_value)
+                            }
+                            @foreach (var value in Protocolsdataforpopups.Where(x => x.ID == item.ID))
+                            {
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="thumbnail">
+                                            @{
+                                                var getimagevalue = value.ParameterName_Image.TrimEnd(',');
+                                                if (!string.IsNullOrEmpty(getimagevalue))
+                                                {
+                                                    var splitimagevalue = getimagevalue.Split(',');
+                                                    foreach (var imageshow in splitimagevalue)
+                                                    {
+                                                        string lastthreewords = imageshow.Substring(imageshow.Length - 3);
+                                                        if (lastthreewords == "PEG" || lastthreewords == "peg" || lastthreewords == "png" || lastthreewords == "jpg" || lastthreewords == "JPG" || lastthreewords == "gif" || lastthreewords == "PNG")
+                                                        {
+                                                            if (!string.IsNullOrEmpty(imageshow))
+                                                            {
+                                                                var s = imageshow;
+                                                                <img src="@s" style="height:226px;width:442px;border: 5px solid #555;margin-bottom: 7px;" class="img-rounded thumb" />
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <span style="padding-left:5px">Click The Link To Download File</span> <a href="@imageshow">Link</a>
+
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+                                            <div class="caption"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                break;
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <strong>No Record Found!</strong>
+                }
+
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-sm btn-dark text-white" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>

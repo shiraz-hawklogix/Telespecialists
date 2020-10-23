@@ -1,0 +1,82 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.physician_shift_rate
+@{
+    var dicOptions = new Dictionary<string, string>();
+    dicOptions.Add("true", "Yes");
+    dicOptions.Add("false", "No");
+    var indexList = Enum.GetValues(typeof(PhysicianShifts)).Cast<PhysicianShifts>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList list = new SelectList(indexList, "key", "title");
+}
+<div class="ajaxForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.psr_key)
+        @Html.HiddenFor(m => m.psr_created_by)
+        @Html.HiddenFor(m => m.psr_created_by_name)
+        @Html.HiddenFor(m => m.psr_created_date)
+        <input type="hidden" id="lbl_shift_name" name="psr_shift_name" value="@Model.psr_shift_name" />
+        <div class="form-horizontal">
+
+            <div class="row">
+                <div class="@(ViewBag.Edit ? "col-md-6 col-sm-12" : "col-md-5 col-sm-11 col-offset-1")">
+
+                    <div class="form-group row">
+                        @Html.Label("Physician:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="phy_list" name="psr_phy_key" class="form-control addValidation" data-searchFilter="true" data-selectedValue="@(Model != null ? Model.psr_phy_key : "")" required readonly></select>
+                            @Html.ValidationMessageFor(model => model.psr_phy_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @* Added By AXIM*@
+                    <div class="form-group row">
+                        @Html.Label("Start Date:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.FormattedDateTextBoxFor(x => x.psr_start_date, new { @class = "form-control", @id = "rate_start_Date", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.psr_start_date, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @* Ended By AXIM*@
+
+                </div>
+                <div class="@(ViewBag.Edit ? "col-md-6 col-sm-12" : "col-md-5 col-sm-11 col-offset-1")">
+                    <div class="form-group row">
+                        @Html.Label("Shift Title:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.DropDownListFor(x => x.psr_shift, list, "--Select List--", new { @class = "cls_shift_name form-control", @id = "shift_name_id", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.psr_shift, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    @* Added By AXIM*@
+                    <div class="form-group row">
+                        @Html.Label("End Date:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                            @Html.FormattedDateTextBoxFor(x => x.psr_end_date, new { @class = "form-control", @id = "rate_end_Date", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.psr_end_date, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @* Ended By AXIM*@
+
+                    <div class="form-group row">
+                        @Html.Label("Rate:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.psr_rate, new { htmlAttributes = new { @class = "form-control", @type = "number", @required = "required" } })
+                            @Html.ValidationMessageFor(model => model.psr_rate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="@(ViewBag.Edit ? "col-11" : "col-10 col-offset-1")">
+                    <div class="form-group row">
+                        <div class="col-lg-6 col-sm-6 offset-md-6 offset-xl-6 offset-lg-6 offset-sm-6  text-right">
+                            <a class="btn btn-link loadLinkAsync" href="@Url.Action("GetPhysician",new { id = Model.psr_phy_key })">Cancel</a>
+                            <input type="submit" value="Save" class="btn btn-dark" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

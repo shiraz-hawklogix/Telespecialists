@@ -1,0 +1,162 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.facility_rate
+
+@{
+
+    var indexList = Enum.GetValues(typeof(IndexRate)).Cast<IndexRate>().Select(m => new { key = (int)m, title = (int)m });
+    var _hour = indexList.Where(x => x.key <= 24).ToList();
+    SelectList list = new SelectList(indexList, "key", "title");
+    SelectList shiftHours = new SelectList(_hour, "key", "title");
+
+    SelectList facilities = new SelectList(ViewBag.Facilities, "Value", "Text");
+
+}
+
+<div class="ajaxForm">
+
+    @using (Html.BeginForm(new { role = "form", @id = "productivity_rate" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.fct_key)
+        @Html.HiddenFor(x => x.fct_created_by)
+        @Html.HiddenFor(x => x.fct_created_by_name)
+        @Html.HiddenFor(x => x.fct_created_date)
+        @Html.HiddenFor(x => x.fct_facility_key)
+
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="@(ViewBag.Edit ? "col-md-6 col-sm-12" : "col-md-5 col-sm-11 col-offset-1")">
+                    <div class="form-group row">
+                        @Html.Label("Billing Code:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="cas_ctp_key" name="fct_billing_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fct_billing_key : 0)" required></select>
+                            @Html.ValidationMessageFor(model => model.fct_billing_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="divfilter" style="display:none;">
+                        @Html.Label("Facility Type:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select class="form-control" id="ddlfiltertype">
+                                <option value="SelectType"> -- Select Type -- </option>
+                                <option value="facility">Facility</option>
+                                <option value="system">System</option>
+                                <option value="regional">Regional</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="divfacility" style="display:none;">
+                        @{
+                            if (ViewBag.Status == true)
+                            {
+                                @Html.Label("Facility:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                                <div class="col-lg-8 col-md-12 col-xs-12">
+                                    @Html.DropDownListFor(x => x.fct_facility_key, facilities, "--Select facility--", new { @class = "form-control", @id = "Facilities", @required = "required", @disabled = "disabled" })
+                                    @Html.ValidationMessageFor(model => model.fct_facility_key, "", new { @class = "text-danger" })
+                                </div>
+                            }
+                            else
+                            {
+                                @Html.Label("Facility:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                                <div class="col-lg-8 col-md-12 col-xs-12">
+                                    @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control", multiple = "multiple", @required = "required" })
+                                    @Html.ValidationMessageFor(model => model.fct_facility_key, "", new { @class = "text-danger" })
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <div class="form-group row" id="divsystem" style="display:none;">
+                        @Html.Label("System :", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_ucd_key_system" name="fac_ucd_key_system" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="divregional" style="display:none;">
+                        @Html.Label("Regional :", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_ucd_region_key" name="fac_ucd_region_key" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="divfacility_change" style="display:none;">
+                        @Html.Label("Facility:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="FacilitiesChange" name="Facilities" class="form-control" data-searchFilter="true" data-selectedValue=@Model.fct_facility_key multiple="multiple" required></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="@(ViewBag.Edit ? "col-md-6 col-sm-12" : "col-md-5 col-sm-11 col-offset-1")">
+                    @*<div class="form-group row">
+                        <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">Start Index: </label>
+                        <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                            @Html.DropDownListFor(x => x.fct_starting, list, "--Select List--", new { @class = "form-control", @id = "rat_starting", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.fct_starting, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+
+                    <div class="form-group row">
+                        @Html.Label("Start Index:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fct_starting, new { htmlAttributes = new { @class = "form-control", @type = "number", @id = "rat_starting", @placeholder = "Enter Index ...", @required = "required" } })
+                            @Html.ValidationMessageFor(model => model.fct_starting, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    @*<div class="form-group row">
+                        <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">End Index: </label>
+                        <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                            @Html.DropDownListFor(x => x.fct_ending, list, "--Select List--", new { @class = "form-control", @id = "rat_ending", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.fct_ending, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+
+                    <div class="form-group row">
+                        @Html.Label("End Index:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fct_ending, new { htmlAttributes = new { @class = "form-control", @type = "number", @id = "rat_ending", @placeholder = "Enter Index ...", @required = "required" } })
+                            @Html.ValidationMessageFor(model => model.fct_ending, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                        @Html.Label("Start Date:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.FormattedDateTextBoxFor(x => x.fct_start_date, new { @class = "form-control", @id = "rate_start_Date", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.fct_start_date, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("End Date:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                            @Html.FormattedDateTextBoxFor(x => x.fct_end_date, new { @class = "form-control", @id = "rate_end_Date", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.fct_end_date, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Rate:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fct_rate, new { htmlAttributes = new { @class = "form-control", @type = "number", @placeholder = "Enter Price...", @required = "required" } })
+                            @Html.ValidationMessageFor(model => model.fct_rate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="@(ViewBag.Edit ? "col-11" : "col-10 col-offset-1")">
+                    <div class="form-group row">
+                        <div class="col-lg-6 col-sm-6 offset-md-6 offset-xl-6 offset-lg-6 offset-sm-6  text-right">
+                            <a class="btn btn-link loadLinkAsync" href="@Url.Action("Index",new { id = Model.fct_key })">Cancel</a>
+                            <input type="submit" value="Save" class="btn btn-dark" id="submit" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

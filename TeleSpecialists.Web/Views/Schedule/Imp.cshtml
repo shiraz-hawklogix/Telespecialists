@@ -1,0 +1,97 @@
+﻿
+@model TeleSpecialists.BLL.ViewModels.SchedulerResponseViewModel
+
+@{
+    ViewBag.Title = "Import";
+}
+
+@using (Html.BeginForm("Imp", "Schedule", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmImportSchedule" }))
+{
+    <div class="row">
+        <div class="col-sm-10 offset-sm-1">
+            <div class="col-lg-8 col-sm-12">
+                <h2>Import PAOC Schedule</h2>
+            </div>
+            <div class="col-6 col-sm-12 pb-lg-5">
+                <a class="btn btn-info float-lg-right" href='@Url.Action("DownloadSampleImp")'>Download Sample Template</a>
+            </div>
+            <hr />
+
+            @if (!string.IsNullOrEmpty(Model.Message) && Model.ParseErrors.Count() == 0)
+            {
+
+                <div class="alert alert-dismissible  @(!Model.Success? "alert-danger" : "alert-success")" id="autoclose">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    @Model.Message
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-xl-6 col-lg-8 col-sm-12">
+                    <div class="input-group">
+                        <div class="input-group-prepend" style="min-width:35px;">
+                            <span class="input-group-text" id="inputGroupFileAddon01">CSV</span>
+                        </div>
+                        <div class="custom-file" style="min-width:230px;">
+                            <input type="file" class="custom-file-input" id="fileUpload" name="fileUpload" aria-describedby="inputGroupFileAddon01" onchange="$('.custom-file-label').html(this.files[0].name)" required />
+                            <label class="custom-file-label" for="fileUpload">Choose file</label>
+                        </div>
+                        &nbsp;&nbsp;&nbsp;
+                        @if (Model.ParseErrors.Count() == 0)
+                        {
+                            <input type="submit" value="Import Schedule" class="btn btn-dark sm-div-seperator" />
+                        }
+                    </div>
+                </div>
+            </div>
+            @if (Model.ParseErrors.Count() > 0)
+            {
+                <div class="row">
+                    <div class="col-xl-6 col-lg-8 col-sm-12">
+                        <br />
+                        <span class="text-danger">
+                            @Html.Raw(string.Join("<br/>", Model.ParseErrors))
+                        </span>
+                        <br /><br />
+                        <div class="w-100">
+                            <input type="hidden" id="FileId" name="FileId" value="@Model.FileId" autocomplete="off">
+                            <input type="button" class="btn btn-dark" value="Continue with Errors" id="btnContinue" autocomplete="off">
+                            <a href="#" class="btn btn-link" id="lnkCancel">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+
+        $("#btnContinue").off("click").click(function () {
+            var data = $("#frmImportSchedule").serialize();
+            var url = "@Url.Action("ContinueImportImp")";
+            $.post(url, data, function (response) {
+                $("#divContentArea").html(response);
+                autoCloseAlert();
+            });
+        });
+
+        $("#lnkCancel").off("click").click(function (e) {
+            e.preventDefault();
+            $("#divModelPopUp").empty().showConfirmPopUp("Cancel Import", "Are you sure to cancel schedule import?", function () {
+                loadPageAsync("@Url.Action("Imp")");
+                $("#divModelPopUp").modal("hide");
+            }, "Yes", function () { $("#divModelPopUp").modal("hide"); });
+        });
+    });
+
+</script>
+

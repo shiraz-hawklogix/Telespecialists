@@ -1,0 +1,204 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+
+
+@model TeleSpecialists.Models.EditUserViewModel
+@{
+    ViewBag.Title = "Edit User";
+}
+
+<input type="hidden" name="edit-user-id" id="edit-user-id" value="@Model.Id" />
+<input type="hidden" name="edit-user-fullname" id="edit-user-id" value="@Model.FirstName @Model.LastName" />
+<div class="alert case-info">
+    <div class="row">
+        <div class="col-9">
+            <div class="row">
+                <div class="d-inline-block">
+                    <strong>User:</strong> <span id="edit-user-name"> @Model.FirstName @Model.LastName </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item"><a data-toggle="tab" class="nav-link active" href="#physician">General</a></li>
+
+    @if (Model.Level == UserRoles.Physician.ToDescription() || Model.Level == UserRoles.PartnerPhysician.ToDescription())
+    {
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#license">Licenses</a></li>
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#facility">Credentials</a></li>
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#userCredentialIndex">Credential Index</a></li>
+    }
+    @if (Model.Level == UserRoles.FacilityNavigator.ToDescription() || Model.Level == UserRoles.PACNavigator.ToDescription() || Model.Level == UserRoles.AOC.ToDescription())
+    {
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#facilities">Facilities</a></li>
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#caseType">Case Types</a></li>
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#ipRestrictions">IP Restrictions</a></li>
+    }
+    @if (Model.Level == UserRoles.FacilityAdmin.ToDescription() || Model.Level == UserRoles.FacilityPhysician.ToDescription())
+    {
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#facilities">Facilities</a></li>
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#ipRestrictions">IP Restrictions</a></li>
+    }
+    @if (Model.Level == UserRoles.RegionalMedicalDirector.ToDescription())
+    {
+        <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#facilities">Facilities</a></li>
+    }
+    <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#notes">Notes</a></li>
+</ul>
+
+<div class="tab-content mt-5">
+
+    <div id="physician" role="tabpanel" class="tab-pane fade in active show">
+        @Html.Partial("_UserForm", Model)
+    </div>
+
+    <div id="license" role="tabpanel" class="tab-pane fade">
+
+        @{Html.RenderAction("Index", "PhysicianLicense", new { phy_key = Model.Id }); }
+        <div class="form-group row">
+            <div class="col-sm-6 offset-sm-5 text-right">
+                <br />
+                <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Users", new { level = Model.Level})">Cancel</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="facility" role="tabpanel" class="tab-pane fade in">
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-xs-12">
+            </div>
+            <div class="col-lg-6 col-md-12 col-xs-12">
+                <form id="frmSearch" method="post" class="float-lg-right mr-3">
+                    <div class="row pl-3">
+                        <div>
+                            <strong>Search</strong><br />
+                            <input type="search" id="searchBox" class="k-textbox form-control-sm " />
+                        </div>
+                        <div style="margin-left: 2px;">
+                            <strong>Onboarded</strong><br />
+                            <select id="FacilityOnboardedFilter" class="form-control active">
+                                <option value="" selected="selected">All</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                        <div class="pl-1" style="max-width:275px;">
+                            <br />
+                            <input type="button" id="btnSearch" class="btn btn-dark" value="Search" />
+                            <a href="javascript:;" class="btn btn-dark clearLS" id="resetSearch" style="display:none;">Clear Search</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        @{Html.RenderAction("_ListPhysicianFacilities", "FacilityPhysician", new { phy_key = Model.Id }); }
+
+        <div class="form-group row">
+            <div class="col-sm-6 offset-sm-5 text-right">
+                <br />
+                <a class="btn btn-link loadLinkAsync" href="@Url.Action("Users", new { level = Model.Level})">Cancel</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="userCredentialIndex" role="tabpanel" class="tab-pane fade">
+        @{Html.RenderAction("_UserCredentialIndex", "Admin", new { Id = Model.Id }); }
+    </div>
+
+
+    @if (Model.Level == UserRoles.FacilityNavigator.ToDescription() || Model.Level == UserRoles.PACNavigator.ToDescription() || Model.Level == UserRoles.AOC.ToDescription() || Model.Level == UserRoles.QPS.ToDescription() || Model.Level == UserRoles.RegionalMedicalDirector.ToDescription())
+    {
+        <div id="facilities" role="tabpanel" class="tab-pane fade">
+            @{Html.RenderAction("_FacilityUserFacilities", "FacilityUser", new { userKey = Model.Id, userFullName = Model.FirstName + " " + Model.LastName }); }
+            <div class="form-group row">
+                <div class="col-sm-6 offset-sm-5 text-right">
+                    <br />
+                    <a class="btn btn-link loadLinkAsync" href="@Url.Action("Users", new { level = Model.Level})">Cancel</a>
+                </div>
+            </div>
+        </div>
+        <div id="caseType" role="tabpanel" class="tab-pane fade">
+            @{Html.RenderAction("_FacilityUserCaseTypes", "FacilityUser", new { userKey = Model.Id, userFullName = Model.FirstName + " " + Model.LastName }); }
+            <div class="form-group row">
+                <div class="col-sm-6 offset-sm-5 text-right">
+                    <br />
+                    <a class="btn btn-link loadLinkAsync" href="@Url.Action("Users", new { level = Model.Level})">Cancel</a>
+                </div>
+            </div>
+        </div>
+        <div id="ipRestrictions" role="tabpanel" class="tab-pane fade">
+        </div>
+    }
+
+    @if (Model.Level == UserRoles.FacilityAdmin.ToDescription() || Model.Level == UserRoles.FacilityPhysician.ToDescription())
+    {
+        <div id="facilities" role="tabpanel" class="tab-pane fade">
+            @{Html.RenderAction("_FacilityUserFacilities", "FacilityUser", new { userKey = Model.Id, userFullName = Model.FirstName + " " + Model.LastName }); }
+            <div class="form-group row">
+                <div class="col-sm-6 offset-sm-5 text-right">
+                    <br />
+                    <a class="btn btn-link loadLinkAsync" href="@Url.Action("Users", new { level = Model.Level})">Cancel</a>
+                </div>
+            </div>
+        </div>
+        <div id="ipRestrictions" role="tabpanel" class="tab-pane fade">
+        </div>
+    }
+
+    <div id="notes" role="tabpanel" class="tab-pane fade">
+
+        <div class="row">
+            <div class="col-sm-12">
+                <a class="btn btn-dark loadModelPopup" href="@Url.Action("Create","EntityNote", new {etn_entity_key = Model.Id, entity_type = EntityTypes.User })">Add Note</a>
+            </div>
+        </div>
+
+        @{Html.RenderAction("Index", "EntityNote", new { etn_entity_key = Model.Id, entity_type = EntityTypes.User }); }
+
+        <div class="form-group row">
+            <div class="col-sm-6 offset-sm-5 text-right">
+                <br />
+                <a class="btn btn-link loadLinkAsync" href="@Url.Action("Users", new { level = Model.Level})">Cancel</a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    $(document).ready(function () {
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        maskPhoneNumber();
+           $("#State_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.State.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        var role = $("#Role option:selected").text();
+        if (role == "@UserRoles.Physician.ToDescription()") {
+            $("#UserInitial").attr('Required', true);
+        }
+        else {
+            $("#UserInitial").removeAttr('Required');
+        }
+    });
+    $("#Role").off("change").change(function () {
+        var role = $("#Role option:selected").text();
+        if (role == "@UserRoles.Physician.ToDescription()") {
+            $("#UserInitial").attr('Required', true);
+        }
+        else {
+            $("#UserInitial").removeAttr('Required');
+        }
+    });
+        @*$("#btnAddFacility").off("click").click(function () {
+            $("#fap_fac_key").fillKendoDropDown("/FacilityPhysician/GetFacilities?phy_key=@Model.Id.ToString()", "fac_name", "fac_key", "-- Select --");
+            $("#AddFacilityModel").modal("show");
+        });*@
+
+        //License Tab
+</script>
+
+

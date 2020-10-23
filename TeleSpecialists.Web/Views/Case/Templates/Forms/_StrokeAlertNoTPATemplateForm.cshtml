@@ -1,0 +1,539 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@model TeleSpecialists.BLL.Model.@case
+
+@{
+    var AcuteISchemicStrokeList = Enum.GetValues(typeof(AcuteISchemicStroke)).Cast<AcuteISchemicStroke>()
+                           .Select(m => new SelectListItem
+                           {
+                               Value = Convert.ToInt32(m).ToString(),
+                               Text = m.ToDescription(),
+                               Selected = (Model?.case_template_stroke_notpa?.ctn_impression != null ? Model.case_template_stroke_notpa.ctn_impression.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                           });
+
+    var StrokeMechanismList = Enum.GetValues(typeof(StrokeMechanism)).Cast<StrokeMechanism>()
+                    .Select(m => new SelectListItem
+                    {
+                        Value = Convert.ToInt32(m).ToString(),
+                        Text = m.ToDescription(),
+                        Selected = (Model?.case_template_stroke_notpa?.ctn_mechanism_stroke != null ? Model.case_template_stroke_notpa.ctn_mechanism_stroke.Split(',').Select(k => k.ToInt()).Contains(m.ToInt()) ? true : false : false)
+                    });
+
+
+
+    var AntiplateletTherapyRecommended = ViewBag.AntiplateletTherapyRecommended as Dictionary<int, string>;
+    var selectedAntiplateletTherapyRecommended = Model?.case_template_stroke_notpa?.ctn_antiplatelet_therapy_recommedned?.Split(',').Select(m => m.ToInt());
+
+    var ImagingStudiesRecommendedNoTpa = ViewBag.ImagingStudiesRecommendedNoTpa as Dictionary<int, string>;
+    var selectedImagingStudiesRecommendedNoTpa = Model?.case_template_stroke_notpa?.ctn_imaging_studies_recommedned?.Split(',').Select(m => m.ToInt());
+
+    var TherapiesNoTpa = ViewBag.TherapiesNoTpa as Dictionary<int, string>;
+    var selectedTherapiesNoTpa = Model?.case_template_stroke_notpa?.ctn_therapies?.Split(',').Select(m => m.ToInt());
+
+    var DysphaghiaScreenNoTpa = ViewBag.DysphaghiaScreenNoTpa as Dictionary<int, string>;
+    var selectedDysphaghiaScreenNoTpa = Model?.case_template_stroke_notpa?.ctn_dysphaghia_screen?.Split(',').Select(m => m.ToInt());
+
+    if (Model != null && Model.case_template_stroke_notpa == null)
+    {
+        var defaultTherapiesNoTpa = ViewBag.DefaultTherapiesNoTpa as List<int>;
+
+        if (defaultTherapiesNoTpa != null && defaultTherapiesNoTpa.Count() > 0)
+        {
+            if (selectedTherapiesNoTpa == null) { selectedTherapiesNoTpa = new List<int>(); }
+
+            var temp = selectedTherapiesNoTpa.ToList();
+            temp.AddRange(defaultTherapiesNoTpa);
+            selectedTherapiesNoTpa = temp.AsEnumerable();
+        }
+
+        var defaultDysphaghiaScreenNoTp = ViewBag.DefaultDysphaghiaScreenNoTpa as List<int>;
+        if (defaultDysphaghiaScreenNoTp != null && defaultDysphaghiaScreenNoTp.Count() > 0)
+        {
+            if (selectedDysphaghiaScreenNoTpa == null) { selectedDysphaghiaScreenNoTpa = new List<int>(); }
+
+            var temp = selectedDysphaghiaScreenNoTpa.ToList();
+            temp.AddRange(defaultDysphaghiaScreenNoTp);
+            selectedDysphaghiaScreenNoTpa = temp.AsEnumerable();
+        }
+    }
+
+
+
+
+    var DispositionNoTpa = ViewBag.DispositionNoTpa as Dictionary<string, string>;
+
+    var DVTProphylaxisNoTpa = ViewBag.DVTProphylaxisNoTpa as Dictionary<int, string>;
+    var selectedDVTProphylaxisNoTpa = Model?.case_template_stroke_notpa?.ctn_dvt_prophylaxis?.Split(',').Select(m => m.ToInt());
+
+    var SignOutNoTpa = ViewBag.SignOutNoTpa as Dictionary<int, string>;
+    var selectedSignOutNoTpa = Model?.case_template_stroke_notpa?.ctn_sign_out?.Split(',').Select(m => m.ToInt());
+
+    var nihssList = ViewBag.NIHSSList as List<TeleSpecialists.BLL.Model.nih_stroke_scale_question>;
+    var nihssSelectedOptions = ViewBag.NIHSSSelectedOptions as List<int>;
+    if (nihssSelectedOptions == null)
+    {
+        nihssSelectedOptions = new List<int>();
+    }
+
+    IDictionary<string, object> dynamicHtmlAttributesTextArea = new Dictionary<string, object>();
+    IDictionary<string, object> dynamicHtmlAttributes = new Dictionary<string, object>();
+    IDictionary<string, object> dynamicHtmlAttributesForComment = new Dictionary<string, object>();
+
+    dynamicHtmlAttributesTextArea.Add("style", "width:100%");
+    dynamicHtmlAttributes.Add("class", "form-control");
+    dynamicHtmlAttributes.Add("maxlength", "50");
+    dynamicHtmlAttributesForComment.Add("style", "width:100%; height:100px;");
+
+    var status = "false";
+
+    if (Model.case_template_stroke_notpa != null)
+    {
+        if (Model.case_template_stroke_notpa.ctn_patient_family_cosulted == null)
+        {
+            Model.case_template_stroke_notpa.ctn_patient_family_cosulted = true;
+        }
+        if (Model.case_template_stroke_notpa.ctn_patient_family_cosulted != null && Model.case_template_stroke_notpa.ctn_patient_family_cosulted == false)
+        {
+            status = "true";
+        }
+    }
+    var yesNoOptions = new Dictionary<string, string>();
+    yesNoOptions.Add("true", "Yes");
+    yesNoOptions.Add("false", "No");
+
+    DateTime examdate = Convert.ToDateTime("09/22/2020");
+    var examtext = "false";
+    var classdanger = "";
+    if (Model.cas_created_date > examdate)
+    {
+        examtext = "true";
+        classdanger = "text-danger";
+    }
+}
+
+@Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_nihss_totalscore)
+@Html.HiddenFor(m => m.SelectedNIHSQuestionResponse)
+
+@if (Model.case_template_stroke_notpa != null)
+{
+    <input type="hidden" name="TemplateKey" id="TemplateKey" value="@Model.case_template_stroke_notpa.ctn_cas_key" />
+}
+
+<input type="hidden" name="TemplateKeyName" id="TemplateKeyName" value="ctn_cas_key" />
+
+<input type="hidden" name="case_template_stroke_notpa.ctn_cas_key" id="case_template_stroke_notpa_ctn_cas_key" value="@Model.cas_key" />
+<div class="form-group row case-template-tab">
+    <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+        <div class="form-group row">
+            <label class="control-label col-12">Date of Consult: </label>
+            <div class="col-12">
+                @Model.cas_created_date.FormatDateTime()
+            </div>
+        </div>
+        <div class="form-group row" id="divImpression">
+            <label class="control-label col-12 text-danger">Impression:</label>
+            <div class="col-12">
+                @Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_impression)
+                @foreach (var item in AcuteISchemicStrokeList)
+                {
+                    <div class="checkbox">
+                        <input type="checkbox" data-IgnoreAutoSave="true" class="track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")><label>&nbsp;@item.Text</label>
+                    </div>
+                }
+            </div>
+            <div class="col-10">
+                @Html.TextAreaFor(m => m.case_template_stroke_notpa.ctn_impression_text, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="control-label col-12">Mechanism of Stroke:</label>
+            <div class="col-10 col-offset-2 ctn_mechanism_stroke">
+                @Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_mechanism_stroke)
+                @foreach (var item in StrokeMechanismList)
+                {
+                    <div class="checkbox">
+                        <input type="checkbox" data-IgnoreAutoSave="true" class="track_change" value="@item.Value" @(item.Selected ? "checked='checked'" : "")><label>&nbsp;@item.Text</label>
+                    </div>
+                }
+                <div id="case_template_stroke_notpa.ctn_mechanism_stroke_freeText">
+                    @Html.TextAreaFor(m => m.case_template_stroke_notpa.ctn_mechanism_stroke_text, new { @class = "form-control mechanism_stroke_text", style = "width: 100%" }) @*, placeholder = "Max text limit 2000." })*@
+                    @Html.ValidationMessageFor(model => model.case_template_stroke_notpa.ctn_mechanism_stroke_text, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        @{
+            var templateTypes = new List<int>()
+                    {
+                    EntityTypes.StrokeAlertTemplateTpa.ToInt(),
+                    EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt(),
+                    EntityTypes.StrokeAlertTemplateNoTpa.ToInt(),
+                    EntityTypes.StrokeAlertTemplateNoTpaTeleStroke.ToInt()
+                    };
+
+            if (Model.TemplateEntityType.HasValue && templateTypes.Contains(Model.TemplateEntityType.Value))
+            {
+                <div class="form-group row">
+                    <label class="control-label col-12 text-danger">Comments/Sign-Out:</label>
+                    <div class="col-10" id="divComment">
+                        @Html.TextAreaFor(m => m.cas_billing_comments, dynamicHtmlAttributesForComment)
+                        <div class="text-danger">
+                            <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label>
+                        </div>
+                        <div class="error_msg" style="display:none;">
+                            <label>This field is required</label>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        <div class="form-group row">
+            <label class="control-label col-12 @classdanger">BP: </label>
+            <div class="col-10" id="divBP">
+                @Html.TextAreaFor(m => m.case_template_stroke_notpa.ctn_vitals_bp, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12 @classdanger">Pulse: </label>
+            <div class="col-10" id="divpulse">
+                @Html.TextAreaFor(m => m.case_template_stroke_notpa.ctn_vitals_pulse, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12 @classdanger">Blood Glucose: </label>
+            <div class="col-10" id="divBloodGlucose">
+                @Html.TextAreaFor(m => m.case_template_stroke_notpa.ctn_vitals_blood_glucose, dynamicHtmlAttributesTextArea)
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+
+        <div class="row">
+            <label class="control-label col-12">Recommendations:</label>
+            <div class="col-12">
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-10 col-offset-2 ctn_antiplatelet_therapy_recommedned" id="divAntiplateletTherapyRecommended">
+                @Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_antiplatelet_therapy_recommedned)
+                @foreach (var item in AntiplateletTherapyRecommended)
+                {
+                    var isExists = selectedAntiplateletTherapyRecommended != null ? selectedAntiplateletTherapyRecommended.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input class="form-check-input track_change" data-IgnoreAutoSave="true" id="SA_@item.Key" type="checkbox" value="@item.Key" @(isExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+            <div class="col-10" id="case_template_stroke_notpa.ctn_antiplatelet_therapy_recommedned_freeText">
+                @Html.TextAreaFor(m => m.case_template_stroke_notpa.ctn_antiplatelet_therapy_recommedned_text, dynamicHtmlAttributesTextArea)
+                @Html.ValidationMessageFor(model => model.case_template_stroke_notpa.ctn_antiplatelet_therapy_recommedned_text, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12">Imaging Studies Recommended: </label>
+            <div class="col-10 col-offset-2 ctn_imaging_studies_recommedned" id="divImagingStudiesRecommendedNoTpa">
+                @Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_imaging_studies_recommedned)
+                @foreach (var item in ImagingStudiesRecommendedNoTpa)
+                {
+                    var isExists = selectedImagingStudiesRecommendedNoTpa != null ? selectedImagingStudiesRecommendedNoTpa.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input class="form-check-input track_change" data-IgnoreAutoSave="true" id="SA_@item.Key" type="checkbox" value="@item.Key" @(isExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12">Therapies: </label>
+            <div class="col-10 col-offset-2 ctn_therapies" id="divTherapiesNoTpa">
+                @Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_therapies)
+                @foreach (var item in TherapiesNoTpa)
+                {
+                    var isExists = selectedTherapiesNoTpa != null ? selectedTherapiesNoTpa.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input class="form-check-input track_change" data-IgnoreAutoSave="true" id="SA_@item.Key" type="checkbox" value="@item.Key" @(isExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12">Dysphaghia Screen: </label>
+            <div class="col-10 col-offset-2 ctn_dysphaghia_screen" id="divDysphaghiaScreenNoTpa">
+                @Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_dysphaghia_screen)
+                @foreach (var item in DysphaghiaScreenNoTpa)
+                {
+                    var isExists = selectedDysphaghiaScreenNoTpa != null ? selectedDysphaghiaScreenNoTpa.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input class="form-check-input track_change" data-IgnoreAutoSave="true" id="SA_@item.Key" type="checkbox" value="@item.Key" @(isExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12">DVT Prophylaxis: </label>
+            <div class="col-10 col-offset-2 ctn_dvt_prophylaxis" id="divDVTProphylaxisNoTpa">
+                @Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_dvt_prophylaxis)
+                @foreach (var item in DVTProphylaxisNoTpa)
+                {
+                    var isExists = selectedDVTProphylaxisNoTpa != null ? selectedDVTProphylaxisNoTpa.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input class="form-check-input track_change" data-IgnoreAutoSave="true" id="SA_@item.Key" type="checkbox" value="@item.Key" @(isExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+            <div class="col-10" id="case_template_stroke_notpa.ctn_dvt_prophylaxis_freeText">
+                @Html.TextAreaFor(m => m.case_template_stroke_notpa.ctn_dvt_prophylaxis_text, dynamicHtmlAttributesTextArea)
+                @Html.ValidationMessageFor(model => model.case_template_stroke_notpa.ctn_dvt_prophylaxis_text, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-12">
+                @Html.CheckBoxFor(m => m.case_template_stroke_notpa.ctn_lipid_panel_obtained, new { @class = "disabled" })
+                <span class="control-label"> Lipid Panel to be Obtained, if Not Done in the Last 30 days</span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12">Disposition: </label>
+            <div class="col-10 col-offset-2 ctn_disposition" id="divDispositionNoTpa">
+                @Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_disposition)
+                @Html.RadioButtonListFor(m => m.case_template_stroke_notpa.ctn_disposition, DispositionNoTpa)
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12">Sign Out: </label>
+            <div class="col-10 col-offset-2 ctn_sign_out" id="divSignOutNoTpa">
+                @Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_sign_out)
+                @foreach (var item in SignOutNoTpa)
+                {
+                    var isExists = selectedSignOutNoTpa != null ? selectedSignOutNoTpa.Contains(item.Key) : false;
+                    <div class="form-check mb-1">
+                        <input class="form-check-input track_change" data-IgnoreAutoSave="true" id="SA_@item.Key" type="checkbox" value="@item.Key" @(isExists ? "checked='checked'" : "")>
+                        <label class="form-check-label">@item.Value</label>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-12">Patient/Family Consent to Neurology Consult via TeleHealth</label>
+            <div class="col-4">
+                @Html.RadioButtonListFor(m => m.case_template_stroke_notpa.ctn_patient_family_cosulted, yesNoOptions, new { @class = "ctn_familyRD", @id = "ctn_familyRD" })
+            </div>
+
+        </div>
+
+        <div class="form-check mb-1" id="ctn-family-consent" style="display:none">
+            @Html.CheckBox("case_template_stroke_notpa.ctn_family_consent_available", new { @class = "form-check-input track_change" })<label class="form-check-label"> Consent could not be obtained due to patient status and family not available </label>
+        </div>
+
+
+        <div class="form-group row">
+            <label class="control-label col-12 text-danger">Critical Care was Provided: </label>
+            <div class="col-12" id="divcriticalCare">
+                @Html.RadioButtonListFor(m => m.case_template_stroke_notpa.ctn_critical_care_was_provided, yesNoOptions)
+                <div class="error_msg" style="display:none">
+                    <label>This field is required</label>
+                </div>
+            </div>
+
+            @{
+                var display = "none";
+                if (Model.case_template_stroke_notpa != null)
+                {
+                    if (Model.case_template_stroke_notpa.ctn_critical_care_was_provided.HasValue && Model.case_template_stroke_notpa.ctn_critical_care_was_provided.Value)
+                    {
+                        display = "";
+                    }
+                }
+            }
+        </div>
+        <div class="form-group row" id="criticalcareTimeDiv" style="display:@display">
+            <div class="col-8">
+                <div class="input-group">
+                    @Html.TextBoxFor(m => m.case_template_stroke_notpa.ctn_critical_care_minutes, new { @class = "form-control minutes", @type = "number" })
+                    <div class="input-group-append">
+                        <span class="input-group-text">Minutes</span>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="error_msg" style="display:none">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+        <div class="form-group row">
+            <div class="col-12">
+                @*@Html.CheckBoxFor(m => m.case_template_stroke_notpa.ctn_ignore_nihss)*@
+                @Html.CheckBoxFor(m => m.cas_nihss_cannot_completed)
+                <label class="checkbox-inline">
+                    <b> NIHSS Cannot be Completed Due to Patient Status</b>
+                </label>
+            </div>
+        </div>
+        @* Added BY axim 10-09-2020 *@
+        <div class="form-group row" id="divexamTextFree" style="display:none">
+            <label class="control-label col-12 @classdanger">Exam Free Text: </label>
+            <div class="col-12" id="divexamFree">
+                @Html.TextAreaFor(m => m.cas_exam_free_text, new { @class = "form-control" })
+                <div class="text-danger">
+                    <label class="error">50 characters minimum (<span class="Counter">0</span>)</label>
+                </div>
+                <div class="error_msg" id="cas_exam_free_text-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        @* Ended by Axim 10-09-2020 *@
+        <div class="form-group row">
+            <div class="col-12" id="NIHSSIsChecked">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label id="nihScoreLabel" class="control-label col-12">NIH Stroke Scale/Score: </label>
+            <div class="col-12" id="divTotalScore">
+            </div>
+        </div>
+        <div id="nihssDiv">
+            @foreach (var item in nihssList)
+            {
+                <div class="form-group row">
+                    <label class="control-label col-12">@(item.nsq_title): </label>
+                    <div class="col-12 nihss-empty d-none">
+                        @Html.DropDownList("parent", Enumerable.Empty<SelectListItem>(), "", new { @class = "form-control" })
+                    </div>
+                    <div class="col-12 nihss">
+                        @{
+                            var defaultZero = item.nih_stroke_scale.Where(m => m.nss_score == 0).FirstOrDefault();
+                            var selectItemList = item.nih_stroke_scale.Select(m => new SelectListItem
+                            {
+                                Text = m.nss_title + (m.nss_score > 0 ? " +" : " ") + m.nss_score,
+                                Value = m.nss_key.ToString(),
+                                Selected = nihssSelectedOptions.Contains(m.nss_key) ? true : (nihssSelectedOptions.Count() == 0 ? (m.nss_key == defaultZero?.nss_key) : false)
+                            });
+                            var name = "case_template_stroke_notpa.ctn_nihss_" + item.nsq_key;
+                        }
+                        @Html.DropDownList(name, selectItemList, new { @style = "Width: 100%", @class = "form-control", @data_IgnoreAutoSave = true })
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+    onCriticalOptionsChanged();
+    setCriticalCareDefaults();
+        $(".ctn_disposition .form-check-inline").addClass("col-12");
+    calculateScore("#case_template_stroke_notpa_ctn_nihss_totalscore");
+    //if ($("#case_template_stroke_notpa_ctn_ignore_nihss").is(':checked')) {
+    if ($("#cas_nihss_cannot_completed").is (':checked')) {
+            $(".nihss-empty").removeClass("d-none");
+            $(".nihss").addClass("d-none");
+        $("#divTotalScore").addClass("d-none");
+        $("#divexamTextFree").show();
+        @*if (@examtext) {
+            $("#cas_exam_free_text").attr('required', true);
+        }*@
+    }
+        else {
+            $(".nihss-empty").addClass("d-none");
+            $(".nihss").removeClass("d-none");
+        $("#divTotalScore").removeClass("d-none");
+        $("#divexamTextFree").hide();
+       // $("#cas_exam_free_text").removeAttr('required');
+        }
+        //Added By Axim
+        if (@status == true) {
+            $("#ctn-family-consent").show();
+        }
+        // Added By Axim 10-09-2020
+        var existingText = $("#cas_exam_free_text").val();
+        if (existingText != undefined) {
+            var charactersTyped = existingText.replace(/\s/g, '').length;
+            $(".Counter").html(charactersTyped);
+
+            $("#cas_exam_free_text").keyup(function () {
+                var text = $(this).val();
+                var charactersTyped = text.replace(/\s/g, '').length;
+                $(".Counter").html(charactersTyped)
+            });
+        }
+        //ended By Axim 10-09-2020
+    if ('@(Model != null && Model.case_template_stroke_notpa == null)'.toLowerCase() == 'true')
+    {
+            $('#case_template_stroke_notpa_ctn_lipid_panel_obtained').prop('checked', true);
+    }
+});
+    $(".ctn_familyRD").on("change").change(function () {
+        var _value = $(this).val();
+        if (_value == "false") {
+            $("#ctn-family-consent").show();
+        }
+        else {
+            $("#ctn-family-consent").hide();
+        }
+    });
+
+    $(".nihss select").off("change").change(function () {
+    calculateScore("#case_template_stroke_notpa_ctn_nihss_totalscore");
+});
+
+    //$('#case_template_stroke_notpa_ctn_ignore_nihss').change(function () {
+    $('#cas_nihss_cannot_completed').change(function () {
+        if ($(this).is(":checked")) {
+            $(".nihss-empty").removeClass("d-none");
+            $(".nihss").addClass("d-none");
+            $("#divTotalScore").addClass("d-none");
+            $("#divexamTextFree").show();
+            @*if (@examtext) {
+                $("#cas_exam_free_text").attr('required', true);
+            }*@
+        }
+        else {
+            $(".nihss-empty").addClass("d-none");
+            $(".nihss").removeClass("d-none");
+        $("#divTotalScore").removeClass("d-none");
+        $("#divexamTextFree").hide();
+        //$("#cas_exam_free_text").removeAttr('required');
+    }
+
+});
+
+    function caseTemplateBeforeSubmit() {
+        setQuestionResponse();
+        setTemplateFieldData('#divImpression', '#case_template_stroke_notpa_ctn_impression');
+        setTemplateFieldData('.ctn_mechanism_stroke', '#case_template_stroke_notpa_ctn_mechanism_stroke');
+        setTemplateFieldData('.ctn_antiplatelet_therapy_recommedned', '#case_template_stroke_notpa_ctn_antiplatelet_therapy_recommedned');
+        setTemplateFieldData('.ctn_imaging_studies_recommedned', '#case_template_stroke_notpa_ctn_imaging_studies_recommedned');
+        setTemplateFieldData('.ctn_therapies', '#case_template_stroke_notpa_ctn_therapies');
+        setTemplateFieldData('.ctn_dysphaghia_screen', '#case_template_stroke_notpa_ctn_dysphaghia_screen');
+        setTemplateFieldData('.ctn_dvt_prophylaxis', '#case_template_stroke_notpa_ctn_dvt_prophylaxis');
+        setTemplateFieldData('.ctn_disposition', '#case_template_stroke_notpa_ctn_disposition');
+        setTemplateFieldData('.ctn_sign_out', '#case_template_stroke_notpa_ctn_sign_out');
+    }
+
+</script>
+

@@ -1,0 +1,365 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@using TeleSpecialists.BLL;
+@model TeleSpecialists.BLL.ViewModels.Physician_billing_rates
+
+<div class="alert case-info">
+    <div class="row">
+        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 case-header-height">
+            <div class="col-12">
+                <strong>Physician Name:</strong> <span> @ViewBag.name </span>
+            </div>
+        </div>
+    </div>
+</div>
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item"><a data-toggle="tab" class="nav-link active" href="#floorRate">Floor Rate</a></li>
+    <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#productivityRate">Productivity Rate</a></li>
+    <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#incentiveRate">Incentive Rate</a></li>
+</ul>
+<div class="tab-content mt-5">
+    <div id="floorRate" role="tabpanel" class="tab-pane fade  in active show">
+        <div class="col-sm-12">
+            <div class="text-left">
+                <h3>Floor Pay</h3>
+            </div>
+            @*@if (!User.IsInRole(UserRoles.Finance.ToDescription()))
+            {*@
+                <div class="text-right" style="margin-top:-40px">
+                    <a href="@Url.Action("users")" class="btn btn-link loadLinkAsync">Cancel</a>
+                    <a class="btn btn-dark loadLinkAsync" id="btnAddFloor" href="@Url.Action("Create", new { phy_key = Model.phy_key })">Add Floor Pay</a>
+                    <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Index", "Schedule")">Add Custom Pay</a>
+                </div>
+            @*}*@
+            </div>
+        <hr />
+        <div class="pt-1 customGridHeader Rate-grid-container ">
+            <div id="grid" class="kendo-ui-grid-control">
+            </div>
+        </div>
+    </div>
+
+    <div id="productivityRate" role="tabpanel" class="tab-pane fade">
+        <div class="col-sm-12">
+            <div class="text-left">
+                <h3>Productivity Pay</h3>
+            </div>
+            @*@if (!User.IsInRole(UserRoles.Finance.ToDescription()))
+            {*@
+                <div class="text-right" style="margin-top:-40px">
+                    <a href="@Url.Action("users")" class="btn btn-link loadLinkAsync">Cancel</a>
+                    <a class="btn btn-dark loadLinkAsync" href="@Url.Action("CreateRate", new { phy_key = Model.phy_key })">Add Productivity Pay</a>
+                </div>
+            @*}*@
+            </div>
+
+        <hr />
+        <div class="pt-1 customGridHeader Rate-grid-container ">
+            <div id="grid-productivity">
+            </div>
+        </div>
+    </div>
+
+    <div id="incentiveRate" role="tabpanel" class="tab-pane fade">
+        <div class="col-sm-12">
+            <div class="text-left">
+                <h3>Incentive</h3>
+            </div>
+            @*@if (!User.IsInRole(UserRoles.Finance.ToDescription()))
+            {*@
+                <div class="text-right" style="margin-top:-40px">
+                    <a href="@Url.Action("users")" class="btn btn-link loadLinkAsync">Cancel</a>
+                    <a class="btn btn-dark loadLinkAsync" href="@Url.Action("CreatePercentage", new { phy_key = Model.phy_key })">Add Incentive</a>
+                </div>
+            @*}*@
+            </div>
+        <hr />
+        <div class="pt-1 customGridHeader Rate-grid-container ">
+            <div id="grid-incentive">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+   @{ 
+       string dnoneClass = "";
+       if (User.IsInRole(UserRoles.Finance.ToDescription())) {
+           //dnoneClass = "d-none";
+       }
+    }
+    $(document).ready(function () {
+           var phy_key = '@Model.phy_key';
+           LoadFloorPay(phy_key);
+           LoadProductivityPay(phy_key);
+           LoadIncentive(phy_key);
+       });
+
+    function LoadFloorPay(phy_key) {
+           var url = '@Url.Action("PhysicianFloorRate")';
+           document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $("#grid").kendoGrid({
+           dataSource: {
+               page: KendoGet("Rate", "page"),
+                transport: {
+                   read: {
+                       url: url + "?phy_key=" + phy_key,
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                           options = KendoKeepState("Rate", options, true);
+
+                           if (options.filter !== undefined && options.filter.filters !== undefined) {
+                            $("#searchBox").val(options.filter.filters[0].value);
+                            $("#resetSearch").show();
+                           }
+
+                           return kendo.stringify(options);
+                       }
+                   },
+                schema: {
+                   data: "Data",
+                    total: "Total",
+                },
+                pageSize: GetKendoPageSize("Rate", "RecPerPage", true),
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            filterable: true,
+            sortable: true,
+            scrollable: true,
+            resizable: true,
+            pageable: {
+               refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            dataBound: function (e) {
+                   //get All records
+                   SetKendoTotalCount("Rate", $('#grid').data("kendoGrid").dataSource.total());
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                       var kendoDropDown = $(this).data("kendoDropDownList");
+                       if (kendoDropDown)
+                           kendoDropDown.bind("open", onDropdDownOpen);
+                   });
+               },
+            columns: [
+                { hidden: true, field: "psr_key" },
+                { hidden: true, field: "psr_phy_key" },
+                { field: "name", title: "Name", width: '120px' },
+                { field: "psr_shift_name", title: "Schedule", width: '100px' },
+                { field: "psr_start_date", title: "Start Date", width: '100px', template: "#= kendo.toString(kendo.parseDate(psr_start_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                { field: "psr_end_date", title: "End Date", width: '100px', template: "#= kendo.toString(kendo.parseDate(psr_end_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                { field: "rate", title: "Rate", width: '120px' },
+                {
+               title: "Actions", width: '80px',
+                    template: "<a class='btn btn-dark btn-sm py-1 loadLinkAsync @dnoneClass' title='Edit' href='@Url.Action("Edit")/\#= psr_key#'>Edit</a>"
+                }
+            ]
+        });
+       }
+       function LoadProductivityPay(phy_key) {
+           var url = '@Url.Action("PhysicianProductivityRate")';
+           document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $("#grid-productivity").kendoGrid({
+           dataSource: {
+               page: KendoGet("Rate", "page"),
+                transport: {
+                   read: {
+                       url: url + "?phy_key=" + phy_key,
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                           options = KendoKeepState("Rate", options, true);
+
+                           if (options.filter !== undefined && options.filter.filters !== undefined) {
+                            $("#searchBox").val(options.filter.filters[0].value);
+                            $("#resetSearch").show();
+                           }
+
+                           return kendo.stringify(options);
+                       }
+                   },
+                schema: {
+                   data: "Data",
+                    total: "Total",
+                },
+                pageSize: GetKendoPageSize("Rate", "RecPerPage", true),
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            filterable: true,
+            sortable: true,
+            scrollable: true,
+            resizable: true,
+            pageable: {
+               refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            dataBound: function (e) {
+                   //get All records
+                   SetKendoTotalCount("Rate", $('#grid-productivity').data("kendoGrid").dataSource.total());
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                       var kendoDropDown = $(this).data("kendoDropDownList");
+                       if (kendoDropDown)
+                           kendoDropDown.bind("open", onDropdDownOpen);
+                   });
+               },
+            columns: [
+                { hidden: true, field: "rat_key" },
+                { field: "name", title: "Name", width: '120px' },
+                { field: "CaseType", title: "Case", width: '100px' },
+                { field: "rat_range", title: "Index", width: '100px' },
+                { field: "rat_shift_name", title: "Schedule", width: '120px' },
+                { field: "rat_start_date", title: "Start Date", width: '100px', template: "#= kendo.toString(kendo.parseDate(rat_start_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                { field: "rat_end_date", title: "End Date", width: '100px', template: "#= kendo.toString(kendo.parseDate(rat_end_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                { field: "rate", title: "Rate", width: '100px' },
+                {
+               title: "Actions", width: '80px',
+                    template: "<a class='btn btn-dark btn-sm py-1 loadLinkAsync @dnoneClass' title='Edit' href='@Url.Action("EditRate")/\#= rat_key#'>Edit</a>"
+                }
+            ]
+        });
+       }
+       function LoadIncentive(phy_key) {
+           var url = '@Url.Action("PhysicianIncentiveRate")';
+           document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $("#grid-incentive").kendoGrid({
+           dataSource: {
+               page: KendoGet("Rate", "page"),
+                transport: {
+                   read: {
+                       url: url + "?phy_key=" + phy_key,
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                           options = KendoKeepState("Rate", options, true);
+
+                           if (options.filter !== undefined && options.filter.filters !== undefined) {
+                            $("#searchBox").val(options.filter.filters[0].value);
+                            $("#resetSearch").show();
+                           }
+
+                           return kendo.stringify(options);
+                       }
+                   },
+                schema: {
+                   data: "Data",
+                    total: "Total",
+                },
+                pageSize: GetKendoPageSize("Rate", "RecPerPage", true),
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            filterable: true,
+            sortable: true,
+            scrollable: true,
+            resizable: true,
+            pageable: {
+               refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            dataBound: function (e) {
+                   //get All records
+                   SetKendoTotalCount("Rate", $('#grid-incentive').data("kendoGrid").dataSource.total());
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                       var kendoDropDown = $(this).data("kendoDropDownList");
+                       if (kendoDropDown)
+                           kendoDropDown.bind("open", onDropdDownOpen);
+                   });
+               },
+            columns: [
+                { hidden: true, field: "ppr_key" },
+                { hidden: true, field: "ppr_phy_key" },
+                { field: "name", title: "Name", width: '120px' },
+                { field: "ppr_shift_name", title: "Schedule", width: '100px' },
+                { field: "ppr_start_date", title: "Start Date", width: '100px', template: "#= kendo.toString(kendo.parseDate(ppr_start_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                { field: "ppr_end_date", title: "End Date", width: '100px', template: "#= kendo.toString(kendo.parseDate(ppr_end_date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                { field: "percentage", title: "Rate", width: '120px' },
+                {
+               title: "Actions", width: '80px',
+                    template: "<a class='btn btn-dark btn-sm py-1 loadLinkAsync @dnoneClass' title='Edit' href='@Url.Action("EditPercentage")/\#= ppr_key#'>Edit</a>"
+                }
+            ]
+        });
+       }
+        $("#btnSearch").click(function () {
+           var searchValue = $('#searchBox').val();
+           if (searchValue === "") {
+                $("#grid").data("kendoGrid").dataSource.filter({});
+           }
+           else {
+                $("#grid").data("kendoGrid").dataSource.filter({
+               logic: "or",
+                    filters: [
+                        {
+                   field: "fac_name",
+                            operator: "contains",
+                            value: searchValue
+                        },
+                        {
+                   field: "fac_address_line1",
+                            operator: "contains",
+                            value: searchValue
+                        },
+                        {
+                   field: "fac_address_line2",
+                            operator: "contains",
+                            value: searchValue
+                        },
+                        {
+                   field: "fac_city",
+                            operator: "contains",
+                            value: searchValue
+                        },
+                        {
+                   field: "fac_state",
+                            operator: "contains",
+                            value: searchValue
+                        },
+                        {
+                   field: "fac_zip",
+                            operator: "contains",
+                            value: searchValue
+                        },
+                        {
+                   field: "timezone",
+                            operator: "contains",
+                            value: searchValue
+                        }
+                    ]
+                });
+                $("#resetSearch").show();
+           }
+
+       });
+
+        $("#resetSearch").off("click").click(function (e) {
+           e.preventDefault();
+           localStorage.clear();
+            $('#searchBox').val("");
+            $("#btnSearch").click();
+            $("#resetSearch").hide();
+       });
+
+        $("#frmSearch").off("submit").submit(function (e) {
+           e.preventDefault();
+            $("#btnSearch").click();
+
+       });
+
+</script>

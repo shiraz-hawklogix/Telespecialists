@@ -1,0 +1,628 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{57AD4FA9-0DF4-4D55-8B0C-90E21EBE1155}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TeleSpecialists.BLL</RootNamespace>
+    <AssemblyName>TeleSpecialists.BLL</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'AzureCustomBuild-Web|AnyCPU'">
+    <OutputPath>bin\AzureCustomBuild-Web\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Kendo.DynamicLinq, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Kendo.DynamicLinq.1.1.2.0\lib\net40\Kendo.DynamicLinq.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Exchange.WebServices.Auth, Version=15.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Exchange.WebServices.2.2\lib\40\Microsoft.Exchange.WebServices.Auth.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.Doc, Version=7.1.13.41046, Culture=neutral, PublicKeyToken=663f351905198cb3, processorArchitecture=MSIL">
+      <HintPath>..\packages\FreeSpire.Doc.7.1.13\lib\net46\Spire.Doc.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.License, Version=1.3.7.46, Culture=neutral, PublicKeyToken=b1144360237c8b3f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FreeSpire.Doc.7.1.13\lib\net46\Spire.License.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.Pdf, Version=5.1.23.18046, Culture=neutral, PublicKeyToken=663f351905198cb3, processorArchitecture=MSIL">
+      <HintPath>..\packages\FreeSpire.Doc.7.1.13\lib\net46\Spire.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Linq.Expressions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Expressions.4.3.0\lib\net463\System.Linq.Expressions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.6\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TimeZoneConverter, Version=3.0.0.0, Culture=neutral, PublicKeyToken=e20ab7d0d9479841, processorArchitecture=MSIL">
+      <HintPath>..\packages\TimeZoneConverter.3.0.0\lib\net471\TimeZoneConverter.dll</HintPath>
+    </Reference>
+    <Reference Include="TimeZoneNames, Version=4.0.0.0, Culture=neutral, PublicKeyToken=e20ab7d0d9479841, processorArchitecture=MSIL">
+      <HintPath>..\packages\TimeZoneNames.4.0.0\lib\net471\TimeZoneNames.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extensions\AttributeExtensions.cs" />
+    <Compile Include="Extensions\CSVExtensions.cs" />
+    <Compile Include="Extensions\DbContextExtensions.cs" />
+    <Compile Include="Extensions\HtmlExtensions.cs" />
+    <Compile Include="Extensions\MiscExtensions.cs" />
+    <Compile Include="Helpers\AttributeHelper.cs" />
+    <Compile Include="Helpers\CaseReviewTrends.cs" />
+    <Compile Include="Helpers\CSVReader.cs" />
+    <Compile Include="Helpers\CWHGraphReport.cs" />
+    <Compile Include="Helpers\CWHReport.cs" />
+    <Compile Include="Helpers\DBHelper.cs" />
+    <Compile Include="Helpers\EmailHelper.cs" />
+    <Compile Include="Helpers\EnumCollection.cs" />
+    <Compile Include="Helpers\FacilityDashboardcls.cs" />
+    <Compile Include="Helpers\Functions.cs" />
+    <Compile Include="Helpers\HourlyMeanReport.cs" />
+    <Compile Include="Helpers\PredicateUtils.cs" />
+    <Compile Include="Helpers\QualityGoalscls.cs" />
+    <Compile Include="Helpers\QualityMetricsGraphReport.cs" />
+    <Compile Include="Helpers\QualityMetricsReportCls.cs" />
+    <Compile Include="Helpers\RCIGraphReport.cs" />
+    <Compile Include="Helpers\RCIReport.cs" />
+    <Compile Include="Helpers\tPACaseAnalysis.cs" />
+    <Compile Include="Helpers\VolumeMetricsReport.cs" />
+    <Compile Include="Helpers\WebScrapper.cs" />
+    <Compile Include="ModelEx\CaseModel.cs" />
+    <Compile Include="ModelEx\PhysicianModel.cs" />
+    <Compile Include="Model\alarm_setting.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\alarm_tunes.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\application_setting.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AspNetUser.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AspNetUserClaim.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AspNetUserLogin.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\audit_records.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_cancelled_type.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_review_template.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_template_statconsult.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\cwh_data.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\diagnosis_codes.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\facility.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\facility_availability_rate.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\facility_questionnaire_contact.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\facility_questionnaire_contact_designation.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\facility_questionnaire_pre_live.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\facility_rate.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\firebase_usersemail.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\goals_data.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Hospital_Protocols.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Onboarded.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\operationsoutliersTemp.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\pac_case_template.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_timestamp.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\default_notification_tune.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\physician_case_temp.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\physician_holiday_rate.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\physician_percentage_rate.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\physician_rate.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\physician_shift_rate.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\post_acute_care.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\quality_goals.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\rapids_mailbox.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\rca_counter_measure.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\token.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\user_login_verify.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\user_schedule_nhalert.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\user_schedule_sleep.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetCWHData2_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetCWHData3_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetCWHData_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetRCIData_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\usp_get_cwh_data_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\web2campaign_log.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Process\RapidsProcessor.cs" />
+    <Compile Include="Repository\AuditRecordsRepository.cs" />
+    <Compile Include="Repository\CasCancelledTypeRepository.cs" />
+    <Compile Include="Repository\CaseReviewerRepository.cs" />
+    <Compile Include="Repository\DiagnosisCodesRepoistory.cs" />
+    <Compile Include="Repository\FacilityAvailabilityRateRepository.cs" />
+    <Compile Include="Repository\FacilityQuestionnaireContactDesignationRepository.cs" />
+    <Compile Include="Repository\FacilityQuestionnaireContactRespository.cs" />
+    <Compile Include="Repository\FacilityQuestionnairePreLiveRepository.cs" />
+    <Compile Include="Repository\CaseTemplateStatConsultRepository.cs" />
+    <Compile Include="Repository\FacilityRateRepository.cs" />
+    <Compile Include="Repository\FireBaseUserMailRepository.cs" />
+    <Compile Include="Repository\GoalsDataRepository.cs" />
+    <Compile Include="Repository\HospitalProtocols.cs" />
+    <Compile Include="Repository\ICwhData.cs" />
+    <Compile Include="Repository\NHRepository.cs" />
+    <Compile Include="Repository\OnBoardedRepository.cs" />
+    <Compile Include="Repository\PostAcuteCareRepository.cs" />
+    <Compile Include="Repository\CaseReviewTemplateRepository.cs" />
+    <Compile Include="Repository\PhysicianHolidayRateRepository.cs" />
+    <Compile Include="Repository\PhysicianPercentageRateRepository.cs" />
+    <Compile Include="Repository\PhysicianRateRepository.cs" />
+    <Compile Include="Repository\Physician_Case_TempRepository.cs" />
+    <Compile Include="Repository\QualityGoalsRepository.cs" />
+    <Compile Include="Repository\RapidsMailboxRepository.cs" />
+    <Compile Include="Repository\RateRepository.cs" />
+    <Compile Include="Repository\PACGeneratedTemplateRepository.cs" />
+    <Compile Include="Repository\RootCauseRepository.cs" />
+    <Compile Include="Repository\SleepRepository.cs" />
+    <Compile Include="Repository\TokenRepository.cs" />
+    <Compile Include="Repository\UserProfileRepository.cs" />
+    <Compile Include="Repository\UserVerificationRepoistory.cs" />
+    <Compile Include="Repository\Web2Campaign_LogRepository.cs" />
+    <Compile Include="Service\AuditRecordsService.cs" />
+    <Compile Include="Service\CancelledCasesService.cs" />
+    <Compile Include="Service\CasCancelledTypeService.cs" />
+    <Compile Include="Service\CaseReviewTemplateService.cs" />
+    <Compile Include="Service\CaseServices\CaseGridService.cs" />
+    <Compile Include="Service\DiagnosisCodesService.cs" />
+    <Compile Include="Service\FacilityBillingReportService.cs" />
+    <Compile Include="Service\FacilityQuestionnaireService.cs" />
+    <Compile Include="Service\FacilityPIService.cs" />
+    <Compile Include="Service\FireBaseUserMailService.cs" />
+    <Compile Include="Service\HospitalprotocolServices.cs" />
+    <Compile Include="Service\NHService.cs" />
+    <Compile Include="Service\OnBoardedServices.cs" />
+    <Compile Include="Service\PhysicianCaseTempService.cs" />
+    <Compile Include="Service\PhysicianHolidayRateService.cs" />
+    <Compile Include="Service\PhysicianPercentageRateService.cs" />
+    <Compile Include="Service\PhysicianRateService.cs" />
+    <Compile Include="Service\QualityGoalService.cs" />
+    <Compile Include="Service\RapidsService.cs" />
+    <Compile Include="Service\RateService.cs" />
+    <Compile Include="Service\RateService_new.cs" />
+    <Compile Include="Service\RootCauseService.cs" />
+    <Compile Include="Service\PostAcuteCareService.cs" />
+    <Compile Include="Service\PACGeneratedTemplateService.cs" />
+    <Compile Include="Service\SleepService.cs" />
+    <Compile Include="Service\TokenService.cs" />
+    <Compile Include="Service\UserProfileServices.cs" />
+    <Compile Include="Service\UserVerificationService.cs" />
+    <Compile Include="Service\Web2CampaignLogService.cs" />
+    <Compile Include="ViewModels\CancelledCases.cs" />
+    <Compile Include="ViewModels\CasePage\CaseListing.cs" />
+    <Compile Include="ViewModels\CasePage\CaseListing_Export.cs" />
+    <Compile Include="ViewModels\CasePage\CasePageCommonFields.cs" />
+    <Compile Include="ViewModels\CasePage\DashboardPage.cs" />
+    <Compile Include="ViewModels\CasePage\DiagnosisCodesViewModel.cs" />
+    <Compile Include="ViewModels\CasesPendingReviewListing.cs" />
+    <Compile Include="ViewModels\CredentialsExpiringCaseListing.cs" />
+    <Compile Include="ViewModels\EntityNotes\SignOutNoteViewModel.cs" />
+    <Compile Include="ViewModels\FacilityBillingByAmount.cs" />
+    <Compile Include="ViewModels\FacilityQuestionnaire\PreLiveVM.cs" />
+    <Compile Include="ViewModels\FireBaseData.cs" />
+    <Compile Include="ViewModels\Physician_billing_rates.cs" />
+    <Compile Include="ViewModels\Rapids\EmailInfo.cs" />
+    <Compile Include="ViewModels\Reports\OperationOutlier.cs" />
+    <Compile Include="ViewModels\Reports\PhysicianVolumetricViewModel.cs" />
+    <Compile Include="ViewModels\Reports\QualityGoalsViewModel.cs" />
+    <Compile Include="ViewModels\Schedule\ScheduleExportVM.cs" />
+    <Compile Include="ViewModels\UserLoggedInVerification.cs" />
+    <Compile Include="ViewModels\UserPresenceListings.cs" />
+    <Compile Include="ViewModels\user_alarm_setting.cs" />
+    <Compile Include="ViewModels\PACgridVM.cs" />
+    <Compile Include="Model\AspNetRole.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AspNetUserRole.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AspNetUsers_Log.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AspNetUsers_PasswordReset.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\AspNetUser_Detail.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\call_history.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_assign_history.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_copy_log.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_generated_template.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_template_stroke_neuro_tpa.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_template_stroke_notpa.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_template_stroke_tpa.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\case_template_telestroke_notpa.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\contact.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\DataModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\DataModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\DataModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ealert_user_case_type.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ealert_user_facility.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\entity_change_log.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\entity_note.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\entity_type.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\facility_contract.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\facility_contract_service.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\facility_physician.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\MDStaffFacility.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\nih_stroke_scale.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\nih_stroke_scale_answer.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\nih_stroke_scale_question.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\physician_license.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\physician_status.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\physician_status_log.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\physician_status_snooze.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\physician_status_snooze_option.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ucl.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ucl_data.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\user_schedule.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Process\MDStaffProcessor.cs" />
+    <Compile Include="Process\MDStaff\MDStaffBase.cs" />
+    <Compile Include="Process\MDStaff\MDStaffImport.cs" />
+    <Compile Include="ModelEx\case.cs" />
+    <Compile Include="ModelEx\application_setting.cs" />
+    <Compile Include="ModelEx\stroke_certification.cs" />
+    <Compile Include="ModelEx\physician_license.cs" />
+    <Compile Include="ModelEx\contact.cs" />
+    <Compile Include="ModelEx\entity_note.cs" />
+    <Compile Include="ModelEx\facility_contract.cs" />
+    <Compile Include="ModelEx\case_type.cs" />
+    <Compile Include="ModelEx\case_status.cs" />
+    <Compile Include="ModelEx\ChartDataModel.cs" />
+    <Compile Include="ModelEx\facility.cs" />
+    <Compile Include="ModelEx\physician_status.cs" />
+    <Compile Include="Helpers\EventLogger.cs" />
+    <Compile Include="Process\PhysicianStatusProcessor.cs" />
+    <Compile Include="Process\ProcessorBase.cs" />
+    <Compile Include="Repository\AlarmSettingRepository.cs" />
+    <Compile Include="Repository\AlarmTuneRepository.cs" />
+    <Compile Include="Repository\AppSettingRepository.cs" />
+    <Compile Include="Repository\AspNetUserDetailRepository.cs" />
+    <Compile Include="Repository\AspNetUsersPasswordResetRepository.cs" />
+    <Compile Include="Repository\CaseCopyLogRepository.cs" />
+    <Compile Include="Repository\CaseGeneratedTemplateRepository.cs" />
+    <Compile Include="Repository\CaseTemplateStrokeNeuroTPARepository.cs" />
+    <Compile Include="Repository\CaseTemplateStrokeNoTpaRepository.cs" />
+    <Compile Include="Repository\CaseTemplateStrokeTpaRepository.cs" />
+    <Compile Include="Repository\CaseTemplateTelestrokeNotpaRepository.cs" />
+    <Compile Include="Repository\EAlertCaseTypesRepository.cs" />
+    <Compile Include="Repository\EAlertFacilitiesRepository.cs" />
+    <Compile Include="Repository\EntityChangeLogRepository.cs" />
+    <Compile Include="Repository\FacilityContractServiceRepository.cs" />
+    <Compile Include="Repository\AspNetUsersLogRepository.cs" />
+    <Compile Include="Repository\NIHStrokeScaleAnswerRepository.cs" />
+    <Compile Include="Repository\NIHStrokeScaleQuestionRepository.cs" />
+    <Compile Include="Repository\NIHStrokeScaleRepository.cs" />
+    <Compile Include="Repository\PhysicianStatusSnoozeOptionRepository.cs" />
+    <Compile Include="Service\AlarmService.cs" />
+    <Compile Include="Service\AlarmTuneService.cs" />
+    <Compile Include="Service\AspNetUseDetailService.cs" />
+    <Compile Include="Service\AspNetUsersPasswordResetService.cs" />
+    <Compile Include="Service\AspNetUsersLogService.cs" />
+    <Compile Include="Service\CaseGeneratedTemplateService.cs" />
+    <Compile Include="Service\CaseTemplateService.cs" />
+    <Compile Include="Service\EAlertCaseTypesService.cs" />
+    <Compile Include="Service\EAlertFacilitiesService.cs" />
+    <Compile Include="Service\EntityChangeLogService.cs" />
+    <Compile Include="Service\NIHStrokeScaleService.cs" />
+    <Compile Include="Repository\physician_status_snoozeRepository.cs" />
+    <Compile Include="Repository\ScheduleRepository.cs" />
+    <Compile Include="Repository\RoleRepository.cs" />
+    <Compile Include="Repository\UserRepository.cs" />
+    <Compile Include="Repository\Five9CallHistoryRepository.cs" />
+    <Compile Include="Repository\CaseAssignHistoryRepository.cs" />
+    <Compile Include="Repository\CaseRepository.cs" />
+    <Compile Include="Repository\PhysicianLicenseRepository.cs" />
+    <Compile Include="Repository\StrokeCertificationRepository.cs" />
+    <Compile Include="Repository\EntityNoteRepository.cs" />
+    <Compile Include="Repository\FacilityContractRepository.cs" />
+    <Compile Include="Repository\ContactRepository.cs" />
+    <Compile Include="Repository\FacilityPhysicianRepository.cs" />
+    <Compile Include="Repository\CaseTypeRepository.cs" />
+    <Compile Include="Repository\FacilityRepository.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\CaseStatusRepository.cs" />
+    <Compile Include="Repository\GenericRepository.cs" />
+    <Compile Include="Repository\PhysicianStatusLogRepository.cs" />
+    <Compile Include="Repository\PhysicianStatusRepository.cs" />
+    <Compile Include="Repository\UCL_UCDRepository.cs" />
+    <Compile Include="Repository\UCLRepository.cs" />
+    <Compile Include="Repository\UnitOfWork.cs" />
+    <Compile Include="Repository\UserRoleRepository.cs" />
+    <Compile Include="Service\AdminService.cs" />
+    <Compile Include="Service\AppSettingService.cs" />
+    <Compile Include="Service\BaseService.cs" />
+    <Compile Include="Service\CallHistoryService.cs" />
+    <Compile Include="Service\CaseCopyLogService.cs" />
+    <Compile Include="Service\CaseReviewerService.cs" />
+    <Compile Include="Service\CaseAssignHistoryService.cs" />
+    <Compile Include="Service\CaseService.cs" />
+    <Compile Include="Service\PhysicianLicenseService.cs" />
+    <Compile Include="Service\PhysicianStatusSnoozeService.cs" />
+    <Compile Include="Service\ReportService.cs" />
+    <Compile Include="Service\SchedulerService.cs" />
+    <Compile Include="Service\EntityNoteService.cs" />
+    <Compile Include="Service\FacilityContractService.cs" />
+    <Compile Include="Service\ContactService.cs" />
+    <Compile Include="Service\FacilityPhysicianService.cs" />
+    <Compile Include="Service\FacilityService.cs" />
+    <Compile Include="Service\DashboardService.cs" />
+    <Compile Include="Service\LookupService.cs" />
+    <Compile Include="Service\PhysicianService.cs" />
+    <Compile Include="Service\PhysicianStatusLogService.cs" />
+    <Compile Include="Service\PhysicianStatusService.cs" />
+    <Compile Include="Service\ShiftReport.cs" />
+    <Compile Include="Service\UCLService.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="System\Data\Objects.cs" />
+    <Compile Include="ViewModels\ChangeTrackEntityVM.cs" />
+    <Compile Include="ViewModels\DashboardViewModel.cs" />
+    <Compile Include="ViewModels\FacilityBillingReportViewModel.cs" />
+    <Compile Include="ViewModels\FacilityUser\CaseTypesViewModel.cs" />
+    <Compile Include="ViewModels\FacilityUser\FacilityInfoViewModel.cs" />
+    <Compile Include="ViewModels\FacilityUser\FacilityViewModel.cs" />
+    <Compile Include="ViewModels\MutlipleCaseViewModel.cs" />
+    <Compile Include="ViewModels\PhysicianCaseListing.cs" />
+    <Compile Include="ViewModels\PhysicianDashboardViewModel.cs" />
+    <Compile Include="ViewModels\PhysicianStatusResetServiceModel.cs" />
+    <Compile Include="ViewModels\PhysicianStatusSnoozeViewModel.cs" />
+    <Compile Include="ViewModels\PhysicianStatusViewModel.cs" />
+    <Compile Include="ViewModels\Reports\PhysicianBillingByShiftViewModel.cs" />
+    <Compile Include="ViewModels\Reports\QualityMetricsViewModel.cs" />
+    <Compile Include="ViewModels\ScheduleRecordViewModel.cs" />
+    <Compile Include="ViewModels\SchedulerResponseViewModel.cs" />
+    <Compile Include="ViewModels\user_fcm_notification.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
+    <EntityDeploy Include="Model\DataModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>DataModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Model\DataModel.edmx.diagram">
+      <DependentUpon>DataModel.edmx</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Process\MDStaff\Service\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Model\DataModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>DataModel.edmx</DependentUpon>
+      <LastGenOutput>DataModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Model\DataModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>DataModel.edmx</DependentUpon>
+      <LastGenOutput>DataModel.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

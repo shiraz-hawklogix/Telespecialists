@@ -1,0 +1,152 @@
+﻿@model TeleSpecialists.BLL.Model.goals_data
+
+<div class="col-md-12">
+    <table id="qualityGrid">
+        <colgroup>
+            <col style="width:280px" />
+            <col style="width:310px" />
+            <col style="width:300px" />
+            <col style="width:300px" />
+            @*<col style="width:300px" />*@
+            <col style="width:350px" />
+            <col style="width:350px" />
+            <col style="width:350px" />
+            <col style="width:200px" />
+            @*<col style="width:200px" />*@
+            <col style="width:200px" />
+            <col style="width:350px" />
+            <col style="width:350px" />
+            <col style="width:350px" />
+            <col style="width:350px" />
+            <col style="width:450px" />
+            <col style="width:450px" />
+            <col style="width:450px" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Door to TS Notification Ave. Minutes</th>
+                <th>Door to TS Notification Median Minutes</th>
+                <th>Percent 10 Min or Less Activation (EMS)</th>
+                <th>Percent 10 Min or Less Activation (PV)</th>
+                @*<th>Percent 10 Min or Less Activation (Inpt)</th>*@
+                <th>TS Notification to Response Average Minute</th>
+                <th>TS Notification to Response Median Minute</th>
+                <th>Percent TS at Bedside less-than 10 Minutes</th>
+                @*<th>ALTEPLASE ADMINISTERED #</th>*@
+                <th>Door to Needle Average (min:sec)</th>
+                <th>Door to Needle Median (min:sec)</th>
+                <th>Alteplase early mix decision to Administration Average Minutes</th>
+                <th>DTN Less-Than or Equal 30 Minutes Percent</th>
+                <th>DTN Less-Than or Equal 45 Minutes Percent</th>
+                <th>DTN Less-Than or Equal 60 Minutes Percent</th>
+                <th>TS Notification to Needle Less-Than or Equal 30 Minutes Percent</th>
+                <th>TS Notification to Needle Less-Than or Equal 45 Minutes Percent</th>
+                <th>TS Notification to Needle Less-Than or Equal 60 Minutes Percent</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_door_to_TS_notification_ave_minutes, new { @class = "form-control qag_door_to_TS_notification_ave_minutes", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_door_to_TS_notification_median_minutes, new { @class = "form-control qag_door_to_TS_notification_median_minutes", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_percent10_min_or_less_activation_EMS, new { @class = "form-control qag_percent10_min_or_less_activation_EMS", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_percent10_min_or_less_activation_PV, new { @class = "form-control qag_percent10_min_or_less_activation_PV", type = "number" })
+                    </div>
+                </td>
+                @*<td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_percent10_min_or_less_activation_Inpt, new { @class = "form-control qag_percent10_min_or_less_activation_Inpt", type = "number" })
+                    </div>
+                </td>*@
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_TS_notification_to_response_average_minute, new { @class = "form-control qag_TS_notification_to_response_average_minute", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_TS_notification_to_response_median_minute, new { @class = "form-control qag_TS_notification_to_response_median_minute", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_percent_TS_at_bedside_grterthan10_minutes, new { @class = "form-control qag_percent_TS_at_bedside_grterthan10_minutes", type = "number" })
+                    </div>
+                </td>
+                @*<td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_alteplase_administered, new { @class = "form-control qag_alteplase_administered", type = "number" })
+                    </div>
+                </td>*@
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_door_to_needle_average, new { @class = "form-control qag_door_to_needle_average", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_door_to_needle_median, new { @class = "form-control qag_door_to_needle_median", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_verbal_order_to_administration_average_minutes, new { @class = "form-control qag_verbal_order_to_administration_average_minutes", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_DTN_grter_or_equal_30minutes_percent, new { @class = "form-control qag_DTN_grter_or_equal_30minutes_percent", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_DTN_grter_or_equal_45minutes_percent, new { @class = "form-control qag_DTN_grter_or_equal_45minutes_percent", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_DTN_grter_or_equal_60minutes_percent, new { @class = "form-control qag_DTN_grter_or_equal_60minutes_percent", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent, new { @class = "form-control qag_TS_notification_to_needle_grter_or_equal_30minutes_percent", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent, new { @class = "form-control qag_TS_notification_to_needle_grter_or_equal_45minutes_percent", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent, new { @class = "form-control qag_TS_notification_to_needle_grter_or_equal_60minutes_percent", type = "number" })
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#qualityGrid").kendoGrid({
+            sortable: false
+        });
+    });
+</script>
+
+

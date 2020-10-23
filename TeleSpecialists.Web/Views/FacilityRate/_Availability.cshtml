@@ -1,0 +1,105 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.facility_availability_rate
+
+@{
+
+    //var indexList = Enum.GetValues(typeof(IndexRate)).Cast<IndexRate>().Select(m => new { key = (int)m, title = (int)m });
+    //var _hour = indexList.Where(x => x.key <= 24).ToList();
+    //SelectList list = new SelectList(indexList, "key", "title");
+    //SelectList shiftHours = new SelectList(_hour, "key", "title");
+
+    SelectList facilities = new SelectList(ViewBag.Facilities, "Value", "Text");
+
+}
+
+<div class="ajaxForm">
+
+    @using (Html.BeginForm(new { role = "form", @id = "productivity_rate" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.far_key)
+        @Html.HiddenFor(x => x.far_created_by)
+        @Html.HiddenFor(x => x.far_created_by_name)
+        @Html.HiddenFor(x => x.far_created_date)
+        @Html.HiddenFor(x => x.far_fac_key)
+
+        <div class="form-horizontal">
+            <div class="row">
+
+                <div class="@(ViewBag.Edit ? "col-md-6 col-sm-12" : "col-md-5 col-sm-11 col-offset-1")">
+                    <div class="form-group row" id="divfacility">
+                        @{
+                            if (ViewBag.Status == true)
+                            {
+                                @Html.Label("Facility:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                                <div class="col-lg-8 col-md-12 col-xs-12">
+                                    @Html.DropDownListFor(x => x.far_fac_key, facilities, "--Select facility--", new { @class = "form-control", @id = "Facilities", @required = "required", @disabled = "disabled" })
+                                    @Html.ValidationMessageFor(model => model.far_fac_key, "", new { @class = "text-danger" })
+                                </div>
+                            }
+                            else
+                            {
+                                @Html.Label("Facility:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                                <div class="col-lg-8 col-md-12 col-xs-12">
+                                    @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control", multiple = "multiple", @required = "required" })
+                                    @Html.ValidationMessageFor(model => model.far_fac_key, "", new { @class = "text-danger" })
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Shifts:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.far_shifts, new { htmlAttributes = new { @class = "form-control", @type = "number", @placeholder = "Enter Shifts ...", @required = "required" } })
+                            @Html.ValidationMessageFor(model => model.far_shifts, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Start Date:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+
+                            <input type="text" id="rate_start_Date" class="form-control" name="far_start_date" value="@(Model.far_start_date != null ? Model.far_start_date.Value.ToString("MMMM yyyy"):"") " required="required"  />
+                            @*@Html.FormattedDateTextBoxFor(x => x.far_start_date, new { @class = "form-control", @id = "rate_start_Date", @required = "required" })*@
+                            @Html.ValidationMessageFor(model => model.far_start_date, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    @*<div class="form-group row">
+                        @Html.Label("End Date:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.FormattedDateTextBoxFor(x => x.far_end_date, new { @class = "form-control", @id = "rate_end_Date", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.far_end_date, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+                    <div class="form-group row">
+                        @Html.Label("Rate:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.far_rate, new { htmlAttributes = new { @class = "form-control", @type = "number", @placeholder = "Enter Price...", @required = "required" } })
+                            @Html.ValidationMessageFor(model => model.far_rate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Recurring:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.CheckBoxFor(model => model.far_recurrence, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.far_recurrence, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="@(ViewBag.Edit ? "col-11" : "col-10 col-offset-1")">
+                    <div class="form-group row">
+                        <div class="col-lg-6 col-sm-6 offset-md-6 offset-xl-6 offset-lg-6 offset-sm-6  text-right">
+                            <a class="btn btn-link loadLinkAsync" href="@Url.Action("Index",new { id = Model.far_key })">Cancel</a>
+                            <input type="submit" value="Save" class="btn btn-dark" id="submit" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

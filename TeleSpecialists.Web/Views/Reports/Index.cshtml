@@ -1,0 +1,41 @@
+﻿@{
+    ViewBag.Title = "Reports";
+    bool isAllowListing = (bool)ViewBag.AllowListing;
+    string FacilityAdminMessage = (string)ViewBag.FacilityAdminMessage;
+}
+
+@if (isAllowListing)
+{
+    <div class="row">
+        <div class="col-12">
+            <h2>Reports</h2>
+            <hr />
+        </div>
+    </div>
+
+    <div class="row" id="Reports">
+        @*<div class="col-lg-4 col-md-6 col-sm-12 pl-0">*@
+        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 col.xs-12" id="ReportsMenu">
+            @Html.Partial("_Menu")
+        </div>
+
+
+        <div class="col-sm-6" id="_menu2">
+        </div>
+
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('.move-next-col').appendTo('#_menu2')
+            var panelBar = $(".panelbar").kendoPanelBar().data("kendoPanelBar");
+        });
+    </script>
+}
+else
+{
+    <div class="col-12  dashboard-indicators p-2">
+        <label class="font-weight-normal">@FacilityAdminMessage</label>
+    </div>
+}

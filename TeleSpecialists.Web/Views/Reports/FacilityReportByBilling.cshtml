@@ -1,0 +1,416 @@
+﻿
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+
+@{
+    ViewBag.Title = "Facility Report by Billing Amount";
+    var currentDate = DateTime.Now.ToEST();
+    var previousMonth = currentDate.AddMonths(-1);
+    List<ucl_data> billingCodes = ViewBag.BillingCodes;
+    var billingCodeColumns = "";
+    foreach (var item in billingCodes)
+    {
+        billingCodeColumns += "{ field: " + @"""" + item.ucd_title.Replace("-", "_").Replace(" ", "") + @"""" + ", title: " + @"""";
+        billingCodeColumns += item.ucd_title.Replace("-", "_").Replace(" ", "") + @"""" + "},";
+    }
+}
+@Html.Partial("_ReportLayout")
+
+<div class="row" id="divLocalFilters">
+    <div class="col-12">
+
+        <div class="form-row">
+
+            <div class="form-group col-xl-3 col-4 " id="divfilter">
+                <label>Filter Type</label>
+                <select class="form-control" id="ddlfiltertype">
+                    <option value="SelectType"> -- Select Type -- </option>
+                    <option value="facility">Facility</option>
+                    <option value="system">System</option>
+                    <option value="regional">Regional</option>
+                </select>
+            </div>
+
+            <div class="form-group col-xl-3 col-4">
+                <label for="ddlTimeFrame">Time Frame</label>
+                <select class="form-control" id="ddlTimeFrame">
+                    <option value="ThisMonth" selected="selected">This Month</option>
+                    <option value="PreviousMonth">Previous Month</option>
+                    <option value="CustomMonth">Custom Month</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group col-xl-3 col-4" id="divfacility" style="display:none;">
+                <label>Facility</label>
+                @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control", multiple = "multiple", @required = "required" })
+            </div>
+
+            <div class="form-group col-xl-3 col-4" id="divsystem" style="display:none;">
+                <label>System</label>
+                <select id="fac_ucd_key_system" name="fac_ucd_key_system" class="form-control"></select>
+            </div>
+
+            <div class="form-group col-xl-3 col-4" id="divregional" style="display:none;">
+                <label>Region</label>
+                <select id="fac_ucd_region_key" name="fac_ucd_region_key" class="form-control"></select>
+            </div>
+
+            <div class="form-group col-xl-3 col-4" id="divfacility_change" style="display:none;">
+                <label>Facility</label>
+                <select id="FacilitiesChange" name="Facilities" class="form-control" data-searchFilter="true" data-selectedValue="" multiple="multiple" required></select>
+            </div>
+
+            <div class="form-group row col-xl-6 col-12" id="divCustomDate" style="display:none;">
+                <div class="col-6 pr-0">
+                    <label for="FromDate">Month</label>
+                    <input type="text" id="FromDate" name="FromDate" required class="form-control datepicker" />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-1">
+                <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $("#FromDate").kendoDatePicker({
+            start: "year",
+            depth: "year",
+            format: "MMMM yyyy",
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $("#ddlTimeFrame").off("change").change(function () {
+            if ($(this).val() == "CustomMonth") {
+                $("#divCustomDate").show();
+            }
+            else {
+                $("#divCustomDate").hide();
+            }
+        });
+
+        $('#divLocalFilters').appendTo('#divFilters');
+
+        $('#divLocalFilters').appendTo('#divFilters');
+
+        $("#btnSearch").click(function () {
+            var errorMessage = "";
+            if ($("#ddlTimeFrame").val() == "CustomMonth") {
+                if ($("#FromDate").val() == "")
+                    errorMessage = "Enter From Date<br/>";
+            }
+            if (errorMessage == "") {
+                var existingGrid = $('#kendoDataGrid').data('kendoGrid');
+                if (existingGrid) {
+                    $('#kendoDataGrid').kendoGrid('destroy').empty();
+                }
+                loadGridData();
+            }
+            else {
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+            }
+        });
+
+        var existingGrid = $('#kendoDataGrid').data('kendoGrid');
+
+        if (existingGrid) {
+            $('#kendoDataGrid').kendoGrid('destroy').empty();
+        }
+
+        resetDropDownOnDeseelect();
+        loadGridData();
+        $("#kendoDataGrid th").css("font-weight", "bold");
+    });
+
+    function loadGridData() {
+        $("#kendoDataGrid").kendoGrid({
+        //toolbar: ["excel", "pdf"],
+        excel: {
+            allPages: true,
+            filterable: false,
+            fileName: '@ViewBag.Title' + '.xlsx',
+            proxyURL: '@Url.Action("ExportToExcel")',
+        },
+        pdf: {
+            author:  "TeleCare",
+            creator: "TeleCare",
+            date: new Date(),
+            fileName: '@ViewBag.Title' + '.pdf',
+            keywords: '@ViewBag.Title',
+            subject: '@ViewBag.Title',
+            title: '@ViewBag.Title',
+            allPages: true,
+            filterable: true
+        },
+        dataSource: {
+            transport: {
+                read: {
+                    url: '@Url.Action("GetFacilityReportByBilling")',
+                    contentType: "application/json",
+                    type: "POST",
+                    data: function () {
+                        var filterModel = { startDate: null, endDate: null, facilities: "" };
+                        var facility= $("#Facilities").val();
+                        var systemfacility = $("#FacilitiesChange").val();
+                        if (facility.length>0) {
+                            filterModel.facilities = $("#Facilities").val();
+                        }
+                        else if (systemfacility.length > 0) {
+                            filterModel.facilities = $("#FacilitiesChange").val();
+                        }
+
+                        switch ($("#ddlTimeFrame").val()) {
+                            case "ThisMonth":
+                                filterModel.startDate = "@(new DateTime(currentDate.Year, currentDate.Month,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(currentDate.Year, currentDate.Month, currentDate.Day).ToString())";
+                                break;
+
+                            case "PreviousMonth":
+                                filterModel.startDate = "@(new DateTime(previousMonth.Year, previousMonth.Month,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(previousMonth.Year,previousMonth.Month, DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month)).ToString())";
+                                break;
+                            case "CustomMonth":
+                                var newdate = $("#FromDate").val();
+                                if (newdate) {
+                                    var timeframe = newdate.split(" ");
+                                    var year = timeframe[1];
+                                    var month = new Date(Date.parse(timeframe[0] + '1,', year)).getMonth() + 1;
+                                    if (!isNaN(month)) {
+                                        var days = new Date(year, month, 0).getDate();
+                                    }
+                                    if (days) {
+                                        filterModel.startDate = month + '/1/' + year;
+                                        filterModel.endDate = month + '/' + days + '/' + year;
+                                    }
+                                }
+                                break;
+                        }
+                        return filterModel;
+                    }
+                },
+                parameterMap: function (options) {
+                    return kendo.stringify(options);
+                }
+            },
+            schema: {
+                model: {
+                    fields: {
+                        Facility: { type: "string" },
+                        CC1_StrokeAlert: { type: "number" },
+                        CC1_STAT: { type: "number" },
+                        New: { type: "number" },
+                        FU: { type: "number" },
+                        EEG: { type: "number" },
+                        LTM_EEG: { type: "number" },
+                        TC: { type: "number" }
+                    }
+                },
+                data: "Data",
+                total: "Total"
+            },
+            serverPaging: false,
+            serverFiltering: false,
+            serverSorting: false,
+            group: {
+                field: "Facility"
+            }
+        },
+        dataBound: function (e) {
+            $("#kendoDataGrid th").css("font-weight", "bold");
+            applybold();
+            // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+            $('[data-role="dropdownlist"]').each(function () {
+                var kendoDropDown = $(this).data("kendoDropDownList");
+                if (kendoDropDown)
+                    kendoDropDown.bind("open", onDropdDownOpen);
+            });
+        },
+        columns: [
+            { hidden: true, field: "Facilitykey" },
+            {
+                field: "AssignDate", title: "Date", width: '120px'
+            },
+            {
+                field: "Facility", title: "Facility", width: '180px'
+            },
+            {
+                field: "CC1_StrokeAlertstring", title: "CC1-StrokeAlert", width: '120px'
+            },
+            {
+                field: "CC1_STATstring", title: "CC1-STAT", width: '120px'
+            },
+            {
+                field: "Newstring", title: "New", width: '120px'
+            },
+            {
+                field: "FUstring", title: "FU", width: '120px'
+            },
+            {
+                field: "EEGstring", title: "EEG", width: '120px'
+            },
+            {
+                field: "LTM_EEGstring", title: "LTM-EEG", width: '120px'
+            },
+            {
+                field: "TCstring", title: "TC", width: '120px'
+            },
+            {
+                field: "STAT_EEGstring", title: "STAT EEG", width: '120px'
+            },
+            {
+                field: "LTM_VIDEOstring", title: "LTM with Video (2-12 hrs)", width: '120px'
+            },
+            {
+                field: "EEG_MINUTESstring", title: "EEG (61-119 mins)", width: '120px'
+            },
+            {
+                field: "Amountstring", title: "Total Bill", width: '80px', format: "{0:c}"
+            }
+        ],
+        pageable: {
+            refresh: true,
+            pageSize: 10,
+            pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+        },
+        groupable: false,
+        filterable: false,
+        resizable: true,
+        });
+    }
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#Facilities').multiselect({
+            columns: 1,
+            placeholder: 'Select Facility',
+            search: true,
+            searchOptions: {
+                'default': 'Select Facility'
+            },
+            selectAll: true
+        });
+
+        $('#ddlfiltertype').off("change").change(function () {
+            $("#divfacility,#divsystem,#divregional,#divfacility_change").hide();
+            var selectedValue = $(this).val();
+            if (selectedValue == "facility") {
+                $("#fac_ucd_key_system").data("kendoDropDownList").value(-1);
+                $("#fac_ucd_region_key").data("kendoDropDownList").value(-1);
+                $("#FacilitiesChange").val("");
+                $('#FacilitiesChange').multiselect('reload');
+                $("#divfacility").show();
+                $("#divfacility_change").hide();
+            }
+            else if (selectedValue == "system") {
+                $("#Facilities").val("");
+                $('#Facilities').multiselect('reload');
+                $("#FacilitiesChange").val("");
+                $('#FacilitiesChange').multiselect('reload');
+                $("#divfacility_change").hide();
+                $("#divsystem").show();
+            }
+            else if (selectedValue == "regional") {
+                $("#Facilities").val("");
+                $('#Facilities').multiselect('reload');
+                $("#FacilitiesChange").val("");
+                $('#FacilitiesChange').multiselect('reload');
+                $("#divfacility_change").hide();
+                $("#divregional").show();
+            }
+        });
+        $("#fac_ucd_key_system").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.System.ToInt())", "ucd_title", "ucd_key", " Select System");
+        $("#fac_ucd_region_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.Regional.ToInt())", "ucd_title", "ucd_key", " Select Region");
+
+    });
+
+    $("#fac_ucd_key_system").off("change").change(function () {
+        var id = $(this).val();
+        GetFacilityById(id,"system");
+        $("#fac_ucd_region_key").data("kendoDropDownList").value(-1);
+        $('#FacilitiesChange').val("");
+        $('#FacilitiesChange').multiselect('reload');
+        $("#divfacility_change").show();
+    });
+
+    $("#fac_ucd_region_key").off("change").change(function () {
+        var id = $(this).val();
+        GetFacilityById(id,"regional");
+        $("#fac_ucd_key_system").data("kendoDropDownList").value(-1);
+        $('#FacilitiesChange').val("");
+        $('#FacilitiesChange').multiselect('reload');
+        $("#divfacility_change").show();
+    });
+
+    function GetFacilityById(Id,type) {
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "GET",
+            url: '/FacilityRate/GetFacility',
+            data: { id: Id, Fac_type: type },
+            success: function (data) {
+                $('#FacilitiesChange').multiselect('reset');
+                $('#FacilitiesChange').html("");
+                var html = "";
+                $.each(data, function (key, val) {
+                    html += "<option value=" + val.fac_key + ">" + val.fac_name + "</option>";
+                });
+                $('#FacilitiesChange').append(html);
+                $('#FacilitiesChange').multiselect({
+                    columns: 1,
+                    placeholder: ' Select Facility',
+                    selectAll: true,
+                    search: true,
+                    searchOptions: {
+                        'default': ' Search Facility'
+                    }
+                });
+                $('#FacilitiesChange').multiselect('reload');
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+    function applybold() {
+
+        $("#kendoDataGrid tr").each(function (index, element) {
+            var row = $(element);
+            var status = row.find("td:nth-child(3)").text();
+            if (status == "Aggregate" || status == "Availability Pay" || status == "Grand Total") {
+                row.children("td").addClass("font-weight-bold");
+            }
+        });
+    }
+
+</script>
+
+
+
+
+

@@ -1,0 +1,56 @@
+﻿@model TeleSpecialists.BLL.Model.facility_physician
+
+@{
+    ViewBag.Title = "_AssignFacility";
+}
+<div id="AddFacilityModel" class="modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" >
+        <form method="post" role="form" id="FacilityForm" action="@Url.Action("AddFacility")">
+
+
+            @Html.AntiForgeryToken()
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Facility</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        @Html.HiddenFor(m => m.fap_phy_key)
+                        @Html.HiddenFor(m => m.fap_is_active)
+                        <div id="validationSummary">
+
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-sm-10 offset-sm-1">
+                                <div class="form-group row">
+                                    @Html.Label("Facilities:", htmlAttributes: new { @class = "control-label col-3" })
+                                    <div class="col-9">
+                                        <select id="fap_fac_key" name="fap_fac_key" class="form-control addValidation" ></select>
+                                        @Html.ValidationMessageFor(model => model.fap_fac_key, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-link" data-dismiss="modal">Cancel</a>
+                    <input type="submit" class="btn btn-dark" value="Save" />
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>

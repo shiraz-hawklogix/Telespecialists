@@ -1,0 +1,350 @@
+﻿
+@{
+    ViewBag.Title = "RCI Report";
+}
+
+@Html.Partial("_ReportLayout")
+
+<div class="form-row align-items-center" id="divLocalFilters" style="padding-bottom:20px!important">
+    <span>Physician</span>
+    <div class="col-auto  col-4">
+        @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control",@multiple="multiple" })
+    </div>
+    <div class="col-auto">
+        <label>From Month</label>
+        <input type="text" id=FromMonth name=FromMonth placeholder="From Month" class="form-control datemonthpicker" />
+    </div>
+    <div class="col-auto">
+        <label>To Month</label>
+        <input type="text" id="ToMonth" name="ToMonth" placeholder="To Month" class="form-control  datemonthpicker" />
+    </div>
+
+    <div class="col-auto">
+        <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+        <button type="button" class="btn btn-dark" id="btnClear" style="display: none">Clear Search</button>
+    </div>
+</div>
+<div class="modal" id="graphmodal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" style=" max-width: 1000px; width: 1000px; ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="export-pdf k-button">Save as PDF</button>
+            </div>
+            <div class="modal-body">
+                <div id="chart"></div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/Custom/inputMask.js"></script>
+<script>
+    $(document).ready(function () {
+        var listFacilities = [];
+        var listPhysicians = [];
+        var filters = [];
+        $('#divLocalFilters').appendTo('#divFilters');
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $('#Physicians').multiselect({
+            columns: 1,
+            placeholder: 'Select Physician',
+            selectAll: true,
+            search: true,
+            searchOptions: {
+                'default': 'Search Physician'
+            }
+        });
+
+        $('#btnClear').click(function () {
+            $('#btnClear').css('display', 'none');
+            $("#kendoDataGrid").data("kendoGrid").dataSource.filter({});
+            $("#Physicians").val("");
+            $("#Facilities").multiselect('reload');
+            $("#ToMonth").val('');
+            $("#FromMonth").val('');
+        });
+        $('#btnSearch').click(function () {
+            $('#btnClear').css('display', '');
+            loadDate();
+        });
+        var presentDate = new Date();
+        $('.datemonthpicker').kendoDatePicker({
+            max: presentDate,
+            start: "year",
+            depth: "year",
+            format: "MMMM yyyy",
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+    });
+
+    function loadDate() {
+        showAllColumns();
+        $("#kendoDataGrid").kendoGrid({
+            excel: {
+                allPages: true,
+                filterable: false,
+                fileName: '@ViewBag.Title' + '.xlsx',
+                proxyURL: '@Url.Action("ExportToExcel")',
+            },
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetRCI")',
+                        contentType: "application/json",
+                        type: "POST",
+                         data: function () {
+                             var filterModel = { Physicians: "", FromMonth: "" , ToMonth: ""};
+                             filterModel.Physicians = $("#Physicians").val();
+                             filterModel.FromMonth = $("#FromMonth").val();
+                             filterModel.ToMonth = $("#ToMonth").val();
+                            return filterModel;
+                        }
+                    },
+                    parameterMap: function (options) {
+                        options = KendoKeepState("Report", options);
+                        exportPostData = options;
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                    errors: function (response) {
+                        if (response != null && response.success != undefined && response.success != null && !response.success) {
+                            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Error! Please try again.");
+                            HideLoading();
+                        }
+                    }
+                },
+                serverPaging: true,
+                pageSize: 1000,
+                serverFiltering: false,
+                serverSorting: true,
+            },
+            width: '100%',
+            groupable: false,
+            filterable: false,
+            sortable: true,
+            resizable: false,
+            pageable: {
+                refresh: true,
+                pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+            },
+            dataBound: function (e) {
+
+                $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+                filterColumns();
+            },
+            columns: [
+                {
+                    title: "<b>Graph</b>", width: '80px',
+                    template: "<input type='button' class='btn btn-dark btn-sm hopitalid' data-hopitalid='#=Physicians_Id#' onclick='showgraph.call(this)' value='View' />"
+                },
+
+                {
+                    field: "Physicians_name", width:230, title: "Physicians Name"
+                },
+                {
+                    field: "January", width: 80, title: "January"
+                },
+                {
+                    field: "February", width: 80, title: "February"
+                },
+                {
+                    field: "March", width: 80, title: "March"
+                },
+                {
+                    field: "April", width: 80, title: "April"
+                },
+                {
+                    field: "May", width: 80, title: "May"
+                },
+                {
+                    field: "June", width: 80, title: "June"
+                },
+                {
+                    field: "July", width: 80, title: "July"
+                },
+                {
+                    field: "August", width: 80, title: "August"
+                },
+                {
+                    field: "September", width: 80, title: "September"
+                },
+                {
+                    field: "October", width: 80, title: "October"
+                },
+                {
+                    field: "November", width: 80, title: "November"
+                },
+                {
+                    field: "December", width: 80, title: "December"
+                },
+                {
+                    field: "Total_RHI", width: 170, title: "RCI For All Selected Months"
+                },
+            ]
+        });
+    }
+    var showgraph = function () {
+        var hospitalid = $(this).data("hopitalid");
+        var model = {
+            Physicians_Id: "",
+            FromMonth: null,
+            ToMonth: null,
+        };
+        model.Physicians_Id = hospitalid;
+        model.FromMonth = $("#FromMonth").val();
+        model.ToMonth = $("#ToMonth").val();
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/Reports/GetRCIGraphModal',
+            data: { model: model },
+            success: function (data) {
+                var title;
+                var mean;
+                var median;
+                var meancal = [];
+                var mediancal = [];
+                var mindate;
+                var catgory;
+                $.each(data, function (key, value) {
+                    $.each(value, function (id, dat) {
+                        if (id == "Title") {
+                            title = dat;
+                        }
+                        else if (id == "Mean") {
+                            mean = dat;
+                        }
+                        else if (id == "Median") {
+                            median = dat;
+                        }
+                        else if (id == "MinDate") {
+                            mindate = dat;
+                        }
+                        else if (id == "MeanCalculation") {
+                            $.each(dat, function (keys, vals) {
+                                meancal.push(vals);
+                            })
+                        }
+                        else if (id == "MedianCalculation") {
+                            $.each(dat, function (keys, vals) {
+                                mediancal.push(new Date(mindate + " " + vals).getTime());
+                            })
+                        }
+                        else if (id == "Category") {
+                            catgory = dat;
+                        }
+                    });
+                });
+                createChart(title, mean, median, meancal, mediancal, mindate, catgory);
+                $(document).bind("kendo:skinChange", createChart);
+                $("#graphmodal").modal('show');
+            },
+            error: function () {
+
+            }
+
+        });
+    }
+    function createChart(title, mean, median, meancal = [], mediancal = [], mindate, catgory = []) {
+        $("#chart").kendoChart({
+            title: {
+                text: title,
+                color: "black"
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 966
+            },
+            seriesDefaults: {
+                type: "line",
+                style: "smooth"
+            },
+            series: [{
+                labels: {
+                    template: "#= value #",
+                    visible: true,
+                    format: "{0}",
+                },
+                name: mean,
+                data: meancal,
+                color: "purple"
+
+            }
+            ],
+            valueAxis: {
+                labels: {
+                    format: "{0}"
+                },
+                line: {
+                    visible: false
+                },
+                axisCrossingValue: 0
+            },
+            categoryAxis: {
+                categories: catgory,
+                majorGridLines: {
+                    visible: false
+                },
+                labels: {
+                    rotation: "auto"
+                }
+            },
+            //tooltip: {
+            //    visible: true,
+            //    format: "{0}",
+            //    template: "#= value #"
+            //}
+        });
+    }
+    $(".export-pdf").click(function () {
+        $("#chart").getKendoChart().saveAsPDF();
+    })
+    function showAllColumns() {
+
+        var grid = $("#kendoDataGrid").data("kendoGrid");
+        if (grid != null && grid != 'undefined') {
+            var cols = grid.columns.length
+            for (var i = 2; i < cols; i++) {
+                grid.showColumn(i)
+            }
+        }
+    }
+    function filterColumns() {
+        var grid = $("#kendoDataGrid").data("kendoGrid");
+        if (grid == null || grid == 'undefined')
+            return;
+        showAllColumns();
+        for (var i = 0; i < grid._data.length; i++) {
+            $.each(grid._data[i], function (key, val) {
+                if (val != null) {
+                    grid.showColumn(key);
+                }
+                else {
+                    grid.hideColumn(key);
+                }
+            })
+        }
+        $(".k-grid-header-wrap > table").css("width", "100%");
+        $(".k-grid-content > table").css("width", "100%");
+
+    }
+</script>
+
+
+

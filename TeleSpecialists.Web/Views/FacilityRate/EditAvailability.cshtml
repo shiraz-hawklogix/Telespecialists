@@ -1,0 +1,36 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@model TeleSpecialists.BLL.Model.facility_availability_rate
+@{
+    ViewBag.Title = "Update Availability Rate";
+    ViewBag.Edit = true;
+}
+<h4>Update Availability Rate</h4>
+<hr />
+
+@Html.Partial("_Availability", Model)
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        //$("#rate_end_Date").kendoDatePicker({
+        //    start: "year",
+        //    depth: "year",
+        //    format: "MMMM yyyy",
+        //    open: function (e) {
+        //        onDatePickerOpen(e);
+        //    }
+        //    });
+        $("#rate_start_Date").kendoDatePicker({
+            start: "year",
+            depth: "year",
+            format: "MMMM yyyy",
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+    });
+</script>
+
+
+

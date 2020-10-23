@@ -1,0 +1,336 @@
+﻿@model TeleSpecialists.BLL.Model.Hospital_Protocols
+
+@{
+    ViewBag.Title = "EditProtocols";
+}
+<style>
+    .lenghts {
+        width: 514px;
+    }
+
+    .lenghtsHeight {
+        width: 514px;
+        height: 109px !important;
+    }
+
+
+    #divimages {
+        background-image: url('https://pngimage.net/wp-content/uploads/2018/06/red-bin-png-1.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+        height: 0;
+    }
+</style>
+<div class="alert alert-success removestyle" role="alert" style="display:none!important">
+    Hospital Protocols Successfully Edited.
+</div>
+
+<h2><b>Edit Protocols</b></h2>
+<br />
+<input type="hidden" value="@Model.ID" id="onid" />
+<input type="hidden" value="@Model.ParameterName_Image" id="ParameterNameImage" />
+<input type="hidden" value="@Model.Facility_Id" id="FacilityIds" />
+<input type="hidden" value="@Model.Facility_Name" id="FacilityNames" />
+<div class="ajaxForm" id="basic">
+    <div class="row general-tab">
+        <div class="col-xl-4 col-lg-4 col-md-12 left-panel">
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Facility: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    @Html.TextBoxFor(m => Model.Facility_Name, new { @class = "form-control lenghts", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Header: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    @Html.TextBoxFor(m => Model.ParameterName, new { @class = "form-control lenghts", @id = "ParameterName", @onchange = "CheckAvailability();" })
+                    <div id="ParameterName-error" class="error_msg" style="display:none;">
+                        <label for="ParameterName">This field is required</label>
+                    </div>
+                    <span id="message"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Header Sort#: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    @Html.TextBoxFor(m => Model.SortNum, new { @class = "form-control", @type = "number", @min = "1" })
+                    <div id="SortNum-error" class="error_msg" style="display:none;">
+                        <label for="SortNum">This field is required</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Upload Images: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    @Html.TextBoxFor(model => model.ParameterName_Image, new { @type = "file", @class = "form-control lenghts", @multiple = "multiple", @onclick = "removedivdata();" })
+                </div>
+            </div>
+            <div class="form-group row divshowimages">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4"> Images: </label>
+
+                <div class="d-flex align-items-center">
+                    <div class="d-inline-block preview" style="width: 1193px;padding-left: 163px;height:150px;overflow-y: scroll;resize:both;overflow:auto;border-color:black;border:solid;" id="divimages2">
+                        @foreach (var value in Model.ParameterName_Image.Split(','))
+                        {
+                            if (value == "")
+                            {
+
+                            }
+                            else
+                            {
+                                string lastthreewords = value.Substring(value.Length - 3);
+                                if (lastthreewords == "PEG" || lastthreewords == "peg" || lastthreewords == "png" || lastthreewords == "jpg" || lastthreewords == "JPG" || lastthreewords == "gif" || lastthreewords == "PNG")
+                                {
+                                    if (value == "")
+                                    {
+
+                                    }
+                                    else
+                                    {
+
+                                        {
+                                            var s = value;
+                                            <img src="@s" style="height:100px;" id="@value" />
+
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <a href="@value">Your File Link</a>
+                                }
+                            }
+
+
+                        }
+                    </div>
+                    <div class="d-inline-block preview " style="border-style: solid;width: 169px;height:150px;overflow-y: scroll;" id="divimages">
+                    </div>
+                </div>
+                @*<span><b style="color:red;font-size: 21px;position: relative;padding-left: 43px;">Drag here to delete.</b></span>*@
+            </div>
+        </div>
+
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4" style="padding-left: 0px;">Details: </label>
+        <div style="padding-left: 152px;">
+            @{
+                var aa = Html.Raw(Model.ParameterName_Info);
+                @Html.TextAreaFor(model => model.ParameterName_Info, new { @value = aa, @class = "form-control " })
+
+            }
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-12">
+            @*<a href="@Url.Action("Edit","HospitalProtocols", new { fac_key = ViewBag.Fac_Id})" id="backpage" class="btn btn-dark loadLinkAsync">Cancel</a>*@
+            <input type="button" class="btn btn-dark loadLinkAsync" id="btngetbackedit" value="Cancel" />
+            <input type="button" value="Save" onclick="uplaod()" ; class="btn btn-dark" id="savebtn" />
+        </div>
+    </div>
+</div>
+<br />
+<script>
+    $(function () {
+        function previewImages() {
+            var preview = document.querySelector('.preview');
+            if (this.files) {
+                [].forEach.call(this.files, readAndPreview);
+            }
+            var plus = 1;
+            function readAndPreview(file) {
+
+                var reader = new FileReader();
+                reader.addEventListener("load", function () {
+
+                    var image = new Image();
+                    image.height = 100;
+                    image.title = file.name;
+                    image.src = this.result;
+                    image.id = file.name;
+                    image.className = 'box-item';
+                    preview.appendChild(image);
+                    plus++
+                });
+                reader.readAsDataURL(file);
+
+            }
+        }
+        document.querySelector('#ParameterName_Image').addEventListener("change", previewImages);
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $(function () {
+            $("#divimages, #divimages2").sortable({
+                connectWith: ".preview",
+                cursor: "move"
+            }).disableSelection();
+        });
+
+
+    });
+
+</script>
+<script src="~/Scripts/ckeditor/config.js"></script>
+<link href="~/Scripts/ckeditor/contents.css" rel="stylesheet" />
+<script>
+    $(document).ready(function () {
+        showCKEditoronboardw("ParameterName_Info");
+        function showCKEditoronboardw(elementId) {
+
+            destryCkEditorField(elementId);
+            window.setTimeout(function () {
+                CKEDITOR.replace(elementId, { contentsCss: "body {font-size: 18px;}" });
+            }, 100);
+
+            window.setTimeout(function () {
+                $(".cke_toolbar").each(function () {
+                    $this = $(this);
+                    if ($(this).find("a:visible").length <= 0) {
+                        $this.hide()
+                    } else {
+                        $this.show();
+                    }
+                });
+            }, 300);
+        }
+    });
+</script>
+<script>
+    $('.thumb').on('click', function () {
+        var tr = $(this).closest('tr');
+        tr.remove();
+    });
+
+</script>
+<script>
+    function validateFormData() {
+        var result = true;
+        //if ($.trim($("#ParameterName").val()) == "") {
+        //    result = false;
+        //    $("#ParameterName-error").show();
+        //    setTimeout(function () {
+        //        $('#ParameterName-error').fadeOut('fast');
+        //    }, 2000);
+        //}
+        return result;
+    }
+    function uplaod() {
+        // $(".error_msg").hide();
+        if (validateFormData() == true) {
+            var formData = new FormData();
+            var totalFiles = document.getElementById("ParameterName_Image").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("ParameterName_Image").files[i];
+                formData.append("ParameterName_Image", file);
+            }
+            //OldImagePath
+            var Images_Name_Array = [];
+            $("#tbodytmpitem tr").each(function () {
+                Images_Name_Array.push(this.id);
+            });
+            var ParameterName_Images = Images_Name_Array;
+            formData.append("OldImagePath", ParameterName_Images);
+            var images = [];
+            $("#divimages2 img").each(function () {
+                images.push($(this).attr('id'))
+            });
+            formData.append("Div_Image", images);
+            var names = $('#ParameterName').val();
+            formData.append("ParameterName", names);
+            var sortnum = $("#SortNum").val();
+            formData.append("SortNum", sortnum);
+            var info = Base64.encode(CKEDITOR.instances["ParameterName_Info"].getData());
+            formData.append("parameterinfo", info);
+
+            var onids = $('#onid').val();
+            formData.append("onid", onids);
+            var FacilityIdsss = $('#FacilityIds').val();
+            formData.append("FacilityIdss", FacilityIdsss);
+            var FacilityNamess = $('#FacilityNames').val();
+            formData.append("FacilityNames", FacilityNamess);
+            $.ajax({
+                type: "POST",
+                url: '/HospitalProtocols/EditProtocols',
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    hidedivs();
+                    $("#Facilities").multiselect('reset');
+                    setTimeout(function () {
+                        $("#btngetbackedit").trigger('click');
+                    }, 3000);
+                },
+                error: function (error) {
+                    alert("Failed");
+                }
+            });
+        }
+    }
+    function funlatecall() {
+        $('#btngetbackedit').click();
+    }
+    function hidedivs() {
+        $('.removestyle').removeAttr('style');
+        $('.removestyle').delay(2000).hide(1000);
+    }
+
+</script>
+
+<script>
+    function removedivdata() {
+        $('.box-item').remove();
+        $(this).val("");
+    }
+
+
+</script>
+<script>
+
+
+    function CheckAvailability() {
+        if ($("#Facilities").val() != "" && $("#ParameterName").val() != "") {
+            var formData = new FormData();
+            var ParameterName = $("#ParameterName").val();
+            formData.append("ParameterName", ParameterName);
+
+            var ss = $("#FacilityIds").val();
+            formData.append("cas_fac_key_arrays", ss);
+            $.ajax({
+                type: "POST",
+                url: "/HospitalProtocols/CheckHeaderName",
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    var message = $("#message");
+                    if (response) {
+                        $("#message").html("");
+                        $('#savebtn').prop('disabled', false);
+                        $('#Previewbtn').prop('disabled', false);
+                    }
+                    else {
+                        message.css("color", "red");
+                        message.html("Header already in use");
+                        $('#savebtn').prop('disabled', true);
+                        $('#Previewbtn').prop('disabled', true);
+                    }
+                }
+            });
+        }
+        else {
+            $("#message").html("");
+            $('#savebtn').prop('disabled', false);
+            $('#Previewbtn').prop('disabled', false);
+        }
+    }
+    $("#btngetbackedit").off('click').click(function () {
+        editProtocolsData();
+    });
+</script>

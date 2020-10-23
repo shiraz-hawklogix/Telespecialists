@@ -1,0 +1,268 @@
+﻿@model TeleSpecialists.BLL.ViewModels.FacilityQuestionnaire.PreLiveVM
+
+<div>
+    <form method="post" id="frmQuestionnaire">
+        @Html.HiddenFor(m => m.FacilityKey)
+        @Html.HiddenFor(m => m.questionnaireModel.fqp_key)
+        @Html.HiddenFor(m => m.questionnaireModel.fqp_created_by)
+        @Html.HiddenFor(m => m.questionnaireModel.fqp_created_by_name)
+        @Html.HiddenFor(m => m.questionnaireModel.fqp_created_date)
+
+
+        <div class="form-group row ">
+            <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Bed Count </label>
+                    <div class="col-12">
+                        @Html.TextBoxFor(m => m.questionnaireModel.fqp_bedsize, new { @class = "form-control", @type = "number" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_bedsize)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> ED Visits (Annually) </label>
+                    <div class="col-12">
+                        @Html.TextBoxFor(m => m.questionnaireModel.fqp_volume_ed_visits, new { @class = "form-control", @type = "number" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_volume_ed_visits)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Pre GoLive Stroke Alerts (Annually) </label>
+                    <div class="col-12">
+                        @Html.TextBoxFor(m => m.questionnaireModel.fqp_volume_go_live_annual_strokes, new { @class = "form-control", @type = "number" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_volume_go_live_annual_strokes)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Pre GoLive IP Neuro/Day </label>
+                    <div class="col-12">
+                        @Html.TextBoxFor(m => m.questionnaireModel.fqp_volume_go_live_ip_neuro_per_day, new { @class = "form-control", @type = "number" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_volume_go_live_ip_neuro_per_day)
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-12"> Pre GoLive EEG/month </label>
+                    <div class="col-12">
+                        @Html.TextBoxFor(m => m.questionnaireModel.fqp_volume_go_live_EEG_per_month, new { @class = "form-control", @type = "number" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_volume_go_live_EEG_per_month)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Emergency Neuro </label>
+                    <div class="col-12">
+                        @Html.TextBoxFor(m => m.questionnaireModel.fqp_op_emergency_neuro, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_op_emergency_neuro)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> General Neuro </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_op_general_neuro, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_op_general_neuro)
+                    </div>
+                </div>
+
+
+
+
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4  col-sm-12">
+                <div class="form-group row">
+                    <label class="control-label col-12"> EEG </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_op_EEG, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_op_EEG)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> CT/CTA (schedule of coverage) </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_op_ct_cta_schedule, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_op_ct_cta_schedule)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> MRI (schedule  of coverage) </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_op_mri_schedule, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_op_mri_schedule)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Radiology coverage for stroke </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_op_radiology_coverage_for_stroke, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_op_radiology_coverage_for_stroke)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> NIR </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_op_nir, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_op_nir)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Weighted Stretchers </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_op_weighted_stretchers, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_op_weighted_stretchers)
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Current ED Process </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_process_ed_stroke_desc, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_process_ed_stroke_desc)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> STAT Response/Rapid Response Team </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_process_stat_response, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_process_stat_response)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Code Stroke Activation Trime Frame </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_process_timeframe_code_stroke, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_process_timeframe_code_stroke)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Post TPA Patient Services </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_process_admin_post_tpa_patients, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_process_admin_post_tpa_patients)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Facility (for transfer patient for stroke intervention) </label>
+                    <div class="col-12">
+                        @Html.TextAreaFor(m => m.questionnaireModel.fqp_process_facility_transfer_patient_stroke, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_process_timeframe_code_stroke)
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> RN's NIHSS Certified </label>
+                    <div class="col-12">
+                        @Html.CheckBoxFor(m => m.questionnaireModel.fqp_process_rn_nihss_certified)
+                        @Html.ValidationMessageFor(m => m.questionnaireModel.fqp_process_rn_nihss_certified)
+                    </div>
+                </div>
+
+
+                <div class="form-group row">
+                    <label class="control-label col-12"> Service Type </label>
+                    <div class="col-12">
+                        <div class="form-check-inline">
+                            <label>@Html.CheckBoxFor(m => m.questionnaireModel.fqp_service_has_telestroke) &nbsp;TeleStroke</label>
+                        </div>
+
+                        <div class="form-check-inline">
+                            <label>@Html.CheckBoxFor(m => m.questionnaireModel.fqp_service_has_teleneuro) &nbsp;TeleNeuro</label>
+                        </div>
+                        <div class="form-check-inline">
+                            <label>@Html.CheckBoxFor(m => m.questionnaireModel.fqp_service_has_stat_consult) &nbsp;Stat Consult</label>
+                        </div>
+                        <div class="form-check-inline">
+                            <label>@Html.CheckBoxFor(m => m.questionnaireModel.fqp_service_has_eeg) &nbsp;EEG</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="form-group row ">
+            <div class="col-12">
+                <h3>Stakeholders</h3>
+            </div>
+            <div class="col-12">
+
+                <table class="table">
+                    <tr>
+                        <th> Designation</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                    </tr>
+
+
+                    <tbody>
+                        @for (int i = 0; i < Model.contactList.Count; i++)
+                        {
+
+
+
+
+                            <tr>
+                                <td><strong>@Model.contactList[i].fqd_name </strong></td>
+                                <td>
+                                    @Html.HiddenFor(m => Model.contactList[i].fqd_key)
+                                    @Html.TextBoxFor(m => Model.contactList[i].fqc_name, new { @class = "form-control" })
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(m => Model.contactList[i].fqc_email, new { @class = "form-control" })
+                                </td>
+                                <td>
+                                <td>
+                                    @Html.TextBoxFor(m => Model.contactList[i].fqc_phone, new { @class = "form-control" })
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-lg-6 col-sm-6 offset-md-6 offset-xl-6 offset-lg-6 offset-sm-6  text-right">
+
+                <input type="submit" value="Generate Document" class="btn btn-dark">
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+
+
+        $("#frmQuestionnaire").off("submit").submit(function (e) {
+            e.preventDefault();
+             var data = $("#frmQuestionnaire").serialize();
+             var url = "@Url.Action("GenerateDoc")";
+             $.post(url, data, function (response) {
+                 var fileUrl = "/Documents/" + response.fileName;
+                 window.location = fileUrl;
+             });
+        });
+    });
+</script>

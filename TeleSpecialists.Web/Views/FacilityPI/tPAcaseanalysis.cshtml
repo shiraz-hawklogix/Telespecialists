@@ -1,0 +1,149 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@{
+    ViewBag.Title = "TPA Case Analysis";
+}
+
+
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h3>TPA Cases</h3>
+    </div>
+</div>
+<div class="row">
+    <div id="tPAcaseanalysisGrid">
+    </div>
+</div>
+
+<script type="text/javascript">
+    function gettPAanaylysis() {
+        $("#tPAcaseanalysisGrid").kendoGrid({
+            excel: {
+                allPages: true,
+                filterable: false,
+                fileName: '@ViewBag.Title' + '.xlsx',
+                proxyURL: '@Url.Action("ExportToExcel")',
+            },
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetTPAAnalysis")',
+                        contentType: "application/json",
+                        type: "POST",
+                        data: function () {
+                            var model = {
+                                Facilities: "",
+                                System: "",
+                                Regional: "",
+                                States: "",
+                                QPS: "",
+                                qag_time_frame: "",
+                                fromMonth: "",
+                                toMonth: "",
+                            };
+                            var fac_keys = $("#Facilities").val();
+                            if (fac_keys == "") {
+                                model.Facilities = null;
+                            } else {
+                                model.Facilities = $("#Facilities").val();
+                            }
+
+                            var system = $("#fac_ucd_key_system").val();
+                            if (system == "") {
+                                model.System = null;
+                            } else {
+                                model.System = $("#fac_ucd_key_system").val();
+                            }
+
+                            var region = $("#fac_ucd_region_key").val();
+                            if (region == "") {
+                                model.Regional = null;
+                            } else {
+                                model.Regional = $("#fac_ucd_region_key").val();
+                            }
+
+                            var state = $("#fac_stt_key").val();
+                            if (state == "") {
+                                model.States = null;
+                            } else {
+                                model.States = $("#fac_stt_key").val();
+                            }
+
+                            var qps = $("#facilityQPS").val();
+                            if (qps == "" || qps == "0" || qps == undefined) {
+                                model.QPS = null;
+                            } else {
+                                model.QPS = $("#facilityQPS").val();
+                            }
+                            var YearFromDate = $("#FromMonth").val();
+                            if (YearFromDate) {
+                                var year = YearFromDate.split(" ");
+                                var timeframe = year[1];
+                                if (timeframe) {
+                                    model.qag_time_frame = timeframe + '-1-1';
+                                }
+                            }
+                            model.fromMonth = $("#FromMonth").val();
+                            model.toMonth = $("#ToMonth").val();
+                            localStorage.setItem('QualityMetricsReport.Filter', JSON.stringify(model));
+                            return model;
+                        },
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                //serverPaging: true,
+                //serverFiltering: true,
+                //serverSorting: true,
+                //pageSize: GetKendoPageSize("QualityReport", "RecPerPage", true),
+                //page: KendoGet("QualityReport", "page")
+                serverPaging: true,
+                pageSize: 50,
+                serverFiltering: false,
+                serverSorting: true,
+            },
+            width: '100%',
+            pageable: {
+                refresh: true,
+                //pageSizes: true,
+                //pageSize: 10
+                pageSizes: [50, 100, 150, 200, 300, 500, 'All']
+            },
+            groupable: false,
+            filterable: true,
+            sortable: true,
+            resizable: true,
+            dataBound: function (e) {
+
+                $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+            },
+            columns: [
+                { field: "name", title: "Facility", width: '150px' },
+                {
+                    title: "TeleCare Case #", width: '90px', field: "case_number",
+                    template: "<a class='py-1 loadLinkAsync' href='@Url.Action("Edit","Case")/\@(User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()) ? "?id=#=cas_key#&isReadOnly=#= true#" : "#= cas_key#?showPopupOnLoad=true")'>#= case_number#</a>"
+                },
+                //{ field: "case_number", title: "TeleCare Case #", width: '70px' },
+                { field: "created_date", title: "Date", width: '80px' },
+                { field: "process", title: "Process (EMS/ WI/ IP)", width: '120px' },
+                { field: "doortoneedle", title: "DTN (Min)", width: '90px' },
+                { field: "tpanotes", title: "tPA Delay Notes", width: '220px' },
+                { field: "qpsanalysis", title: "QPS Analysis", width: '220px' },
+                { field: "medicaldirectoranalysis", title: "Medical Director Analysis", width: '220px' }
+            ]
+        });
+        }
+</script>
+

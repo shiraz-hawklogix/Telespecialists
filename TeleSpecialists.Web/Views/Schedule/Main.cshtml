@@ -1,0 +1,145 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@{
+    bool isPac = false;
+    var isSleep = ViewBag.isSleep;
+    var nhAlert = ViewBag.nhAlert;
+    var isStrokeAlert = ViewBag.isStrokeAlert;
+    if (User.IsInRole(UserRoles.AOC.ToDescription()))
+    {
+        isPac = true;
+    }
+}
+
+<div class="form-group">
+    <div class="col-md-12">
+        @if (isStrokeAlert == true && !(User.IsInRole(UserRoles.AOC.ToDescription())) || User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+        || User.IsInRole(UserRoles.Administrator.ToDescription())
+        || User.IsInRole(UserRoles.Navigator.ToDescription())
+        || User.IsInRole(UserRoles.Finance.ToDescription())
+        || User.IsInRole(UserRoles.RRCManager.ToDescription())
+        || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+         || User.IsInRole(UserRoles.CapacityResearcher.ToDescription())
+         || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
+         || User.IsInRole(UserRoles.QPS.ToDescription())
+         || User.IsInRole(UserRoles.QualityDirector.ToDescription())
+         || User.IsInRole(UserRoles.QualityTeam.ToDescription())
+         || User.IsInRole(UserRoles.VPQuality.ToDescription())
+         || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()))
+        {
+            <div style="width:175px;float:left">
+                @Html.RadioButton("Physician", "Physician", new { @class = "lbltype rdStrokePhy", @checked = "true" })
+                <strong>Stroke Physician</strong>
+            </div>
+        }
+        @if (nhAlert == true || User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+           || User.IsInRole(UserRoles.Administrator.ToDescription())
+           || User.IsInRole(UserRoles.Navigator.ToDescription())
+           || User.IsInRole(UserRoles.Finance.ToDescription())
+           || User.IsInRole(UserRoles.RRCManager.ToDescription())
+           || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+            || User.IsInRole(UserRoles.CapacityResearcher.ToDescription())
+            || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
+            || User.IsInRole(UserRoles.QPS.ToDescription())
+            || User.IsInRole(UserRoles.QualityDirector.ToDescription())
+            || User.IsInRole(UserRoles.QualityTeam.ToDescription())
+            || User.IsInRole(UserRoles.VPQuality.ToDescription())
+            || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()))
+        {
+            <div style="width:100px;float:left">
+                @Html.RadioButton("Physician", "nhAlert", new { @class = "lbltype rdIsNhAlert" })
+                <strong>NH</strong>
+            </div>
+        }
+        @if (User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+            || User.IsInRole(UserRoles.Administrator.ToDescription())
+            || User.IsInRole(UserRoles.Navigator.ToDescription())
+            || User.IsInRole(UserRoles.Finance.ToDescription())
+            || User.IsInRole(UserRoles.RRCManager.ToDescription())
+            || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+             || User.IsInRole(UserRoles.CapacityResearcher.ToDescription())
+             || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
+             || User.IsInRole(UserRoles.QPS.ToDescription())
+             || User.IsInRole(UserRoles.QualityDirector.ToDescription())
+             || User.IsInRole(UserRoles.QualityTeam.ToDescription())
+             || User.IsInRole(UserRoles.VPQuality.ToDescription())
+             || User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
+            )
+        {
+            <div style="width:100px;float:left">
+                @Html.RadioButton("Physician", "aoc", new { @class = "lbltype" })
+                <strong>PAOC</strong>
+            </div>
+
+        }
+        @if (User.IsInRole(UserRoles.AOC.ToDescription()))
+        {
+            <div style="width:300px;float:left">
+                @Html.RadioButton("Physician", "aoc", new { @class = "lbltype", @checked = "true" })
+                <strong>PAOC</strong>
+            </div>
+        }
+        @if (isSleep == true || User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+            || User.IsInRole(UserRoles.Administrator.ToDescription())
+            || User.IsInRole(UserRoles.Navigator.ToDescription())
+            || User.IsInRole(UserRoles.Finance.ToDescription())
+            || User.IsInRole(UserRoles.RRCManager.ToDescription())
+            || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+             || User.IsInRole(UserRoles.CapacityResearcher.ToDescription())
+             || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
+             || User.IsInRole(UserRoles.QPS.ToDescription())
+             || User.IsInRole(UserRoles.QualityDirector.ToDescription())
+             || User.IsInRole(UserRoles.QualityTeam.ToDescription())
+             || User.IsInRole(UserRoles.VPQuality.ToDescription())
+             || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()))
+        {
+            <div style="width:100px;float:left">
+                @Html.RadioButton("Physician", "sleep", new { @class = "lbltype" })
+                <strong>Sleep</strong>
+            </div>
+        }
+    </div>
+    <br>
+</div>
+
+<div class="LoadSchedule"></div>
+@{
+    //Html.RenderPartial("index");
+}
+<script>
+    $(document).ready(function () {
+       
+        var val = "Physician";
+        var status = "@(isPac)";
+        if (status === "True")
+            val = "aoc";
+
+        var isStrokeStatus = "@(isStrokeAlert)";
+        var isnhAlertStatus = "@(nhAlert)";
+        if ($('#IsOnlyPhysician').val() == "1" && isStrokeStatus == "False" && isnhAlertStatus == "True") {
+            val = "nhAlert";
+        }
+
+        Load(val);
+    });
+    function Load(val) {
+        $.get("/Schedule/index", { phy_type: val }, function (data) {
+            $('.LoadSchedule').html('');
+            $('.LoadSchedule').html(data);
+        });
+    }
+    function LoadSleep(val) {
+        $.get("/Schedule/indexSleep", { phy_type: val }, function (data) {
+            $('.LoadSchedule').html('');
+            $('.LoadSchedule').html(data);
+        });
+    }
+    $('.lbltype').change(function () {
+        var value = $(this).val();
+        Load(value);
+        //if (value === 'sleep')
+        //    LoadSleep(value);
+        //else
+        //    Load(value);
+    });
+</script>

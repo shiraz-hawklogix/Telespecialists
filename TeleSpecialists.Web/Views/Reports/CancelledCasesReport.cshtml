@@ -1,0 +1,292 @@
+﻿
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+
+@{
+    ViewBag.Title = "Cancelled Cases";
+    var currentDate = DateTime.Now.ToEST();
+    var previousMonth = currentDate.AddMonths(-1);
+    //List<ucl_data> billingCodes = ViewBag.Casetypes;
+    //var billingCodeColumns = "";
+    //foreach (var item in billingCodes)
+    //{
+    //    billingCodeColumns += "{ field: " + @"""" + item.ucd_title.Replace("-", "_").Replace(" ", "") + @"""" + ", title: " + @"""";
+    //    billingCodeColumns += item.ucd_title.Replace("-", "_").Replace(" ", "") + @"""" + "},";
+    //}
+}
+@Html.Partial("_ReportLayout")
+
+<div class="row" id="divLocalFilters">
+    <div class="col-12">
+
+        <div class="form-row">
+            <div class="form-group col-xl-3 col-4" id="divfacility">
+                <label>Facility</label>
+                @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control", multiple = "multiple" })
+            </div>
+
+            <div class="form-group col-xl-3 col-4" id="caseType">
+                <label>Case Type</label>
+                @Html.DropDownList("Casestype", ViewBag.Casestype as List<SelectListItem>, new { @class = "form-control", multiple = "multiple" })
+            </div>
+
+            <div class="form-group col-xl-3 col-4" id="cancelType">
+                <label>Cancelled Type</label>
+                @Html.DropDownList("CancelledType", ViewBag.CancelledType as List<SelectListItem>, new { @class = "form-control", multiple = "multiple" })
+            </div>
+
+            <div class="form-group col-xl-3 col-4">
+                <label for="ddlTimeFrame">Time Frame</label>
+                <select class="form-control" id="ddlTimeFrame">
+                    <option value="ThisMonth" selected="selected">This Month</option>
+                    <option value="PreviousMonth">Previous Month</option>
+                    <option value="ThisYear">This Year</option>
+                    <option value="PreviousYear">Previous Year</option>
+                    <option value="CustomRange">Custom Range</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group row col-xl-6 col-12" id="divCustomDate" style="display:none;">
+                <div class="col-6 pr-0">
+                    <label for="FromDate">From</label>
+                    <input type="text" id="FromDate" name="FromDate" required class="form-control datepicker" />
+                </div>
+
+                <div class="col-6">
+                    <label for="ToDate">To</label>
+                    <input type="text" id="ToDate" name="ToDate" required class="form-control datepicker" />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-1">
+                <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+
+        $("#ddlTimeFrame").off("change").change(function () {
+            if ($(this).val() == "CustomRange") {
+                $("#divCustomDate").show();
+            }
+            else {
+                $("#divCustomDate").hide();
+            }
+        });
+
+        $('#divLocalFilters').appendTo('#divFilters');
+
+        $('#divLocalFilters').appendTo('#divFilters');
+
+        $("#btnSearch").click(function () {
+            var errorMessage = "";
+            if ($("#ddlTimeFrame").val() == "CustomRange") {
+                if ($("#FromDate").val() == "")
+                    errorMessage = "Enter From Date<br/>";
+                if ($("#ToDate").val() == "")
+                    errorMessage += "Enter To Date";
+            }
+            if (errorMessage == "") {
+                var existingGrid = $('#kendoDataGrid').data('kendoGrid');
+                if (existingGrid) {
+                    $('#kendoDataGrid').kendoGrid('destroy').empty();
+                }
+                loadGridData();
+            }
+            else {
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+            }
+        });
+
+        var existingGrid = $('#kendoDataGrid').data('kendoGrid');
+
+        if (existingGrid) {
+            $('#kendoDataGrid').kendoGrid('destroy').empty();
+        }
+
+        resetDropDownOnDeseelect();
+        loadGridData();
+        $("#kendoDataGrid th").css("font-weight", "bold");
+    });
+
+    function loadGridData() {
+        $("#kendoDataGrid").kendoGrid({
+        //toolbar: ["excel", "pdf"],
+        excel: {
+            allPages: true,
+            filterable: false,
+            fileName: '@ViewBag.Title' + '.xlsx',
+            proxyURL: '@Url.Action("ExportToExcel")',
+        },
+        pdf: {
+            author:  "TeleCare",
+            creator: "TeleCare",
+            date: new Date(),
+            fileName: '@ViewBag.Title' + '.pdf',
+            keywords: '@ViewBag.Title',
+            subject: '@ViewBag.Title',
+            title: '@ViewBag.Title',
+            allPages: true,
+            filterable: true
+        },
+        dataSource: {
+            transport: {
+                read: {
+                    url: '@Url.Action("GetCancelledCasesReport")',
+                    contentType: "application/json",
+                    type: "POST",
+                    data: function () {
+                        var filterModel = { startDate: null, endDate: null, facilities: "", Casestype: "", CancelledType:""};
+
+                        filterModel.facilities = $("#Facilities").val();
+                        filterModel.Casestype = $("#Casestype").val();
+                        filterModel.CancelledType = $("#CancelledType").val();
+                        switch ($("#ddlTimeFrame").val()) {
+                            case "ThisMonth":
+                                filterModel.startDate = "@(new DateTime(currentDate.Year, currentDate.Month,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(currentDate.Year, currentDate.Month, currentDate.Day).ToString())";
+                                break;
+
+                            case "PreviousMonth":
+                                filterModel.startDate = "@(new DateTime(previousMonth.Year, previousMonth.Month,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(previousMonth.Year,previousMonth.Month, DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month)).ToString())";
+                                break;
+                            case "ThisYear":
+                                filterModel.startDate = "@(new DateTime(currentDate.Year, 1,1).ToString())";
+                                filterModel.endDate = "@currentDate.ToString()";
+                                break;
+                            case "PreviousYear":
+                                filterModel.startDate = "@(new DateTime(currentDate.AddYears(-1).Year, 1,1).ToString())";
+                                filterModel.endDate = "@(new DateTime(currentDate.AddYears(-1).Year, 12,31).ToString())";
+                                break;
+                            case "CustomRange":
+                                filterModel.startDate = $("#FromDate").val();
+                                filterModel.endDate = $("#ToDate").val();
+                                break;
+                        }
+                        return filterModel;
+                    }
+                },
+                parameterMap: function (options) {
+                    return kendo.stringify(options);
+                }
+            },
+            schema: {
+                               data: "Data",
+                total: "Total"
+            },
+            serverPaging: false,
+            serverFiltering: false,
+            serverSorting: false,
+            group: {
+                field: "Facility"
+            }
+        },
+        dataBound: function (e) {
+            $("#kendoDataGrid th").css("font-weight", "bold");
+
+            // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+            $('[data-role="dropdownlist"]').each(function () {
+                var kendoDropDown = $(this).data("kendoDropDownList");
+                if (kendoDropDown)
+                    kendoDropDown.bind("open", onDropdDownOpen);
+            });
+        },
+        columns: [
+            {
+                field: "FacilityKey", hidden: true
+            },
+            {
+                field: "AssignDate", title: "Date", width: '80px'
+            },
+            {
+                field: "caseID", title: "Case ID", width: '80px'
+            },
+            {
+                field: "Facility", title: "Facility", width: '180px'
+            },
+            {
+                field: "casetype", title: "Case Type", width: '120px'
+            },
+            {
+                field: "physician", title: "Physician", width: '120px'
+            },
+            {
+                field: "cancelType", title: "Cancellation Type", width: '180px'
+            },
+            {
+                field: "cancelReason", title: "Reason of Cancellation", width: '180px'
+            }
+        ],
+        pageable: {
+            refresh: true,
+            pageSize: 10,
+            pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+        },
+        groupable: false,
+        filterable: false,
+        resizable: true,
+        });
+    }
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#Facilities').multiselect({
+            columns: 1,
+            placeholder: 'Select Facility',
+            search: true,
+            searchOptions: {
+                'default': 'Select Facility'
+            },
+            selectAll: true
+        });
+        $('#CancelledType').multiselect({
+            columns: 1,
+            placeholder: 'Select Cancellation Type',
+            search: true,
+            searchOptions: {
+                'default': 'Select Cancellation Type'
+            },
+            selectAll: true
+        });
+        $('#Casestype').multiselect({
+            columns: 1,
+            placeholder: 'Select CaseType',
+            search: true,
+            searchOptions: {
+                'default': 'Select CaseType'
+            },
+            selectAll: true
+        });
+
+    });
+
+</script>
+
+
+
+
+
+

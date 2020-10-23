@@ -1,0 +1,230 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+
+@model TeleSpecialists.Models.EditUserViewModel
+
+<div class="ajaxForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Level)
+
+        if (!ViewData.ModelState.IsValid)
+        {
+            @Html.ShowBootStrapAlert("", Html.ValidationSummary(true, "").ToHtmlString(), BootStrapeAlertType.Danger);
+        }
+
+        if (Model.Level != UserRoles.Physician.ToDescription())
+        {
+            <div class="row">
+                <div class="col-lg-10 col-12 offset-lg-1">
+
+                    <h2>Edit User</h2>
+                    <hr />
+                </div>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-xl-5  col-lg-5 col-md-12 col-sm-12 @(Model.Level == UserRoles.Physician.ToDescription() ? "" : "offset-lg-1" )">
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">First Name: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.FirstName, new { htmlAttributes = new { @class = "form-control", @placeholder = "First Name"} })
+                        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Last Name: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.LastName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Last Name"} })
+                        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Initials: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.UserInitial, new { htmlAttributes = new { @class = "form-control", @placeholder = "Initials"} })
+                        @Html.ValidationMessageFor(model => model.UserInitial, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Username: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.Username, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled", @placeholder = "Username" } })
+                        @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Email: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Email" } })
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Address line 1: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.Address_line1, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address line 1" } })
+                        @Html.ValidationMessageFor(model => model.Address_line1, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">Address line 2: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.Address_line2, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address line 2" } })
+                        @Html.ValidationMessageFor(model => model.Address_line2, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">City: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">State:</label>
+                    <div class="col-md-8 col-sm-12">
+                        <select id="State_key" name="State_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.State_key : 0)"></select>
+                        @Html.ValidationMessageFor(model => model.State_key, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-md-4 col-sm-12">ZIP/Postal Code: </label>
+                    <div class="col-md-8 col-sm-12">
+                        @Html.EditorFor(x => x.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zip" } })
+                        @Html.ValidationMessageFor(model => model.Zip, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6  col-lg-6 col-md-12 col-sm-12)">
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Mobile Phone: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.MobilePhone, new { htmlAttributes = new { @class = "form-control phone_number", @placeholder = "Mobile Phone" } })
+                        @Html.ValidationMessageFor(model => model.MobilePhone, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Other Phone: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.OtherPhone, new { htmlAttributes = new { @class = "form-control phone_number", @placeholder = "Other Phone" } })
+                        @Html.ValidationMessageFor(model => model.OtherPhone, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Role: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        <div>
+                            @Html.DropDownListFor(m => m.Role, null, "--select--", new { @class = "form-control" })
+
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Role, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">NPI Number: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        @Html.EditorFor(x => x.NPINumber, new { htmlAttributes = new { @class = "form-control", @placeholder = "NPI Number", @maxlength = 10 } })
+                        @Html.ValidationMessageFor(model => model.NPINumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Two Factor Enabled: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+
+                        @Html.CheckBoxFor(x => x.TwoFactorEnabled, new { @class = "" })
+
+                        @Html.ValidationMessageFor(model => model.TwoFactorEnabled, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Lockout Enabled: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        @if (Model.LockoutEnabled == true)
+                        {
+                            @Html.CheckBoxFor(x => x.LockoutEnabled, new { @class = "" })
+                        }
+                        else
+                        {
+                            @Html.CheckBoxFor(x => x.LockoutEnabled, new { @class = "", @disabled = "disabled" })
+                        }
+
+                        @Html.ValidationMessageFor(model => model.LockoutEnabled, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Enable Five9: </label>
+                    <div class="col-xl-6 col-lg-6 col-md-8 col-sm-8 col-12">
+                        @Html.CheckBoxFor(x => x.EnableFive9, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.EnableFive9, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
+
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Case Reviewer: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.CheckBoxFor(x => x.CaseReviewer, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.CaseReviewer, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Read EEG: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.CheckBoxFor(x => x.IsEEG, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.IsEEG, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group add row">
+                    <label class="control-label col-sm-4 col-12">Stroke Alert: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.CheckBoxFor(x => x.IsStrokeAlert, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.IsStrokeAlert, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Active: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.CheckBoxFor(x => x.isActive, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.isActive, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4 col-12">Disable: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.CheckBoxFor(x => x.isDisable, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.isDisable, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group add row">
+                    <label class="control-label col-sm-4 col-12">NH: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.CheckBoxFor(x => x.NHAlert, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.NHAlert, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group add row">
+                    <label class="control-label col-sm-4 col-12">Sleep: </label>
+                    <div class="col-lg-8 col-sm-8 col-12">
+                        @Html.CheckBoxFor(x => x.IsSleep, new { @class = "" })
+                        @Html.ValidationMessageFor(model => model.IsSleep, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-sm-6 offset-sm-7 offset-md-5 offset-lg-5 text-right">
+                <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Users", "Admin")">Cancel</a>
+                <input type="submit" value="Save" class="btn btn-dark" />
+            </div>
+
+        </div>
+    }
+</div>
+

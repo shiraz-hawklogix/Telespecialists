@@ -1,0 +1,519 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+<script>
+    function SetIndex(index) {
+        $('#hiddenReportText').val(index);
+    }
+</script>
+<ul class="panelbar" id="panelBarMenu">
+    @if (User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))
+    {
+        <li>
+            <h4>Quality Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("QualityMetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,0')">Quality Metrics Report</a></li>
+                <li><a href="@Url.Action("BedsideResponseTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,1')">Bedside Response Report</a></li>
+                <li><a href="@Url.Action("ArivalToNeedleTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,2')">Arrival To Needle Report</a></li>
+                <li><a href="@Url.Action("VerbalOrderTotPATime")" class="loadLinkAsync text-body" onclick="SetIndex('4,3')">Alteplase early mix decision To tPA Report</a></li>
+                <li><a href="@Url.Action("OnScreenTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,4')">On Screen Report</a></li>
+                <li><a href="@Url.Action("ActivationTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,5')">ED Stroke Alert Activation Report</a></li>
+                <li><a href="@Url.Action("SymptomstoNeedleTimeReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,6')">Symptoms-to-Needle Report</a></li>
+                <li><a href="@Url.Action("QualitySummaryReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,7')">Quality Report Summary</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Operation Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("VolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,1')">Volumetric Report</a></li>
+                @*<li><a href="@Url.Action("HourlyVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,2')">Hourly Volumetric Report</a></li>
+        <li><a href="@Url.Action("HourlyMeanVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,3')">Hourly Mean Volumetric Report</a></li>
+        <li><a href="@Url.Action("StatResponseReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,4')">STAT Response Report</a></li>
+        <li><a href="@Url.Action("STATResponseTrends")" class="loadLinkAsync text-body" onclick="SetIndex('5,5')">STAT Response Outliers Report</a></li>
+        <li><a href="@Url.Action("CancelledCasesReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,6')">Cancelled Cases Report</a></li>
+         <li><a href="@Url.Action("facilitySettingsReport")" class="loadLinkAsync text-body" onclick="SetIndex('6,6')">Facility Settings Report</a></li>
+               <li><a href="@Url.Action("UserPresenceReport")" class="loadLinkAsync text-body" onclick="SetIndex('6,7')">User Presence Report</a></li>
+                *@
+            </ul>
+        </li>
+    }
+    else if (User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
+    {
+        <li>
+            <h4>Quality Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("QualityMetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,0')">Quality Metrics Report</a></li>
+                <li><a href="@Url.Action("BedsideResponseTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,1')">Bedside Response Report</a></li>
+                <li><a href="@Url.Action("ArivalToNeedleTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,2')">Arrival To Needle Report</a></li>
+                <li><a href="@Url.Action("VerbalOrderTotPATime")" class="loadLinkAsync text-body" onclick="SetIndex('4,3')">Alteplase early mix decision To tPA Report</a></li>
+                <li><a href="@Url.Action("OnScreenTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,4')">On Screen Report</a></li>
+                <li><a href="@Url.Action("ActivationTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,5')">ED Stroke Alert Activation Report</a></li>
+                <li><a href="@Url.Action("SymptomstoNeedleTimeReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,6')">Symptoms-to-Needle Report</a></li>
+                <li><a href="@Url.Action("QualitySummaryReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,7')">Quality Report Summary</a></li>
+            </ul>
+        </li>
+    }
+    else if (User.IsInRole(UserRoles.CapacityResearcher.ToDescription()))
+    {
+        <li>
+            <h4>Quality Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("QualityMetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,0')">Quality Metrics Report</a></li>
+                <li><a href="@Url.Action("BedsideResponseTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,1')">Bedside Response Report</a></li>
+                <li><a href="@Url.Action("ArivalToNeedleTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,2')">Arrival To Needle Report</a></li>
+                <li><a href="@Url.Action("VerbalOrderTotPATime")" class="loadLinkAsync text-body" onclick="SetIndex('4,3')">Alteplase early mix decision To tPA Report</a></li>
+                <li><a href="@Url.Action("OnScreenTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,4')">On Screen Report</a></li>
+                <li><a href="@Url.Action("ActivationTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,5')">ED Stroke Alert Activation Report</a></li>
+                <li><a href="@Url.Action("SymptomstoNeedleTimeReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,6')">Symptoms-to-Needle Report</a></li>
+                <li><a href="@Url.Action("QualitySummaryReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,7')">Quality Report Summary</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Credential Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,0')">Facility Credentials</a></li>
+                <li><a href="@Url.Action("PhysicianCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,1')">Physician Credentials</a></li>
+                <li><a href="@Url.Action("CredentialingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('1,2')">Credentialing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Licensing Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("PhysicianLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,0')">Physician Licensing</a></li>
+                <li><a href="@Url.Action("StateLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,1')">State Licensing</a></li>
+                <li><a href="@Url.Action("LicensingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('2,2')">Licensing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Operation Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("HandleTime")" class="loadLinkAsync text-body" onclick="SetIndex('5,0')">Handle Time Report</a></li>
+                <li><a href="@Url.Action("VolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,1')">Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,2')">Hourly Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyMeanVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,3')">Hourly Mean Volumetric Report</a></li>
+                <li><a href="@Url.Action("StatResponseReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,4')">STAT Response Report</a></li>
+                <li><a href="@Url.Action("STATResponseTrends")" class="loadLinkAsync text-body" onclick="SetIndex('5,5')">STAT Response Outliers Report</a></li>
+                <li><a href="@Url.Action("CancelledCasesReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,6')">Cancelled Cases Report</a></li>
+                <li><a href="@Url.Action("PhysicianVolumetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,7')">Physician Volumetric Report</a></li>
+                <li><a href="@Url.Action("facilitySettingsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,8')">Facility Settings Report</a></li>
+                <li><a href="@Url.Action("UserPresenceReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,9')">User Presence Report</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Capacity Reports </h4>
+            <ul>
+                <li><a href="@Url.Action("CWHReport")" class="loadLinkAsync text-body" onclick="SetIndex('6,0')">CWH Report</a></li>
+                <li><a href="@Url.Action("RCIReport")" class="loadLinkAsync text-body" onclick="SetIndex('6,1')">RCI Report</a></li>
+            </ul>
+        </li>
+    }
+    else if (User.IsInRole(UserRoles.CredentialingTeam.ToDescription()))
+    {
+        <li>
+            <h4>Quality Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("QualityMetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,0')">Quality Metrics Report</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Licensing Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("PhysicianLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,0')">Physician Licensing</a></li>
+                <li><a href="@Url.Action("StateLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,1')">State Licensing</a></li>
+                <li><a href="@Url.Action("LicensingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('2,2')">Licensing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Credential Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,0')">Facility Credentials</a></li>
+                <li><a href="@Url.Action("PhysicianCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,1')">Physician Credentials</a></li>
+                <li><a href="@Url.Action("CredentialingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('1,2')">Credentialing Performance Metrics</a></li>
+            </ul>
+        </li>
+    }
+    else if (User.IsInRole(UserRoles.QPS.ToDescription()))
+    {
+        <li>
+            <h4>Quality Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("QualityMetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,0')">Quality Metrics Report</a></li>
+                <li><a href="@Url.Action("BedsideResponseTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,1')">Bedside Response Report</a></li>
+                <li><a href="@Url.Action("ArivalToNeedleTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,2')">Arrival To Needle Report</a></li>
+                <li><a href="@Url.Action("VerbalOrderTotPATime")" class="loadLinkAsync text-body" onclick="SetIndex('4,3')">Alteplase early mix decision To tPA Report</a></li>
+                <li><a href="@Url.Action("OnScreenTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,4')">On Screen Report</a></li>
+                <li><a href="@Url.Action("ActivationTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,5')">ED Stroke Alert Activation Report</a></li>
+                <li><a href="@Url.Action("SymptomstoNeedleTimeReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,6')">Symptoms-to-Needle Report</a></li>
+                <li><a href="@Url.Action("QualitySummaryReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,7')">Quality Report Summary</a></li>
+            </ul>
+        </li>
+    }
+    else if (User.IsInRole(UserRoles.RRCManager.ToDescription()))
+    {
+        <li>
+            <h4>Licensing Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("PhysicianLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,0')">Physician Licensing</a></li>
+                <li><a href="@Url.Action("StateLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,1')">State Licensing</a></li>
+                <li><a href="@Url.Action("LicensingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('2,2')">Licensing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Credential Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,0')">Facility Credentials</a></li>
+                <li><a href="@Url.Action("PhysicianCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,1')">Physician Credentials</a></li>
+                <li><a href="@Url.Action("CredentialingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('1,2')">Credentialing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Operation Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("HandleTime")" class="loadLinkAsync text-body" onclick="SetIndex('5,0')">Handle Time Report</a></li>
+                <li><a href="@Url.Action("VolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,1')">Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,2')">Hourly Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyMeanVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,3')">Hourly Mean Volumetric Report</a></li>
+                <li><a href="@Url.Action("StatResponseReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,4')">STAT Response Report</a></li>
+                <li><a href="@Url.Action("STATResponseTrends")" class="loadLinkAsync text-body" onclick="SetIndex('5,5')">STAT Response Outliers Report</a></li>
+                <li><a href="@Url.Action("CancelledCasesReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,6')">Cancelled Cases Report</a></li>
+                <li><a href="@Url.Action("PhysicianVolumetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,7')">Physician Volumetric Report</a></li>
+                <li><a href="@Url.Action("facilitySettingsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,8')">Facility Settings Report</a></li>
+            </ul>
+        </li>
+    }
+    else if (User.IsInRole(UserRoles.RRCDirector.ToDescription()))
+    {
+        <li>
+            <h4> Billing Reports </h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityBillingReport")" class="loadLinkAsync text-body" onclick="SetIndex('0,0')">Facility Billing Report</a></li>
+                <li><a href="@Url.Action("FacilityBillingWithMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('0,1')">Facility Billing with Metrics</a></li>
+                <li><a href="@Url.Action("PhysicianBillingByShift")" class="loadLinkAsync text-body" onclick="SetIndex('0,2')">Physician Billing by Shift</a></li>
+                <li><a href="@Url.Action("PhysicianBillingWithMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('0,3')">Physician Billing with Metrics</a></li>
+                <li><a href="@Url.Action("PhysicianBillingByConsult")" class="loadLinkAsync text-body" onclick="SetIndex('0,4')">Physician Billing by Consult</a></li>
+                <li><a href="@Url.Action("PhysicianBillingAmount")" class="loadLinkAsync text-body" onclick="SetIndex('0,5')">Physician Billing by Amount</a></li>
+                <li><a href="@Url.Action("PhysicianBillingAmount_new")" class="loadLinkAsync text-body" onclick="SetIndex('0,6')">Physician Billing by Amount (New)</a></li>
+                <li><a href="@Url.Action("FacilityReportByBilling")" class="loadLinkAsync text-body" onclick="SetIndex('0,7')">Facility Billing by Amount</a></li>
+            </ul>
+        </li>
+
+
+        <li>
+            <h4>Credential Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,0')">Facility Credentials</a></li>
+                <li><a href="@Url.Action("PhysicianCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,1')">Physician Credentials</a></li>
+                <li><a href="@Url.Action("CredentialingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('1,2')">Credentialing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Licensing Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("PhysicianLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,0')">Physician Licensing</a></li>
+                <li><a href="@Url.Action("StateLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,1')">State Licensing</a></li>
+                <li><a href="@Url.Action("LicensingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('2,2')">Licensing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Physician Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("CaseAssignHistory")" class="loadLinkAsync text-body" onclick="SetIndex('3,0')">Assignment History</a></li>
+            </ul>
+        </li>
+
+        <li>
+            <h4>Quality Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("QualityMetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,0')">Quality Metrics Report</a></li>
+                <li><a href="@Url.Action("BedsideResponseTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,1')">Bedside Response Report</a></li>
+                <li><a href="@Url.Action("ArivalToNeedleTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,2')">Arrival To Needle Report</a></li>
+                <li><a href="@Url.Action("VerbalOrderTotPATime")" class="loadLinkAsync text-body" onclick="SetIndex('4,3')">Alteplase early mix decision To tPA Report</a></li>
+                <li><a href="@Url.Action("OnScreenTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,4')">On Screen Report</a></li>
+                <li><a href="@Url.Action("ActivationTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,5')">ED Stroke Alert Activation Report</a></li>
+                <li><a href="@Url.Action("SymptomstoNeedleTimeReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,6')">Symptoms-to-Needle Report</a></li>
+                <li><a href="@Url.Action("QualitySummaryReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,7')">Quality Report Summary</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Operation Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("HandleTime")" class="loadLinkAsync text-body" onclick="SetIndex('5,0')">Handle Time Report</a></li>
+                <li><a href="@Url.Action("VolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,1')">Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,2')">Hourly Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyMeanVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,3')">Hourly Mean Volumetric Report</a></li>
+                <li><a href="@Url.Action("StatResponseReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,4')">STAT Response Report</a></li>
+                <li><a href="@Url.Action("STATResponseTrends")" class="loadLinkAsync text-body" onclick="SetIndex('5,5')">STAT Response Outliers Report</a></li>
+                <li><a href="@Url.Action("CancelledCasesReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,6')">Cancelled Cases Report</a></li>
+                <li><a href="@Url.Action("PhysicianVolumetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,7')">Physician Volumetric Report</a></li>
+                <li><a href="@Url.Action("facilitySettingsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,8')">Facility Settings Report</a></li>
+            </ul>
+        </li>
+    }
+    else if (User.IsInRole(UserRoles.VPQuality.ToDescription()))
+    {
+        <li>
+            <h4> Billing Reports </h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityBillingReport")" class="loadLinkAsync text-body" onclick="SetIndex('0,0')">Facility Billing Report</a></li>
+                <li><a href="@Url.Action("FacilityBillingWithMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('0,1')">Facility Billing with Metrics</a></li>
+                <li><a href="@Url.Action("PhysicianBillingByShift")" class="loadLinkAsync text-body" onclick="SetIndex('0,2')">Physician Billing by Shift</a></li>
+                <li><a href="@Url.Action("PhysicianBillingWithMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('0,3')">Physician Billing with Metrics</a></li>
+                <li><a href="@Url.Action("PhysicianBillingByConsult")" class="loadLinkAsync text-body" onclick="SetIndex('0,4')">Physician Billing by Consult</a></li>
+                <li><a href="@Url.Action("PhysicianBillingAmount")" class="loadLinkAsync text-body" onclick="SetIndex('0,5')">Physician Billing by Amount</a></li>
+                <li><a href="@Url.Action("PhysicianBillingAmount_new")" class="loadLinkAsync text-body" onclick="SetIndex('0,6')">Physician Billing by Amount (New)</a></li>
+                <li><a href="@Url.Action("FacilityReportByBilling")" class="loadLinkAsync text-body" onclick="SetIndex('0,7')">Facility Billing by Amount</a></li>
+            </ul>
+        </li>
+
+
+        <li>
+            <h4>Credential Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,0')">Facility Credentials</a></li>
+                <li><a href="@Url.Action("PhysicianCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,1')">Physician Credentials</a></li>
+                <li><a href="@Url.Action("CredentialingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('1,2')">Credentialing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Licensing Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("PhysicianLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,0')">Physician Licensing</a></li>
+                <li><a href="@Url.Action("StateLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,1')">State Licensing</a></li>
+                <li><a href="@Url.Action("LicensingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('2,2')">Licensing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Physician Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("CaseAssignHistory")" class="loadLinkAsync text-body" onclick="SetIndex('3,0')">Assignment History</a></li>
+            </ul>
+        </li>
+
+        <li>
+            <h4>Quality Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("QualityMetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,0')">Quality Metrics Report</a></li>
+                <li><a href="@Url.Action("BedsideResponseTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,1')">Bedside Response Report</a></li>
+                <li><a href="@Url.Action("ArivalToNeedleTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,2')">Arrival To Needle Report</a></li>
+                <li><a href="@Url.Action("VerbalOrderTotPATime")" class="loadLinkAsync text-body" onclick="SetIndex('4,3')">Alteplase early mix decision To tPA Report</a></li>
+                <li><a href="@Url.Action("OnScreenTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,4')">On Screen Report</a></li>
+                <li><a href="@Url.Action("ActivationTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,5')">ED Stroke Alert Activation Report</a></li>
+                <li><a href="@Url.Action("SymptomstoNeedleTimeReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,6')">Symptoms-to-Needle Report</a></li>
+                <li><a href="@Url.Action("QualitySummaryReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,7')">Quality Report Summary</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Operation Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("HandleTime")" class="loadLinkAsync text-body" onclick="SetIndex('5,0')">Handle Time Report</a></li>
+                <li><a href="@Url.Action("VolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,1')">Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,2')">Hourly Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyMeanVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,3')">Hourly Mean Volumetric Report</a></li>
+                <li><a href="@Url.Action("StatResponseReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,4')">STAT Response Report</a></li>
+                <li><a href="@Url.Action("STATResponseTrends")" class="loadLinkAsync text-body" onclick="SetIndex('5,5')">STAT Response Outliers Report</a></li>
+                <li><a href="@Url.Action("CancelledCasesReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,6')">Cancelled Cases Report</a></li>
+                <li><a href="@Url.Action("PhysicianVolumetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,7')">Physician Volumetric Report</a></li>
+                <li><a href="@Url.Action("facilitySettingsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,8')">Facility Settings Report</a></li>
+            </ul>
+        </li>
+
+    }
+
+    else if (User.IsInRole(UserRoles.QualityDirector.ToDescription()))
+    {
+
+        <li>
+            <h4>Quality Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("QualityMetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,0')">Quality Metrics Report</a></li>
+                <li><a href="@Url.Action("BedsideResponseTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,1')">Bedside Response Report</a></li>
+                <li><a href="@Url.Action("ArivalToNeedleTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,2')">Arrival To Needle Report</a></li>
+                <li><a href="@Url.Action("VerbalOrderTotPATime")" class="loadLinkAsync text-body" onclick="SetIndex('4,3')">Alteplase early mix decision To tPA Report</a></li>
+                <li><a href="@Url.Action("OnScreenTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,4')">On Screen Report</a></li>
+                <li><a href="@Url.Action("ActivationTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,5')">ED Stroke Alert Activation Report</a></li>
+                <li><a href="@Url.Action("SymptomstoNeedleTimeReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,6')">Symptoms-to-Needle Report</a></li>
+                <li><a href="@Url.Action("QualitySummaryReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,7')">Quality Report Summary</a></li>
+            </ul>
+        </li>
+
+    }
+
+    else if (User.IsInRole(UserRoles.Finance.ToDescription()))
+    {
+        <li>
+            <h4> Billing Reports </h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityBillingReport")" class="loadLinkAsync text-body" onclick="SetIndex('0,0')">Facility Billing Report</a></li>
+                <li><a href="@Url.Action("FacilityBillingWithMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('0,1')">Facility Billing with Metrics</a></li>
+                <li><a href="@Url.Action("PhysicianBillingByShift")" class="loadLinkAsync text-body" onclick="SetIndex('0,2')">Physician Billing by Shift</a></li>
+                <li><a href="@Url.Action("PhysicianBillingWithMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('0,3')">Physician Billing with Metrics</a></li>
+                <li><a href="@Url.Action("PhysicianBillingByConsult")" class="loadLinkAsync text-body" onclick="SetIndex('0,4')">Physician Billing by Consult</a></li>
+                <li><a href="@Url.Action("PhysicianBillingAmount")" class="loadLinkAsync text-body" onclick="SetIndex('0,5')">Physician Billing by Amount</a></li>
+                <li><a href="@Url.Action("PhysicianBillingAmount_new")" class="loadLinkAsync text-body" onclick="SetIndex('0,6')">Physician Billing by Amount (New)</a></li>
+                <li><a href="@Url.Action("FacilityReportByBilling")" class="loadLinkAsync text-body" onclick="SetIndex('0,7')">Facility Billing by Amount</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Credential Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,0')">Facility Credentials</a></li>
+                <li><a href="@Url.Action("PhysicianCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,1')">Physician Credentials</a></li>
+                <li><a href="@Url.Action("CredentialingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('1,2')">Credentialing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Licensing Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("PhysicianLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,0')">Physician Licensing</a></li>
+                <li><a href="@Url.Action("StateLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,1')">State Licensing</a></li>
+                <li><a href="@Url.Action("LicensingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('2,2')">Licensing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Operation Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("HandleTime")" class="loadLinkAsync text-body" onclick="SetIndex('5,0')">Handle Time Report</a></li>
+                <li><a href="@Url.Action("VolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,1')">Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,2')">Hourly Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyMeanVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,3')">Hourly Mean Volumetric Report</a></li>
+                <li><a href="@Url.Action("StatResponseReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,4')">STAT Response Report</a></li>
+                <li><a href="@Url.Action("STATResponseTrends")" class="loadLinkAsync text-body" onclick="SetIndex('5,5')">STAT Response Outliers Report</a></li>
+                <li><a href="@Url.Action("CancelledCasesReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,6')">Cancelled Cases Report</a></li>
+                <li><a href="@Url.Action("PhysicianVolumetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,7')">Physician Volumetric Report</a></li>
+                <li><a href="@Url.Action("facilitySettingsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,8')">Facility Settings Report</a></li>
+            </ul>
+        </li>
+
+    }
+    else if (User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
+    {
+
+        <li>
+            <h4>Credential Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('0,0')">Facility Credentials</a></li>
+                <li><a href="@Url.Action("PhysicianCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('0,1')">Physician Credentials</a></li>
+                <li><a href="@Url.Action("CredentialingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('1,2')">Credentialing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Licensing Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("PhysicianLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('1,0')">Physician Licensing</a></li>
+                <li><a href="@Url.Action("StateLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('1,1')">State Licensing</a></li>
+                <li><a href="@Url.Action("LicensingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('2,2')">Licensing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Physician Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("CaseAssignHistory")" class="loadLinkAsync text-body" onclick="SetIndex('2,0')">Assignment History</a></li>
+            </ul>
+        </li>
+
+        <li>
+            <h4>Quality Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("QualityMetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('3,0')">Quality Metrics Report</a></li>
+                <li><a href="@Url.Action("BedsideResponseTime")" class="loadLinkAsync text-body" onclick="SetIndex('3,1')">Bedside Response Report</a></li>
+                <li><a href="@Url.Action("ArivalToNeedleTime")" class="loadLinkAsync text-body" onclick="SetIndex('3,2')">Arrival To Needle Report</a></li>
+                <li><a href="@Url.Action("VerbalOrderTotPATime")" class="loadLinkAsync text-body" onclick="SetIndex('3,3')">Alteplase early mix decision To tPA Report</a></li>
+                <li><a href="@Url.Action("OnScreenTime")" class="loadLinkAsync text-body" onclick="SetIndex('3,4')">On Screen Report</a></li>
+                <li><a href="@Url.Action("ActivationTime")" class="loadLinkAsync text-body" onclick="SetIndex('3,5')">ED Stroke Alert Activation Report</a></li>
+                <li><a href="@Url.Action("SymptomstoNeedleTimeReport")" class="loadLinkAsync text-body" onclick="SetIndex('3,6')">Symptoms-to-Needle Report</a></li>
+                <li><a href="@Url.Action("QualitySummaryReport")" class="loadLinkAsync text-body" onclick="SetIndex('3,7')">Quality Report Summary</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Operation Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("HandleTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,0')">Handle Time Report</a></li>
+                <li><a href="@Url.Action("VolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,1')">Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,2')">Hourly Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyMeanVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,3')">Hourly Mean Volumetric Report</a></li>
+                <li><a href="@Url.Action("StatResponseReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,4')">STAT Response Report</a></li>
+                <li><a href="@Url.Action("STATResponseTrends")" class="loadLinkAsync text-body" onclick="SetIndex('5,5')">STAT Response Outliers Report</a></li>
+                <li><a href="@Url.Action("CancelledCasesReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,6')">Cancelled Cases Report</a></li>
+                <li><a href="@Url.Action("PhysicianVolumetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,7')">Physician Volumetric Report</a></li>
+                <li><a href="@Url.Action("facilitySettingsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,8')">Facility Settings Report</a></li>
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li>
+            <h4> Billing Reports </h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityBillingReport")" class="loadLinkAsync text-body" onclick="SetIndex('0,0')">Facility Billing Report</a></li>
+                <li><a href="@Url.Action("FacilityBillingWithMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('0,1')">Facility Billing with Metrics</a></li>
+                <li><a href="@Url.Action("PhysicianBillingByShift")" class="loadLinkAsync text-body" onclick="SetIndex('0,2')">Physician Billing by Shift</a></li>
+                <li><a href="@Url.Action("PhysicianBillingWithMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('0,3')">Physician Billing with Metrics</a></li>
+                <li><a href="@Url.Action("PhysicianBillingByConsult")" class="loadLinkAsync text-body" onclick="SetIndex('0,4')">Physician Billing by Consult</a></li>
+                <li><a href="@Url.Action("PhysicianBillingAmount")" class="loadLinkAsync text-body" onclick="SetIndex('0,5')">Physician Billing by Amount</a></li>
+                <li><a href="@Url.Action("PhysicianBillingAmount_new")" class="loadLinkAsync text-body" onclick="SetIndex('0,6')">Physician Billing by Amount (New)</a></li>
+                <li><a href="@Url.Action("FacilityReportByBilling")" class="loadLinkAsync text-body" onclick="SetIndex('0,7')">Facility Billing by Amount</a></li>
+            </ul>
+        </li>
+
+
+        <li>
+            <h4>Credential Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("FacilityCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,0')">Facility Credentials</a></li>
+                <li><a href="@Url.Action("PhysicianCredentials")" class="loadLinkAsync text-body" onclick="SetIndex('1,1')">Physician Credentials</a></li>
+                <li><a href="@Url.Action("CredentialingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('1,2')">Credentialing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Licensing Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("PhysicianLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,0')">Physician Licensing</a></li>
+                <li><a href="@Url.Action("StateLicensing")" class="loadLinkAsync text-body" onclick="SetIndex('2,1')">State Licensing</a></li>
+                <li><a href="@Url.Action("LicensingPerformanceMetrics")" class="loadLinkAsync text-body" onclick="SetIndex('2,2')">Licensing Performance Metrics</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Physician Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("CaseAssignHistory")" class="loadLinkAsync text-body" onclick="SetIndex('3,0')">Assignment History</a></li>
+            </ul>
+        </li>
+
+        <li>
+            <h4>Quality Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("QualityMetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,0')">Quality Metrics Report</a></li>
+                <li><a href="@Url.Action("BedsideResponseTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,1')">Bedside Response Report</a></li>
+                <li><a href="@Url.Action("ArivalToNeedleTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,2')">Arrival To Needle Report</a></li>
+                <li><a href="@Url.Action("VerbalOrderTotPATime")" class="loadLinkAsync text-body" onclick="SetIndex('4,3')">Alteplase early mix decision To tPA Report</a></li>
+                <li><a href="@Url.Action("OnScreenTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,4')">On Screen Report</a></li>
+                <li><a href="@Url.Action("ActivationTime")" class="loadLinkAsync text-body" onclick="SetIndex('4,5')">ED Stroke Alert Activation Report</a></li>
+                <li><a href="@Url.Action("SymptomstoNeedleTimeReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,6')">Symptoms-to-Needle Report</a></li>
+                <li><a href="@Url.Action("QualitySummaryReport")" class="loadLinkAsync text-body" onclick="SetIndex('4,7')">Quality Report Summary</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Operation Reports</h4>
+            <ul>
+                <li><a href="@Url.Action("HandleTime")" class="loadLinkAsync text-body" onclick="SetIndex('5,0')">Handle Time Report</a></li>
+                <li><a href="@Url.Action("VolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,1')">Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,2')">Hourly Volumetric Report</a></li>
+                <li><a href="@Url.Action("HourlyMeanVolumeMetricsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,3')">Hourly Mean Volumetric Report</a></li>
+                <li><a href="@Url.Action("StatResponseReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,4')">STAT Response Report</a></li>
+                <li><a href="@Url.Action("STATResponseTrends")" class="loadLinkAsync text-body" onclick="SetIndex('5,5')">STAT Response Outliers Report</a></li>
+                <li><a href="@Url.Action("CancelledCasesReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,6')">Cancelled Cases Report</a></li>
+                <li><a href="@Url.Action("PhysicianVolumetricReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,7')">Physician Volumetric Report</a></li>
+                <li><a href="@Url.Action("facilitySettingsReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,8')">Facility Settings Report</a></li>
+                <li><a href="@Url.Action("UserPresenceReport")" class="loadLinkAsync text-body" onclick="SetIndex('5,9')">User Presence Report</a></li>
+            </ul>
+        </li>
+        <li>
+            <h4>Capacity Reports </h4>
+            <ul>
+                <li><a href="@Url.Action("CWHReport")" class="loadLinkAsync text-body" onclick="SetIndex('6,0')">CWH Report</a></li>
+                <li><a href="@Url.Action("RCIReport")" class="loadLinkAsync text-body" onclick="SetIndex('6,1')">RCI Report</a></li>
+            </ul>
+        </li>
+    }
+
+</ul>

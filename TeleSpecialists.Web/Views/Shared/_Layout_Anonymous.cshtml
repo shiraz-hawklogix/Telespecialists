@@ -1,0 +1,65 @@
+﻿@using TeleSpecialists.BLL;
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="~/telerCare.ico" />
+    <title>TeleSpecialists - Login</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryval")
+    <link href="~/Content/LoginStyle.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+          var enableJSLogging = @(Settings.EnableJavascriptConsoleLogging.ToString().ToLower());
+    </script>
+</head>
+<body class="login-body" style="background-image: url(&quot;/Content/images/bg-01.jpg&quot;);">
+
+
+    <section class="col-lg-3 col-sm-12 col-md-4 col-xs-12 side-bg">
+        <div class="login-bg">
+            <section class="page-wrap">
+                <article class="page-wrap-form">
+                    <div class="logo-sec">
+                        @*<h2><span class="col-h">T</span>ELE<span class="col-h">C</span>ARE</h2>
+                            <h4>Software Solutions</h4>*@
+                        <img class="img-responsive img-sm-resp" src="~/Content/images/logo-header.png">
+                    </div>
+                    <div id="form2">
+                        @RenderBody()
+
+                    </div>
+
+                </article>
+            </section>
+            <footer class="site-footer">
+                <div class="row">
+                    <div class="col-sm-12 col-lg-12 bold">Copyright @DateTime.Now.Year TeleSpecialists, LLC.</div>
+                    <div class="col-lg-12 col-sm-12 bold "> All rights reserved.</div>
+                </div>
+            </footer>
+            @*<footer class="site-footer">
+                    <p><strong>Copyright @DateTime.Now.Year TeleSpecialists, LLC. All rights reserved.</strong></p>
+                </footer>*@
+        </div>
+    </section>
+
+
+
+
+
+    <div id="progressimg" class="loadingimg d-none"></div>
+
+    @*<script type="text/javascript">
+        var images = ['bg-01.jpg', 'bg-02.jpg'];
+        $('body').css({ 'background-image': 'url(/Content/images/' + images[Math.floor(Math.random() * 2)] + ')' });
+    </script>*@
+
+</body>
+</html>

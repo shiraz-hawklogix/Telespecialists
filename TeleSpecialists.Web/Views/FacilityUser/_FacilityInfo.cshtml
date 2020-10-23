@@ -1,0 +1,407 @@
+﻿@model TeleSpecialists.BLL.Model.@case
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@{
+    Layout = "";
+    var isCartMandatroy = ViewBag.CaseTypeKey.Equals((int)CaseType.StrokeAlert) || ViewBag.CaseTypeKey.Equals((int)CaseType.StatConsult) ? true : false;
+    var isCallBackMandatroy = ViewBag.CaseTypeKey.Equals((int)CaseType.StrokeAlert)
+                              || ViewBag.CaseTypeKey.Equals((int)CaseType.StatConsult)
+                              || ViewBag.CaseTypeKey.Equals((int)CaseType.LongTermEEG)
+                              || ViewBag.CaseTypeKey.Equals((int)CaseType.RoutineEEG)
+                              || ViewBag.CaseTypeKey.Equals((int)CaseType.StatEEG)
+                              || ViewBag.CaseTypeKey.Equals((int)CaseType.NursetoDr)
+                              || ViewBag.CaseTypeKey.Equals((int)CaseType.DrtoDr)
+                              ? true : false;
+    var iscartdisplay = ViewBag.CaseTypeKey.Equals((int)CaseType.NursetoDr) || ViewBag.CaseTypeKey.Equals((int)CaseType.DrtoDr) ? true : false;
+}
+
+<input type="hidden" id="case-type-name" name="case-type-name" value="@ViewBag.CaseType" />
+<input type="hidden" id="case-f9-domain" name="case-f9-domain" value="@ViewBag.f9Domain" />
+<input type="hidden" id="case-f9-call-number" name="case-f9-call-number" value="@ViewBag.f9CallNumber" />
+<input type="hidden" id="case-f9list" value="@ViewBag.f9List"/>
+<div class="row">
+    <div class="col-lg-8 col-md-10 col-12 offset-md-1">
+        <h3>Facility Information</h3>
+        <span class="@ViewBag.ClassName col-md-5 col-12 eAlert-sub-heading">@ViewBag.CaseType</span>
+        <hr class="mt-4" />
+    </div>
+</div>
+<div class="row col-md-4 col-md-7 col-lg-5 col-xl-4 p-2 mx-auto d-none" id="warning-no-facility">
+    <div class="col-12  dashboard-indicators p-2">
+        <label class="font-weight-normal">No Facility assigned to the user. Please contact your system administrator.</label>
+    </div>
+</div>
+<div class="row add-facility-info d-none">
+    <form method="post" class="form-horizontal col-12 ajax-form" id="createForm" action="@(Url.Action("Create", "Case"))">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(m => m.cas_ctp_key, new { id = "facility-info-cas-key" })
+        @Html.HiddenFor(m => m.cas_cst_key, new { id = "facility-info-case-status" })
+        @Html.HiddenFor(m => m.cas_identification_type)
+        <input type="hidden" id="cas_call_type" name="cas_call_type" value="@CallType.Direct.ToInt()" />
+
+        <input id="cas_is_ealert" name="cas_is_ealert" type="hidden" value="true" />
+        <input type="hidden" name="RedirectPage" id="RedirectPage" value="0" />
+        <div class="col-md-10 col-12 offset-md-1">
+            <div class="form-group row">
+                <label class="col-4 text-danger control-label ">Facility: </label>
+                <div class="col-lg-6 col-md-8 col-8">
+                    <select id="cas_fac_key" name="cas_fac_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.cas_fac_key : Guid.Empty)" required></select>
+                    <input type="text" class="form-control d-none" id="txt-facility-info-facility" value="" disabled="disabled" />
+                    @Html.TextBoxFor(m => m.cas_fac_key, new { id = "id-facility-info-facility", @class = "d-none ", @required = "required" })
+                    <div id="cas_fac_key-error" class="error_msg" style="display:none;">
+                        <label for="cas_fac_key">This field is required</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row @(isCartMandatroy ? "text-danger" : "")" @(iscartdisplay ? "style=display:none" : "")>
+                <label class="col-4 control-label">Cart: </label>
+                <div class="col-lg-6 col-md-8 col-8">
+                    @if (isCartMandatroy)
+                    {
+                        <select id="casecart" name="casecart" class="form-control addValidation" required></select>
+                        @Html.ValidationMessage("casecart", "", new { @class = "text-danger" })
+                    }
+                    else
+                    {
+                        <select id="casecart" name="casecart" class="form-control addValidation"></select>
+                    }
+
+                </div>
+            </div>
+            <div class="form-group row @(isCartMandatroy ? "text-danger" : "")" style="display:none" id="othercart">
+                <label class="col-4 control-label">Other Cart: </label>
+                <div class="col-lg-6 col-md-8 col-8">
+                    @if (isCartMandatroy)
+                    {
+                        @Html.TextBoxFor(m => m.cas_cart, new { @class = "form-control", id = "facility-info-cart", @required = "required" })
+                        @Html.ValidationMessageFor(m => m.cas_cart, "", new { @class = "text-danger" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.cas_cart, new { @class = "form-control", id = "facility-info-cart" })
+                    }
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-4 control-label @(isCallBackMandatroy ? "text-danger" : "")">Callback Phone: </label>
+                <div class="col-lg-6 col-md-8 col-8">
+                    @if (isCallBackMandatroy)
+                    {
+                        @Html.TextBoxFor(m => m.cas_callback, new { @class = "form-control phone_number", id = "facility-info-callbackphone", @required = "required" })
+                        @Html.ValidationMessageFor(m => m.cas_callback, "", new { @class = "text-danger" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.cas_callback, new { @class = "form-control phone_number", id = "facility-info-callbackphone" })
+                    }
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-4 control-label">Extension: </label>
+                <div class="col-lg-6 col-md-8 col-8">
+                    @Html.TextBoxFor(m => m.cas_callback_extension, new { @class = "form-control type_integer", @maxlength = "10", id = "facility-info-extension" })
+                    @Html.ValidationMessageFor(m => m.cas_callback_extension, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @*<div class="form-group row @(ViewBag.CaseTypeKey.Equals((int)CaseType.NursetoDr) ? "" : "d-none")">*@
+                <div class="form-group row">
+                    <label class="col-4 control-label">Caller: </label>
+                    <div class="col-lg-6 col-md-8 col-8">
+                        @Html.TextBoxFor(m => m.cas_caller, new { @class = "form-control", id = "facility-info-caller" })
+                    </div>
+                </div>
+                <div class="form-group row @(ViewBag.CaseTypeKey.Equals((int)CaseType.DrtoDr)
+                                        || ViewBag.CaseTypeKey.Equals((int)CaseType.RoundingNew)
+                                        || ViewBag.CaseTypeKey.Equals((int)CaseType.RoundingFollowUp)? "": "d-none")">
+                    <label class="col-4 control-label">Referring Physician:</label>
+                    <div class="col-lg-6 col-md-8 col-8">
+                        @Html.TextBoxFor(m => m.cas_referring_physician, new { @class = "form-control", id = "facility-info-reffering-physician" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4 ">
+                        @if (!ViewBag.IsItDashboard)
+                        {
+                            <input type="button" class="btn btn-dark" value="Back" id="btnback_facilityInfo" onclick="navigateToDashBoard()" />
+                        }
+                    </div>
+                    <div class="col-lg-6 col-md-8 col-8 text-right">
+                        <input type="button" class="btn btn-dark" value="Activate Consult" id="btnActivateConsult_facilityInfo" />
+                    </div>
+                </div>
+            </div>
+</form>
+</div>
+<div id="webcampaignresult" class="d-none">
+
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        maskPhoneNumber();
+        var isProcessingRequest = false;
+        loadUserAssignedFacilities();
+        $("#mainContentArea").find("#validationSummary").empty();
+        $("#facility-info-callbackphone").focus();
+        $("#facility-info-case-status").val('@((int)CaseStatus.Open)');
+        $("#facility-info-cas-key").val(@ViewBag.CaseTypeKey);
+        $("#btnActivateConsult_facilityInfo").off("click").click(function () {
+            $(this).disable();
+            if (!isProcessingRequest) {
+                isProcessingRequest = true;
+                if ($("#txt-facility-info-facility").is('.d-none')) {
+                    $("#id-facility-info-facility").val($('#cas_fac_key').data('kendoDropDownList').value());
+                    $("#txt-facility-info-facility").val($('#cas_fac_key').data('kendoDropDownList').text());
+                    isProcessingRequest = false;
+                    $(this).enable();
+                }
+                $("#cas_fac_key-error").hide();
+                if (!$("#createForm").valid()) {
+                    if ($("#id-facility-info-facility").val() == "") {
+                        $("#cas_fac_key-error").show();
+                    }
+                    $("#createForm").validate();
+                    isProcessingRequest = false;
+                    $(this).enable();
+                }
+                else {
+                    if ($("#id-facility-info-facility").val() == "") {
+                        $("#cas_fac_key-error").show();
+                        isProcessingRequest = false;
+                        $(this).enable();
+                    }
+                    else {
+                        $("#createForm").submit();
+                    }
+                }
+            }
+        });
+        $('#createForm').submit(function (e) {
+            e.preventDefault();
+            $('#btnActivateConsult_facilityInfo').disable();
+            $.ajax({
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                method: "post",
+                success: function (response) {
+                    if (response.success) {
+                        //navigateToPatientInfo(response.data.cas_key);
+                        if (response.data != null) {
+
+                           
+
+                            if (response.data.cas_ctp_key == @CaseType.StrokeAlert.ToInt() || response.data.cas_ctp_key == @CaseType.StatConsult.ToInt()) {
+                                // send call request to five9 to inform navigator about case
+
+                                var f9DomainValue = $("#case-f9-domain").val();
+                                var f9CallNumber = $("#case-f9-call-number").val();
+                                if (f9DomainValue != undefined && f9DomainValue != null && f9DomainValue != ""
+                                    && f9CallNumber != undefined && f9CallNumber != null && f9CallNumber != "") {
+                                    sendCallRequestToFive9(response.data, f9CallNumber, f9DomainValue);
+                                }
+                                else {
+                                    ("#divModelPopUp .modal-body").append("<br/> Unable to send Five9 call request. Please contact your system administrator.");
+                                    $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Unable to send Five9 call request. Please check Five9 number and domain.");
+                                }
+                            }
+                            else {
+                                consultConfirmation("#" + response.data.cas_case_number, response.data.cas_metric_stamp_time_formated);
+                            }
+                        }
+                    }
+                    else {
+                        $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", response.message);
+                    }
+                },
+                complete: function () {
+                    isProcessingRequest = false;
+                    $('#btnActivateConsult_facilityInfo').enable();
+                }
+            });
+        });
+
+        function sendCallRequestToFive9(data, f9Number, f9Domain) {
+            try {
+                var f9List = $.trim($("#case-f9list").val());
+                var case_number = ((data.cas_case_number == undefined) ? '' : data.cas_case_number);
+                var case_type = $("#case-type-name").val();
+                var facility_name = $("#txt-facility-info-facility").val();
+                var callback_number = ((data.cas_callback == undefined) ? '' : data.cas_callback);
+                var callback_extension = ((data.cas_callback_extension == undefined) ? '' : data.cas_callback_extension);
+                var cart = ((data.cas_cart == undefined) ? '' : data.cas_cart);
+                var five9ApiUrl = 'https://api.five9.com/web2campaign/AddToList?F9domain=' + f9Domain + '&F9list=' + f9List;
+                five9ApiUrl += '&F9key=case_number&F9updateCRM=1&case_number=' + case_number;
+                five9ApiUrl += '&number1=' + f9Number;
+                five9ApiUrl += '&case_type=' + case_type + '&Facility Name=' + facility_name + '&cart=' + cart + '&callback_number=' + callback_number;
+                five9ApiUrl += '&callback_extension=' + callback_extension + '&F9CallASAP=0&F9retResults=1';
+                //$.ajax(five9ApiUrl, null, function (response) {
+                //   // Nothing to do here ...
+                //    $("#webcampaignresult").empty().html(response);
+                //    logWeb2Campaign(data.cas_key, response);
+                //});
+                logInitialRequest(data.cas_key, five9ApiUrl);
+                postDataToFiveData(five9ApiUrl,data).done(function (response) {
+                    consultConfirmation("#" + data.cas_case_number, data.cas_metric_stamp_time_formated);
+                });
+            }
+            catch (e) {
+                logWeb2Campaign(data.cas_key, { success: false, message: e });
+            }
+        }
+
+        function postDataToFiveData(url, data) {
+            var defer = $.Deferred();
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: null,
+                error: function (xhr, error) {
+
+                    logWeb2Campaign(data.cas_key, { success: false, message: error });
+                    defer.resolve(false);
+
+                },
+                success: function (response) {
+                    $("#webcampaignresult").empty().html(response);
+                    logWeb2Campaign(data.cas_key, { success: true, message: "" });
+                    defer.resolve(true);
+                }
+            });
+
+            return defer.promise();
+        }
+        function logInitialRequest(cas_key, requestUrl) {
+            var data = {
+
+                "wcl_cas_key": cas_key,
+                "wcl_browser_name": getBrowserName(),
+                "wcl_error_code": "0",
+                "wcl_error_description": "Sent Request to Five 9",
+                "wcl_request_url": requestUrl
+            };
+
+            var url = '/Web2CampaignLog/Add';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                },
+                error: function (error) {
+                    logToConsole(error);
+                }
+            });
+        }
+
+        function logWeb2Campaign(cas_key, response) {
+            var data = {
+
+                "wcl_cas_key": cas_key,
+                "wcl_browser_name": getBrowserName(),
+                "wcl_error_code": "",
+                "wcl_error_description": "",
+                "wcl_raw_result": ""
+            };
+
+            try {
+                
+
+                if (response.success) {
+                    var result = $("#webcampaignresult").find("form").serializeToJson();
+                    data.wcl_error_code = result.F9errCode,
+                        data.wcl_error_description = result.F9errDesc,
+                        data.wcl_raw_result = btoa(JSON.stringify(result))
+                }
+                else {
+                    data.wcl_error_code = "TC-Error";
+                    var message = "";
+                    if (response.message.message != undefined)
+                        message += response.message.message + "#";
+                    if (response.message.stack != undefined)
+                        message += response.message.stack;
+
+                    data.wcl_error_description = message;
+                }
+
+            }
+            catch (error) {
+                data.wcl_error_code = "TC-Error";               
+                data.wcl_error_description = "Error occured with updating the log entry";
+            }
+
+
+            var url = '/Web2CampaignLog/Update';
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                },
+                error: function (error) {
+                    logToConsole(error);
+                }
+            });
+        }
+    });
+
+    $("#cas_fac_key").off("change").change(function () {
+        var value = $("#cas_fac_key").val();
+        if (value) {
+            GetFacilityCart($("#cas_fac_key").val());
+        } else {
+            $("#casecart").empty();
+        }
+    })
+    $("#casecart").off("change").change(function () {
+        var value = $(this).val();
+        if (value == "other") {
+            $("#facility-info-cart").val("");
+            $("#othercart").show();
+        } else {
+            $("#facility-info-cart").val(value);
+            $("#othercart").hide();
+        }
+
+    })
+    function GetFacilityCart(cas_key) {
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/Case/GetFacilityCart?key=' + cas_key,
+            success: function (data) {
+                var fac_cart = [];
+                $.each(data, function (key, val) {
+                    if (val) {
+                        fac_cart = val.split('#');
+                    }
+                })
+                var html = "";
+                html += '<option value="">-- Select --</option>';
+                if (fac_cart.length > 0) {
+                    for (var i = 0; i < fac_cart.length; i++) {
+                        html += '<option value="' + fac_cart[i] + '">' + fac_cart[i] + '</option>';
+                    }
+                }
+                html += '<option value="other">Other</option>';
+                $("#casecart").empty();
+                $("#casecart").append(html);
+            },
+            error: function () {
+
+            }
+
+        });
+    }
+</script>
+
+

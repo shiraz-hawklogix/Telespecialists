@@ -1,0 +1,79 @@
+﻿@model TeleSpecialists.BLL.ViewModels.FacilityUser.PutCaeTypeViewModel
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@{
+    Layout = "";
+}
+
+<div class="modal-dialog modal-lg">
+    <form method="post" role="form" id="CaseTypesForm" action="@Url.Action("EditCaseType")">
+        @Html.AntiForgeryToken()
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Case Type</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="validationSummary">
+                </div>
+                <div class="row">
+                    <div class="col-sm-10 offset-sm-1">
+                        <div class="form-group row">
+                            <label class="control-label col-lg-3 col-sm-12">User: </label>
+                            <div class="col-lg-8 col-sm-12">
+                                @Html.HiddenFor(m => m.Id, new { id = "ect-id" })
+                                @Html.HiddenFor(m => m.UserKey, new { id = "ect-edit-userkey" })
+                                <label id="current-facilityNavigator-id" data-userkey="@Model.UserKey">@Model.UserFullName</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-lg-3 col-sm-12">Case Type:</label>
+                            <div class="col-lg-8 col-sm-12">
+                                <select id="ect-case-type" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.CaseTypeKey : 0)"></select>
+                                <div id="ect-case-type-error" class="error_msg" style="display:none;">
+                                    <label style="color: red" for="ect-case-type">This field is required</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <a href="#" class="btn btn-link" data-dismiss="modal">Cancel</a>
+                <input type="submit" class="btn btn-dark" value="Save" />
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $("#ect-case-type").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.CaseType.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+    $("#CaseTypesForm").off("submit").submit(function (e) {
+        e.preventDefault();
+        if ($("#ect-case-type").data("kendoDropDownList").value() == "" || $("#ect-case-type").data("kendoDropDownList").value() == "selected") {
+            $("#ect-case-type-error").show();
+        }
+        else {
+            var url = $(this).attr("action");
+            var data = {
+                Id: $("#ect-id").val(),
+                UserKey: $("#ect-edit-userkey").val(),
+                CaseTypeKey: $("#ect-case-type").val(),
+                CaseTypeName: $("#ect-case-type :selected").text()
+            }
+            $("#divModelPopUp").find("input:button, input:submit").disable();
+            $.post(url, data, function (response) {
+                $("#divModelPopUp").find("input:button, input:submit").enable();
+                if (response.success) {
+                    getAssignedCaseTypes();
+                    $("#divModelPopUp").modal("hide");
+                }
+                else {
+                    $("#divModelPopUp").find("#validationSummary").showBSDangerAlert("", response.data);
+                }
+            });
+        }
+    });
+</script>

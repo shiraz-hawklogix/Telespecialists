@@ -1,0 +1,984 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@using TeleSpecialists.BLL;
+@model post_acute_care
+@{
+    ViewBag.Title = "EditPAC";
+    var enableControlsInReadOnly = User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription());
+    bool isReadOnlyCase = ViewBag.IsReadOnlyCase;
+    string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+    if (Model.facility != null)
+    {
+        if (!string.IsNullOrEmpty(Model.facility.fac_timezone))
+        {
+            facilityTimeZone = Model.facility.fac_timezone;
+        }
+    }
+    var type = "";
+    // test billing tab
+    ViewBag.Title = "PAC Billing";
+    var dicOptions = new Dictionary<string, string>();
+    dicOptions.Add("true", "Yes");
+    dicOptions.Add("false", "No");
+
+    var isTeleNeuroFacility = false;
+    if (Model.facility != null)
+    {
+        if (Model.facility.facility_contract != null)
+        {
+            if (Model.facility.facility_contract.fct_service_calc != null
+                && Model.facility.facility_contract.fct_service_calc != ""
+                && Model.facility.facility_contract.fct_service_calc.Contains(ContractServiceTypes.TeleNeuro.ToString()))
+            {
+                isTeleNeuroFacility = true;
+            }
+        }
+    }
+
+    IDictionary<string, object> dynamicHtmlAttributesForComment = new Dictionary<string, object>();
+    dynamicHtmlAttributesForComment.Add("style", "width:100%; height:100px;");
+    var BillingCode = new SelectList(
+        new List<SelectListItem>
+        {
+new SelectListItem {Text = "Visit - Video", Value = "1"},
+new SelectListItem {Text = "Visit - No Video", Value = "2"},
+
+            //new SelectListItem {Text = "Initial Visit - Video (High Complexity)", Value = "1"},
+            //new SelectListItem {Text = "Initial Visit - Video (Low Complexity)", Value = "2"},
+            //new SelectListItem {Text = "Initial Visit - No Video", Value = "3"},
+            //new SelectListItem {Text = "Urgent Visit - No Video", Value = "4"},
+            //new SelectListItem {Text = "Urgent Visit - Video", Value = "5"},
+            //new SelectListItem {Text = "Follow Up Visit - Video", Value = "6"},
+        }, "Value", "Text");
+
+    var Identification = new SelectList(
+        new List<SelectListItem>
+        {
+new SelectListItem {Text = "MRN", Value = "1"},
+new SelectListItem {Text = "CSN", Value = "2"},
+new SelectListItem {Text = "FIN", Value = "3"},
+        }, "Value", "Text");
+
+    var identification = Enum.GetValues(typeof(PACIdentificationTypes)).Cast<PACIdentificationTypes>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList identificationList = new SelectList(identification, "key", "title");
+    var IsNavigator = User.IsInRole("Navigator");
+
+}
+
+<div class="alert case-info">
+    <div class="row">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 case-header-height">
+            <div class="col-12 ">
+                <strong>@Model.pac_patient</strong>
+            </div>
+            <div class="col-12 ">
+                <strong>
+                    <span>
+                        @if (Model.pac_identification_type != null) { type = ((PACIdentificationTypes)Model.pac_identification_type).ToDescription(); }
+                        @type
+                    </span>
+                    <span>
+                        @Model.pac_identification_number
+                    </span>
+                </strong>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border">
+            <div class="col-12">
+                <strong>Facility:</strong> <span>@Model.facility.fac_name</span>
+            </div>
+            <div class="col-12">
+                <strong>Case Type:</strong> <span>
+                @ViewBag.ctpNAme
+                </span>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border">
+            <div class="col-12">
+                <strong>Facility Time:</strong> <span id="FacilityTime"> @DateTime.UtcNow.ToTimezoneFromUtc(facilityTimeZone).ToString("HH:mm:ss") </span>
+                <span>@(Functions.GetTimeZoneAbbreviation(facilityTimeZone))</span>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border">
+            <div class="col-sm-12">
+                <strong>Physician: </strong>
+                @if (Model.AspNetUser != null)
+                {
+                    <span>
+                        @Model.AspNetUser.FirstName @Model.AspNetUser.LastName
+                    </span>
+                }
+            </div>
+            <div class="col-sm-12">
+                <strong>Navigator: </strong>
+                <span>@Model.pac_created_by_name </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ul class="nav nav-tabs" role="tablist" id="menuTabs">
+    <li class="nav-item @(User.IsInRole(UserRoles.Physician.ToDescription())?"d-none" :"")"><a id="generalTABLink" data-toggle="tab" onclick="showHideTabElements('#basic')" class="nav-link active" href="#basic">General</a></li>
+    @*<li class="nav-item @(User.IsInRole(UserRoles.Navigator.ToDescription())?"d-none" :"")"><a id="templatesTabLink" data-toggle="tab" onclick="showHideTabElements('#templates')" class="nav-link" href="#templates">Templates</a></li>*@
+    <li class="nav-item @(User.IsInRole(UserRoles.Navigator.ToDescription())?"d-none" :"") @(User.IsInRole(UserRoles.Physician.ToDescription())?"active show" :"")"><a id="billingTabLink" data-toggle="tab" onclick="showHideTabElements('#billing')" class="nav-link" href="#billing">Billing</a></li>
+</ul>
+
+<div class="ajaxForm">
+    <form method="post" class="form-horizontal" id="createForm" action="@Url.Action("EditPAC","PACPhysician")">
+        <input type="hidden" id="pac_key" name="pac_key" value="@Model.pac_key" />
+        @Html.HiddenFor(x => x.pac_created_by_name)
+        <div class="tab-content" style="margin-top:27px;">
+            <div id="basic" role="tabpanel" class="tab-pane fade @(User.IsInRole(UserRoles.Physician.ToDescription())?"d-none" :"")">
+                @Html.Partial("_Form", Model)
+            </div>
+            <div id="templates" role="tabpanel" class="tab-pane fade">
+                @Html.Partial("Templates/Forms/_PACCaseTemplateForm", Model)
+            </div>
+            <div id="billing" role="tabpanel" class="fade  @(User.IsInRole(UserRoles.Navigator.ToDescription())?"d-none" :"") @(User.IsInRole(UserRoles.Physician.ToDescription())?"active show" :"")">
+                @* @Html.Partial("_PACBilling", Model)*@
+                <div class="form-group row pac-billing-tab">
+                    <div class="col-xl-5  col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group row">
+                            <label class="control-label col-sm-4 text-danger">Billing Code: </label>
+                            <div class="col-sm-8">
+                                @*@Html.DropDownListFor(m => m.pac_billing_bic_key, BillingCode, "--Select--", new { @class = "form-control", @id = "pac_billing_bic_key" })*@
+                                <select id="pac_billing_bic_key" name="pac_billing_bic_key" class="form-control" data-selectedValue="@(Model != null ? Model.pac_billing_bic_key : 0)" required></select>
+                                <div class="error_msg" id="pac_billing_bic_key-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-sm-4 text-danger">Date of Consult: </label>
+                            <div class="col-sm-8">
+                                @Html.FormattedDateTextBoxFor(m => m.pac_date_of_completion, new { @class = "form-control datepicker", name = "pac_date_of_completion", @id = "pac_date_of_completion" })
+                                <div class="error_msg" id="pac_date_of_completion-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.pac_date_of_completion, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-sm-4 text-danger">Patient Name: </label>
+                            <div class="col-sm-8">
+                                @Html.TextBoxFor(m => m.pac_billing_patient_name, new { @class = "form-control", id = "pac_patient", @placeholder = "Last Name, First Name" })
+                                <div class="error_msg" id="pac_patient-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.pac_billing_patient_name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-sm-4 text-danger">Date of Birth: </label>
+                            <div class="col-sm-8">
+                                @Html.FormattedDateTextBoxFor(m => m.pac_billing_dob, new { @class = "form-control dob", style = "width:100%", @id = "billing_cas_dob", @value = @Model.pac_billing_dob?.FormatDate() })
+                                <div class="error_msg" id="billing_cas_dob-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.pac_billing_dob, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-sm-4 text-danger">Identification Type: </label>
+                            <div class="col-sm-8">
+                                @Html.DropDownListFor(x => x.pac_billing_identification_type, identificationList, "--Select--", new { @class = "pac_identification_type form-control", @id = "billing_pac_identification_type_id" })
+                                <div class="error_msg" id="billing_pac_identification_type_id-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.pac_billing_identification_type, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-sm-4 text-danger">Identification Number: </label>
+                            <div class="col-sm-8">
+                                @Html.TextBoxFor(m => m.pac_billing_identification_number, new { @class = "form-control", id = "pac_identification_number" })
+                                <div class="error_msg" id="pac_identification_number-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.pac_billing_identification_number, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-5  col-lg-6 col-md-12 col-sm-12">
+                        <div class="form-group row">
+                            <label class="control-label col-sm-4 text-danger">Diagnosis: </label>
+                            <div class="col-sm-8">
+                                @Html.TextAreaFor(m => m.pac_billing_diagnosis, new { @class = "form-control", @id = "pac_billing_diagnosis" })
+                                <div class="error_msg" id="pac_billing_diagnosis-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-sm-4">Notes: </label>
+                            <div class="col-sm-8">
+                                @Html.TextAreaFor(m => m.pac_billing_notes, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div id="pacTemplateModel" class="modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm(new { role = "form" }))
+        {
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Case Template</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div id="validationSummary">
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <textarea class="form-control" id="pac_template_html" name="pac_template_html"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <div class="col-2 text-left">
+                        <a class="btn btn-link" href="#" id="btnCancelTemplatePopup">Cancel</a>
+                    </div>
+                    <div class="col-10 text-right">
+                        <input type="button" class="btn btn-dark" id="btnSaveTemplate" value="Save" />
+
+                       @* <input type="button" class="btn btn-dark" id="btnSaveAndCopyTemplate" value="Save & Finalize" data-clipboard-action="copy" data-clipboard-target="#editorContentHolder" />*@
+                        <input type="button" class="btn btn-dark" id="btnSaveAndCloseTemplate" value="Save & Close" />
+                        <div id="editorContentHolder" style="height:0.5px; width:0.5px; overflow:hidden;"></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-2 btn-copy-popup"> 
+            <input type="button" value="Copy" class="btn btn-dark" id="btnCopy" /> 
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-8 col-12 btn-save-close-cancel">
+        <a href="@Url.Action("Index","Case")" class="btn btn-link CaseCancelled">Cancel</a>
+        <input type="button" class="btn btn-dark" value="Save" id="btnSave" />
+        <input type="button" class="btn btn-dark" value="Save & Close" id="btnSaveClose" />
+        <input type="button" class="btn btn-dark" value="Complete Case" id="CompleteCase" />
+        <input type="button" class="btn btn-dark" value="Generate Template" id="btnpactemplate" style="display:none" />
+        @*@{
+            var reviewtemplate = Model.pac_case_template.Where(x => x.pct_pac_key == Model.pac_key).FirstOrDefault();
+            <input type="button" class="btn btn-dark" value="@(reviewtemplate?.pct_pac_key !=null ? "Load Template" : "Generate Template")" id="btnpactemplate" style="display:none" />
+        }*@
+    </div>
+</div>
+
+
+<div id="pacTemplatePreviewModal" class="modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Copy Preview</h4>
+                <button type="button" class="close btnCloseTemplatePreview">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="pacTemplateReviewData">
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <div class="col-2 text-left">
+                    <input type="button" class="btn btn-dark btnCloseTemplatePreview" id="btnCancelTemplatePreview" value="Close" />
+                </div>
+                <div class="col-10 text-right">
+                    <input type="button" class="btn btn-dark" id="btnOKTemplatePreview" value="OK" />
+                    <input type="button" class="btn btn-dark d-none " id="btnCopyTemplatePreview" value="copyTemplateAlt" data-clipboard-action="copy" data-clipboard-target="#pacTemplateReviewData" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@Html.Partial("_CaseCopyPopup")
+<script src="~/Scripts/clipboard.min.js"></script>
+<script>
+    var uclData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.UclData, Newtonsoft.Json.Formatting.Indented));
+    $("#pac_billing_bic_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.SleepCodes.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+
+    var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm:ss");
+    $("[name = pac_date_of_completion]").val(currentDateTime);
+    //$(".date_consult_datepicker [name='pac_date_of_completion']").data('kendoDatePicker').readonly(true);
+
+    var currentFacilityOffset = @(Functions.GetTimeZoneOffset(Settings.DefaultTimeZone));
+    var browserName = getBrowserName();
+    function validateBillingRequiredFields(isCaseCompleteCall) {
+
+       // $(".error_msg").hide();
+
+        var result = true;
+        var pac_billing_bic_key = true;
+        var pac_date_of_completion = true;
+        var pac_patient = true;
+        var billing_cas_dob = true;
+        var billing_pac_identification_type_id = true;
+        var pac_identification_number = true;
+        var pac_billing_diagnosis = true;
+
+        if ($.trim($("#pac_billing_bic_key").val()) == "") {
+             
+            $("#pac_billing_bic_key-error").show();
+            result = false;
+            pac_billing_bic_key = false;
+        }
+
+        if ($.trim($("#pac_date_of_completion").val()) == "") {
+            $("#pac_date_of_completion-error").show();
+            result = false;
+            pac_date_of_completion = false;
+        }
+
+        if ($.trim($("#pac_patient").val()) == "") {
+            $("#pac_patient-error").show();
+            result = false;
+            pac_patient = false;
+        }
+
+        if ($.trim($("#billing_cas_dob").val()) == ""){
+            $("#billing_cas_dob-error").show();
+            result = false;
+            billing_cas_dob = false;
+        }
+
+        if ($.trim($("#billing_pac_identification_type_id").val()) == "") {
+            $("#billing_pac_identification_type_id-error").show();
+            result = false;
+            billing_pac_identification_type_id = false;
+        }
+
+        if ($.trim($("#pac_identification_number").val()) == "") {
+            $("#pac_identification_number-error").show();
+            result = false;
+            pac_identification_number = false;
+        }
+
+        if ($.trim($("#pac_billing_diagnosis").val()) == "") {
+            $("#pac_billing_diagnosis-error").show();
+            result = false;
+            pac_billing_diagnosis = false;
+        }
+
+        /// Focusing the first invalid control on the tab
+        if (!result) {
+
+            var element = null;
+
+            if (!pac_billing_bic_key) {
+                element = $("#pac_billing_bic_key");
+            }
+            else if (!pac_date_of_completion) {
+                element = $("#pac_date_of_completion");
+            }
+            else if (!pac_patient) {
+                element = $("#pac_patient");
+            }
+            else if (!billing_cas_dob) {
+                element = $("#billing_cas_dob");
+            }
+            else if (!billing_pac_identification_type_id) {
+                element = $("#billing_pac_identification_type_id");
+            }
+            else if (!pac_identification_number) {
+                element = $("#pac_identification_number");
+            }
+            else if (!pac_billing_diagnosis) {
+                element = $("#pac_billing_diagnosis");
+            } 
+
+            if (element !== null) {
+
+                window.setTimeout(function () { $(element).focus(); }, 250)
+            }
+        }
+
+        return result;
+    }
+
+
+    function ValidateAllPACTabs() {
+        $(".error_msg").hide();
+            var generalTab = true;
+            var templateTab = true;
+            var billingTab = true;
+        var tabToShow = "";
+        var isnavigatorValue = '@(IsNavigator)'.toLowerCase();
+        if (isnavigatorValue == "false") {
+            if (!validateBillingRequiredFields(true)) {
+                tabToShow = "#billingTabLink";
+                billingTab = false;
+            }
+        }
+        // code commented because there is no template will be open if template added
+        /*
+        if (!validateTemplateRequiredFields(true)) {
+            tabToShow = "#templatesTabLink";
+            templateTab = false;
+        }
+        */
+        if (!validateGeneralRequiredFields(true)) {
+
+               tabToShow = "#generalTABLink";
+               generalTab = false;
+        }
+       
+
+        if (tabToShow !== null && tabToShow !== "") {
+                if (tabToShow == "#billingTabLink") {
+                    $("#CompleteCase").show();
+
+                }
+                else {
+                    $("#CompleteCase").hide();
+                }
+                $(tabToShow).tab("show");
+        }
+
+        if ('@User.IsInRole(UserRoles.Physician.ToDescription())' == 'True') {
+            $("#CompleteCase").show();
+            $("#btnCopy").hide();
+        }
+
+           return  (generalTab && templateTab && billingTab)
+        }
+
+
+    function showHideTabElements(tab) {
+        $("#btnpactemplate").hide();
+        $("#btnCopy").hide();
+        $("#btnSave").hide();
+        $("#btnSaveClose").hide();
+        $("#CompleteCase").hide();
+        
+        //$('#btnSave, #btnSaveClose, #btnpactemplate').attr('disabled', false); 
+        if (tab == '#basic') {
+            //$("#basic").show();
+            //$("#templates").hide();
+            //$("#billing").hide();
+            $("#btnCopy").show();
+            $("#btnSave").show();
+            $("#btnSaveClose").show();
+        }
+        else if (tab == '#templates')
+        {
+            if (@isReadOnlyCase.ToString().ToLower()) {
+                $("#btnCopy").hide();
+                $("#btnSave").hide();
+                $("#btnSaveClose").hide();
+                $("#btnpactemplate").hide();
+
+            }
+            else {
+                //$("#templates").show();
+                //$("#basic").hide();
+                //$("#billing").hide();
+                $("#btnSave").show();
+                $("#btnSaveClose").show();
+                $("#btnpactemplate").show();
+            }
+        }
+        else if (tab == '#billing') {
+            //$("#billing").show();
+            //$("#basic").hide();
+            //$("#templates").hide();
+            $("#btnSave").show();
+            $("#btnSaveClose").show();
+            $("#CompleteCase").show();
+        }
+
+        //Disable and Enable buttons
+        if (@isReadOnlyCase.ToString().ToLower()) {
+               if (@enableControlsInReadOnly.ToString().ToLower()) {
+
+                   if (tab == 'templates' || tab == '#templates') {
+                        $('#btnSave').enable();
+                       $('#btnSaveClose').enable();
+                        $('#btnpactemplate').enable();
+                    }
+                    else {
+                        $('#btnSave').disable();
+                        $('#btnSaveClose').disable();
+                        $('#btnpactemplate').disable();
+                  }
+              }
+        }
+        if ('@User.IsInRole(UserRoles.Physician.ToDescription())' == 'True') {
+            $("#CompleteCase").show();
+            $("#btnCopy").hide();
+        }
+    }
+
+        $(".CaseCancelled").off("click").on("click", function (e) {
+            e.preventDefault();
+            $("#divModelPopUp").empty().showConfirmPopUp("Confirm", "<span>Are you sure you want to close this case without saving?</span>", function () {
+                //clearSoftSaveCase();
+                    var url = '@Url.Action("Index","Case")';
+                    $("#divModelPopUp").modal("hide");
+                    loadPageAsync(url);
+                }, "Yes", function () {
+                $("#divModelPopUp").modal("hide");
+            });
+        });
+
+    $(".datepicker").kendoTimePicker({
+        open: function (e) {
+            e.preventDefault();
+
+            var currentDateTime = moment().utcOffset(currentFacilityOffset).format("MM/DD/YYYY HH:mm:ss");
+            this.element.first().attr("data-utc_time", new Date().toUTCString());
+            this.element.first().val(currentDateTime);
+
+            var timePicker = this.element.first();
+            ShowHideTimeZone(timePicker);
+        }
+    });
+    $(".datepicker").kendoMaskedTextBox({
+        mask: "00/00/0000 00:00:00"
+    });
+
+
+    $(document).ready(function () {
+       
+        //$('#billingTabLink').click();
+        //$('#generalTABLink').click(); // showing general tab on document ready
+        //$('#billing').hide();
+         
+        if ($('#YES').is(':checked')) {
+            $("#SeenTypeDiv").removeClass("d-none");
+        }
+         if ('@User.IsInRole(UserRoles.Physician.ToDescription())' == 'True') {
+            $('#billing').removeClass('d-none');
+            $('#billing').addClass('active show');
+            $('#basic').removeClass("active show");
+        }
+    });
+   
+
+    $(document).ready(function () {
+        var tab = $("#activetab").val();
+        if (tab == '') {
+            $("#menuTabs").find('.nav-link').first().addClass("active");
+            tab = $("#menuTabs .active ").attr("href");
+        }
+        if (tab != "") {
+            var panId = tab.replace("#", "");
+            $('.nav-tabs .nav-link').removeClass("active");
+            $('.tab-content .tab-pane').removeClass("fade in active show");
+            $('.nav-tabs a[href="' + tab + '"]').addClass("active");
+            $('.tab-content div[id="' + panId + '"]').addClass("fade in active show");
+
+            $("#activetab").val("");
+
+            $("#activetab").val("");
+            window.setTimeout(function () {
+
+                var visibleTabs = [];
+                $("#menuTabs a").each(function (index, item) {
+                    visibleTabs.push($(this).attr("href").replace("#", ""));
+
+                });
+                $("#VisibleTabs").val(visibleTabs.join(","));
+
+            }, 500);
+
+            showHideTabElements(tab);
+        }
+        //if ($.trim($("#case_status_id").val()).toInt() == pacStatusEnum.Cancelled) {
+        //    return true;
+        //}
+
+        if ((@Model.pac_cst_key == @PacStatus.Cancelled.ToInt())) {
+            DisableFields();
+        }
+
+    });
+ 
+    function DisableFields() {
+        $('input[type="text"]').prop("disabled", true);
+        $('input[type="text"], textarea').prop("disabled", true);
+        $("input.ml-2").attr("disabled", true);
+        $("input.track_change").attr("disabled", true);
+        $("input.form-check-input").attr("disabled", true);
+        $(".addValidation").attr("disabled", true);
+        $('select').attr('disabled', true);
+        $("#pac_fac_key").KendoDropDownDisable();
+        $("#pac_billing_bic_key").KendoDropDownDisable();
+        // $("#cas_cst_key").removeAttr("disabled");
+        //for (var i = 1; i <= 15; i++) {
+        //    var id = '#case_template_telestroke_notpa_ctt_nihss_' + i;
+        //    $(id).attr("disabled", true);
+        //}
+        //for (var i = 1; i <= 15; i++) {
+        //    var id = '#case_template_stroke_notpa_ctn_nihss_' + i;
+        //    $(id).attr("disabled", true);
+        //}
+        //for (var i = 1; i <= 15; i++) {
+        //    var id = '#case_template_statconsult_ctt_nihss_' + i;
+        //    $(id).attr("disabled", true);
+        //}
+        //$('#cas_billing_bic_key').attr("disabled", true);
+        //$('#cas_billing_bic_key3').attr("disabled", true);
+        $('.disabled').attr("disabled", true);
+        //$('#cas_metric_is_lastwell_unknown').attr("disabled", true);
+        $("input.disabled").attr("disabled", true);
+       // $('#cas_metric_lastwell_date_est').attr("disabled", true);
+        $('.readonly').attr("disabled", true);
+        $('.staticDropDown').attr("disabled", true);
+        $('input[type=checkbox]').attr('disabled', 'true');
+        $('input[type=radio]').attr('disabled', 'true');
+
+        $('#btnSave,#btnSaveClose,#btnCopy,#CompleteCase').attr('disabled', true);
+
+    }
+    $("#btnSave,#btnSaveClose,#CompleteCase").off("click").click(function () {
+        $(".error_msg").hide();
+        if ($.trim($("#case_status_id").val()).toInt() == pacStatusEnum.Complete) {
+
+            if (!ValidateAllPACTabs()) {
+                return;
+            }
+        } 
+
+        var caseId = $("#createForm").find("#pac_key").val();
+        $("#RedirectPage").val("0");
+        var currentTab = $("#menuTabs .active ").attr("href");
+        $("#activetab").val(currentTab);
+
+        var isSaveAndClose = false;
+        
+        if ($(this).attr("id") === "btnSaveClose") {
+            isSaveAndClose = true;
+            $("#RedirectPage").val("1");
+            if (!ValidateAllPACTabs()) {
+                return;
+            }
+        }
+
+        if ($(this).attr("id") === "CompleteCase") {
+            $("#RedirectPage").val("1");
+            if (!ValidateAllPACTabs()) {
+                return;
+            }
+            else {
+                 $("#case_status_id").val(@PacStatus.Complete.ToInt());
+            }
+
+        }
+        else if ($("#generalTABLink").hasClass("active"))
+        {
+            if (!validateGeneralRequiredFields(0))
+            { 
+                    return;
+            }
+        }
+        console.log('case type is  :  ' + $("#case_status_id").val());
+        
+         submitPACCaseChanges();
+    });
+
+    function submitPACCaseChanges() {
+        $("#createForm").submit();
+    }
+
+    var facilityDropDown = $("#pac_fac_key").fillKendoDropDown("/LookUp/GetPACFacility?phoneNumber=@*@Model.cas_ani*@", "fac_name", "fac_key", "--Select--", function () {
+        window.setTimeout(function () {
+            var selectedFacility = $.trim($("#pac_fac_key").val());
+            if (selectedFacility != "") {
+                //loadFacilityTimeZone(selectedFacility);
+                //showDuplicateCheckPopup(selectedFacility);
+            }
+        }, 50);
+    });
+
+    facilityDropDown.unbind("change").bind("change", function (e) {
+        if ($.trim($("#pac_fac_key").val()) == "" || $("#pac_fac_key").val() == "00000000-0000-0000-0000-000000000000") {
+        }
+        else {
+        }
+    });
+    maskPhoneNumber();
+    $("#btnCopy").off("click").click(PACcopyCase);
+
+     function disableAllControls() {
+         $('#btnpactemplate').disable();
+         if ($('#btnpactemplate').val() == 'Load Template')
+             $('#btnpactemplate').enable();
+
+        if (@enableControlsInReadOnly.ToString().ToLower()) {
+            enableReviewTabElements();
+        }
+    }
+
+    function enableReviewTabElements() {
+        var currentTab = $("#menuTabs .active").attr("href");
+        if (currentTab == 'templates' || currentTab == '#templates') {
+            $('#btnSave').enable();
+            $('#btnSaveClose').enable();
+            $('#btnpactemplate').enable();
+        }
+        else {
+            $('#btnSave').disable();
+            $('#btnSaveClose').disable();
+            $('#btnpactemplate').disable();
+        }
+    }
+
+    function saveFormData() {
+
+        // Make all fields readonly by calling readOnlyAllFields
+        $this = $("#createForm");
+        var url = $this.attr("action").addParamToUrl("ShowSuccessOnly", "1");
+        var data = $this.serialize();
+        //$("#divContentArea").find("input:button, input:submit").disable();
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: 'json',
+            data: data,
+            error: function (xhr, error) {
+                //$("#divContentArea").find("input:button, input:submit").enable();
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Oops, Something went wrong.<br/>Please retry or contact us if the problem still persist.");
+                //console.debug(xhr); console.debug(error);
+            },
+            success: function (response) {
+
+                if (response.success) {
+                    if (response.message !== "" && response.message !== null) {
+                        $("#mainContentArea").find("#validationSummary").empty().showBSSuccessAlert("", response.message);
+                        //$("#divContentArea").find("input:button, input:submit").enable();
+                    }
+                }
+                else {
+                    //$("#divContentArea").find("input:button, input:submit").enable();
+                    $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", response.message);
+                    $("#divModelPopUp").modal("hide");
+                }
+            }
+
+        });
+        //Now make all fields disabled by calling disableallcontrol
+        // now make fields enable in case review tab by calling  enableReviewTabElements
+    }
+
+    $("#btnpactemplate").off("click").click(function () {
+        if ($(this).val() == 'Generate Template') {
+            saveFormData();
+            var url = "@Url.Action("GeneratePACTemplate", "PACPhysician")";
+            var data = $("#createForm").serialize();
+            $.post(url, data, function (response) {
+                if (response.success) {
+                    if (response.showEditor) {
+                        // code for wsiwyg popup
+                        $("#pac_template_html").val(response.data);
+                        showCKEditor("pac_template_html");
+                        $("#pacTemplateModel").modal("show");
+                        if (browserName == "Edge" || browserName == "FireFox") {
+                            copyTemplateAlt("#btnSaveAndCopyTemplate", false);
+                        }
+                    }
+                    else {
+                        $("#btnCancelTemplatePreview").show();
+                        $("#btnOKTemplatePreview").val("Copy");
+                        $("#pacTemplateReviewData").html(response.data);
+                        $("#pacTemplatePreviewModal").modal("show");
+                    }
+                }
+            });
+        }
+        else if ($(this).val() == 'Load Template') {
+            var paccaseKey = @Model.pac_key;
+            @*var templateEntityKey = @Model.TemplateEntityType.ToInt();*@
+            var url = '/PACPhysician/LoadPACTemplate?pacKey=' + paccaseKey;
+            $.post(url, null, function (response) {
+                if (response.success) {
+                    if (response.showEditor) {
+                        // code for wsiwyg popup
+                        $("#pac_template_html").val(response.data);
+                        showCKEditor("pac_template_html");
+                        $("#pacTemplateModel").modal("show");
+                    }
+                    else {
+                        $("#btnCancelTemplatePreview").show();
+                        $("#btnOKTemplatePreview").val("Copy");
+                        $("#pacTemplateReviewData").html(response.data);
+                        $("#pacTemplatePreviewModal").modal("show");
+                    }
+                }
+            });
+        }
+        $("#btnSaveTemplate,#btnSaveAndCloseTemplate").off("click").click(function () {
+            var isSaveAndClose = $(this).attr("id") == "btnSaveAndCloseTemplate" ? true : false;
+            savePACTemplateData(false).done(function (response) {
+
+                window.setTimeout(function () {
+
+                    if (response.success) {
+                       // $("#btnpactemplate").val('Load Template');
+                        if (browserName != "Edge" || browserName != "FireFox") {
+                            copyHtmlToClipboard(CKEDITOR.instances["pac_template_html"].getData());
+                        }
+                        $("#pacTemplateModel").find("#validationSummary").empty().showBSSuccessAlert("", "Template changes saved successfully");
+
+                       
+                        if (isSaveAndClose) {
+                            $("#pac_template_html").val(CKEDITOR.instances["pac_template_html"].getData());
+                            showCKEditor("pac_template_html");
+                            
+                            $("#pacTemplateModel").modal("hide");
+                            alert('Template has been copied to clipboard.');
+                        }
+                       
+                        
+                    }
+                    else {
+                        $("#pacTemplateModel").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                    }
+                }, 100);
+            })
+        });
+        $("#btnCancelTemplatePopup").off("click").click(function () {
+            var isDirty = CKEDITOR.instances["pac_template_html"].checkDirty();
+            if (isDirty) {
+                $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+                    "Are you sure you want to close this template without saving?",
+                    function () {
+                        $("#pacTemplateModel").modal("hide");
+                        $("#divModelPopUp").modal("hide");
+                    });
+            }
+            else {
+                $("#pacTemplateModel").modal("hide");
+                $("#divModelPopUp").modal("hide");
+            }
+        });
+        $(".btnCloseTemplatePreview").off("click").click(function () {
+            $("#pacTemplateModel").modal("hide");
+            $("#divModelPopUp").modal("hide");
+            $("#pacTemplatePreviewModal").modal("hide");
+        });
+        $("#btnSaveAndCopyTemplate").off("click").click(function () {
+            $("#editorContentHolder").html(CKEDITOR.instances["pac_template_html"].getData());
+            savePACTemplateData(true).done(function (response) {
+                if (response.success) {
+                   // $("#btnpactemplate").val("Load Template");
+                    $("#btnCancelTemplatePreview").hide();
+                    $("#btnOKTemplatePreview").val("OK");
+                    if (browserName != "Edge" || browserName != "FireFox") {
+                        copyHtmlToClipboard(CKEDITOR.instances["pac_template_html"].getData());
+                    }
+                    $("#pacTemplateReviewData").html(CKEDITOR.instances["pac_template_html"].getData());
+                    $("#pacTemplateModel").modal("hide");
+                    $("#pacTemplatePreviewModal").modal("show");
+                    $("#pacTemplateReviewData").find(".datetime").show();
+                }
+                else {
+                    $("#pacTemplateModel").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                }
+            });
+        });
+        $("#btnOKTemplatePreview").off("click").click(function () {
+            if ($("#btnOKTemplatePreview").val().toLowerCase() == "copy") {
+                if (browserName == "Edge") {
+                    copyTemplateAlt("#btnCopyTemplatePreview", true);
+                }
+                else {
+                    copyHtmlToClipboard($("#pacTemplateReviewData").html());
+                }
+                alert('Template has been copied to clipboard.');
+            }
+            else {
+                $("#pacTemplateModel").modal("hide");
+                $("#divModelPopUp").modal("hide");
+                $("#pacTemplatePreviewModal").modal("hide");
+            }
+        });
+    });
+    function savePACTemplateData(bIsFinal) {
+        var deffer = $.Deferred();
+        var url = "@Url.Action("SaveTemplate")";
+        var postData = {
+            pac_key: $("#createForm").find("#pac_key").val(),
+            //entityKey: $("#TemplateEntityType").val(),
+            is_finalized: bIsFinal,
+            ptemplateData: Base64.encode(CKEDITOR.instances["pac_template_html"].getData())
+        };
+        $.post(url, postData, function (data) {
+             return deffer.resolve(data);
+        });
+        return deffer.promise();
+    }
+    $("#pac_identification_type_id").change(function () {
+        var open = $(this).val();
+        $('#billing_pac_identification_type_id').val(open);
+    });
+    $("#billing_pac_identification_type_id").change(function () {
+        var open = $(this).val();
+        $('#pac_identification_type_id').val(open);
+    });
+    $("#general_cas_identification_number").change(function () {
+        var open = $(this).val();
+        $('#pac_identification_number').val(open);
+    });
+    $("#pac_identification_number").change(function () {
+        var open = $(this).val();
+        $('#general_cas_identification_number').val(open);
+    });
+
+
+    $("#general_cas_dob").change(function () {
+        var open = $(this).val();
+        $('#billing_cas_dob').val(open);
+    });
+    $("#billing_cas_dob").change(function () {
+        var open = $(this).val();
+        $('#general_cas_dob').val(open);
+    });
+
+
+    $("#pac_patient").change(function () {
+        var open = $(this).val();
+        $('#pac_patient_name').val(open);
+    });
+    $("#pac_patient_name").change(function () {
+        var open = $(this).val();
+        $('#pac_patient').val(open);
+    });
+    //general_cas_dob
+    //billing_cas_dob
+
+    $("#pac_phy_key").change(function () {
+        var open = @PacStatus.Open.ToInt();
+        $('#case_status_id').val(open);
+            //data('kendoDropDownList').value(open);
+    });
+    
+        @*if (@User.IsInRole(UserRoles.Physician.ToDescription())) {
+          
+           // ..$('#CompleteCase').show();
+
+        }*@
+     
+    $("#Billing").trigger("click");
+</script>

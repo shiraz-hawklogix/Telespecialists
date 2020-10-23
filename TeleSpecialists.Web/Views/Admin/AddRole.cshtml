@@ -1,0 +1,56 @@
+﻿@model TeleSpecialists.Models.ApplicationRole
+@{
+    ViewBag.Title = "Add Role";    
+}
+<div class="ajaxForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="row">
+            <div class="col-sm-10 offset-sm-1">
+                <h2>Add New Role</h2>
+                <hr />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-10 offset-sm-1">
+                <div class="form-group row">
+                    <label class="control-label col-sm-2">Role: </label>
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @id = "rolename", @placeholder = "Role Name" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-sm-2">Description: </label>
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", @id = "rolededscription", @placeholder = "Role Description" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-sm-6 offset-sm-4 text-right">
+                <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Roles", "Admin")">Cancel</a>
+                <input type="submit" value="Save" class="btn btn-dark" />
+            </div>
+
+        </div>
+    }
+</div>
+
+  
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        });
+
+    </script>

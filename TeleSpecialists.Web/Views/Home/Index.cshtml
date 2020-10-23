@@ -1,0 +1,40 @@
+﻿@*@model List<TeleSpecialists.BLL.Model.ChartDataModel>*@
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@using TeleSpecialists.Models;
+@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Dashboard";
+    var QPSList = ViewBag.QPSList;
+    ViewBag.QPSLIST = QPSList;
+    var Facilities = ViewBag.Facilities;
+    ViewBag.facilities = Facilities;
+    var physician = ViewBag.Physicians;
+    ViewBag.physician = physician;
+}
+@{
+    if (User.IsInRole(UserRoles.Physician.ToDescription()))
+    {
+
+        Html.RenderAction("Index", "Rapids", null);
+    }
+}
+
+@Html.Partial("_PendingDataGrids")
+
+@if (!User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) && !User.IsInRole(UserRoles.MedicalStaff.ToDescription()) && !User.IsInRole(UserRoles.QPS.ToDescription()))
+{
+    @Html.Partial("_NavigatorDashboard")
+}
+@{
+    if (!User.IsInRole(UserRoles.Finance.ToDescription()) && !User.IsInRole(UserRoles.CapacityResearcher.ToDescription()) && !User.IsInRole(UserRoles.MedicalStaff.ToDescription()) && !User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) && !User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) && !User.IsInRole(UserRoles.QPS.ToDescription()))
+    {
+        Html.RenderAction("Index", "Rapids", null);
+    }
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+    });
+</script>

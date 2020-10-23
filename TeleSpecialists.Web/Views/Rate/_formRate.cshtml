@@ -1,0 +1,211 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.physician_rate
+
+@{
+    /**/
+
+    var dicOptions = new Dictionary<string, string>();
+    dicOptions.Add("true", "Yes");
+    dicOptions.Add("false", "No");
+
+    var indexList = Enum.GetValues(typeof(IndexRate)).Cast<IndexRate>().Select(m => new { key = (int)m, title = (int)m });
+    var _hour = indexList.Where(x => x.key <= 24).ToList();
+    SelectList list = new SelectList(indexList, "key", "title");
+    SelectList shiftHours = new SelectList(_hour, "key", "title");
+
+    var ShiftList = Enum.GetValues(typeof(PhysicianShifts)).Cast<PhysicianShifts>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList shifts = new SelectList(ShiftList, "key", "title");
+    shifts = new SelectList(shifts.Where(x => x.Text != "Blast").ToList(), "Value", "Text");
+    var rejectedlist = ViewBag.RejectedList;
+}
+
+<div class="ajaxForm">
+
+    @using (Html.BeginForm(new { role = "form", @id = "productivity_rate" }))
+    {
+        @Html.AntiForgeryToken()
+        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+        @Html.HiddenFor(x => x.rat_key)
+        @Html.HiddenFor(x => x.rat_created_by)
+        @Html.HiddenFor(x => x.rat_created_by_name)
+        @Html.HiddenFor(x => x.rat_created_date)
+        @*@Html.HiddenFor(m => m.rat_phy_key)*@
+
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="@(ViewBag.Edit ? "col-md-6 col-sm-12" : "col-md-5 col-sm-11 col-offset-1")">
+                    <div class="form-group row">
+                        @Html.Label("Billing Code:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="cas_ctp_key" name="rat_cas_id" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.rat_cas_id : 0)" required></select>
+                            @Html.ValidationMessageFor(model => model.rat_cas_id, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("Physician:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @{
+                                if (ViewBag.Status == true)
+                                {
+                                    <select id="phy_list" name="rat_phy_key" class="form-control addValidation" data-searchFilter="true" data-selectedValue="@(Model != null ? Model.rat_phy_key : "")" readonly required></select>
+                                }
+                                else
+                                {
+                                    @Html.DropDownList("Physicians", ViewBag.physicians_List as List<SelectListItem>, new { @class = "form-control", @id = "phy_list", multiple = "multiple", @required = "required" })
+                                    @Html.ValidationMessageFor(model => model.rat_phy_key, "", new { @class = "text-danger" })
+                                }
+                            }
+                        </div>
+                    </div>
+                    @* Added By AXIM*@
+                    <div class="form-group row">
+                        @Html.Label("Start Date:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.FormattedDateTextBoxFor(x => x.rat_start_date, new { @class = "form-control", @id = "rate_start_Date", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.rat_start_date, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="@(ViewBag.Edit ? "col-md-6 col-sm-12" : "col-md-5 col-sm-11 col-offset-1")">
+                    <div class="form-group row">
+                        <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">Start Index: </label>
+                        <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                            @Html.DropDownListFor(x => x.rat_starting, list, "--Select List--", new { @class = "form-control", @id = "rat_starting", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.rat_starting, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">End Index: </label>
+                        <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                            @Html.DropDownListFor(x => x.rat_ending, list, "--Select List--", new { @class = "form-control", @id = "rat_ending", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.rat_ending, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    @* Added By AXIM*@
+                    <div class="form-group row">
+                        @Html.Label("End Date:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                            @Html.FormattedDateTextBoxFor(x => x.rat_end_date, new { @class = "form-control", @id = "rate_end_Date", @required = "required" })
+                            @Html.ValidationMessageFor(model => model.rat_end_date, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("Shift Title:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @{
+                                if (ViewBag.Status == true)
+                                {
+                                    @Html.DropDownListFor(x => x.rat_shift_id, shifts, new { @class = "form-control", @id = "rat_shift_id", @required = "required" })
+                                    @Html.ValidationMessageFor(model => model.rat_shift_id, "", new { @class = "text-danger" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownList("rat_shift_id", shifts, new { @class = "form-control", @id = "rat_shift_id", multiple = "multiple", @name = "rat_shift_id[]", @required = "required" })
+                                    @Html.ValidationMessageFor(model => model.rat_shift_id, "", new { @class = "text-danger" })
+                                }
+                            }
+                        </div>
+                    </div>
+                    @* Ended By AXIM*@
+                    <div class="form-group row">
+                        @Html.Label("Rate:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.rat_price, new { htmlAttributes = new { @class = "form-control", @type = "number", @placeholder = "Enter Price...", @required = "required" } })
+                            @Html.ValidationMessageFor(model => model.rat_price, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="@(ViewBag.Edit ? "col-11" : "col-10 col-offset-1")">
+                    <div class="form-group row">
+                        <div class="col-lg-6 col-sm-6 offset-md-6 offset-xl-6 offset-lg-6 offset-sm-6  text-right">
+                            <a class="btn btn-link loadLinkAsync" href="@Url.Action("GetPhysician",new { id = Model.rat_phy_key })">Cancel</a>
+                            <input type="submit" value="Save" class="btn btn-dark" id="submit" />
+                            @*@{
+                                    if (ViewBag.Status == false)
+                                    {
+                                        <button type="button" id="btn_detail" data_toggle="modal" data_target="#DuplicateDetails" class="btn btn-dark">Duplicate Record List</button>
+                                    }
+                                    if (ViewBag.RejectedList != null /*|| ((IEnumerable<dynamic>)ViewBag.RejectedList).Count() > 0*/)
+                                        {
+                                            <button type="button" id="btn_detail" data_toggle="modal" data_target="#DuplicateDetails" class="btn btn-dark">Duplicate Record List</button>
+                                        }
+                                }*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@* Modal Starts here  *@
+
+<div class="modal fade " id="DuplicateDetails" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Duplicate Records List</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm())
+                {
+                    <div class="container">
+                        <div class="row">
+                            <div class="form-horizontal">
+                                <table id="example2" class="table table-bordered table-responsive table-hover datatable" role="grid" aria-describedby="example2-info">
+                                    <thead>
+                                        <tr class="col-md-12">
+                                            <th>
+                                                Physician
+                                            </th>
+                                            <th>
+                                                Index
+                                            </th>
+                                            <th>
+                                                Schedule
+                                            </th>
+                                            <th>
+                                                Start Date
+                                            </th>
+                                            <th>
+                                                End Date
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            if (rejectedlist != null)
+                                            {
+                                                foreach (var listRecord in rejectedlist)
+                                                {
+                                                    <tr class="col-md-12">
+                                                        <td>@listRecord.AspNetUser.FirstName + "" + @listRecord.AspNetUser.LastName</td>
+                                                        <td>@listRecord.rat_range</td>
+                                                        <td>@listRecord.rat_shift_name</td>
+                                                        <td>@listRecord.rat_start_date</td>
+                                                        <td>@listRecord.rat_end_date</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <p style="color:red;font-style:italic;font-weight:bold">*These Records Already Exists in the Database</p>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+

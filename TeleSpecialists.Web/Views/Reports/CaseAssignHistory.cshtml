@@ -1,0 +1,326 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@{
+    ViewBag.Title = "Assignment History";
+    var currentDate = DateTime.Now.ToEST();
+    var previousMonth = currentDate.AddMonths(-1);
+    //ViewBag.showPrint = true;
+}
+
+@Html.Partial("_ReportLayout")
+
+<div class="row" id="divLocalFilters">
+    <div class="col-12">
+        <div class="form-row">
+            <div class="form-group col-2">
+                <label for="ddlTimeFrame">Time Frame</label>
+                <select class="form-control" id="ddlTimeFrame">
+                    <option value="ThisMonth" selected="selected">This Month</option>
+                    <option value="PreviousMonth">Previous Month</option>
+                    <option value="ThisYear">This Year</option>
+                    <option value="PreviousYear">Previous Year</option>
+                    <option value="CustomRange">Custom Range</option>
+                </select>
+            </div>
+            <div class="form-row col-4" id="divCustomDate" style="display:none;">
+                <div class="form-group col-6">
+                    <label for="FromDate">From</label>
+                    <input type="text" id="FromDate" name="FromDate" required class="form-control datepicker" />
+                </div>
+
+                <div class="form-group col-6">
+                    <label for="ToDate">To</label>
+                    <input type="text" id="ToDate" name="ToDate" required class="form-control datepicker" />
+                </div>
+            </div>
+            <div class="form-group col-2">
+                <label for="">&nbsp;</label><br />
+                <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+                <button type="button" class="btn btn-dark" id="btnClear" style="display: none">Clear Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/kendo/kendo_jszip.js"></script>
+<script>
+    var isDateField = [];
+    var detailExportPromises = [];
+    var detailDataSource = new kendo.data.DataSource({
+        transport: {
+            read: "/Reports/GetCompleteCaseAssignmentHistoryDetails",
+            contentType: "application/json"
+        },
+        schema: {
+            data: "Data",
+            total: "Total"
+        },
+        serverPaging: false,
+        serverSorting: false,
+        serverFiltering: false,
+    });
+    detailDataSource.read();
+
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $('#divLocalFilters').appendTo('#divFilters');
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $("#ddlTimeFrame").off("change").change(function () {
+            if ($(this).val() == "CustomRange") {
+                $("#divCustomDate").show();
+            }
+            else {
+                $("#divCustomDate").hide();
+            }
+        });
+        $("#btnSearch").off("click").click(function () {
+            var errorMessage = "";
+            if ($("#ddlTimeFrame").val() == "CustomRange") {
+                if ($("#FromDate").val() == "")
+                    errorMessage = "Enter From Date<br/>";
+                if ($("#ToDate").val() == "")
+                    errorMessage += "Enter To Date";
+            }
+            if (errorMessage == "") {
+                $("#kendoDataGrid").empty();
+                loadGridData();
+            }
+            else {
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+            }
+        });
+        resetDropDownOnDeseelect();
+        loadGridData();
+    });
+
+    function exportChildData(cah_cas_key, rowIndex) {
+        var deferred = $.Deferred();
+        detailExportPromises.push(deferred);
+        var rows = [{
+            cells: [
+                { value: "cah_created_date" },
+                { value: "cah_action_time" },
+                { value: "physician" },
+                { value: "status" }
+            ]
+        }];
+        detailDataSource.filter({ field: "cah_cas_key", operator: "eq", value: cah_cas_key });
+        var exporter = new kendo.ExcelExporter({
+            columns: [{
+                field: "cah_created_date", title: "Start Time Stamp"
+            }, {
+                    field: "cah_action_time", title: "End Time Stamp"
+            }, {
+                    field: "physician", title: "Physician"
+            }, {
+                    field: "status", title: "Status"
+            }],
+            dataSource: detailDataSource
+        });
+        exporter.workbook().then(function (book, data) {
+            deferred.resolve({
+                masterRowIndex: rowIndex,
+                sheet: book.sheets[0]
+            });
+        });
+    }
+    function loadGridData() {
+        try {
+            $("#kendoDataGrid").attr("style", "min-height : unset !important;");
+            $("#kendoDataGrid").kendoGrid({
+                excel: {
+                    allPages: true
+                },
+                excelExport: function (e) {
+                    e.preventDefault();
+                    var workbook = e.workbook;
+                    detailExportPromises = [];
+                    var masterData = e.data;
+                    for (var rowIndex = 0; rowIndex < masterData.length; rowIndex++) {
+                        exportChildData(masterData[rowIndex].cah_cas_key, rowIndex);
+                    }
+                    $.when.apply(null, detailExportPromises).then(function () {
+                        // Get the export results.
+                        var detailExports = $.makeArray(arguments);
+                        // Sort by masterRowIndex.
+                        detailExports.sort(function (a, b) {
+                            return a.masterRowIndex - b.masterRowIndex;
+                        });
+                        // Add an empty column.
+                        workbook.sheets[0].columns.unshift({
+                            width: 100
+                        });
+                        // Merge the detail export sheet rows with the master sheet rows.
+                        // Loop backwards so the masterRowIndex does not need to be updated.
+                        for (var i = detailExports.length - 1; i >= 0; i--) {
+                            var masterRowIndex = detailExports[i].masterRowIndex + 1; // compensate for the header row
+                            var sheet = detailExports[i].sheet;
+                            // Prepend an empty cell to each row.
+                            for (var ci = 0; ci < sheet.rows.length; ci++) {
+                                if (sheet.rows[ci].cells[0].value) {
+                                    sheet.rows[ci].cells.unshift({});
+                                }
+                            }
+                            // Insert the detail sheet rows after the master row.
+                            [].splice.apply(workbook.sheets[0].rows, [masterRowIndex + 1, 0].concat(sheet.rows));
+                        }
+                        // Save the workbook.
+                        kendo.saveAs({
+                            dataURI: new kendo.ooxml.Workbook(workbook).toDataURL(),
+                            fileName: "Export.xlsx"
+                        });
+                    });
+                },
+                pdf: {
+                    author:  "Condado Group",
+                    creator: "Condado Group",
+                    date: new Date(),
+                    fileName: '@ViewBag.Title' + '.pdf',
+                    keywords: '@ViewBag.Title',
+                    subject: '@ViewBag.Title',
+                    title: '@ViewBag.Title'
+                },
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetCaseAssignHistory")',
+                            contentType: "application/json",
+                            data: function () {
+                                var filterModel = {startDate : null, endDate: null, duration: "Month"  };
+                                switch ($("#ddlTimeFrame").val()) {
+                                    case "ThisMonth":
+                                        filterModel.startDate = "@(new DateTime(currentDate.Year, currentDate.Month,1).ToString())";
+                                        filterModel.endDate = "@(new DateTime(currentDate.Year, currentDate.Month, currentDate.Day).ToString())";
+                                        break;
+
+                                    case "PreviousMonth":
+                                        filterModel.startDate = "@(new DateTime(previousMonth.Year, previousMonth.Month,1).ToString())";
+                                        filterModel.endDate = "@(new DateTime(previousMonth.Year,previousMonth.Month, DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month)).ToString())";
+                                        break;
+                                    case "ThisYear":
+                                        filterModel.startDate = "@(new DateTime(currentDate.Year, 1,1).ToString())";
+                                        filterModel.endDate = "@currentDate.ToString()";
+                                        break;
+                                    case "PreviousYear":
+                                        filterModel.startDate = "@(new DateTime(currentDate.AddYears(-1).Year, 1,1).ToString())";
+                                        filterModel.endDate = "@(new DateTime(currentDate.AddYears(-1).Year, 12,31).ToString())";
+                                        break;
+                                    case "CustomRange":
+                                        filterModel.startDate = $("#FromDate").val();
+                                        filterModel.endDate = $("#ToDate").val();
+                                        break;
+                                }
+                                 return filterModel;
+                            },
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total"
+                    },
+                    //serverPaging: true,
+                    //pageSize: 10,
+                    //serverFiltering: false,
+                    //serverSorting: true,
+                    serverPaging: true,
+                    pageSize: 10,
+                    serverFiltering: false,
+                    serverSorting: true,
+                },
+                detailInit: detailInit,
+                dataBound: function (e) {
+                    detailExportPromises = [];
+                    var grid = e.sender;
+                    grid.tbody.find("tr.k-master-row").click(function (e) {
+                        var target = $(e.target);
+                        if ((target.hasClass("k-i-expand")) || (target.hasClass("k-i-collapse"))) {
+                            return;
+                        }
+                        var row = target.closest("tr.k-master-row");
+                        var icon = row.find(".k-i-expand");
+
+                        if (icon.length) {
+                            grid.expandRow(row);
+                        } else {
+                            grid.collapseRow(row);
+                        }
+                    });
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                },
+                resizable: true,
+                filterable: false,
+                groupable: false,
+                sortable: true,
+                pageable: {
+                    refresh: true,
+                    //pageSizes: true,
+                    //buttonCount: 5
+                    pageSizes: [5,10,15,20,30, 50,'All']
+                },
+                columns: [
+                    { hidden: true, field: "cah_cas_key" },
+                    { field: "cas_billing_date_of_consult", title: "Date of Consult" },
+                    { field: "cas_case_number", title: "Case Number" }
+                ]
+            });
+        } catch (e) {
+            consol.log(e);
+        }
+    }
+
+    function detailInit(e) {
+        var detailRow = e.detailRow;
+        detailRow.find(".tabstrip").kendoTabStrip({
+            animation: {
+                open: { effects: "fadeIn" }
+            }
+        });
+        $("<div />").appendTo(e.detailCell).kendoGrid({
+            dataSource: {
+                transport: {
+                    read: "/Reports/GetCaseAssignmentHistoryDetails?id=" + e.data.cah_cas_key,
+                    contentType: "application/json"
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                serverPaging: false,
+                serverSorting: false,
+                serverFiltering: false
+            },
+            scrollable: false,
+            sortable: false,
+            pageable: false,
+            excelExport: function (e) {
+                e.preventDefault();
+            },
+            dataBound: function (e) {
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+            },
+            columns: [
+                { hidden: true, field: "cah_cas_key" },
+                { field: "cah_created_date", title:"Start Time Stamp" },
+                { field: "cah_action_time", title: "End Time Stamp" },
+                { field: "physician", title: "Physician" },
+                { field: "status", title: "Status" }
+            ]
+        });
+    }
+</script>

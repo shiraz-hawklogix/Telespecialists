@@ -1,0 +1,1028 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.ViewModels.Reports;
+@using TeleSpecialists.BLL.Helpers;
+@{
+    ViewBag.Title = "Symptom to Needle Time Report";
+    var currentDate = DateTime.Now.ToEST();
+    var previousMonth = currentDate.AddMonths(-1);
+    bool isAllowListing = (bool)ViewBag.AllowListing;
+    string FacilityAdminMessage = (string)ViewBag.FacilityAdminMessage;
+    var CallTypes = ViewBag.CallType as List<SelectListItem>;
+    var QPS_Numbers_List = ViewBag.QPS_Numbers_List as IEnumerable<SelectListItem>;
+    var tPA_List = ViewBag.tPA_List as IEnumerable<SelectListItem>;
+    var eAlert_List = ViewBag.eAlert_List as IEnumerable<SelectListItem>;
+
+
+    //Last Month
+    var lastMonths = Enumerable.Range(0, 1)
+                              .Select(i => DateTime.Now.ToEST().AddMonths(i - 1))
+                              .Select(date => date.ToString("MM/dd/yyyy"));
+    DateTime dates = Convert.ToDateTime(lastMonths.FirstOrDefault());
+    DateTime LMStartDate = new DateTime(dates.Year, dates.Month, 1);
+    DateTime LMEndDate = LMStartDate.AddMonths(1).AddDays(-1);
+    //Last 3 Months
+    var last3Months = Enumerable.Range(0, 3)
+                              .Select(i => DateTime.Now.ToEST().AddMonths(i - 3))
+                              .Select(date => date.ToString("MM/dd/yyyy"));
+    DateTime firstmonth = Convert.ToDateTime(last3Months.FirstOrDefault());
+    DateTime lastmonth = Convert.ToDateTime(last3Months.LastOrDefault());
+    DateTime LTHRStartDate = new DateTime(firstmonth.Year, firstmonth.Month, 1);
+    DateTime StartDatelastmonth = new DateTime(lastmonth.Year, lastmonth.Month, 1);
+    DateTime LTHREndDate = StartDatelastmonth.AddMonths(1).AddDays(-1);
+
+    //Last 12 Months
+    var last12Months = Enumerable.Range(0, 12)
+                              .Select(i => DateTime.Now.ToEST().AddMonths(i - 12))
+                              .Select(date => date.ToString("MM/dd/yyyy"));
+    DateTime first12month = Convert.ToDateTime(last12Months.FirstOrDefault());
+    DateTime las12tmonth = Convert.ToDateTime(last12Months.LastOrDefault());
+    DateTime LTWStartDate = new DateTime(first12month.Year, first12month.Month, 1);
+    DateTime LTWStartDatelastmonth = new DateTime(las12tmonth.Year, las12tmonth.Month, 1);
+    DateTime LTWEndDate = LTWStartDatelastmonth.AddMonths(1).AddDays(-1);
+    string display = "";
+    if (User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))
+    {
+        display = "d-none";
+    }
+}
+@if (isAllowListing)
+{
+    @Html.Partial("_ReportLayout")
+
+    <div class="row" id="divLocalFilters">
+        <div class="col-12">
+            <div class="form-row">
+                <div class="form-group col-xl-4 col-6 @display">
+                    <label for="State">State</label>
+                    @Html.DropDownList("fac_stt_key", ViewBag.States as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+                </div>
+                <div class="form-group col-xl-4 col-6">
+                    <label for="Facilities">Facility</label>
+                    <select id="Facilities" name="Facilities" class="form-control Facilities" multiple="multiple"></select>
+                </div>
+                <div class="form-group col-xl-3 col-6">
+                    <label for="Physicians">Physician</label>
+                    @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+                </div>
+                <div class="form-group col-xl-3 col-6">
+                    <label for="ddlTimeFrame">Time Frame</label>
+                    <select class="form-control" id="ddlTimeFrame">
+                        <option value="LastMonth">Last Month</option>
+                        <option value="Last3Months">Last 3 Month's</option>
+                        <option value="Last12Months">Last 12 Month's</option>
+                        <option value="CustomRange">Date Range</option>
+                    </select>
+                </div>
+
+                <div class="form-group row col-xl-5 col-12" id="divDateRange" style="display:none;">
+                    <div class="col-6 pr-0">
+                        <label>From</label>
+                        <input type="text" id=FromDate name=FromDate class="form-control datepicker" />
+                        <span class="text-danger field-validation-error position-absolute" id="txtFromDateError"
+                              style="display:none" data-valmsg-for=FromDate data-valmsg-replace="true">
+                            <span id="FromDate-error" class=""></span>
+                        </span>
+                    </div>
+
+                    <div class="form-group col-6">
+                        <label>To Date</label>
+                        <input type="text" id="ToDate" name="ToDate" class="form-control datepicker" />
+                    </div>
+                </div>
+                <div class="form-group col-xl-2 col-6">
+                    <label>Workflow Type</label>
+                    <div id="divCaseWorkflowFilter">
+                        @Html.DropDownList("WorkflowType", ViewBag.WorkflowType as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+                    </div>
+                </div>
+                <div class="form-group col-xl-2 col-6">
+                    <label>QPS</label>
+                    <div id="divQPSNumbersList">
+                        @Html.DropDownList("QPS_Numbers_List", QPS_Numbers_List, new { @class = "form-control", @multiple = "multiple" })
+
+                    </div>
+                </div>
+                <div class="form-group col-xl-2 col-6">
+                    <label>eAlert</label>
+                    <div id="diveAlert">
+                        @Html.DropDownList("eAlert_List", eAlert_List, new { @class = "form-control", @multiple = "multiple" })
+
+                    </div>
+                </div>
+
+                <div class="form-group col-12 mt-xl-12 pt-xl-12">
+                    <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+                    <button type="button" class="btn btn-dark ml-2 d-none" id="resetSearch">Clear Search</button>
+                    @*<button type="button" class="btn btn-dark ml-2" id="btnfields" href="javascript:;" data-toggle="modal" data-target="#fieldsModel">Fields</button>*@
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    Html.RenderPartial("_QualityReportAdvanceSearch", new QualityMetricsAdvance());
+
+    <div class="modal" id="fieldsModel" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" style=" max-width: 1000px; width: 1000px; ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Report Fields</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    @{
+                        Html.RenderPartial("_QualityMetricReportField");
+                    }
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-link" data-dismiss="modal">Close</a>
+                    <button class="btn btn-dark" type="button" id="btnFieldsSearch">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="graphmodal" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" style=" max-width: 1000px; width: 1000px; ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
+                    <button type="button" class="export-pdf k-button">Save as PDF</button>
+                </div>
+                <div class="modal-body">
+                    <div id="chart"></div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-link" data-dismiss="modal">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/Custom/inputMask.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#fac_stt_key').multiselect({
+                columns: 1,
+                placeholder: 'Select State',
+                selectAll: true,
+                search: true,
+                searchOptions: {
+                    'default': 'Search State'
+                }
+            });
+            var state = 0;
+            GetFacilityByState(state);
+        })
+        $("#fac_stt_key").change(function () {
+            var state = $(this).val();
+            if (state.length == 0) {
+                state = 0;
+            }
+            GetFacilityByState(state);
+        })
+        function GetFacilityByState(state) {
+            $.ajax({
+                cache: false,
+                async: true,
+                type: "POST",
+                url: '/Reports/GetFacilityByState',
+                data: { state: state },
+                success: function (data) {
+                    $('.Facilities').multiselect('reset');
+                    $('.Facilities').html("");
+                    var html = "";
+                    $.each(data, function (key, val) {
+                        html += "<option value=" + val.Value + ">" + val.Text + "</option>";
+                    });
+                    $('.Facilities').append(html);
+                    $('.Facilities').multiselect({
+                        columns: 1,
+                        placeholder: 'Select Facility',
+                        selectAll: true,
+                        search: true,
+                        searchOptions: {
+                            'default': 'Search Facility'
+                        }
+                    });
+                    $('.Facilities').multiselect('reload');
+                },
+                error: function () {
+
+                }
+            });
+
+        }
+        function unCheckAllColumns() {
+
+            $("#fieldsModel").find("input[type='checkbox']:checked").each(function () {
+
+                var cb = $(this);
+                $(cb).prop("checked", false);
+            });
+        }
+
+        function showAllColumns() {
+
+            var grid = $("#kendoDataGrid").data("kendoGrid");
+            if (grid != null && grid != 'undefined') {
+
+                var cols = grid.columns.length
+
+            /// Starting from 2nd column so it will not effect the Action column
+                for (var i = 2; i < cols; i++) {
+                    grid.showColumn(i)
+                }
+            }
+        }
+
+        function filterColumns() {
+
+            var grid = $("#kendoDataGrid").data("kendoGrid");
+
+            if (grid == null || grid == 'undefined')
+                return;
+            var colsChecked = $("#fieldsModel").find("input[type='checkbox']:checked").length;
+
+
+
+
+            showAllColumns();
+
+            if (colsChecked == 0)
+                return;
+
+            $("#fieldsModel").find("input[type='checkbox']").each(function () {
+
+                    var cb = $(this);
+
+                // The id of checkbox and field/column in grid are same.
+                var col = $(cb).attr("id");
+
+                if ($(cb).prop("checked") == true)
+                    grid.showColumn(col);
+                else
+                    grid.hideColumn(col);
+            });
+
+             //set the width of the table to 100% as it should not be showing blank area.
+            $(".k-grid-header-wrap > table").css("width", "100%");
+            $(".k-grid-content > table").css("width", "100%");
+
+        }
+
+        $("#btnFieldsSearch").off("click").on("click", function () {
+
+            $("#fieldsModel").modal("hide");
+            $('#btnSearch').click();
+        });
+
+
+        var advanceSearchModel = {
+            HandleTime: null,
+            AssignmentTime: null,
+            BedsideResponseTime: null,
+            LogInHandleTime: null,
+            OnScreenTime: null,
+            ActivationTime: null,
+            ArrivalToNeedleTime: null,
+            PhysicianMDM: null,
+            TPAAdministratorTime: null,
+            TSResponseTime: null,
+            VerbalOrderToCPOEOrder: null,
+            CPOEOrderToNeedle: null,
+            StartAcceptTime: null
+        }
+        var isFacilityAdmin = @User.IsInRole(UserRoles.FacilityAdmin.ToDescription()).ToString().ToLower();
+        $(document).ready(function () {
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+            $('#btnExportPdf').hide();
+            $('.datepicker').kendoDatePicker({
+                open: function (e) {
+                    onDatePickerOpen(e);
+                }
+            });
+            $('#divLocalFilters').appendTo('#divFilters');
+            $('.timeToEvaluate').inputmask("hh:mm:ss", {
+                placeholder: "00:00:00",
+                insertMode: false,
+                showMaskOnHover: false,
+                hourFormat: 12
+             });
+            $('#ddlTimeFrame').off("change").change(function () {
+                $("#divDateRange").hide();
+                var selectedValue = $(this).val();
+                if (selectedValue == "CustomRange")
+                    $("#divDateRange").show();
+            });
+            
+            $('#Physicians').multiselect({
+                columns: 1,
+                placeholder: 'Select Physician',
+                selectAll: true,
+                search: true,
+                searchOptions: {
+                    'default': 'Search Physician'
+                }
+            });
+            $('#CaseStatus').multiselect({
+                columns: 1,
+                placeholder: 'Select Status',
+                search: false,
+                selectAll: true,
+            });
+            $('#BillingCode').multiselect({
+                columns: 1,
+                placeholder: 'Select Code',
+                search: false,
+                selectAll: true,
+            });
+            $('#CaseTypes').multiselect({
+                columns: 1,
+                placeholder: 'Select Type',
+                search: false,
+                selectAll: true,
+            });
+            $('#WorkflowType').multiselect({
+                columns: 1,
+                placeholder: 'Select Workflow Type',
+                search: false,
+                selectAll: true,
+            });
+
+            $('#CallType').multiselect({
+                columns: 1,
+                placeholder: 'Select Call Type',
+                search: false,
+                selectAll: true,
+            });
+
+            $('#CallerSource').multiselect({
+                columns: 1,
+                placeholder: 'Select Caller Source',
+                search: false,
+                selectAll: true,
+            });
+
+            //CallerSource
+
+            $('#QPS_Numbers_List').multiselect({
+                columns: 1,
+                placeholder: 'Select',
+                selectAll: true,
+                search: true,
+                searchOptions: {
+                    'default': 'Enter a number'
+                }
+            });
+
+            $('#tPA_List').multiselect({
+                columns: 1,
+                placeholder: 'Select',
+                selectAll: true,
+                search: true,
+                searchOptions: {
+                    'default': 'Select tPA'
+                }
+            });
+
+            $('#eAlert_List').multiselect({
+                columns: 1,
+                placeholder: 'Select',
+                selectAll: true,
+                search: true,
+                searchOptions: {
+                    'default': 'Select eAlert'
+                }
+            });
+            $('#btnSearch').off("click").click(function () {
+
+                var errorMessage = "";
+                if ($("#ddlTimeFrame").val() == "CustomRange") {
+                    if ($("#FromDate").val() == "")
+                        errorMessage = "Enter From Date<br/>";
+                    if ($("#ToDate").val() == "")
+                        errorMessage += "Enter To Date";
+                }
+                if (errorMessage == "") {
+                    loadGridData();
+                    localStorage.setItem('QualityMetricsReport.SearchApplied', true);
+                    $("#resetSearch").removeClass("d-none");
+                }
+                else {
+                    $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+                }
+
+
+            });
+            $('#resetSearch').off("click").click(function () {
+
+                unCheckAllColumns();
+                localStorage.setItem('QualityMetricsReport.SearchApplied', false);
+                $('#Physicians').val("");
+                $('#Physicians').multiselect('reload');
+                $('.Facilities').val("");
+                $('.Facilities').multiselect('reload');
+                $('#BillingCode').val("");
+                $('#BillingCode').multiselect('reload');
+                $('#CaseTypes').val("");
+                $('#CaseTypes').multiselect('reload');
+                $('#WorkflowType').val("");
+                $('#WorkflowType').multiselect('reload');
+
+                $('#CallType').val("");
+                $('#CallType').multiselect('reload');
+
+                $('#CallerSource').val("");
+                $('#CallerSource').multiselect('reload');
+
+
+                $('#CaseStatus').val("");
+                $('#CaseStatus').multiselect('reload');
+                $('#QPS_Numbers_List').val("");
+                $('#QPS_Numbers_List').multiselect('reload');
+                $('#tPA_List').val("");
+                $('#tPA_List').multiselect('reload');
+                $('#eAlert_List').val("");
+                $('#eAlert_List').multiselect('reload');
+
+                $('#ddlTimeFrame').val("Last48Hours").change();
+                $('.cb_benchMarck').each(function () {
+                    $(this).prop("checked", false);
+                    var parentGroup = $(this).parents(".form-group");
+                    $(parentGroup).find("select").val("0");
+                    $(parentGroup).find("select").disable();
+                    $(parentGroup).find(".timeToEvaluate ").val("");
+                    $(parentGroup).find(".timeToEvaluate ").disable();
+                });
+                advanceSearchModel = {
+                    HandleTime: null,
+                    AssignmentTime: null,
+                    BedsideResponseTime: null,
+                    LogInHandleTime: null,
+                    OnScreenTime: null,
+                    ActivationTime: null,
+                    ArrivalToNeedleTime: null,
+                    PhysicianMDM: null,
+                    TPAAdministratorTime: null,
+                    TSResponseTime: null,
+                    VerbalOrderToCPOEOrder: null,
+                    CPOEOrderToNeedle: null,
+                    StartAcceptTime: null
+                }
+                loadGridData();
+                setWidthOfDropDowns();
+                $("#resetSearch").addClass("d-none");
+            });
+            $('#kendoDataGrid').attr("style", "min-height : unset !important");
+            $('.cb_benchMarck').change(function () {
+                var ischecked = $(this).is(':checked');
+                var parentGroup = $(this).parents(".form-group");
+                if (!ischecked) {
+                    $(parentGroup).find("select").val("0");
+                    $(parentGroup).find(".timeToEvaluate").val("");
+                    $(parentGroup).find(".error_msg").hide();
+                    $(this).parents(".form-group").find("select, .timeToEvaluate").disable();
+                }
+                else {
+                    $(this).parents(".form-group").find("select, .timeToEvaluate").enable();
+                }
+            });
+            $('#btnAdvanceSearchForm').off("click").click(function (e) {
+                e.preventDefault();
+                $(".error_msg").hide();
+                var valid = true;
+                $("#frmAdvanceSearch input[type='checkbox']").each(function () {
+                    if ($(this).is(":checked")) {
+                        var parentGroup = $(this).parents(".form-group");
+                        var timeFieldValue = $(parentGroup).find(".timeToEvaluate").val();
+                        if (timeFieldValue == "") {
+                            valid = false;
+                            $(parentGroup).find(".error_msg").show();
+                        }
+                    }
+                });
+
+                if (valid) {
+                    $("#frmAdvanceSearch").submit();
+                }
+            });
+            $('#frmAdvanceSearch').off("submit").submit(function (e) {
+                e.preventDefault();
+
+                $('#qa_AdvanceSearch .form-group').each(function () {
+                    var benchMark = $(this).find('input[type="checkbox"]');
+                    var benchMarkName = $(benchMark).attr("name");
+                    switch (benchMarkName) {
+                        case "HandleTime":
+                            advanceSearchModel.HandleTime = mapModelProperties(this, benchMark);
+                            break;
+                        case "AssignmentTime":
+                            advanceSearchModel.AssignmentTime = mapModelProperties(this, benchMark);
+                            break;
+                        case "BedsideResponseTime":
+                            advanceSearchModel.BedsideResponseTime = mapModelProperties(this, benchMark);
+                            break;
+                        case "LogInHandleTime":
+                            advanceSearchModel.LogInHandleTime = mapModelProperties(this, benchMark);
+                            break;
+                        case "OnScreenTime":
+                            advanceSearchModel.OnScreenTime = mapModelProperties(this, benchMark);
+                            break;
+                        case "ActivationTime":
+                            advanceSearchModel.ActivationTime = mapModelProperties(this, benchMark);
+                            break;
+                        case "ArrivalToNeedleTime":
+                            advanceSearchModel.ArrivalToNeedleTime = mapModelProperties(this, benchMark);
+                            break;
+                        case "PhysicianMDM":
+                            advanceSearchModel.PhysicianMDM = mapModelProperties(this, benchMark);
+                            break;
+                        case "TPAAdministratorTime":
+                            advanceSearchModel.TPAAdministratorTime = mapModelProperties(this, benchMark);
+                            break;
+                        case "TSResponseTime":
+                            advanceSearchModel.TSResponseTime = mapModelProperties(this, benchMark);
+                            break;
+                        case "VerbalOrderToCPOEOrder":
+                            advanceSearchModel.VerbalOrderToCPOEOrder = mapModelProperties(this, benchMark);
+                            break;
+                        case "CPOEOrderToNeedle":
+                            advanceSearchModel.CPOEOrderToNeedle = mapModelProperties(this, benchMark);
+                            break;
+                        case "StartAcceptTime":
+                            advanceSearchModel.StartAcceptTime = mapModelProperties(this, benchMark);
+                            break
+                        default:
+                    }
+                });
+
+                window.setTimeout(function () {
+                    $("#qa_AdvanceSearch").modal("hide");
+                    $("#btnSearch").click();
+                }, 100);
+            });
+            trySetFilters();
+            resetDropDownOnDeseelect();
+            loadGridData();
+            setWidthOfDropDowns();
+        });
+
+        function trySetFilters() {
+            var isSearchApplied = localStorage.getItem("QualityMetricsReport.SearchApplied");
+            if (isSearchApplied == "true") {
+                console.log("Search applied");
+                var filters = localStorage.getItem("QualityMetricsReport.Filter");
+                if (filters) {
+                    var filterApplied = false;
+                    filters = JSON.parse(filters);
+                    if (filters.Facilities) {
+                        filterApplied = true;
+                        $(".Facilities").val(filters.Facilities);
+                        $(".Facilities").multiselect('reload');
+                    }
+                    if (filters.Physicians) {
+                        filterApplied = true;
+                        $("#Physicians").val(filters.Physicians);
+                        $("#Physicians").multiselect('reload');
+                    }
+                    if (filters.CaseStatus) {
+                        filterApplied = true;
+                        $("#CaseStatus").val(filters.CaseStatus);
+                        $("#CaseStatus").multiselect('reload');
+                    }
+                    if (filters.BillingCode) {
+                        filterApplied = true;
+                        $("#BillingCode").val(filters.BillingCode);
+                        $("#BillingCode").multiselect('reload');
+                    }
+                    if (filters.CaseType) {
+                        filterApplied = true;
+                        $("#CaseTypes").val(filters.CaseType);
+                        $("#CaseTypes").multiselect('reload');
+                    }
+                    if (filters.workflowType) {
+                        filterApplied = true;
+                        $("#WorkflowType").val(filters.WorkflowType);
+                        $("#WorkflowType").multiselect('reload');
+                    }
+
+                    if (filters.callType) {
+                        filterApplied = true;
+                        $("#CallType").val(filters.callType);
+                        $("#CallType").multiselect('reload');
+                    }
+
+                    if (filters.CallerSource) {
+                        filterApplied = true;
+                        $("#CallerSource").val(filters.CallerSource);
+                        $("#CallerSource").multiselect('reload');
+                    }
+
+                    if (filters.QPSNumbers) {
+                        filterApplied = true;
+                        $("#QPS_Numbers_List").val(filters.QPSNumbers);
+                        $("#QPS_Numbers_List").multiselect('reload');
+                    }
+
+                    if (filters.tPA) {
+                        filterApplied = true;
+                        $("#tPA_List").val(filters.tPA);
+                        $("#tPA_List").multiselect('reload');
+                    }
+
+                    if (filters.eAlert) {
+                        filterApplied = true;
+                        $("#eAlert_List").val(filters.eAlert);
+                        $("#eAlert_List").multiselect('reload');
+                    }
+
+                    if (filters.TimeFrame) {
+                        filterApplied = true;
+                        $("#ddlTimeFrame").val(filters.TimeFrame);
+                        var selectedValue = filters.TimeFrame;
+                        if (selectedValue == "CustomRange") {
+                            $("#FromDate").val(filters.StartDate);
+                            $("#ToDate").val(filters.EndDate);
+                            $("#divDateRange").show();
+                        }
+                    }
+
+                    if (filters.AdvanceSearchCriteria) {
+                        for (var key in filters.AdvanceSearchCriteria) {
+                            if (filters.AdvanceSearchCriteria[key]) {
+                                filterApplied = true;
+                                $('input[name="' + key + '"').prop("checked", true);
+                                $('input[name="' + key + '"').change();
+                                $('input[name="' + key + '.TimeToEvaluate"').val(filters.AdvanceSearchCriteria[key].TimeToEvaluate);
+                                $('[name="' + key + '.ComparisonOperator"').val(filters.AdvanceSearchCriteria[key].ComparisonOperator);
+                            }
+                        }
+                        advanceSearchModel = filters.AdvanceSearchCriteria;
+                    }
+                    if(filterApplied)
+                        $("#resetSearch").removeClass("d-none");
+                }
+            }
+        }
+        function mapModelProperties(elem, benchMark) {
+            var data = {};
+            if ($(benchMark).prop("checked") == true) {
+                $(elem).find('select').each(function () {
+                    data.ComparisonOperator = this.value;
+                });
+                $(elem).find('input[type="text"]').each(function () {
+                    data.TimeToEvaluate = this.value;
+                });
+            }
+            else {
+                data = null;
+            }
+            return data;
+        }
+
+        function loadGridData() {
+            showAllColumns();
+
+         $("#kendoDataGrid").kendoGrid({
+                excel: {
+                    allPages: true,
+                    filterable: false,
+                    fileName: '@ViewBag.Title' + '.xlsx',
+                    proxyURL: '@Url.Action("ExportToExcel")',
+                },
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetSymptomstoNeedle")',
+                            contentType: "application/json",
+                            type: "POST",
+                            data: function() {
+                                    var model = {
+                                        Facilities: "",
+                                        Physicians: "",
+                                        StartDate: null,
+                                        EndDate: null,
+                                        IncludeTime: false,
+                                        AdvanceSearchCriteria: advanceSearchModel,
+                                        BillingCode: null,
+                                        CaseType: null,
+                                        QPSNumbers: "",
+                                        tPA: "",
+                                        eAlert: "",
+                                        TimeFrame: "",
+                                        states: ""
+                                };
+                                model.states = $("#fac_stt_key").val();
+                                    model.Physicians = $("#Physicians").val();
+                                    model.Facilities = $(".Facilities").val();
+                                    model.BillingCode = 1;//$("#BillingCode").val();
+
+                                    model.CaseType = 9;//$("#CaseTypes").val();
+                                    model.QPSNumbers = $("#QPS_Numbers_List").val();
+                                    model.tPA = true;//$("#tPA_List").val();
+                                    model.eAlert = $("#eAlert_List").val();
+                                    model.WorkFlowType = $("#WorkflowType").val();
+
+                                    model.CallType = $("#CallType").val();
+                                    model.CallerSource = $("#CallerSource").val();
+
+
+                                    model.CaseStatus = 20;//$("#CaseStatus").val();
+                                    model.TimeFrame = $("#ddlTimeFrame").val();
+                                    switch (model.TimeFrame) {
+                                        case "Today":
+                                            model.StartDate = "@currentDate.ToString()";
+                                            model.EndDate = "@currentDate.ToString()";
+                                            break;
+                                        case "Yesterday":
+                                            model.StartDate = "@(currentDate.AddDays(-1).ToString())";
+                                            model.EndDate = "@(currentDate.AddDays(-1).ToString())";
+                                            break;
+                                        case "Last24Hours":
+                                            model.IncludeTime = true;
+                                            model.StartDate = "@(currentDate.AddHours(-24).ToString())";
+                                            model.EndDate = "@currentDate.ToString()";
+                                            break;
+                                        case "Last48Hours":
+                                            //model.IncludeTime = true;
+                                            model.StartDate = "@(currentDate.AddDays(-2).ToString())";
+                                            model.EndDate = "@currentDate.ToString()";
+                                            break;
+                                        case "LastSevenDays":
+                                            model.StartDate = "@(currentDate.AddDays(-7).ToString())";
+                                            model.EndDate = "@currentDate.ToString()";
+                                            break;
+                                        case "Last14Days":
+                                            model.StartDate = "@(currentDate.AddDays(-14).ToString())";
+                                            model.EndDate = "@currentDate.ToString()";
+                                            break;
+                                        case "LastMonth":
+                                           model.StartDate = "@LMStartDate";
+                                            model.EndDate = "@LMEndDate";
+                                            break;
+                                        case "Last60Days":
+                                            model.StartDate = "@(currentDate.AddDays(-60).ToString())";
+                                            model.EndDate = "@currentDate.ToString()";
+                                            break;
+                                        case "Last3Months":
+                                            model.StartDate = "@LTHRStartDate";
+                                            model.EndDate = "@LTHREndDate";
+                                            break;
+                                        case "Last12Months":
+                                            model.StartDate = "@LTWStartDate";
+                                            model.EndDate = "@LTWEndDate";
+                                            break;
+                                        case "MonthToDate":
+                                            model.StartDate = "@(new DateTime(currentDate.Year, currentDate.Month, 01).ToString())";
+                                            model.EndDate = "@currentDate.ToString()";
+                                            break;
+                                        case "SpecificDate":
+                                            model.StartDate = $("#txtSpecificDate").val();
+                                            model.EndDate = $("#txtSpecificDate").val();
+                                            break;
+                                        case "CustomRange":
+                                            model.StartDate = $("#FromDate").val();
+                                            model.EndDate = $("#ToDate").val();
+                                            break;
+                                    }
+                                    localStorage.setItem('QualityMetricsReport.Filter', JSON.stringify(model));
+                                    return model;
+                                },
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total"
+                    },
+                    //serverPaging: true,
+                    //serverFiltering: true,
+                    //serverSorting: true,
+                    //pageSize: GetKendoPageSize("QualityReport", "RecPerPage", true),
+                    //page: KendoGet("QualityReport", "page")
+                    serverPaging: true,
+                    pageSize: 10,
+                    serverFiltering: false,
+                    serverSorting: true,
+                },
+             width: '100%',
+                pageable: {
+                    refresh: true,
+                    //pageSizes: true,
+                    //pageSize: 10
+                    pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+                },
+                groupable: false,
+                filterable: true,
+                sortable: true,
+             resizable: true,
+             dataBound: function (e) {
+
+                    $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                 });
+
+                 filterColumns();
+                },
+             columns: [
+                 { hidden: true, field: "id" },
+                    {
+                        title: "<b>Graph</b>", width: '80px',
+                        template: "<input type='button' class='btn btn-dark btn-sm hopitalid' data-hopitalid='#= id #' onclick='showgraph.call(this)' value='View' />"
+                    },
+                 { field: "hospitalname", width: 250, title: "Case Count" },
+                    { field: "mean", width: 185, title: "Mean" },
+                    { field: "median", width: 185, title: "Median" },
+                    { field: "timecycle", width: 185, title: "Time Frame"},
+                ]
+            });
+
+
+
+
+        }
+        function validateForm() {
+            var selectedOption = $("#ddlTimeFrame").val();
+            $("#txtStartDateError").hide();
+            if (selectedOption == "CustomRange") {
+                var start_date = $("#txtStartDate").val();
+                var end_date = $("#txtEndDate").val();
+                if (start_date != "" && end_date != "") {
+                    var duration = moment.duration(moment(end_date).diff(new Date(start_date)));
+                    if (duration.asMinutes() < 0) {
+                        $("#txtStartDateError").html("Start Date must be less then End Date");
+                        $("#txtStartDateError").show();
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        function getPatientIntial(tableId, columnIndex) {
+            $(tableId).find("tr").each(function (index, element) {
+                var row = $(element);
+                var patient = row.find("td:nth-child(" + columnIndex + ")").text();
+                if ($.trim(patient) != "") {
+                    var patientName = $.trim(patient).split(' '),
+                        initials = patientName[0].substring(0, 1).toUpperCase();
+                    if (patientName.length > 1) {
+                        initials += patientName[patientName.length - 1].substring(0, 1).toUpperCase();
+                    }
+                    row.find("td:nth-child(" + columnIndex + ")").html(initials);
+                }
+            });
+        }
+        var showgraph = function () {
+            var hospitalid = $(this).data("hopitalid");
+            var array = hospitalid.split(',');
+            var model = {
+                Facilities: "",
+                Physicians: "",
+                StartDate: null,
+                EndDate: null,
+                IncludeTime: false,
+                AdvanceSearchCriteria: advanceSearchModel,
+                BillingCode: null,
+                CaseType: null,
+                QPSNumbers: "",
+                tPA: "",
+                eAlert: "",
+                TimeFrame: "",
+                states: ""
+            };
+            model.states = $("#fac_stt_key").val();
+            model.Physicians = $("#Physicians").val();
+            model.Facilities = array;
+            model.BillingCode = 1;//$("#BillingCode").val();
+            model.CaseType = 9;
+            model.QPSNumbers = $("#QPS_Numbers_List").val();
+            model.tPA = true;
+            model.eAlert = $("#eAlert_List").val();
+            model.WorkFlowType = $("#WorkflowType").val();
+            model.CallType = $("#CallType").val();
+            model.CallerSource = $("#CallerSource").val();
+            model.CaseStatus = 20;//$("#CaseStatus").val();
+            model.TimeFrame = $("#ddlTimeFrame").val();
+
+            $.ajax({
+                cache: false,
+                async: true,
+                type: "POST",
+                url: '/Reports/GetSymptomstoNeedleGraphModal',
+                data: { model: model },
+                success: function (data) {
+                    var title;
+                    var mean;
+                    var median;
+                    var meancal=[];
+                    var mediancal=[];
+                    var mindate;
+                    var catgory;
+                    $.each(data, function (key, value) {
+                        $.each(value, function (id, dat) {
+                            if (title == null) {
+                                title = dat;
+                            }else if (mean == null) {
+                                mean = dat;
+                            } else if (median == null) {
+                                median = dat;
+                            } else if (mindate == undefined) {
+                                mindate = dat;
+                            } else if (meancal.length == 0) {
+                                $.each(dat, function (keys, val) {
+                                    meancal.push(new Date(mindate + " " + val).getTime());
+                                })
+                            } else if (mediancal.length == 0) {
+                                $.each(dat, function (kys, vals) {
+                                    mediancal.push(new Date(mindate + " " + vals).getTime());
+                                })
+                            } else if (catgory == undefined) {
+                                catgory = dat;
+                            }
+                        });
+                    });
+                    createChart(title, mean, median, meancal, mediancal, mindate, catgory);
+                    $(document).bind("kendo:skinChange", createChart);
+                    $("#graphmodal").modal('show');
+                },
+                error: function () {
+
+                }
+
+            });
+        }
+        function createChart(title, mean, median, meancal = [], mediancal = [], mindate, catgory = []) {
+            var chartHeight = 600;
+            $("#chart").css("height", chartHeight);
+            $("#chart").kendoChart({
+                title: {
+                    text: title,
+                    color: "black",
+                    margin: { top: 20, bottom: 50 }
+                },
+                legend: {
+                    position: "bottom"
+                },
+                chartArea: {
+                    background: "",
+                    width:966
+                },
+                seriesDefaults: {
+                    type: "line",
+                    style: "smooth"
+                },
+                series: [{
+                    labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top", margin: { bottom: 20 }, },
+                    name: mean,
+                    data: meancal,
+                    color: "@ChartColors.Purple.ToDescription()"
+                },
+                    {
+                        labels: { visible: true, template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #", position: "top" },
+                        name: median,
+                        data: mediancal,
+                        color: "@ChartColors.Grayish.ToDescription()"
+                    }
+                ],
+                valueAxis: {
+                    labels: {
+                        template: "#= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+                    },
+                    min: new Date(mindate).getTime(),
+                    //majorUnit: 10 * 60 * 1000
+                },
+                categoryAxis: {
+                    categories: catgory,
+                    majorGridLines: {
+                        visible: false
+                    },
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                //tooltip: {
+                //    visible: true,
+                //    template: "#= series.name #: #= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+                //}
+            });
+        }
+        $(".export-pdf").click(function () {
+            $("#chart").getKendoChart().saveAsPDF();
+        })
+    </script>
+}
+else
+{
+    <div class="col-12  dashboard-indicators p-2">
+        <label class="font-weight-normal">@FacilityAdminMessage</label>
+    </div>
+}
+
+

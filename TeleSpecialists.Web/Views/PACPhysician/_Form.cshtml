@@ -1,0 +1,533 @@
+﻿@using TeleSpecialists.BLL.Model;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.post_acute_care
+@{
+    // PAC Case Types
+    //var indexList = Enum.GetValues(typeof(PacCaseType)).Cast<PacCaseType>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    // indexList = indexList.Where(x => x.key == 227).ToList();
+    var indexList = ViewBag.PacCaseType;
+    SelectList list = new SelectList(indexList, "ucd_key", "ucd_title");
+    // Case Status
+    //var caseStatus = Enum.GetValues(typeof(PacStatus)).Cast<PacStatus>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    var caseStatus = ViewBag.PacStatus;
+    SelectList CaseStatuslist = new SelectList(caseStatus, "ucd_key", "ucd_title");
+    // PAC Physicians
+    var physicians = ViewBag.physicians as List<AspNetUser>;
+    physicians.Select(m => new { Id = m.Id, m.FirstName });
+    SelectList physicianslist = new SelectList(physicians, "Id", "FirstName");
+    // Identification Types
+    var identification = Enum.GetValues(typeof(PACIdentificationTypes)).Cast<PACIdentificationTypes>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList identificationList = new SelectList(identification, "key", "title");
+
+    var seenTypeList = new SelectList(
+        new List<SelectListItem>
+        {
+new SelectListItem {Text = "Phone", Value = "Phone Consult"},
+new SelectListItem {Text = "Video", Value = "Video Consult"}
+        }, "Value", "Text");
+
+    // Added by Axim 24-08-2020
+    var IsNavigator = User.IsInRole("Navigator");
+    var isEdit = ViewBag.IsEdit;
+    var showPhyOfflinePopup = false;
+    DateTime nowdate = DateTime.Now.ToEST();
+}
+<div class="ajaxForm">
+    @using (Html.BeginForm("Create", "PACPhysician", FormMethod.Post, new { @id = "createPACForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="RedirectPage" id="RedirectPage" value="1" />
+        @Html.HiddenFor(m => m.pac_key)
+        //@Html.HiddenFor(m => m.pac_patient_initials, new { @id = "pac_patient_initials" })
+
+        @Html.HiddenFor(m => m.pac_created_by)
+        @Html.HiddenFor(m => m.pac_created_date)
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-xl-4 col-lg-4 col-md-12 left-panel">
+                    <div class="form-group row">
+                        @Html.Label("Case Type:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12 text-danger" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.DropDownListFor(x => x.pac_ctp_key, list, new { @class = "pac_ctp_key form-control", @id = "pac_ctp_key", @required = "required" })
+                            <div class="error_msg" id="pac_ctp_key-error" style="display:none;">
+                                <label>This field is required</label>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.pac_ctp_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("Facility:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12 text-danger", @required = "required" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="pac_fac_key" name="pac_fac_key" class="form-control addValidation" data-searchFilter="true" data-selectedValue="@(Model != null ? Model.pac_fac_key : Guid.Empty)"></select>
+                            <div class="error_msg" id="pac_fac_key-error" style="display:none;">
+                                <label>This field is required</label>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.pac_fac_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("Physician:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12 text-danger" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.DropDownListFor(x => x.pac_phy_key, physicianslist, "--Select--", new { @class = "pac_phy_key form-control", @id = "pac_phy_key" })
+                            <div class="error_msg" id="pac_phy_key-error" style="display:none;">
+                                <label>This field is required</label>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.pac_phy_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("Status:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12 text-danger" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @if (Model.pac_cst_key == PacStatus.Complete.ToInt() && User.IsInRole(UserRoles.Navigator.ToDescription()))
+                            {
+                                <label style="color: #a1a1a1;" id="case-complete-label">Complete </label>
+                                <input type="hidden" value="@PacStatus.Complete.ToInt()" name="pac_cst_key" id="case_status_id" />
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(x => x.pac_cst_key, CaseStatuslist, "--Select--", new { @class = "case_status_id form-control", @id = "case_status_id" })
+                                <div class="error_msg" id="pac_cst_key-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.pac_cst_key, "", new { @class = "text-danger" })
+                            }
+                        </div>
+                    </div>
+                    @*<div class="form-group row">
+                            @Html.Label("Patient Initials:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                            <div class="col-lg-8 col-md-12 col-xs-12">
+                                @Html.TextBoxFor(m => m.pac_patient_initials, new { @class = "form-control", id = "pac_patient_initials", })
+                                <div class="error_msg" id="pac_patient_initials-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.pac_patient_initials, "", new { @class = "text-danger" })
+                            </div>
+                        </div>*@
+                    <div class="form-group row">
+                        @Html.Label("Patient Name:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12 text-danger" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.TextBoxFor(m => m.pac_patient, new { @class = "form-control", id = "pac_patient_name", @placeholder = "Last Name First Name" })
+                            <div class="error_msg" id="pac_patient_name-error" style="display:none;">
+                                <label>This field is required</label>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.pac_patient, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @*<div class="form-group row">
+                            <label class="control-label col-lg-4 col-md-12 col-xs-12 text-danger ">Anticipated Date of Consult: </label>
+                            <div class="col-lg-8 col-md-12 col-xs-12">
+                                if (!isEdit)
+                                    {
+                                        @Html.FormattedDateTextBoxFor(m => m.pac_date_of_consult, new { @class = "form-control datepicker", @data_currentVal = (Model.pac_date_of_consult.HasValue ? Model.pac_date_of_consult.Value.FormatDateTime() : "") })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.FormattedDateTextBoxFor(m => m.pac_date_of_consult, new { @class = "form-control datepicker", @value = DateTime.Now })
+                                    }
+                                @Html.FormattedDateTextBoxFor(m => m.pac_date_of_consult, new { @class = "form-control datepicker", @value = DateTime.Now, @id = "pac_date_of_consult" })
+                                <div class="error_msg" id="pac_date_of_consult-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.Label("Primary Discharge Diagnosis:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12 text-danger" })
+                            <div class="col-lg-8 col-md-12 col-xs-12">
+                                @Html.TextAreaFor(m => m.pac_primary_discharge_diagnosis, new { @class = "form-control", id = "pac_primary_discharge_diagnosis" })
+                                <div class="error_msg" id="pac_primary_discharge_diagnosis-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.pac_primary_discharge_diagnosis, "", new { @class = "text-danger" })
+                            </div>
+                        </div>*@
+                </div>
+                <div class="col-xl-4 col-lg-4 col-md-12 right-panel">
+
+                    <div class="form-group row">
+                        <label class="control-label col-lg-4 col-md-12 col-xs-12 text-blue">Date of Birth:</label>
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.FormattedDateTextBoxFor(m => m.pac_dob, new { @class = "form-control dob", style = "width:100%", placeholder = "MM/DD/YYYY", @id = "general_cas_dob" })
+                            <div class="error_msg" id="general_cas_dob-error" style="display:none;">
+                                <label>This field is required</label>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.pac_dob, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-lg-4 col-md-12 col-xs-12 text-blue">Callback Contact: </label>
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.TextBoxFor(m => m.pac_caller, new { @class = "form-control", @id = "pac_caller" })
+                            <div class="error_msg" id="pac_caller-error" style="display:none;">
+                                <label>This field is required</label>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.pac_caller, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    @*<div class="form-group row">
+                            <label class="control-label col-lg-4 col-md-12 col-xs-12  text-blue">Callback Phone: </label>
+                            <div class="col-lg-8 col-md-12 col-xs-12">
+                                @Html.TextBoxFor(m => m.pac_callback, new { @class = "form-control phone_number", @id = "pac_callback" })
+                                <div class="error_msg" id="pac_callback-error" style="display:none;">
+                                    <label>This field is required</label>
+                                </div>
+                                @Html.ValidationMessageFor(m => m.pac_callback, "", new { @class = "text-danger" })
+                            </div>
+                        </div>*@
+                    <div class="form-group row">
+                        @Html.Label("Identification Type:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12 text-blue" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.DropDownListFor(x => x.pac_identification_type, identificationList, "--Select--", new { @class = "pac_identification_type form-control", @id = "pac_identification_type_id" })
+                            <div class="error_msg" id="pac_identification_type_id-error" style="display:none;">
+                                <label>This field is required</label>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.pac_identification_type, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-lg-4 col-md-12 col-xs-12 text-blue">Identification Number: </label>
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.TextBoxFor(m => m.pac_identification_number, new { @class = "form-control", @id = "general_cas_identification_number" })
+                            <div class="error_msg" id="general_cas_identification_number-error" style="display:none;">
+                                <label>This field is required</label>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.pac_identification_number, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    @*<div class="form-group row">
+                            <label class="control-label col-lg-4 col-md-12 col-xs-12 ">HH Nurse: </label>
+                            <div class="col-lg-8 col-md-12 col-xs-12">
+                                @Html.TextBoxFor(m => m.pac_hh_nurse, new { @class = "form-control", @id = "pac_hh_nurse" })
+                                @Html.ValidationMessageFor(m => m.pac_hh_nurse, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-lg-4 col-md-12 col-xs-12 ">HH Contact: </label>
+                            <div class="col-lg-8 col-md-12 col-xs-12">
+                                @Html.TextBoxFor(m => m.pac_hh_contact, new { @class = "form-control phone_number", @id = "pac_hh_contact" })
+                                @Html.ValidationMessageFor(model => model.pac_hh_contact, "", new { @class = "text-danger" })
+                            </div>
+                        </div>*@
+                </div>
+                @*<div class="col-xl-4 col-lg-4 col-md-12">
+                        <div class="form-group row">
+                            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4">Patient Seen By Tele Specialist?</label>
+                            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12" onclick="seenByChange()">
+                                @Html.RadioButtonFor(model => model.pac_seen_by_telespecialist, "1", new { id = "YES" })
+                                @Html.Label("Yes", new { @for = "YES" })
+                                @Html.RadioButtonFor(model => model.pac_seen_by_telespecialist, "2", new { id = "NO" })
+                                @Html.Label("No", new { @for = "NO" })
+                            </div>
+                        </div>
+
+                        <div class="form-group row" d-none" id="SeenTypeDiv">
+                            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4">Is this a phone consult or video consult?</label>
+                            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                                @Html.DropDownListFor(x => x.pac_seen_type, seenTypeList, "--Select--", new { @class = "pac_seen_type form-control", @id = "pac_seen_type" })
+                                @Html.ValidationMessageFor(model => model.pac_seen_type, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                    </div>*@
+
+            </div>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+
+
+    function validateGeneralRequiredFields(isCaseCompleteCall) {
+
+       // $(".error_msg").hide();
+
+        var result = true;
+        var pac_ctp_key = true;
+        var pac_fac_key = true;
+        var pac_phy_key = true;
+        var pac_patient_name = true;
+        var general_cas_dob = true;
+        var pac_caller = true;
+        var pac_callback = true;
+        var pac_identification_type_id = true;
+        var general_cas_identification_number = true;
+        var pac_date_of_consult = true;
+        var pac_primary_discharge_diagnosis = true;
+        var pac_cst_key = true;
+
+
+        //if ($.trim($("#case_status_id").val()).toInt() == pacStatusEnum.Cancelled) {
+        //    return true;
+        //}
+
+
+        if ($.trim($("#pac_ctp_key").val()) == "") {
+            $("#pac_ctp_key-error").show();
+            result = false;
+            pac_ctp_key = false;
+        }
+
+        if ($.trim($("#pac_fac_key").val()) == "") {
+            $("#pac_fac_key-error").show();
+            result = false;
+            pac_fac_key = false;
+        }
+        if ($.trim($("#pac_phy_key").val()) == "") {
+            $("#pac_phy_key-error").show();
+            result = false;
+            pac_phy_key = false;
+        }
+        if ($.trim($("#case_status_id").val()) == "") {
+            $("#pac_cst_key-error").show();
+            result = false;
+            pac_cst_key = false;
+        }
+        if ($.trim($("#pac_patient_name").val()) == "") {
+            $("#pac_patient_name-error").show();
+            result = false;
+            pac_patient_name = false;
+        }
+        //if ($.trim($("#pac_date_of_consult").val()) == "") {
+        //    $("#pac_date_of_consult-error").show();
+        //    result = false;
+        //    pac_date_of_consult = false;
+        //}
+        //if ($.trim($("#pac_primary_discharge_diagnosis").val()) == "") {
+        //    $("#pac_primary_discharge_diagnosis-error").show();
+        //    result = false;
+        //    pac_primary_discharge_diagnosis = false;
+        //}
+
+        if (isCaseCompleteCall == 1) {
+            if ($.trim($("#pac_patient_name").val()) == "") {
+                $("#pac_patient_name-error").show();
+                result = false;
+                pac_patient_name = false;
+            }
+            var isnavigatorValue = '@(IsNavigator)'.toLowerCase();
+            if (isnavigatorValue=="false") {
+                if ($.trim($("#general_cas_dob").val()) == "") {
+                    $("#general_cas_dob-error").show();
+                    result = false;
+                    general_cas_dob = false;
+                }
+                if ($.trim($("#pac_identification_type_id").val()) == "") {
+                    $("#pac_identification_type_id-error").show();
+                    result = false;
+                    pac_identification_type_id = false;
+                }
+                if ($.trim($("#general_cas_identification_number").val()) == "") {
+                    $("#general_cas_identification_number-error").show();
+                    result = false;
+                    general_cas_identification_number = false;
+                }
+            }
+
+            if ($.trim($("#pac_phy_key").val()) == "") {
+                $("#pac_phy_key-error").show();
+                result = false;
+                pac_phy_key = false;
+            }
+            if ($.trim($("#case_status_id").val()) == "") {
+                $("#pac_cst_key-error").show();
+                result = false;
+                pac_cst_key = false;
+            }
+
+            //if ($.trim($("#pac_caller").val()) == "") {
+            //    $("#pac_caller-error").show();
+            //    result = false;
+            //    pac_caller = false;
+            //}
+
+            //if ($.trim($("#pac_callback").val()) == "") {
+            //    $("#pac_callback-error").show();
+            //    result = false;
+            //    pac_callback = false;
+            //}
+
+        }
+
+        /// Focusing the first invalid control on the tab
+        if (!result) {
+
+            var element = null;
+
+            if (!pac_ctp_key) {
+                element = $("#pac_ctp_key");
+            }
+            else if (!pac_fac_key) {
+                element = $("#pac_fac_key").parent(".k-dropdown");
+            }
+            else if (!pac_phy_key) {
+                element = $("#pac_phy_key").parent(".k-dropdown");
+            }
+            else if (!pac_patient_name) {
+                element = $("#pac_patient_name");
+            }
+
+            else if (!general_cas_dob) {
+                element = $("#general_cas_dob");
+            }
+            else if (!pac_caller) {
+                element = $("#pac_caller");
+            }
+            //else if (!pac_callback) {
+            //    element = $("#pac_callback");
+            //}
+            else if (!pac_identification_type_id) {
+                element = $("#pac_identification_type_id");
+            }
+            else if (!general_cas_identification_number) {
+                element = $("#general_cas_identification_number");
+            }
+            //else if (!pac_date_of_consult) {
+            //    element = $("#pac_date_of_consult");
+            //}
+            //else if (!pac_primary_discharge_diagnosis) {
+            //    element = $("#pac_primary_discharge_diagnosis");
+            //}
+
+            if (element !== null) {
+
+                window.setTimeout(function () { $(element).focus(); }, 250)
+            }
+        }
+
+        return result;
+    }
+
+    //function seenByChange() {
+    //    if ($('#YES').is(':checked'))
+    //    {
+    //        $("#SeenTypeDiv").removeClass("d-none");
+    //    }
+
+    //    if ($('#NO').is(':checked'))
+    //    {
+    //        $("#SeenTypeDiv").addClass("d-none");
+    //    }
+    // }
+
+     $(".dob").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+         }
+         @*,
+            disableDates: function (date) {
+                if (@(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()).ToString().ToLower()) || @(isReadOnlyCase.ToString().ToLower())) {
+                    return true;
+                }
+            }*@
+        });
+
+    $('#general_cas_dob').data('kendoDatePicker').enable(true);
+
+    $("#pac_patient_name").focusout(function () {
+        var initial = generatePatientIntial();
+        //if (initial != "" && $("#pac_patient_initials").val() == "") {
+        //    $("#pac_patient_initials").val(initial);
+        //}
+    });
+
+    function generatePatientIntial() {
+        var initial = "";
+        var fullname = ($("#pac_patient_name").val()).split(" ");
+        var lastname = fullname[0];
+
+        //var fullname = $("#pac_patient_name").val();
+        var firstname = fullname[1];
+
+        if (firstname != "" && firstname != undefined && lastname != "" && lastname != undefined) {
+            initial = firstname.charAt(0).toUpperCase();
+            initial += lastname.charAt(0).toUpperCase();
+        }
+        return initial;
+    }
+
+     function showTime() {
+            var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(TeleSpecialists.BLL.Settings.DefaultTimeZone));
+            return (currentDateTime.format("MM-DD-YYYY HH:mm:ss"));
+        }
+
+
+    function PACcopyCase() {
+
+        $("#divCaseCopy").html("");
+
+        // var today = new Date();
+        $("#divCaseCopy").append(showTime() + " EST - Local Time" );
+        $("#divCaseCopy").append("##NewLine##");
+
+        var caseType = $.trim($("#pac_ctp_key option:selected").text()).replace("-- Select --", "");
+        if ($.trim(caseType) != "") {
+            $("#divCaseCopy").append(caseType);
+            $("#divCaseCopy").append("##NewLine##");
+        }
+
+        var facility = $.trim($("#pac_fac_key option:selected").text()).replace("--Select--", "");
+        if ($.trim(facility) != "") {
+            $("#divCaseCopy").append(facility);
+            $("#divCaseCopy").append("##NewLine##");
+        }
+
+        var patient = $.trim($("#pac_patient_name").val());
+        if ($.trim(patient) != "") {
+            $("#divCaseCopy").append("Patient Name: " + patient);
+            $("#divCaseCopy").append("##NewLine##");
+        }
+
+        //var caller = $.trim($("#pac_caller").val());
+        //if ($.trim(caller) != "") {
+        //    $("#divCaseCopy").append("Caller: " + caller);
+        //    $("#divCaseCopy").append("##NewLine##");
+        //}
+
+        //var callBack = $.trim($("#pac_callback").val());
+        //if ($.trim(callBack) != "") {
+        //    $("#divCaseCopy").append("Callback Phone: " + callBack);
+        //    $("#divCaseCopy").append("##NewLine##");
+        //}
+
+        var hhnurse = $.trim($("#pac_hh_nurse").val());
+        if ($.trim(hhnurse) != "") {
+            $("#divCaseCopy").append("HH Nurse: " + hhnurse);
+            $("#divCaseCopy").append("##NewLine##");
+        }
+        var hhcontact = $.trim($("#pac_hh_contact").val());
+        if ($.trim(hhcontact) != "") {
+            $("#divCaseCopy").append("HH Contact: " + hhcontact);
+            $("#divCaseCopy").append("##NewLine##");
+        }
+
+        var notes = $.trim($("#pac_notes").val());
+        if (notes != undefined && notes != "") {
+
+            var notesMarkup = '';
+            $(notes.split("\n")).each(function (i, n) {
+                if (n != "") {
+                    notesMarkup += n + '##NewLine##';
+                }
+            });
+
+            $("#divCaseCopy").append("Notes: " + notesMarkup);
+            $("#divCaseCopy").append("##NewLine##");
+        }
+
+        var textToCopy = $("#divCaseCopy").text();
+        if (textToCopy != "" && textToCopy != undefined) {
+            setClipboardText(textToCopy.replaceAll("##NewLine##", "\r\n"));
+            var textToPreview = textToCopy.replaceAll("##NewLine##", "<br/>");
+            $("#caseCopyPopUp").find(".modal-body").empty().html(textToPreview);
+            var isRefreshed = $("#caseCopyPopUp").hasClass("show");
+            $("#caseCopyPopUp").modal("show");
+            logCopyCaseInfo(isRefreshed);
+        }
+    }
+
+</script>
+

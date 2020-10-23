@@ -1,0 +1,203 @@
+﻿@model TeleSpecialists.BLL.Model.post_acute_care
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@{
+    string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+    var now = DateTime.Now.ToEST();
+    var defaultConsultTime = new DateTime(now.Year, now.Month, now.Day, 10, 0, 0);
+
+    Layout = "";
+    @*var isCartMandatroy = ViewBag.CaseTypeKey.Equals((int)PacCaseType.PACNewpatientconsult) || ViewBag.CaseTypeKey.Equals((int)PacCaseType.PACUrgentconsult) ? true : false;
+    var isCallBackMandatroy = ViewBag.CaseTypeKey.Equals((int)PacCaseType.PACNewpatientconsult)
+                              || ViewBag.CaseTypeKey.Equals((int)PacCaseType.PACFollowupconsult)
+                              || ViewBag.CaseTypeKey.Equals((int)PacCaseType.PACRNPhonecall)
+                              || ViewBag.CaseTypeKey.Equals((int)PacCaseType.PACUrgentconsult)
+                              ? true : false;*@
+}
+
+<input type="hidden" id="case-type-name" name="case-type-name" value="@ViewBag.CaseType" />
+<div class="row">
+    <div class="col-lg-8 col-md-10 col-12 offset-md-1">
+        <h3>Sleep Case Consult</h3>
+        <span class="@ViewBag.ClassName col-md-5 col-12 eAlert-sub-heading">@ViewBag.CaseType</span>
+        <hr class="mt-4" />
+    </div>
+</div>
+<div class="row col-md-4 col-md-7 col-lg-5 col-xl-4 p-2 mx-auto d-none" id="warning-no-facility">
+    <div class="col-12  dashboard-indicators p-2">
+        <label class="font-weight-normal">No Facility assigned to the user. Please contact your system administrator.</label>
+    </div>
+</div>
+<div class="row add-facility-info d-none">
+    <form method="post" class="form-horizontal col-12 ajax-form" id="createForm" action="@(Url.Action("CreateNavigator", "PACPhysician"))">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(m => m.pac_ctp_key, new { id = "facility-info-cas-key" })
+        @Html.HiddenFor(m => m.pac_cst_key, new { id = "facility-info-case-status" })
+        @Html.HiddenFor(m => m.pac_identification_type)
+        <input type="hidden" id="cas_call_type" name="cas_call_type" value="@CallType.Direct.ToInt()" />
+
+        <input id="cas_is_ealert" name="cas_is_ealert" type="hidden" value="true" />
+        <input type="hidden" name="RedirectPage" id="RedirectPage" value="0" />
+        <div class="col-md-10 col-12 offset-md-1">
+            <div class="form-group row">
+                <label class="col-4 text-danger control-label ">Facility: </label>
+                <div class="col-lg-6 col-md-8 col-8">
+                    <select id="cas_fac_key" name="cas_fac_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.pac_fac_key : Guid.Empty)" required></select>
+                    <input type="text" class="form-control d-none" id="txt-facility-info-facility" value="" disabled="disabled" />
+                    @Html.TextBoxFor(m => m.pac_fac_key, new { id = "id-facility-info-facility", @class = "d-none ", @required = "required" })
+                    <div id="cas_fac_key-error" class="error_msg" style="display:none;">
+                        <label for="cas_fac_key">This field is required</label>
+                    </div>
+                </div>
+            </div>
+            @*<div class="form-group row @(isCartMandatroy ? "text-danger" : "")">
+            <label class="col-4 control-label">Cart: </label>
+            <div class="col-lg-6 col-md-8 col-8">
+                @if (isCartMandatroy)
+                {
+                    @Html.TextBoxFor(m => m.pac_cart, new { @class = "form-control", id = "facility-info-cart", @required = "required" })
+                    @Html.ValidationMessageFor(m => m.pac_cart, "", new { @class = "text-danger" })
+                }
+                else
+                {
+                    @Html.TextBoxFor(m => m.pac_cart, new { @class = "form-control", id = "facility-info-cart" })
+                }
+            </div>
+        </div>*@
+
+            <div class="form-group row">
+                <label class="col-4 control-label">Patient Initials: </label>
+                <div class="col-lg-6 col-md-8 col-8">
+                    @Html.TextBoxFor(m => m.pac_patient_initials, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.pac_patient_initials, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                @*@(isCallBackMandatroy ? "text-danger" : "")*@
+                <label class="col-4 text-danger control-label">Callback Phone: </label>
+                <div class="col-lg-6 col-md-8 col-8">
+                    @Html.TextBoxFor(m => m.pac_callback, new { @class = "form-control phone_number", id = "facility-info-callbackphone", @required = "required" })
+                    @Html.ValidationMessageFor(m => m.pac_callback, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-4 text-danger control-label">Callback Contact: </label>
+                <div class="col-lg-6 col-md-8 col-8">
+                    @Html.TextBoxFor(m => m.pac_caller, new { @class = "form-control", id = "facility-info-caller", @required = "required" })
+                    @Html.ValidationMessageFor(m => m.pac_caller, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @*<div class="form-group row">
+            <label class="col-4 control-label">Referring Physician:</label>
+            <div class="col-lg-6 col-md-8 col-8">
+                @Html.TextBoxFor(m => m.pac_referring_physician, new { @class = "form-control", id = "facility-info-reffering-physician" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-4 control-label">Date of Consult: </label>
+            <div class="col-lg-6 col-md-8 col-8">
+                @Html.TextBox("pac_date_of_consult", defaultConsultTime.ToString("MM/dd/yyyy hh:mm:ss"), new { @class = "form-control timepicker" })
+            </div>
+        </div>*@
+            <div class="form-group row">
+                <div class="col-4 ">
+                    @if (!ViewBag.IsItDashboard)
+                    {
+                        <input type="button" class="btn btn-dark" value="Back" id="btnback_facilityInfo" onclick="navigateToDashBoard()" />
+                    }
+                </div>
+                <div class="col-lg-6 col-md-8 col-8 text-right">
+                    <input type="button" class="btn btn-dark" value="Activate Consult" id="btnActivateConsult_facilityInfo" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="webcampaignresult" class="d-none">
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+          // counter up timer -- kendoTimePicker
+        $(".timepicker").kendoTimePicker({
+            open: function (e) {
+                e.preventDefault();
+                var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm:ss");
+                this.element.first().val(currentDateTime);
+                $("[name = pac_date_of_consult]").val(this.element.first().val());
+                var timePicker = this.element.first();
+                ShowHideTimeZone(timePicker);
+            },
+            close: function (e) {
+                e.preventDefault(); //prevent popup closing
+            }
+        });
+
+        maskPhoneNumber();
+        var isProcessingRequest = false;
+        loadUserAssignedFacilitiesForSleep();
+        $("#mainContentArea").find("#validationSummary").empty();
+        $("#facility-info-callbackphone").focus();
+        $("#facility-info-case-status").val('@((int)PacStatus.Open)');
+        $("#facility-info-cas-key").val(@ViewBag.CaseTypeKey);
+        $("#btnActivateConsult_facilityInfo").off("click").click(function () {
+            $(this).disable();
+            if (!isProcessingRequest) {
+                isProcessingRequest = true;
+                if ($("#txt-facility-info-facility").is('.d-none')) {
+                    $("#id-facility-info-facility").val($('#cas_fac_key').data('kendoDropDownList').value());
+                    $("#txt-facility-info-facility").val($('#cas_fac_key').data('kendoDropDownList').text());
+                    isProcessingRequest = false;
+                    $(this).enable();
+                }
+                $("#cas_fac_key-error").hide();
+                if (!$("#createForm").valid()) {
+                    if ($("#id-facility-info-facility").val() == "") {
+                        $("#cas_fac_key-error").show();
+                    }
+                    $("#createForm").validate();
+                    isProcessingRequest = false;
+                    $(this).enable();
+                }
+                else {
+                    if ($("#id-facility-info-facility").val() == "") {
+                        $("#cas_fac_key-error").show();
+                        isProcessingRequest = false;
+                        $(this).enable();
+                    }
+                    else {
+                        $("#createForm").submit();
+                    }
+                }
+            }
+        });
+        $('#createForm').submit(function (e) {
+            e.preventDefault();
+            $('#btnActivateConsult_facilityInfo').disable();
+            $.ajax({
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                method: "post",
+                success: function (response) {
+                    if (response.success) {
+                        //navigateToPatientInfo(response.data.cas_key);
+                        if (response.data != null) {
+                            consultConfirmation("#" + response.data.pac_key)
+                            $("#divModelPopUp .modal-header").append("<span>" + "</span>");
+                        }
+                    }
+                    else {
+                        $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", response.message);
+                    }
+                },
+                complete: function () {
+                    isProcessingRequest = false;
+                    $('#btnActivateConsult_facilityInfo').enable();
+                }
+            });
+        });
+    });
+</script>
+
+

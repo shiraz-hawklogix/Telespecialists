@@ -1,0 +1,82 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+
+@model IEnumerable<TeleSpecialists.BLL.Model.@case>
+
+@{
+    Layout = "";
+}
+@{
+    var caseTypelist = new Dictionary<int, string>();
+    if (ViewBag.CaseTypes != null)
+    {
+        caseTypelist = ViewBag.CaseTypes;
+    }
+
+}
+@if (Model != null)
+{
+    if (Model.Any())
+    {
+        <div class="modal-dialog modal-lg" id="checkDuplicateCasePopup" style="left: 7%; width: 100%;">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        @Model.FirstOrDefault().facility.fac_name
+                    </h4>
+                    <button type="button" id="btnClose" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="border-0 pl-0 control-label"><u>Case Type</u></th>
+                                <th class="border-0 pl-0 control-label"><u>Patient Name</u></th>
+                                <th class="border-0 pl-0 control-label"><u>Assigned Physician</u></th>
+                                <th class="border-0 pl-0 control-label"><u>Start Time</u></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (var currentCase in Model)
+                                {
+                                    <tr>
+                                        <td class="p-1 border-0 control-label" style="font-weight:normal !important">
+                                            @if (caseTypelist.ContainsKey(currentCase.cas_ctp_key))
+                                            {
+                                                <text>
+                                                    @caseTypelist[currentCase.cas_ctp_key]
+                                                </text>
+                                            }
+                                        </td>
+                                        <td class="p-1 border-0 control-label" style="font-weight:normal !important">@(String.IsNullOrEmpty(currentCase.cas_patient) ? "" : currentCase.cas_patient)</td>
+                                        <td class="p-1 border-0 control-label" style="font-weight:normal !important">@(String.IsNullOrEmpty(currentCase.cas_history_physician_initial_cal) ? "" : currentCase.cas_history_physician_initial_cal)</td>
+                                        <td class="p-1 border-0 control-label" style="font-weight:normal !important">
+                                            @if (currentCase.cas_response_ts_notification.HasValue)
+                                            {
+                                            <span> @currentCase.cas_response_ts_notification.Value.ToTimezoneFromUtc(TeleSpecialists.BLL.Settings.DefaultTimeZone).ToString("MM/dd/yyyy") - @currentCase.cas_response_ts_notification.Value.ToTimezoneFromUtc(TeleSpecialists.BLL.Settings.DefaultTimeZone).ToString("H:mm:ss") </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer" style="justify-content:flex-start">
+                    <div class="row" style="width:100%;">
+                        <div class="col-12 text-right">
+                            <a class="btn btn-dark text-white" data-dismiss="modal">Close</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            formatPhysicianInitials("#checkDuplicateCasePopup", 3);
+        </script>
+    }
+}

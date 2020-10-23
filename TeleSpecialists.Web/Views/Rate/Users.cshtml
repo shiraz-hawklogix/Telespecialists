@@ -1,0 +1,413 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@{
+    ViewBag.Title = "Users";
+    var roleList = ViewBag.Role as List<SelectListItem>;
+}
+
+@if (ViewBag.Message != "" && ViewBag.Message != null)
+{
+    <div class="alert alert-dismissible @((bool)ViewBag.Error ? "alert-danger" : "alert-success")" id="autoclose">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>@((bool)ViewBag.Error ? "Error!" : "Success!")</strong> @ViewBag.Message
+    </div>
+}
+<style>
+    #divRoleFilter .ms-options {
+        width: 95%;
+    }
+</style>
+<div class="row">
+    <div class="col-lg-12 col-xl-1 col-sm-12 col-md-12">
+        @*<a class="btn btn-dark loadLinkAsync btn-create-case float-left" href="@Url.Action("AddUser","Admin", new { level = ViewBag.Role })">Add User</a>*@
+    </div>
+    <div class="col-lg-12 col-xl-11 col-sm-12 col-md-12">
+        <div>
+            <form id="frmSearch" method="post" class="row">
+                <div class="form-row float-right col-lg-12 justify-content-end">
+                    <div class="form-group d-none "></div>
+                    <div class="form-group d-lg-inline-block d-none"></div>
+                    <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                        <label class="bold">Status</label>
+                        <select id="Status_type" name="Status_type" data-role="dropdownlist" class="form-control staticDropDown">
+                            <option value="">All</option>
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                        <label class="bold">Five-9</label>
+                        <select id="Five_9_type" name="Five_9_type" data-role="dropdownlist" class="form-control staticDropDown">
+                            <option value="">All</option>
+                            <option value="true">Enabled </option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                        <label class="bold">Role</label>
+                        <div id="divRoleFilter" style="overflow: hidden;">
+                            <select id="roleFilter" class="form-control active" multiple="multiple">
+                                @foreach (var item in roleList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                        <label class="bold">Search</label>
+                        <input type="search" id="searchBox" class="k-textbox form-control" style="width: 100%;" />
+                    </div>
+                </div>
+                <div class="form-row float-right col-lg-12">
+                    <div class="form-group filter-button-group float-right col-lg-12">
+                        <input class="btn btn-dark margin-b-5" type="button" id="btnSearch" value="Search" />
+                        <a href="javascript:;" class="btn btn-dark clearLS" id="resetSearch" style="display:none;">Clear Search</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="pt-1 customGridHeader">
+    <div id="users_grid" class="kendo-ui-grid-control">
+    </div>
+    @*style="width: 98vw !important;"*@
+</div>
+
+<script type="text/javascript">
+
+    var exportPostData = null;
+    refillFilters.applyFilters = 1;
+    function generateRoleFilter() {
+        $('#roleFilter').multiselect({
+            columns: 1,
+            placeholder: 'Select Role',
+            search: true,
+            searchOptions: {
+                'default': 'Search Role'
+            },
+            selectAll: true,
+            onOptionClick: function (e, opt) {
+                refillFilters.applyFilters = 1;
+                var rolesArray = [];
+                $.each($("#divRoleFilter input[type='checkbox']:checked"), function () {
+                    rolesArray.push($(this).val());
+                });
+                SetKendoRoleIds("UserItem", rolesArray);
+                $("#btnSearch").click();
+            },
+            onSelectAll: function () {
+                performSearch();
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        generateRoleFilter();
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $("#Five_9_type").off("change").change(function () {
+            $("#Five_9_type_form").val($(this).val())
+            $("#btnSearch").click();
+        });
+        $("#searchBox").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#btnSearch").click();
+            }
+        });
+        $("#Status_type").off("change").change(function () {
+            $("#Status_type_form").val($(this).val())
+            $("#btnSearch").click();
+        });
+
+        $("#users_grid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetUsers", "Admin")',
+                        contentType: "application/json",
+                        data: function () {
+                            return { roleIDs: GetKendoRoleIds("UserItem") == null ? null : GetKendoRoleIds("UserItem").split(",")}
+                        },
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        options = KendoKeepState("User", options, true);
+                        exportPostData = options;
+                        SetKendoRoleIds("UserItem", GetKendoRoleIds("UserItem"));
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                },
+                pageSize: GetKendoPageSize("User", "RecPerPage", true),
+                page: KendoGet("User", "page"),
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            filterable: true,
+            sortable: true,
+            scrollable: true,
+            resizable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            dataBound: function (e) {
+                if (refillFilters.applyFilters != 0) {
+                    refillFilters();
+                    fillRoleIdDropdown();
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                }
+
+                formatCredentialIndexCol();
+                //get All records
+                SetKendoTotalCount("User", $('#users_grid').data("kendoGrid").dataSource.total());
+            },
+            columns: [
+                { hidden: true, field: "Id" },
+                { field: "UserName",  title: "Username" },
+                { field: "LastName",  title: "Last Name" },
+                { field: "FirstName",title: "First Name" },
+                { field: "RoleName", title: "Role" },
+                {
+                    field: "EnableFive9", title: "Five9",
+                    template: '<input type="checkbox" #= EnableFive9 ? "checked=checked" : "" # disabled="disabled" ></input>'
+                },
+                {
+                    field: "CredentialIndex", title: "Credential Index", 
+                    template: '<span class="credentialIndex">#=CredentialIndex#</span>'
+                },
+                {
+                    field: "IsEEG", title: "Read EEG", 
+                    template: '<input type="checkbox" #= IsEEG ? "checked=checked" : "" # disabled="disabled" ></input>'
+                },
+                {
+                    field: "IsActive", title: "Active",
+                    template: '<input type="checkbox" #= IsActive ? "checked=checked" : "" # disabled="disabled" ></input>'
+                },
+                {
+                    title: "Actions",  template:  "<a class='btn btn-dark btn-sm py-1 loadLinkAsync' title='Select User' href='@Url.Action("GetPhysician", "rate")/\#= Id#'>Select</a>"
+                }
+            ]
+        });
+
+        $("#btnSearch").off("click").click(function () {
+            performSearch();
+        });
+        $("#resetSearch").off("click").click(function (e) {
+            e.preventDefault();
+            $("#frmSearch").trigger('reset');
+            $(".ms-options input:checkbox").each(function () {
+                $(this).prop("checked", true);
+            })
+
+            $("#divRoleFilter").find(".ms-options-wrap").find("button>span").html("All");
+            if ($("#divRoleFilter").find(".ms-options-wrap").find(".ms-selectall").text().toLowerCase() == "select all") { // unselect all // select all
+                $("#divRoleFilter").find(".ms-options-wrap").find(".ms-selectall").click();
+            }
+            $('#searchBox').val("");
+            localStorage.clear();
+
+            $("#btnSearch").click();
+            $("#resetSearch").hide();
+            refillFilters.applyFilters = 1;
+        });
+        $("#frmSearch").off("submit").submit(function (e) {
+                e.preventDefault();
+                $("#btnSearch").click();
+
+        });
+
+    });
+
+    function performSearch() {
+        var filters = [];
+
+        // textbox search
+        var searchValue = $('#searchBox').val();
+        if (searchValue !== "") {
+            searchValue = searchValue.trim();
+            var searchTextFilter = [];
+            searchTextFilter.push({
+                field: "UserName",
+                operator: "contains",
+                value: searchValue
+            });
+            searchTextFilter.push({
+                field: "FirstName",
+                operator: "contains",
+                value: searchValue
+            });
+
+            searchTextFilter.push({
+                field: "LastName",
+                operator: "contains",
+                value: searchValue
+            });
+            filters.push({
+                logic: "or",
+                filters: searchTextFilter
+            });
+        }
+
+        // filter IsActive
+        var statusFilter = $.trim($("#Status_type").val());
+        if (statusFilter) {
+            if (statusFilter == "true")
+                statusFilter = true;
+            else
+                statusFilter = false;
+
+            filters.push({
+                field: "IsActive",
+                operator: "eq",
+                value: statusFilter
+            });
+        }
+
+        //filter Five9
+        var Five9typeFilter = $.trim($("#Five_9_type").val());
+        if (Five9typeFilter) {
+            if (Five9typeFilter == "true")
+                Five9typeFilter = true;
+            else
+                Five9typeFilter = false;
+
+            filters.push({
+                field: "EnableFive9",
+                operator: "eq",
+                value: Five9typeFilter
+            });
+        }
+
+        // update the grid by filters
+        $("#users_grid").data("kendoGrid").dataSource.filter({
+            logic: filters.length == 0 ? null : "and",
+            filters: filters
+        });
+
+        $("#resetSearch").show();
+    }
+    function formatCredentialIndexCol() {
+
+        $("#users_grid tr").each(function (index, element) {
+             var row = $(element);
+              var ci = row.find(".credentialIndex").text().toFloat().toFixed(2);
+              row.find(".credentialIndex").html(ci);
+
+        });
+    }
+    function isDefaultFiltersSelected() {
+
+        var defaultSelected = true;
+        if ($("#divRoleFilter").find(".ms-options-wrap").find("button>span").html() != "All") { defaultSelected = false; }
+        if ($("#Status_type").val() != "") { defaultSelected = false; }
+        if ($("#Five_9_type").val() != "") { defaultSelected = false; }
+        if ($("#searchBox").val() != "") { defaultSelected = false; }
+
+        return defaultSelected;
+    }
+    function refillFilters() {
+        if (exportPostData === undefined) { return; }
+        if (exportPostData.filter === undefined) { return; }
+        if (exportPostData.filter.filters === undefined) { return; }
+        $.each(exportPostData.filter.filters, function (index, currentFilter) {
+            try {
+                switch (currentFilter.field) {
+                    case 'IsActive':
+                        $("#Status_type").val(currentFilter.value.toString())
+                        $("#Status_type_form").val(currentFilter.value.toString())
+                        break;
+                    case 'EnableFive9':
+                        $('#Five_9_type_form').val(currentFilter.value.toString())
+                        $('#Five_9_type').val(currentFilter.value.toString())
+                        break;
+                    case undefined:
+                        $('#searchBox').val(currentFilter.filters[0].value)
+                        break;
+                }
+
+                if (!isDefaultFiltersSelected()) {
+                    $("#resetSearch").show();
+                }
+            } catch (e) { }
+        });
+
+        if (exportPostData.filter.filters.filters != undefined) {
+            var value = $(exportPostData.filter.filters)[0].filters[0].value;
+            $('#searchBox').val(value);
+        }
+
+        refillFilters.applyFilters = 0;
+    }
+    function fillRoleIdDropdown() {
+        var roleIds = getRolesValue();
+        if (roleIds != null) {
+            $.each($('#divRoleFilter input:checkbox'), function () {
+                $(this).prop('checked', false);
+                $(this).parents('li').removeClass('selected');
+
+                // multiple values will be comma separated
+                var listOfValues = roleIds.split(',');
+
+                if ($.inArray($(this).val(), listOfValues) >= 0) {
+                    $(this).prop('checked', true);
+                    $(this).parents('li').addClass('selected');
+                }
+            });
+            var selectedRoles = [];
+
+            $.each($('#divRoleFilter option'), function () {
+                $(this).removeAttr('selected');
+
+                // multiple values will be comma separated
+                var listOfValues = roleIds.split(',');
+
+                if ($.inArray($(this).val(), listOfValues) >= 0) {
+                    $(this).attr('selected', true);
+                    selectedRoles.push($(this).text());
+                }
+            });
+
+            if ($('#roleFilter option').length != $('#roleFilter option:selected').length) {
+                if (selectedRoles.length > 0) {
+                    if (selectedRoles.length > 2) {
+                        $("#divRoleFilter").find(".ms-options-wrap").find("button>span").html(selectedRoles.length + " selected");
+                        $("#divRoleFilter").find(".ms-options-wrap").find(".ms-selectall").html("select all");
+                    }
+                    else {
+                        var strSelectedRoles = selectedRoles.join(', ');
+                        $("#divRoleFilter").find(".ms-options-wrap").find("button>span").html(strSelectedRoles);
+                        $("#divRoleFilter").find(".ms-options-wrap").find(".ms-selectall").html("select all");
+                    }
+                }
+            }
+        }
+        else {
+            $("#roleFilter").find("option").each(function() {
+                $(this).attr('selected', 'selected');
+            });
+        }
+    }
+    function getRolesValue() {
+        var roleIds = GetKendoRoleIds("UserItem");
+        if (roleIds != null && roleIds != undefined && roleIds != "") {
+            return roleIds;
+        }
+        else {
+            return null;
+        }
+    }
+</script>
+

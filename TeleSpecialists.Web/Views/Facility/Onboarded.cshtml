@@ -1,0 +1,403 @@
+﻿
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@model IEnumerable<Onboarded>
+@{
+    List<Onboarded> On_Boarded_list = Model.ToList();
+    var Facility_Id = ViewBag.fap_keys;
+    var On_Boarded_list_result = On_Boarded_list.Where(x => x.Facility_Id == Facility_Id);
+    var On_Boarded_list_Image = On_Boarded_list.Where(x => x.Facility_Id == Facility_Id).Select(o => o.ParameterName_Image);
+
+}
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .topnav {
+        overflow: hidden;
+        background-color: #333;
+    }
+
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+            .topnav a:hover {
+                background-color: #ddd;
+                color: black;
+            }
+
+            .topnav a.active {
+                background-color: #4CAF50;
+                color: white;
+            }
+
+    #myBtn {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 30px;
+        z-index: 99;
+        font-size: 18px;
+        border: none;
+        outline: none;
+        background-color: black;
+        color: white;
+        cursor: pointer;
+        padding: 15px;
+        border-radius: 4px;
+    }
+
+        #myBtn:hover {
+            background-color: #555;
+        }
+
+    #ShowHidePasswordDiv {
+        width: 100%;
+        padding: 25px 0;
+        text-align: center;
+        background-color: lightblue;
+        margin-top: 20px;
+    }
+
+    .thumb {
+        width: 100px;
+    }
+
+    .overlay {
+        display: none;
+        position: absolute;
+        top: 200px;
+        /*background: #000;*/
+        width: 100%;
+        height: 100vh;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+        .overlay img {
+            width: 47%;
+            border: 5px solid #000;
+            vertical-align: auto;
+        }
+
+    .helper {
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+    }
+
+    .positions {
+        position: fixed !important;
+    }
+</style>
+@{
+    <input type="hidden" value="@ViewBag.fap_key" id="fap_key_value" class="getvalue" />
+    <input type="hidden" value="@ViewBag.fap_key_id" id="fap_key_id" />
+}
+
+@if (User.IsInRole(UserRoles.Physician.ToDescription()))
+{
+    <div class="alert alert-success removestyle" role="alert" style="display:none!important">
+        Onboarding Successfully Added.
+    </div>
+    @*<div class="alert case-info">
+            <div class="row">
+                <div class="col-9">
+                    <div class="row">
+                        <div class="d-inline-block">
+                            <strong>Facility:</strong><span>@ViewBag.facilityname</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    <button onclick="ShowHidePasswordFunction()" class="btn btn-dark">Check Username & Password</button>
+}
+<div class="alert alert-success removestyle" role="alert" style="display:none!important">
+    Onboarding Successfully Added.
+</div>
+<div class="show-hide-password-div" id="ShowHidePasswordDiv" style="display:none;">
+    @if (ViewBag.usernames == null)
+    {
+
+    }
+    else
+    {
+        <span><b>Username/Password:</b>&nbsp;&nbsp; <b>@ViewBag.usernames</b></span>
+    }
+</div>
+@if (On_Boarded_list_result.Count() > 0)
+{
+
+
+    @*menu*@
+    <div class="topnav" style="margin-bottom: 12px;margin-top: 12px;">
+        @foreach (var item in On_Boarded_list_result)
+        {
+            if (item.ParameterName != "")
+            {
+                <a href="#@item.ParameterName">@item.ParameterName</a>
+            }
+        }
+    </div>
+    @*new work*@
+
+
+    foreach (var item in On_Boarded_list_result)
+    {
+        <div style="padding-bottom: 55px;" id="@item.ParameterName">
+            <h2><b>@item.ParameterName</b></h2>
+
+
+            <div class="row" id="target_hyper_link">
+                <div class="col-md-6" style="width:110px;height:auto!important;overflow:auto;text-align:justify!important">
+                    @{
+                        var info_value = On_Boarded_list_result.Where(x => x.Onboarded_ID == item.Onboarded_ID).Select(k => k.ParameterName_Info).FirstOrDefault();
+
+                        @Html.Raw(info_value)
+                    }
+                </div>
+                @foreach (var value in On_Boarded_list_result.Where(x => x.Onboarded_ID == item.Onboarded_ID))
+                {
+                    <div class="col-md-6" style="width:110px;height:auto!important;overflow:auto;">
+                        <div class="thumbnail">
+                            @{
+                                if (value.ParameterName_Image != "" || value.ParameterName_Image != null)
+                                {
+                                    var getimagevalue = value.ParameterName_Image.TrimEnd(',');
+                                    if (!string.IsNullOrEmpty(getimagevalue))
+                                    {
+                                        var splitimagevalue = getimagevalue.Split(',');
+                                        foreach (var imageshow in splitimagevalue)
+                                        {
+                                            string lastthreewords = imageshow.Substring(imageshow.Length - 3);
+                                            if (lastthreewords == "PEG" || lastthreewords == "peg" || lastthreewords == "png" || lastthreewords == "jpg" || lastthreewords == "JPG" || lastthreewords == "gif" || lastthreewords == "PNG")
+                                            {
+                                                if (!string.IsNullOrEmpty(imageshow))
+                                                {
+                                                    var s = imageshow;
+                                                    <a onclick="abc();">
+                                                        <img src="@s" style="height: 226px;width: 442px;border: 5px solid #555;margin-bottom: 7px;" class="img-rounded thumb" />
+                                                    </a>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span style="padding-left:5px">Click The Link To Download File</span> <a href="@imageshow">Link</a>
+
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                            }
+                            <div class="caption"></div>
+                        </div>
+                    </div>
+                    break;
+                }
+
+            </div>
+
+
+        </div>
+
+
+
+
+    }
+    <div class="overlay"><span class="helper"></span><img src=""></div>
+}
+else
+{
+    <div class="col-md-12 text-center mt-lg-5">
+        <strong class="text-danger" style="font-size:larger;">No Onboarding Available</strong>
+    </div>
+}
+<div class="d-none showhideattest">
+    @if (User.IsInRole(UserRoles.Physician.ToDescription()))
+    {
+
+        if (ViewBag.isboungingvalue == true)
+        {
+            <input type="checkbox" class="form" id="chk_value" checked disabled="disabled" /><span>I attest that I have completed the required training for this facility.</span>
+            <br />
+            <div style="padding-left: 515px;padding-top: 11px;">
+                <a class="btn btn-dark loadLinkAsync-cancel cancelattest" href="@Url.Action("EditUserProfile", "UserProfile")">Cancel</a>
+                <button id="onBoardingSubmit" class="btn btn-dark" disabled="disabled">Save</button>
+            </div>
+        }
+        else
+        {
+            <input type="checkbox" class="form" id="chk_value" /><span>I attest that I have completed the required training for this facility.</span>
+            <br />
+            <div style="padding-left: 515px;padding-top: 11px;">
+                <a class="btn btn-dark loadLinkAsync-cancel cancelattest" href="@Url.Action("EditUserProfile", "UserProfile")">Cancel</a>
+                <button id="onBoardingSubmit" class="btn btn-dark">Save</button>
+            </div>
+        }
+    }
+</div>
+
+
+<br />
+<button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+<script>
+    var mybutton = document.getElementById("myBtn");
+    window.onscroll = function () { scrollFunction() };
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            mybutton.style.display = "block";
+        } else {
+            mybutton.style.display = "none";
+        }
+    }
+    function topFunction() {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    }
+</script>
+<script>
+    function fac_addonboarding() {
+        var formData = new FormData();
+        var cas_fac_Name_arrays = [];
+        $.each($(".addonfacility_key option:selected"), function () {
+            cas_fac_Name_arrays.push($(this).text());
+        });
+        formData.append("cas_fac_Name_array", cas_fac_Name_arrays);
+        var cas_fac_key_arrays = [];
+        $.each($(".addonfacility_key option:selected"), function () {
+            cas_fac_key_arrays.push($(this).val());
+        });
+        formData.append("cas_fac_key_arrays", cas_fac_key_arrays);
+        var fackeyss = $('.getvalue').val();
+        formData.append("current_fac_key", fackeyss);
+
+        $.ajax({
+            type: "POST",
+            url: '/Facility/AddNewfacility',
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                debugger
+                $('.removestyle').removeAttr('style');
+                $('.removestyle').delay(2000).hide(1000);
+                $(".Facilities").multiselect('reset');
+            },
+            error: function (error) {
+                console.log(error);
+            }
+
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+
+        //    eval(function(p,a,c,k,e,d){e = function (c) { return c.toString(36) }; if(!''.replace(/^/,String)){while(c--){d[c.toString(a)] = k[c] || c.toString(a)}k=[function(e){return d[e]}];e=function(){return '\\w+'};c=1};while(c--){if(k[c]){p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c])}}return p}('(3(){(3 a(){8{(3 b(2){7((\'\'+(2/2)).6!==1||2%5===0){(3(){}).9(\'4\')()}c{4}b(++2)})(0)}d(e){g(a, f)}})()})();',17,17,'||i|function|debugger|20|length|if|try|constructor|||else|catch||1000|setTimeout'.split('|'),0,{}))
+        //$('img').bind('contextmenu', function (e) {
+        //    return false;
+        //});
+        //$('img').on('dragstart', function (event) { event.preventDefault(); });
+        //$("body").on("contextmenu", function (e) {
+        //    return false;
+        //});
+        $("#AddNewClass").addClass('positions');
+        $("#onBoardingSubmit").click(function () {
+            var fap_key_values = $('#fap_key_id').val();
+            var chk_values = $('#chk_value').is(':checked');
+            $.ajax({
+                type: "POST",
+                url: "/Facility/Edit_Facility_Physician",
+                data: { "chk_value": chk_values, "fap_key_values": fap_key_values },
+                dataType: "html",
+                success: function (response) {
+                    if (response == "false") {
+
+                    }
+                    else {
+                        topFunction();
+                        hidedivs();
+                        $("#onboardingmodal").modal('hide');
+                    }
+
+                },
+                error: function (error) {
+                    alert("Failed");
+                }
+            });
+        });
+
+        $(function () {
+            $("#target_hyper_link a").attr("target", "_blank");
+        });
+
+
+    });
+    function hidedivs() {
+        $('.removestyle').removeAttr('style');
+        $('.removestyle').delay(2000).hide(1000);
+    }
+
+</script>
+<script>
+    function ShowHidePasswordFunction() {
+        debugger
+        if ($('.show-hide-password-div').is(":visible")) {
+            $('.show-hide-password-div').hide();
+        } else {
+            $('.show-hide-password-div').show();
+        }
+        //var x = document.getElementsByClassName("show-hide-password-div");
+        //if (x.style.display === "none") {
+        //    x.style.display = "block";
+        //} else {
+        //    x.style.display = "none";
+        //}
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $(".show-hide-password-div").hide();
+
+    });
+</script>
+<script>
+    $(function () {
+        $('.thumb').on('click', function () {
+            src = $(this).attr('src');
+            $('.overlay img').attr('src', src);
+            $('.overlay').show();
+            var scrollPos = window.scrollY || window.scrollTop || document.getElementsByTagName("html")[0].scrollTop;
+            localStorage.setItem("scrollPos", scrollPos);
+            topFunctions();
+        });
+
+        $('.overlay').on('click', function () {
+            var ss = localStorage.getItem("scrollPos");
+            document.body.scrollTop = ss;
+            document.documentElement.scrollTop = ss;
+            $('.overlay').hide();
+
+        });
+        function topFunctions() {
+            document.body.scrollTop = 350;
+            document.documentElement.scrollTop = 350;
+        }
+
+    });
+</script>

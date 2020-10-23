@@ -1,0 +1,529 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@{
+    var isFacilityAdmin = User.IsInRole(UserRoles.FacilityAdmin.ToDescription());
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="date_of_consult">
+                    <label class="control-label" for="date_of_consult">Date of Consult</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="physicianName">
+                    <label class="control-label" for="physicianName">Physician </label>
+                </div>
+
+            </div>
+        </div>
+        @* Not Required for now but will add in future
+            <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="qps">
+                    <label class="form-check-label bold" for="qps">QPS </label>
+                </div>
+            </div>
+        </div>*@
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="facility">
+                    <label class="control-label" for="facility">Facility </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="patient_intial">
+                    <label class="control-label" for="patient_intial">Patient Initials </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="identification_number">
+                    <label class="control-label" for="identification_number">Identification Number </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="dob">
+                    <label class="control-label" for="dob">DOB </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="gender">
+                    <label class="control-label" for="gender">Gender </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="arrival_needle_time">
+                    <label class="control-label" for="arrival_needle_time"> Arrival to Needle </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="symptom_needle_time">
+                    <label class="control-label" for="symptom_needle_time">Symptom To Needle Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="last_known_well_to_needle_time">
+                    <label class="control-label" for="last_known_well_to_needle_time">Last Known Well to Needle Time</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="login_needle_time">
+                    <label class="control-label" for="login_needle_time">First Login Attempt to Needle Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="bedside_response_time">
+                    <label class="control-label" for="bedside_response_time">   Bedside Response Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="workflow_type">
+                    <label class="control-label" for="workflow_type"> Workflow Type </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="last_known_well">
+                    <label class="control-label" for="last_known_well">  Last Known Well </label>
+                </div>
+            </div>
+        </div>
+        @* Not available in Grid
+            <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="loginToNeedle">
+                    <label class="control-label" for="loginToNeedle"> Login to Needle </label>
+                </div>
+            </div>
+        </div>*@
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="arrival_time">
+                    <label class="control-label" for="arrival_time">  Arrival Time </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="start_time">
+                    <label class="control-label" for="start_time">Start Time </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="stamp_time">
+                    <label class="control-label" for="stamp_time"> Stamp Time </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="first_login_attempt">
+                    <label class="control-label" for="first_login_attempt"> First Log In Attempt </label>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="cas_metric_assesment_time_est">
+                    <label class="control-label" for="cas_metric_assesment_time_est"> NIHSS Start Time </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="tpa">
+                    <label class="control-label" for="tpa">tPA Candidate </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="tpa_verbel_order_time">
+                    <label class="control-label" for="tpa_verbel_order_time"> Alteplase Early Mix Decision Time </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="tpa_cpoe_order_time">
+                    <label class="control-label" for="tpa_cpoe_order_time">  tPA CPOE Order Time </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="needle_time">
+                    <label class="control-label" for="needle_time">  Needle Time </label>
+                </div>
+            </div>
+        </div>
+        @if (!isFacilityAdmin)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="navigator" @*hidden="isFacilityAdmin"*@>
+                        <label class="control-label" for="navigator"> Navigator </label>
+                    </div>
+
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="handle_time">
+                    <label class="control-label" for="handle_time"> Handle Time </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="activation_time">
+                    <label class="control-label" for="activation_time">Activation Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="callback_response_time">
+                    <label class="control-label" for="callback_response_time"> Callback Response Time </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="tPA_administration_time">
+                    <label class="control-label" for="tPA_administration_time"> Alteplase early mix decision Time To Needle Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="cpoe_order_to_needle">
+                    <label class="control-label" for="cpoe_order_to_needle"> CPOE Order to Needle</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="physician_MDM">
+                    <label class="control-label" for="physician_MDM">Physician MDM</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="loginDelayNotes">
+                    <label class="control-label" for="loginDelayNotes">Login Delay Notes</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="tPADelayNotes">
+                    <label class="control-label" for="tPADelayNotes">tPA Delay Notes</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="case_number">
+                    <label class="control-label" for="case_number">TC Case Number </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="video_start_time">
+                    <label class="control-label" for="video_start_time">Video Start Time</label>
+                </div>
+            </div>
+        </div> 
+    </div>
+    <div class="col-md-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="video_end_time">
+                    <label class="control-label" for="video_end_time">Video End Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="on_screen_time">
+                    <label class="control-label" for="on_screen_time">On Screen Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="ts_response_time">
+                    <label class="control-label" for="ts_response_time">TS Response Time</label>
+                </div>
+            </div>
+        </div>
+        @if (!isFacilityAdmin)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="caseStatus" @*hidden="isFacilityAdmin"*@>
+                        <label class="control-label" for="caseStatus">Status</label>
+                    </div>
+
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="login_handletime">
+                    <label class="control-label" for="login_handletime">Login Handle Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="caseType">
+                    <label class="control-label" for="caseType">Case Type</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="eAlert">
+                    <label class="control-label" for="eAlert">eAlert</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="callType">
+                    <label class="control-label" for="callType">Call Type</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="callerSource">
+                    <label class="control-label" for="callerSource">Caller Source</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="billingCode">
+                    <label class="control-label" for="billingCode">Billing Code</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="time_waiting_to_accept">
+                    <label class="control-label" for="time_waiting_to_accept">Time Waiting To Accept Status Saved</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="time_accepted">
+                    <label class="control-label" for="time_accepted">Time Accepted</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="physicians">
+                    <label class="control-label" for="physicians"># Physicians Rotated</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="assignment_time">
+                    <label class="control-label" for="assignment_time">  Assignment Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="verbal_order_to_ocopr_order">
+                    <label class="control-label" for="verbal_order_to_ocopr_order">Alteplase early mix decision To CPOE Order</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="start_accepted">
+                    <label class="control-label" for="start_accepted">Start to Accepted</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="video_start_to_tpa_verbal_order">
+                    <label class="control-label" for="video_start_to_tpa_verbal_order">Video Start Time to Alteplase Early Mix Decision</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="video_start_to_needle">
+                    <label class="control-label" for="video_start_to_needle">Video Start Time to Needle Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="nihss_to_verbal_tpa_order">
+                    <label class="control-label" for="nihss_to_verbal_tpa_order">NIHSS to Alteplase Early Mix Decision</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="nihss_to_needle">
+                    <label class="control-label" for="nihss_to_needle">NIHSS to Needle Time</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="nihss_totalnum">
+                    <label class="control-label" for="nihss_totalnum">NIHSS Total Number</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="neurointerventional_case">
+                    <label class="control-label" for="neurointerventional_case">Neurointerventional Case</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="patient_name">
+                    <label class="control-label" for="patient_name">Patient Name</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="NIHSS_cannot_patient_status">
+                    <label class="control-label" for="NIHSS_cannot_patient_status">NIHSS Cannot Be Completed Due to Patient Status</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="Physician_Blast">
+                    <label class="control-label" for="Physician_Blast">Physician Blast</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="reasonFortPADelay">
+                    <label class="control-label" for="reasonFortPADelay">Reason for tPA Delay</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

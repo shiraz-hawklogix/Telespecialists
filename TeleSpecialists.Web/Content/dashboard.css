@@ -1,0 +1,168 @@
+﻿.dashboard-curved-chart #chartLegend table tr td.legendColorBox div {
+    border-width: 0 !important;
+}
+
+    .dashboard-curved-chart #chartLegend table tr td.legendColorBox div div {
+        border-radius: 100%;
+        border-width: 13px !important;
+    }
+
+
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 12px;
+    line-height: 1.428571429;
+    border-radius: 15px;
+}
+
+    .btn-circle.btn-lg {
+        width: 50px;
+        height: 50px;
+        padding: 10px 16px;
+        font-size: 18px;
+        line-height: 1.33;
+        border-radius: 25px;
+    }
+
+    .btn-circle.btn-xl {
+        width: 70px;
+        height: 70px;
+        padding: 10px 16px;
+        font-size: 24px;
+        line-height: 1.33;
+        border-radius: 35px;
+    }
+
+
+.performance-cards .wrapper.icon-circle {
+    width: 73px;
+    height: 73px;
+    border-radius: 50px;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    padding: 0;
+    margin-right: 15px;
+}
+
+    .performance-cards .wrapper.icon-circle i {
+        font-size: 1.6rem;
+        color: #ffffff;
+    }
+
+.performance-cards .wrapper p:first-child {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600;
+    font-size: 30px;
+}
+.performance-cards .wrapper p:last-child {
+    font-weight: 400;
+    font-size: 0.875rem;
+    line-height: 20px;
+    color: #aab2bd;
+}
+
+.performance-cards .wrapper p {
+    margin-bottom: 0;
+    line-height: 1;
+    width:122px;
+}
+
+
+
+.ct-series .ct-bar {
+    /*stroke: #fed961;*/
+    stroke-width: 50px;
+    stroke-dasharray: 0;
+    stroke-linecap: squre;
+}
+
+/*
+.ct-series .ct-bar {
+    stroke: #fed961;
+    stroke-width: 20px;
+    stroke-dasharray: 0;
+    stroke-linecap: squre;
+}
+
+.ct-series-a .ct-bar {
+    stroke: #fed961;
+    stroke-width: 20px;
+    stroke-dasharray: 0;
+    stroke-linecap: squre;
+}
+
+.ct-series-c .ct-bar {
+    stroke: #fd3258;
+    stroke-width: 20px;
+    stroke-dasharray: 0;
+    stroke-linecap: squre;
+}
+
+#ct-chart-vartical-stacked-bar .ct-legend li {
+    position: relative;
+    padding-left: 23px;
+    margin-bottom: 3px;
+    display: inline-block;
+    font-size: 15px;
+    color: #434a54;
+}
+
+    #ct-chart-vartical-stacked-bar .ct-legend li:first-child {
+        padding-left: 0;
+    }
+
+
+    #ct-chart-vartical-stacked-bar .ct-legend li:before {
+        content: "";
+        height: 15px;
+        width: 15px;
+        margin: 0 10px -2px 0;
+        display: inline-block;
+        border-radius: 100%;
+        border-width: 3px;
+        border-style: solid;
+    }
+
+    #ct-chart-vartical-stacked-bar .ct-legend li.ct-series-0:before {
+        content: "";
+        border-color: #fed961;
+    }
+
+
+*/
+
+#ct-chart-vartical-stacked-bar .ct-legend li {
+    position: relative;
+    padding-left: 23px;
+    margin-bottom: 3px;
+    display: inline-block;
+    font-size: 15px;
+    /*color: #434a54;*/
+}
+
+    #ct-chart-vartical-stacked-bar .ct-legend li:first-child {
+        padding-left: 0;
+    }
+
+    #ct-chart-vartical-stacked-bar .ct-legend li:before {
+        content: "";
+        height: 15px;
+        width: 15px;
+        margin: 0 10px -2px 0;
+        display: inline-block;
+        border-radius: 100%;
+        border-width: 3px;
+        border-style: solid;
+    }
+
+    #ct-chart-vartical-stacked-bar .ct-legend li.ct-series-0:before {
+        content: "";
+        /*border-color: #fed961;*/
+    }

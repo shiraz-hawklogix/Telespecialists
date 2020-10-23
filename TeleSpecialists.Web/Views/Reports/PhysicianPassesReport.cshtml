@@ -1,0 +1,504 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.ViewModels.Reports;
+@using TeleSpecialists.BLL.Helpers;
+@{
+    ViewBag.Title = "Physician Passes";
+    var currentDate = DateTime.Now.ToEST();
+    var previousMonth = currentDate.AddMonths(-1);
+    
+   
+}
+     @Html.Partial("_ReportLayout")
+
+    <div class="row" id="divLocalFilters">
+        <div class="col-12">
+            <div class="form-row">
+                
+                <div class="form-group col-xl-3 col-6">
+                    <label for="Physicians">Physician</label>
+                    @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+                </div> 
+               
+                <div class="form-group col-xl-3 col-6">
+                    <label for="ddlTimeFrame">Time Frame</label>
+                    <select class="form-control" id="ddlTimeFrame">
+                        <option value="Today">Today</option>
+                        <option value="Yesterday">Yesterday</option>
+                        <option value="Last24Hours">Last 24 Hours</option>
+                        <option value="Last48Hours" selected="selected">Last 48 Hours</option>
+                        <option value="LastSevenDays">Last 7 Days</option>
+                        <option value="Last14Days">Last 14 Days</option>
+                        <option value="Last30Days">Last 30 Days</option>
+                        <option value="Last60Days">Last 60 Days</option>
+                        <option value="Last90Days">Last 90 Days</option>
+                        <option value="PreviousMonth">Previous Month</option>
+                        <option value="MonthToDate">Month to Date</option>
+                        <option value="SpecificDate">Specific Date</option>
+                        <option value="CustomRange">Date Range</option>
+                    </select>
+                </div>
+
+                <div class="form-group row col-xl-5 col-12" id="divDateRange" style="display:none;">
+                    <div class="col-6 pr-0">
+                        <label>From</label>
+                        <input type="text" id=FromDate name=FromDate class="form-control datepicker" />
+                        <span class="text-danger field-validation-error position-absolute" id="txtFromDateError"
+                              style="display:none" data-valmsg-for=FromDate data-valmsg-replace="true">
+                            <span id="FromDate-error" class=""></span>
+                        </span>
+                    </div>
+
+                    <div class="form-group col-6">
+                        <label>To Date</label>
+                        <input type="text" id="ToDate" name="ToDate" class="form-control datepicker" />
+                    </div>
+                </div>
+                <div class="form-group col-xl-2 col-6" id="divSpecificDate" style="display:none;">
+                    <div class="col-12">
+                        <label>Date</label>
+                        <input type="text" id="txtSpecificDate" name="txtSpecificDate" class="form-control datepicker" />
+                        <span class="text-danger field-validation-error position-absolute" id="txtSpecificDateError"
+                              style="display:none" data-valmsg-for="txtSpecificDate" data-valmsg-replace="true">
+                            <span id="txtSpecificDate-error" class=""></span>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="form-group col-4 mt-xl-4 pt-xl-2">
+                    <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+                    <button type="button" class="btn btn-dark ml-2 d-none" id="resetSearch">Clear Search</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="row">
+    <div  id="physicianPassesChart" class=" col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+    </div>
+
+</div>
+
+
+
+    
+    <script src="~/Scripts/Custom/inputMask.js"></script>
+    <script>
+         
+        
+        $(document).ready(function () { 
+            var model = {
+
+                Physicians: "",
+                StartDate: null,
+                EndDate: null,
+                IncludeTime: false,
+                TimeFrame: ""
+            };
+            localStorage.setItem('PhysicianPassesReport.Filter', JSON.stringify(model));
+            $('#btnExportPdf').hide();
+            $('.datepicker').kendoDatePicker({
+                open: function (e) {
+                    onDatePickerOpen(e);
+                }
+            });
+            $('#divLocalFilters').appendTo('#divFilters');
+            $('.timeToEvaluate').inputmask("hh:mm:ss", {
+                placeholder: "00:00:00",
+                insertMode: false,
+                showMaskOnHover: false,
+                hourFormat: 12
+             });
+            $('#ddlTimeFrame').off("change").change(function () {
+                $("#divDateRange,#divSpecificDate").hide();
+                var selectedValue = $(this).val();
+                if (selectedValue == "SpecificDate")
+                    $("#divSpecificDate").show();
+                else if (selectedValue == "CustomRange")
+                    $("#divDateRange").show();
+            });
+             
+            $('#Physicians').multiselect({
+                columns: 1,
+                placeholder: 'Select Physician',
+                selectAll: true,
+                search: true,
+                searchOptions: {
+                    'default': 'Search Physician'
+                }
+            });
+            
+
+            $('#btnSearch').off("click").click(function () {
+                var errorMessage = "";
+                if ($("#ddlTimeFrame").val() == "CustomRange") {
+                    if ($("#FromDate").val() == "")
+                        errorMessage = "Enter From Date<br/>";
+                    if ($("#ToDate").val() == "")
+                        errorMessage += "Enter To Date";
+                }
+                if (errorMessage == "") {
+                    loadGridData();
+                    localStorage.setItem('PhysicianPassesReport.SearchApplied', true);
+                    $("#resetSearch").removeClass("d-none");
+                }
+                else {
+                    $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+                }
+            });
+            $('#resetSearch').off("click").click(function () {
+                localStorage.setItem('PhysicianPassesReport.SearchApplied', false);
+                $('#Physicians').val("");
+                $('#Physicians').multiselect('reload');
+                
+                $('#ddlTimeFrame').val("Last48Hours").change();
+                $('.cb_benchMarck').each(function () {
+                    $(this).prop("checked", false);
+                    var parentGroup = $(this).parents(".form-group");
+                    $(parentGroup).find("select").val("0");
+                    $(parentGroup).find("select").disable();
+                    $(parentGroup).find(".timeToEvaluate ").val("");
+                    $(parentGroup).find(".timeToEvaluate ").disable();
+                }); 
+                loadGridData();
+                setWidthOfDropDowns();
+                $("#resetSearch").addClass("d-none");
+            });
+            $('#kendoDataGrid').attr("style", "min-height : unset !important");
+            $('.cb_benchMarck').change(function () {
+                var ischecked = $(this).is(':checked');
+                var parentGroup = $(this).parents(".form-group");
+                if (!ischecked) {
+                    $(parentGroup).find("select").val("0");
+                    $(parentGroup).find(".timeToEvaluate").val("");
+                    $(parentGroup).find(".error_msg").hide();
+                    $(this).parents(".form-group").find("select, .timeToEvaluate").disable();
+                }
+                else {
+                    $(this).parents(".form-group").find("select, .timeToEvaluate").enable();
+                }
+            });
+          
+             
+            trySetFilters();
+            resetDropDownOnDeseelect();
+            loadGridData();
+            setWidthOfDropDowns();
+        });
+
+        function trySetFilters() {
+            var isSearchApplied = localStorage.getItem("PhysicianPassesReport.SearchApplied");
+            if (isSearchApplied == "true") {
+                console.log("Search applied");
+                var filters = localStorage.getItem("PhysicianPassesReport.Filter");
+                if (filters) {
+                    var filterApplied = false;
+                    filters = JSON.parse(filters);
+                    
+                    if (filters.Physicians) {
+                        filterApplied = true;
+                        $("#Physicians").val(filters.Physicians);
+                        $("#Physicians").multiselect('reload');
+                    } 
+
+                    if (filters.TimeFrame) {
+                        filterApplied = true;
+                        $("#ddlTimeFrame").val(filters.TimeFrame);
+                    }
+
+                     
+                    if(filterApplied)
+                        $("#resetSearch").removeClass("d-none");
+                }
+            }
+        }
+        function mapModelProperties(elem, benchMark) {
+            var data = {};
+            if ($(benchMark).prop("checked") == true) {
+                $(elem).find('select').each(function () {
+                    data.ComparisonOperator = this.value;
+                });
+                $(elem).find('input[type="text"]').each(function () {
+                    data.TimeToEvaluate = this.value;
+                });
+            }
+            else {
+                data = null;
+            }
+            return data;
+        }
+        function loadGridData() {
+          
+
+            
+         ///Region grid
+
+            $("#kendoDataGrid").kendoGrid({
+                excel: {
+                    allPages: true,
+                    filterable: false,
+                    fileName: '@ViewBag.Title' + '.xlsx',
+                    proxyURL: '@Url.Action("ExportToExcel")',
+                },
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetPhysicianPassesReportData")',
+                            contentType: "application/json",
+                            type: "POST",
+                            data: function () {
+                                var model = {
+                                    
+                                    Physicians: "",
+                                    StartDate: null,
+                                    EndDate: null,
+                                    IncludeTime: false, 
+                                    TimeFrame: ""
+                                };
+                                model.Physicians = $("#Physicians").val();
+                              
+                                model.TimeFrame = $("#ddlTimeFrame").val();
+                                switch (model.TimeFrame) {
+                                    case "Today":
+                                        model.StartDate = "@currentDate.ToString()";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "Yesterday":
+                                        model.StartDate = "@(currentDate.AddDays(-1).ToString())";
+                                        model.EndDate = "@(currentDate.AddDays(-1).ToString())";
+                                        break;
+                                    case "Last24Hours":
+                                        model.IncludeTime = true;
+                                        model.StartDate = "@(currentDate.AddHours(-24).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "Last48Hours":
+                                        //model.IncludeTime = true;
+                                        model.StartDate = "@(currentDate.AddDays(-2).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "LastSevenDays":
+                                        model.StartDate = "@(currentDate.AddDays(-7).ToString())";
+                                        model.EndDate ="@currentDate.ToString()";
+                                        break;
+                                    case "Last14Days":
+                                        model.StartDate = "@(currentDate.AddDays(-14).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "Last30Days":
+                                        model.StartDate = "@(currentDate.AddDays(-30).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break; Last60Days
+                                    case "Last60Days":
+                                        model.StartDate = "@(currentDate.AddDays(-60).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "Last90Days":
+                                        model.StartDate = "@(currentDate.AddDays(-90).ToString())";
+                                        model.EndDate ="@currentDate.ToString()";
+                                        break;
+                                    case "PreviousMonth":
+                                        model.StartDate = "@(new DateTime(previousMonth.Year, previousMonth.Month,1).ToString())";
+                                        model.EndDate = "@(new DateTime(previousMonth.Year,previousMonth.Month, DateTime.DaysInMonth(previousMonth.Year, previousMonth.Month)).ToString())";
+                                        break;
+                                    case "MonthToDate":
+                                        model.StartDate = "@(new DateTime(currentDate.Year, currentDate.Month, 01).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "SpecificDate":
+                                        model.StartDate = $("#txtSpecificDate").val();
+                                        model.EndDate = $("#txtSpecificDate").val();
+                                        break;
+                                    case "CustomRange":
+                                        model.StartDate = $("#FromDate").val();
+                                        model.EndDate = $("#ToDate").val();
+                                        break;
+                                }
+                                localStorage.setItem('PhysicianPassesReport.Filter', JSON.stringify(model));
+                                return model;
+                            },
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total"
+                    },
+                    //serverPaging: true,
+                    //serverFiltering: true,
+                    //serverSorting: true,
+                    //pageSize: GetKendoPageSize("QualityReport", "RecPerPage", true),
+                    //page: KendoGet("QualityReport", "page")
+                    serverPaging: true,
+                    pageSize: 10,
+                    serverFiltering: false,
+                    serverSorting: true,
+                },
+                width: '100%',
+                pageable: {
+                    refresh: true,
+                    //pageSizes: true,
+                    //pageSize: 10
+                    pageSizes: [1, 2, 5, 10, 15, 20, 30, 50, 'All']
+                },
+                groupable: false,
+                filterable: true,
+                sortable: true,
+                resizable: false,
+                dataBound: function (e) {
+                    $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+
+                    renderChart();
+
+
+
+                },
+                columns: [
+                    {
+                    field: "PhysicianName", title: "Physician Name"
+                },
+                {
+                    field: "NumberOfShifts", title: "Number of Shifts"
+                },
+                {
+                    field: "NumberOfPasses", title: "Number of Passes"
+                },
+                {
+                    field: "NumberOfPassesPerShift", title: "Number of Passes Per Shift"
+                }
+                ]
+            });
+
+           /// Region end grid 
+           
+        }
+
+        function renderChart() {
+
+            var data = $("#kendoDataGrid").data().kendoGrid.dataSource.view();
+           
+            var physicianNames = [];
+            var numberOfShifts = [];
+            var numberOfPasses = [];
+            var numberOfPassesPershift = [];
+
+            var maximum = 0;
+            $.each(data, function (i, e) { 
+                 
+                physicianNames.push(e.PhysicianName);
+                numberOfShifts.push(e.NumberOfShifts);
+                numberOfPasses.push(e.NumberOfPasses);
+                numberOfPassesPershift.push(e.NumberOfPassesPerShift);
+
+
+                if (e.NumberOfShifts > maximum) {
+                    maximum = e.NumberOfShifts
+                }
+
+                if (e.NumberOfPasses > maximum) {
+                    maximum = e.NumberOfPasses;
+                }
+
+                if (e.NumberOfPassesPerShift > maximum) {
+                    maximum = e.NumberOfPassesPerShift;
+                }
+            }); 
+
+            if (maximum % 10 > 0) {
+                var number = maximum % 10;
+                var numberToAdd = 10 - number;
+                maximum = maximum + numberToAdd;
+            }
+
+            console.log(maximum);
+
+            $("#physicianPassesChart").kendoChart({
+                title: {
+                    text: "Physician Passes"
+                },
+                legend: {
+                    visible: false
+                },
+                seriesDefaults: {
+                    type: "column"
+                },
+                series: [
+                    {
+                        name: "Number of Shifts",
+                        data: numberOfShifts
+                    },
+                    {
+                        name: "Number of Passes",
+                        data: numberOfPasses
+                    },
+                    {
+                        name: "Number of Passes Per Shift",
+                        data: numberOfPassesPershift
+                    }
+                ],
+                valueAxis: {
+                    max: maximum,
+                    line: {
+                        visible: false
+                    },
+                    minorGridLines: {
+                        visible: true
+                    },
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                categoryAxis: {
+                    categories: physicianNames,
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                tooltip: {
+                    visible: true,
+                    template: "#= series.name #: #= value #"
+                }
+            });
+
+        }
+        function validateForm() {
+            var selectedOption = $("#ddlTimeFrame").val();
+            $("#txtStartDateError").hide();
+            if (selectedOption == "CustomRange") {
+                var start_date = $("#txtStartDate").val();
+                var end_date = $("#txtEndDate").val();
+                if (start_date != "" && end_date != "") {
+                    var duration = moment.duration(moment(end_date).diff(new Date(start_date)));
+                    if (duration.asMinutes() < 0) {
+                        $("#txtStartDateError").html("Start Date must be less then End Date");
+                        $("#txtStartDateError").show();
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        function getPatientIntial(tableId, columnIndex) {
+            $(tableId).find("tr").each(function (index, element) {
+                var row = $(element);
+                var patient = row.find("td:nth-child(" + columnIndex + ")").text();
+                if ($.trim(patient) != "") {
+                    var patientName = $.trim(patient).split(' '),
+                        initials = patientName[0].substring(0, 1).toUpperCase();
+                    if (patientName.length > 1) {
+                        initials += patientName[patientName.length - 1].substring(0, 1).toUpperCase();
+                    }
+                    row.find("td:nth-child(" + columnIndex + ")").html(initials);
+                }
+            });
+        }
+    </script>
+ 

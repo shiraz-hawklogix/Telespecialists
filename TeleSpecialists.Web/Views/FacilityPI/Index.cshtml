@@ -1,0 +1,134 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@{
+    ViewBag.Title = "Quality Goals";
+}
+
+
+<div class="pt-1 customGridHeader">
+    <div id="qualitygoalsGrid">
+    </div>
+</div>
+
+
+<script type="text/javascript">
+        var contactGrid = null;
+        var fac_key = "@(ViewBag.fac_key)";
+    $(document).ready(function () {
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+            getQualityGoals();
+        });
+
+    function getQualityGoals() {
+            $("#qualitygoalsGrid").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetAll")',
+                            contentType: "application/json",
+                            data: { fac_key: fac_key },
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+
+                            if (fac_key !== "") {
+                                if (options.filter === undefined)
+                                    options.filter = {};
+
+                                if (options.filter.filters === undefined)
+                                    options.filter.filters = [];
+
+                                if (options.filter.logic === undefined)
+                                    options.filter.logic = "and";
+
+                                options.filter.filters.push({ field: "fct_key", operator: "eq", "value": fac_key });
+                            }
+                            options = KendoKeepState("QualityGoals", options);
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                    },
+                    page: KendoGet("QualityGoals", "page"),
+                    pageSize: KendoGet("QualityGoals"),
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true
+                },
+                filterable: true,
+                sortable: true,
+                scrollable: true,
+                resizable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                dataBound: function (e) {
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                },
+                columns: [
+                    { hidden: true, field: "qag_key" },
+                    { hidden: true, field: "qag_fac_key" },
+                    { hidden: true, field: "gd_key" },
+                    { field: "qag_time_frame", title: "Time Frame", width: '140px' },
+                    { field: "qag_door_to_TS_notification_ave_minutes", title: "Arrival-To-Start Ave. Min", width: '200px' },
+                    { field: "qag_door_to_TS_notification_median_minutes", title: "Arrival-To-Start Medn. Min", width: '200px' },
+                    { field: "qag_percent10_min_or_less_activation_EMS", title: "% 10 Min or Less Activation (EMS)", width: '220px' },
+                    { field: "qag_percent10_min_or_less_activation_PV", title: "% 10 Min or Less Activation (PV)", width: '220px' },
+                    //{ field: "qag_percent10_min_or_less_activation_Inpt", title: "% 10 Min or Less Activation (Inpt)", width: '220px' },
+                    { field: "qag_TS_notification_to_response_average_minute", title: "TS Notification to Response Average Minute", width: '270px' },
+                    { field: "qag_TS_notification_to_response_median_minute", title: "TS Notification to Response Median Minute", width: '270px' },
+                    { field: "qag_percent_TS_at_bedside_grterthan10_minutes", title: "% TS at Bedside <10 Minutes", width: '200px' },
+                    //{ field: "qag_alteplase_administered", title: "ALTEPLASE ADMINISTERED #", width: '200px' },
+                    { field: "qag_door_to_needle_average", title: "Door to Needle Average (min:sec)", width: '240px' },
+                    { field: "qag_door_to_needle_median", title: "Door to Needle Median (min:sec)", width: '240px' },
+                    { field: "qag_verbal_order_to_administration_average_minutes", title: "Alteplase early mix decision to Administration Average Minutes", width: '300px' },
+                    { field: "qag_DTN_grter_or_equal_30minutes_percent", title: "DTN less or equal 30 Minutes %", width: '220px' },
+                    { field: "qag_DTN_grter_or_equal_45minutes_percent", title: "DTN less or equal 45 Minutes %", width: '220px' },
+                    { field: "qag_DTN_grter_or_equal_60minutes_percent", title: "DTN less or equal 60 Minutes %", width: '220px' },
+                    { field: "qag_TS_notification_to_needle_grter_or_equal_30minutes_percent", title: "TS Notification to Needle less or equal 30 Minutes %", width: '320px' },
+                    { field: "qag_TS_notification_to_needle_grter_or_equal_45minutes_percent", title: "TS Notification to Needle less or equal 45 Minutes %", width: '320px' },
+                    { field: "qag_TS_notification_to_needle_grter_or_equal_60minutes_percent", title: "TS Notification to Needle less or equal 60 Minutes %", width: '320px' },
+                    {
+                        title: "Actions", width: '135px', template: "<a class='btn btn-dark py-1 loadModelPopup' title='Edit' href='@Url.Action("Edit")/\#= gd_key#'>Edit</a> "
+                           // +"<a class='btn btn-dark btn-sm py-1' onclick='removeGoal(\"#= qag_key#\");' title='Remove' href='javascript:;'>Remove</a>"
+
+                    }
+                ]
+            });
+        }
+
+
+
+    function removeGoal(qag_key) {
+        var url = "@Url.Action("Remove")";
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+            "<span>Are you sure you want to remove this QualityGoal?</span>",
+            function () {
+                $.get(url, { id: qag_key }, function (response) {
+                    if (response.success) {
+                        getQualityGoals();
+                        $("#divModelPopUp").modal("hide");
+                        $("#qualityGoalsRow").show();
+                    }
+                    else {
+                        $("#divModelPopUp").find("#validationSummary").showBSDangerAlert("", response.data);
+                    }
+                })
+            });
+
+    }
+
+
+</script>
+
+
+
+

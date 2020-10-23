@@ -1,0 +1,47 @@
+﻿ul {
+    list-style-type: none;
+}
+
+li {
+    list-style-type: none;
+}
+
+#div {
+    height: 300px;
+    /*width: 120%;*/
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+    #div::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    #div::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    /* Track */
+    #div::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px grey;
+        border-radius: 2px;
+    }
+
+    /* Handle */
+    #div::-webkit-scrollbar-thumb {
+        background: red;
+        border-radius: 2px;
+    }
+
+        /* Handle on hover */
+        #div::-webkit-scrollbar-thumb:hover {
+            background: #b30000;
+        }
+
+.Greencolor {
+    color: green;
+}
+
+.Bluecolor {
+    color: blue;
+}

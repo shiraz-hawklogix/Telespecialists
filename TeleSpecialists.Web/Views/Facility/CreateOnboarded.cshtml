@@ -1,0 +1,409 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@model TeleSpecialists.BLL.Model.Onboarded
+@{
+    List<Onboarded> OnBoardingdataforpopups = ViewBag.onboardingdatas;
+}
+<style>
+    body {
+        font-size:15px !important;
+    }
+    /*.shiraz {
+        margin: 0;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+        opacity: 0.2;
+        color: white !important;
+        filter: alpha(opacity=60);
+        background-color: #000;
+        border: none;
+        outline: none;
+    }
+
+    .csss {
+        height: 180px !important;
+        width: 717px;
+    }
+
+    .divborder {
+        border-radius: 15px;
+    }*/
+
+    /*body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+    }*/
+
+    .topnav {
+        overflow: hidden;
+        background-color: #333;
+    }
+
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+            .topnav a:hover {
+                background-color: #ddd;
+                color: black;
+            }
+
+            .topnav a.active {
+                background-color: #4CAF50;
+                color: white;
+            }
+
+    .box-item {
+        border: 5px solid #555
+    }
+</style>
+<input type="hidden" value="@ViewBag.fac_keys" id="getfid" />
+<div class="alert alert-success removestyle" role="alert" style="display:none!important">
+    Onboarding Successfully Added.
+</div>
+<div class="ajaxForm" id="basic">
+    <div class="form-group row ">
+        <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Facility: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control cas_fac_key Facilities facility_keys", @multiple = "multiple" })
+                    <div id="cas_fac_key-error" class="error_msg" style="display:none;">
+                        <label for="cas_fac_key">This field is required</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Header: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    @Html.TextBoxFor(m => Model.ParameterName, new { @class = "form-control lenghts", @id = "ParameterName" })
+
+                    <div id="ParameterName-error" class="error_msg" style="display:none;">
+                        <label for="ParameterName">This field is required</label>
+                    </div>
+                    <span id="message"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Upload Images: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    @Html.TextBoxFor(model => model.ParameterName_Image, new { @type = "file", @class = "form-control lenghts", @multiple = "multiple"@*, @accept = "image/*"*@,
+@id = "ParameterName_Image",
+@onclick = "removedivdata();"
+})
+                </div>
+            </div>
+            <div class="form-group row divshowimages" style="display:none!important;">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Selected Images: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    <div style="width:1475px;height:150px; overflow-y: scroll;resize:both;overflow:auto;border-color:black;border:solid;" class="preview" id="divimages2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4" style="padding-left: 0px;">Details: </label>
+        <div style="padding-left: 152px;">
+            <textarea class="form-control " id="ParameterName_Info" name="ParameterName_Info">
+
+
+</textarea>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-12">
+            @*<a class="btn btn-dark loadLinkAsync bthhide" style="display:none!important" href="@Url.Action("CreateOnboarded","Facility", new { fac_key = @ViewBag.fac_keys , issave= "1"})">Add Onboarding</a>*@
+            <input type="button" class="btn btn-dark bthhide" style="display:none!important" value="Add Onboarding" onclick="addOnBoardingData('@ViewBag.fac_keys','1','/Facility/CreateOnboarded')" />
+            @*<a href="/Facility/Edit/@ViewBag.fac_keys" class="btn btn-dark loadLinkAsync" id="backpage" onclick="funlatecall();">Cancel</a>*@
+            <input type="button" class="btn btn-dark loadLinkAsync" id="backpage" onclick="funlatecall();" value="Cancel" />
+            <input type="button" value="Preview Onboarding" onclick="openpopup()" ; class="btn btn-dark" id="Previewbtn" />
+            <input type="button" value="Save" onclick="uplaod()" ; class="btn btn-dark" id="savebtn" />
+        </div>
+    </div>
+</div>
+<div class="modal" id="graphmodal">
+    <div class="modal-dialog modal-lg" style=" max-width:1532px; ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4><b>Onboarding</b></h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="topnav" style="margin-bottom: 12px;margin-top: 12px;">
+                    @foreach (var item in OnBoardingdataforpopups)
+                    {
+                        <a href="javascript:void(0)">@item.ParameterName</a>
+                    }
+                    <a href="javascript:void(0)"><span id="submittername"></span></a>
+                </div>
+                @foreach (var item in OnBoardingdataforpopups)
+                {
+                    <div style="padding-bottom: 55px;" id="@item.ParameterName">
+                        <h2><b>@item.ParameterName</b></h2>
+                        @{
+                            var info_value = OnBoardingdataforpopups.Where(x => x.Onboarded_ID == item.Onboarded_ID).Select(k => k.ParameterName_Info).FirstOrDefault();
+
+                            @Html.Raw(info_value)
+                        }
+                        @foreach (var value in OnBoardingdataforpopups.Where(x => x.Onboarded_ID == item.Onboarded_ID))
+                        {
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="thumbnail">
+                                        @{
+                                            var getimagevalue = value.ParameterName_Image.TrimEnd(',');
+                                            if (!string.IsNullOrEmpty(getimagevalue))
+                                            {
+                                                var splitimagevalue = getimagevalue.Split(',');
+                                                foreach (var imageshow in splitimagevalue)
+                                                {
+                                                    string lastthreewords = imageshow.Substring(imageshow.Length - 3);
+                                                    if (lastthreewords == "PEG" || lastthreewords == "peg" || lastthreewords == "png" || lastthreewords == "jpg" || lastthreewords == "JPG" || lastthreewords == "gif" || lastthreewords == "PNG")
+                                                    {
+                                                        if (!string.IsNullOrEmpty(imageshow))
+                                                        {
+                                                            var s = imageshow;
+                                                            <a onclick="abc();">
+                                                                <img src="@s" style="height:226px;width:442px;border: 5px solid #555;margin-bottom: 7px;" class="img-rounded thumb" />
+                                                            </a>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <span style="padding-left:5px">Click The Link To Download File</span> <a href="@imageshow">Link</a>
+
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                        <div class="caption"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            break;
+                        }
+                    </div>
+                }
+                <div style="padding-bottom: 55px;">
+                    <h2><b><span id="submittername2"></span></b></h2>
+                    <span id="infovalue"></span>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="thumbnail">
+                                <div style="width: 1475px;overflow: hidden!Important;height: 148px;overflow-y: scroll;" class="preview2" id="divimages3"></div>
+                                <div class="caption"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal" onclick="fun();">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+
+
+<script>
+    $(document).ready(function () {
+        $(function () {
+            $("#divimages, #divimages2").sortable({
+                connectWith: ".preview",
+                cursor: "move"
+            }).disableSelection();
+        });
+        if (@ViewBag.issaves == 1)
+        {
+            $('.removestyle').removeAttr('style');
+            $('.removestyle').delay(2000).hide(1000);
+        }
+        var values = "@ViewBag.FAC_value";
+        $.each(values.split(","), function (i, e) {
+            $(".Facilities option[value='" + e + "']").prop("selected", true);
+        });
+        $('#ParameterName').trigger("click");
+    });
+    function removedivdata() {
+        $("#divimages2").empty();
+        $("#divimages3").empty();
+    }
+    function fun() {
+        $("#divimages3").empty();
+    }
+    //  $('#graphmodal').modal({ backdrop: 'static', keyboard: false, hide=true })
+</script>
+<script>
+    $(function () {
+        function previewImages() {
+            var preview = document.querySelector('.preview');
+            if (this.files) {
+                [].forEach.call(this.files, readAndPreview);
+            }
+            var plus = 1;
+            function readAndPreview(file) {
+                $('.divshowimages').removeAttr('style');
+                var reader = new FileReader();
+                reader.addEventListener("load", function () {
+
+                    var image = new Image();
+                    image.height = 140;
+                    image.height = 140;
+                    image.title = file.name;
+                    image.src = this.result;
+                    image.id = plus;
+                    image.className = 'box-item';
+                    preview.appendChild(image);
+                    plus++
+                });
+                reader.readAsDataURL(file);
+
+            }
+        }
+        document.querySelector('#ParameterName_Image').addEventListener("change", previewImages);
+    });
+
+</script>
+<link href="~/Scripts/ckeditor/contents.css" rel="stylesheet" />
+<script src="~/Scripts/ckeditor/config.js"></script>
+
+<script>
+    $(document).ready(function () {
+        showCKEditoronboard("ParameterName_Info");
+        $('.Facilities').multiselect({
+            columns: 1,
+            placeholder: 'Select Facility',
+            selectAll: true,
+            search: true,
+            searchOptions: {
+                'default': 'Search Facility'
+            }
+        });
+        $('#ParameterName').trigger("click");
+        function showCKEditoronboard(elementId) {
+
+            destryCkEditorField(elementId);
+            window.setTimeout(function () {
+                CKEDITOR.replace(elementId, { contentsCss: "body {font-size: 18px;}" });
+            }, 100);
+
+            window.setTimeout(function () {
+                $(".cke_toolbar").each(function () {
+                    $this = $(this);
+                    if ($(this).find("a:visible").length <= 0) {
+                        $this.hide()
+                    } else {
+                        $this.show();
+                    }
+                });
+            }, 300);
+        }
+
+    });
+</script>
+<script>
+    function validateFormData() {
+        var result = true;
+        var facilities = $('.Facilities').find(":selected").val();
+        
+        if (facilities.length == 0) {
+            result = false;
+            $("#cas_fac_key-error").show();
+            setTimeout(function () {
+                $('#cas_fac_key-error').fadeOut('fast');
+            }, 2000);
+        }
+        return result;
+    }
+    function uplaod() {
+        $(".error_msg").hide();
+        
+        if (validateFormData() == true) {
+            var formData = new FormData();
+            var totalFiles = document.getElementById("ParameterName_Image").files.length;
+            for (var i = 0; i < totalFiles; i++) {
+                var file = document.getElementById("ParameterName_Image").files[i];
+                formData.append("ParameterName_Image", file);
+            }
+            var images = [];
+            $("#divimages2 img").each(function () {
+                images.push($(this).attr('title'))
+            });
+            formData.append("Div_Image", images);
+            var names = $('#ParameterName').val();
+            formData.append("ParameterName", names);
+            var info = Base64.encode(CKEDITOR.instances["ParameterName_Info"].getData());
+            formData.append("parameterinfo", info);
+            var cas_fac_Name_arrays = [];
+            $.each($(".facility_keys option:selected"), function () {
+                cas_fac_Name_arrays.push($(this).text());
+            });
+            formData.append("cas_fac_Name_array", cas_fac_Name_arrays);
+            var cas_fac_key_arrays = [];
+            $.each($(".facility_keys option:selected"), function () {
+                cas_fac_key_arrays.push($(this).val());
+            });
+            formData.append("cas_fac_key_arrays", cas_fac_key_arrays);
+            $.ajax({
+                type: "POST",
+                url: '/Facility/Upload',
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    debugger
+                    $('#ParameterName').val('');
+                    $("#message").html("");
+                    $(".bthhide").trigger("click");
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+
+            });
+        }
+
+    }
+    function funlatecall() {
+        $("#message").html("");
+
+    }
+
+</script>
+
+<script>
+    function openpopup() {
+        $("#graphmodal").modal('show');
+        var ParameterName2 = $('#ParameterName').val();
+        $("#submittername").text(ParameterName2);
+        $("#submittername2").text(ParameterName2);
+
+
+        var data = {};
+        data.bodyText = CKEDITOR.instances["ParameterName_Info"].getData();
+        $("#infovalue").html(data.bodyText);
+        abc();
+    }
+
+
+    function abc() {
+        var $button = $('.preview').clone();
+        $('.preview2').html($button);
+    }
+    $("#backpage").off('click').click(function () {
+        GetOnboardingData();
+    });
+</script>
+

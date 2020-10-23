@@ -1,0 +1,113 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@model TeleSpecialists.BLL.Model.entity_note
+
+
+
+
+<div class="modal-dialog modal-lg" id="notesForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+
+
+        @Html.AntiForgeryToken()
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">@ViewBag.Title</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="form-horizontal">
+
+                    <div id="validationSummary">
+
+                    </div>
+
+
+                    @Html.HiddenFor(m => m.etn_key)
+                    @Html.HiddenFor(m => m.etn_entity_key)
+                    @Html.HiddenFor(m => m.etn_ent_key)
+                    @Html.HiddenFor(m => m.etn_is_active)
+                    @Html.HiddenFor(m => m.etn_created_date)
+                    @Html.HiddenFor(m => m.etn_created_by)
+
+                    <div class="form-group row">
+                        @Html.Label("Note Type:", htmlAttributes: new { @class = "control-label col-12" })
+                        <div class="col-12">
+                            @Html.DropDownListFor(model => model.etn_ntt_key, null, "Select Type", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.etn_ntt_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Note Description:", htmlAttributes: new { @class = "control-label col-12" })
+                        <div class="col-12">
+                            @Html.TextAreaFor(model => model.etn_notes, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.etn_notes, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-12">
+                            <div class="checkbox">
+                                <label>@Html.CheckBoxFor(m => m.etn_display_on_open) Display On Open</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal">Close</a>
+                <input type="submit" class="btn btn-dark" value="Save" />
+            </div>
+
+        </div>
+    }
+</div>
+
+<script>
+
+    //    destryCkEditorField("etn_notes");
+    //    window.setTimeout(function () {
+    //        CKEDITOR.replace("etn_notes");
+    //}, 100);
+
+    $("#notesForm>form").off().submit("#notesForm>form", function (e) {
+
+        e.preventDefault();
+        if ($(this).valid()) {
+            var url = $(this).attr("action");
+
+            // var notes = CKEDITOR.instances["etn_notes"].getData();
+            var notes = $("#etn_notes").val();
+
+            if ($.trim(notes) == "") {
+                $("#divModelPopUp").find("#validationSummary").empty().showBSDangerAlert("", "Notes is required");
+                return;
+            }
+
+            // $("#etn_notes").val(notes);
+            var data = $(this).serialize();
+            $("#divModelPopUp").find("input:button, input:submit").disable();
+            $.post(url, data, function (response) {
+                $("#divModelPopUp").find("input:button, input:submit").enable();
+                if (response.success) {
+                    getNotes();
+                    $("#divModelPopUp").modal("hide");
+                }
+                else {
+                    $("#divModelPopUp").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                }
+            });
+        }
+    });
+
+</script>
+
+

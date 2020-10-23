@@ -1,0 +1,1659 @@
+﻿@model TeleSpecialists.BLL.Model.@case
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Model;
+
+@{
+    string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+    if (Model.facility != null)
+    {
+        if (!string.IsNullOrEmpty(Model.facility.fac_timezone))
+        {
+            facilityTimeZone = Model.facility.fac_timezone;
+        }
+    }
+
+    var timeZone = Functions.GetTimeZoneAbbreviation(facilityTimeZone);
+    var QPStimeStampdisplay = "";
+    if (Model.cas_response_case_qps_reviewed != 1)
+    {
+        QPStimeStampdisplay = "none";
+    }
+    string qpsname = ViewBag.QPSName;
+
+    string qpsnumber = Model.facility.qps_number;
+
+    var dicOptions = Enum.GetValues(typeof(MetricResponseStatus)).Cast<MetricResponseStatus>()
+                  .Select(m => new
+                  {
+                      Key = Convert.ToInt32(m).ToString(),
+                      Value = m.ToDescription()
+                  }).ToDictionary(m => m.Key, m => m.Value);
+
+    var dicStatusOptions = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                          .Select(m => new
+                          {
+                              Key = Convert.ToInt32(m).ToString(),
+                              Value = m.ToDescription()
+                          }).ToDictionary(m => m.Key, m => m.Value);
+
+    var patientType = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
+                          .Select(m => new
+                          {
+                              Key = Convert.ToInt32(m).ToString(),
+                              Value = m.ToDescription()
+                          }).ToDictionary(m => m.Key, m => m.Value);
+
+    var typename = patientType.Where(x => x.Key == Model.cas_patient_type.ToString()).FirstOrDefault();
+    var qpslist = new SelectList(
+        new List<SelectListItem>
+        {
+new SelectListItem {Text = "1", Value = "1"},
+new SelectListItem {Text = "2", Value = "2"},
+new SelectListItem {Text = "3", Value = "3"},
+new SelectListItem {Text = "4", Value = "4"},
+new SelectListItem {Text = "5", Value = "5"},
+new SelectListItem {Text = "6", Value = "6"},
+new SelectListItem {Text = "7", Value = "7"},
+new SelectListItem {Text = "8", Value = "8"},
+new SelectListItem {Text = "9", Value = "9"},
+new SelectListItem {Text = "10", Value = "10"},
+new SelectListItem {Text = "11", Value = "11"},
+new SelectListItem {Text = "12", Value = "12"},
+new SelectListItem {Text = "13", Value = "13"},
+new SelectListItem {Text = "14", Value = "14"},
+new SelectListItem {Text = "15", Value = "15"},
+new SelectListItem {Text = "16", Value = "16"},
+new SelectListItem {Text = "17", Value = "17"},
+new SelectListItem {Text = "18", Value = "18"},
+new SelectListItem {Text = "19", Value = "19"},
+new SelectListItem {Text = "20", Value = "20"},
+                                                        }, "Value", "Text");
+
+    var listReviewers = ViewBag.CaseReviewers as List<AspNetUser>;
+    var arr = !string.IsNullOrEmpty(Model.cas_response_reviewer) ? Model.cas_response_reviewer.Split(',') : null;
+    var start_time = Model.cas_response_ts_notification ?? null;
+    var stamp_time = Model.cas_metric_stamp_time_est ?? null;
+    var login_time = Model.cas_response_first_atempt ?? null;
+    var door_time = Model.cas_metric_door_time_est ?? null;
+    if (Model.cas_metric_symptom_onset_during_ed_stay)
+    {
+        door_time = Model.cas_metric_symptom_onset_during_ed_stay_time_est ?? null;
+    }
+    var symptomtime = Model.cas_metric_symptom_onset_during_ed_stay_time_est ?? null;
+    var tpa = Model.cas_metric_pa_ordertime_est ?? null;
+    var videostartTime = Model.cas_metric_video_start_time_est ?? null;
+    var videoEndtTime = Model.cas_metric_video_end_time_est ?? null;
+    var needle = Model.cas_metric_needle_time_est ?? null;
+
+    var acceptanceTime = Model.cas_response_time_physician ?? null;
+    var nihssstarttime = Model.cas_metric_assesment_time_est ?? null;
+    var tpaverbaltime = Model.cas_metric_tpa_verbal_order_time_est ?? null;
+    var lastknownwel_time = Model.cas_metric_lastwell_date_est ?? null;
+    bool isNeedleTimeTPA = false;
+    if (door_time.HasValue && needle.HasValue)
+    {
+        isNeedleTimeTPA = needle > door_time ? System.Math.Abs((door_time.Value.Subtract(needle.Value)).TotalMinutes) > 60 : false;
+    }
+
+    TimeSpan? a = new TimeSpan();
+    var start_to_needle = "";
+    if (needle.HasValue && start_time.HasValue)
+    {
+        a = needle.Value > start_time.Value ? needle.Value - start_time.Value : a;
+        start_to_needle = a.FormatTimeSpan();
+    }
+    bool isStartToNeedleTime = false;
+    if (start_time.HasValue && needle.HasValue)
+    {
+        isStartToNeedleTime = needle > start_time ? System.Math.Abs((start_time.Value.Subtract(needle.Value)).TotalMinutes) > 40 : false;
+    }
+
+    TimeSpan? b = new TimeSpan();
+    var loginAttempt = "";
+    if (needle.HasValue && login_time.HasValue)
+    {
+        b = needle.Value > login_time.Value ? needle.Value - login_time.Value : b;
+        loginAttempt = b.FormatTimeSpan();
+    }
+    bool isTimeFirstToNeedleTime = false;
+    if (login_time.HasValue && needle.HasValue)
+    {
+        isTimeFirstToNeedleTime = needle > login_time ? System.Math.Abs((login_time.Value.Subtract(needle.Value)).TotalMinutes) > 30 : false;
+    }
+
+    TimeSpan? c = new TimeSpan();
+    var tpaOrder = "";
+    if (needle.HasValue && tpaverbaltime.HasValue)
+    {
+        c = needle.Value > tpaverbaltime.Value ? needle.Value - tpaverbaltime.Value : c;
+        tpaOrder = c.FormatTimeSpan();
+    }
+    bool isTPAToNeedleTime = false;
+    if (tpaverbaltime.HasValue && needle.HasValue)
+    {
+        isTPAToNeedleTime = needle > tpaverbaltime ? System.Math.Abs((tpaverbaltime.Value.Subtract(needle.Value)).TotalMinutes) > 15 : false;
+    }
+
+    TimeSpan? d = new TimeSpan();
+    var respondTime = "";
+    if (login_time.HasValue && start_time.HasValue)
+    {
+        d = login_time.Value > start_time.Value ? login_time.Value - start_time.Value : d;
+        respondTime = d.FormatTimeSpan();
+    }
+
+    TimeSpan? s_t_l = new TimeSpan();
+    var start_to_login = "";
+    if (start_time.HasValue && login_time.HasValue)
+    {
+        s_t_l = login_time.Value > start_time.Value ? login_time.Value - start_time.Value : s_t_l;
+        start_to_login = s_t_l.FormatTimeSpan();
+    }
+    bool isStartToLoginTime = false;
+    if (start_time.HasValue && login_time.HasValue)
+    {
+        isStartToLoginTime = login_time > start_time ? System.Math.Abs((start_time.Value.Subtract(login_time.Value)).TotalMinutes) > 12 : false;
+    }
+
+    TimeSpan? stm_t_l = new TimeSpan();
+    var stamp_to_login = "";
+    if (stamp_time.HasValue && login_time.HasValue)
+    {
+        stm_t_l = login_time.Value > stamp_time.Value ? login_time.Value - stamp_time.Value : stm_t_l;
+        stamp_to_login = stm_t_l.FormatTimeSpan();
+    }
+    bool isstampToLoginTime = false;
+    if (stamp_time.HasValue && login_time.HasValue)
+    {
+        isstampToLoginTime = login_time > stamp_time ? System.Math.Abs((stamp_time.Value.Subtract(login_time.Value)).TotalMinutes) > 10 : false;
+    }
+
+    double starttoarival = 0;
+
+    TimeSpan? A_T_S = new TimeSpan();
+    var arival_to_starttime = "";
+    if (door_time.HasValue && start_time.HasValue)
+    {
+        A_T_S = start_time.Value > door_time.Value ? start_time.Value - door_time.Value : A_T_S;
+        arival_to_starttime = A_T_S.FormatTimeSpan();
+    }
+    //Added By Axim
+    //var needletime = Model.cas_metric_needle_time ?? null;
+    TimeSpan? CPOEtime = new TimeSpan();
+    var CPOEordertoNeedleTime = "";
+    if (tpa.HasValue && needle.HasValue)
+    {
+        CPOEtime = needle.Value > tpa.Value ? needle.Value - tpa.Value : CPOEtime;
+        CPOEordertoNeedleTime = CPOEtime.FormatTimeSpan();
+    }
+    //Ended By Axim
+
+    bool isarivalTostartTime = false;
+    string isarival = "false";
+    if (door_time.HasValue && start_time.HasValue)
+    {
+        isarivalTostartTime = start_time > door_time ? System.Math.Abs((door_time.Value.Subtract(start_time.Value)).TotalMinutes) > 10 : false;
+        starttoarival = start_time.Value.Subtract(door_time.Value).TotalMinutes;
+    }
+    if (isarivalTostartTime)
+    {
+        isarival = "true";
+    }
+    ViewBag.arivalTime = isarivalTostartTime;
+
+    TimeSpan? FTLA_T_VST = new TimeSpan();
+    var firstTimeLoginAttemtToVideoStartTime = "";
+    if (login_time.HasValue && videostartTime.HasValue)
+    {
+        FTLA_T_VST = videostartTime.Value > login_time.Value ? videostartTime.Value - login_time.Value : FTLA_T_VST;
+        firstTimeLoginAttemtToVideoStartTime = FTLA_T_VST.FormatTimeSpan();
+    }
+    bool isfirstTimeLoginAttemtToVideostartTime = false;
+    string isvideostart = "false";
+    if (login_time.HasValue && videostartTime.HasValue)
+    {
+        isfirstTimeLoginAttemtToVideostartTime = videostartTime > login_time ? System.Math.Abs((login_time.Value.Subtract(videostartTime.Value)).TotalSeconds) > 59 : false;
+    }
+    if (isfirstTimeLoginAttemtToVideostartTime)
+    {
+        isvideostart = "true";
+    }
+    ViewBag.videoStartTime = isfirstTimeLoginAttemtToVideostartTime;
+    TimeSpan? VST_T_VET = new TimeSpan();
+    var VideoStartTime_VideoEndTime = "";
+    if (videostartTime.HasValue && videoEndtTime.HasValue)
+    {
+        VST_T_VET = videoEndtTime.Value > videostartTime.Value ? videoEndtTime.Value - videostartTime.Value : VST_T_VET;
+        VideoStartTime_VideoEndTime = VST_T_VET.FormatTimeSpan();
+    }
+
+    TimeSpan? FTLA_T_NSAT = new TimeSpan();
+    var firstTimeLoginAttemtToNIHSSassTime = "";
+    if (login_time.HasValue && nihssstarttime.HasValue)
+    {
+        FTLA_T_NSAT = nihssstarttime.Value > login_time.Value ? nihssstarttime.Value - login_time.Value : FTLA_T_NSAT;
+        firstTimeLoginAttemtToNIHSSassTime = FTLA_T_NSAT.FormatTimeSpan();
+    }
+    bool isfirstTimeLoginToNIHSSassTime = false;
+    string isnihss = "false";
+    if (login_time.HasValue && nihssstarttime.HasValue)
+    {
+        isfirstTimeLoginToNIHSSassTime = nihssstarttime > login_time ? System.Math.Abs((login_time.Value.Subtract(nihssstarttime.Value)).TotalMinutes) > 10 : false;
+    }
+    if (isfirstTimeLoginToNIHSSassTime)
+    {
+        isnihss = "true";
+    }
+    ViewBag.NIHS = isfirstTimeLoginToNIHSSassTime;
+
+    TimeSpan? A_T_N = new TimeSpan();
+    var arival_to_needletime = "";
+    var symptom_to_needletime = "";
+    bool isNeedleTime = false;
+    bool issymptomtime = false;
+    string isneedle = "false";
+    string arivaltoneedlelabel = "";
+    if (typename.Value == "Inpatient")
+    {
+        arivaltoneedlelabel = "LKW to Needle Time: (< 30 minutes)";
+        if (lastknownwel_time.HasValue && needle.HasValue)
+        {
+
+            A_T_N = needle.Value > lastknownwel_time.Value ? needle.Value - lastknownwel_time.Value : A_T_N;
+            arival_to_needletime = A_T_N.FormatTimeSpan();
+        }
+        if (lastknownwel_time.HasValue && needle.HasValue)
+        {
+            isNeedleTime = needle > lastknownwel_time ? System.Math.Abs((lastknownwel_time.Value.Subtract(needle.Value)).TotalMinutes) > 30 : false;
+        }
+    }
+    else
+    {
+        if (symptomtime.HasValue && needle.HasValue)
+        {
+            A_T_N = needle.Value > symptomtime.Value ? needle.Value - symptomtime.Value : A_T_N;
+            symptom_to_needletime = A_T_N.FormatTimeSpan();
+        }
+        if (symptomtime.HasValue && needle.HasValue)
+        {
+            issymptomtime = needle > symptomtime ? System.Math.Abs((symptomtime.Value.Subtract(needle.Value)).TotalMinutes) > 30 : false;
+        }
+        var doortime = Model.cas_metric_door_time_est ?? null;
+        arivaltoneedlelabel = "Arrival to Needle Time: (< 30 minutes)";
+        if (doortime.HasValue && needle.HasValue)
+        {
+            A_T_N = needle.Value > doortime.Value ? needle.Value - doortime.Value : A_T_N;
+            arival_to_needletime = A_T_N.FormatTimeSpan();
+        }
+        if (doortime.HasValue && needle.HasValue)
+        {
+            isNeedleTime = needle > doortime ? System.Math.Abs((doortime.Value.Subtract(needle.Value)).TotalMinutes) > 30 : false;
+        }
+
+    }
+    double arivaltovideoendtime = 0;
+    if (videoEndtTime.HasValue && door_time.HasValue)
+    {
+        arivaltovideoendtime = videoEndtTime.Value.Subtract(door_time.Value).TotalMinutes;
+    }
+    if (isNeedleTime)
+    {
+        isneedle = "true";
+    }
+    ViewBag.needleTime = isNeedleTime;
+    var dictCaseTypes = new Dictionary<int, string>();
+    if (ViewBag.CaseTypes != null)
+    {
+        dictCaseTypes = ViewBag.CaseTypes;
+    }
+    double _stamptostart = 0;
+    TimeSpan? _Result = new TimeSpan();
+    var start_to_stamp = "";
+    if (start_time.HasValue && stamp_time.HasValue)
+    {
+        _Result = stamp_time.Value > start_time.Value ? stamp_time.Value - start_time.Value : _Result;
+        start_to_stamp = _Result.FormatTimeSpan();
+    }
+    bool isStartToStamp = false;
+    if (start_time.HasValue && stamp_time.HasValue)
+    {
+        isStartToStamp = stamp_time > start_time ? System.Math.Abs((start_time.Value.Subtract(stamp_time.Value)).TotalMinutes) > 1 : false;
+        _stamptostart = stamp_time.Value.Subtract(start_time.Value).TotalMinutes;
+    }
+    double _logintodoor = 0;
+    if (door_time.HasValue && login_time.HasValue)
+    {
+        _logintodoor = login_time.Value.Subtract(door_time.Value).TotalMinutes;
+    }
+    double _nihsstodoor = 0;
+    if (door_time.HasValue && nihssstarttime.HasValue)
+    {
+        _nihsstodoor = nihssstarttime.Value.Subtract(door_time.Value).TotalMinutes;
+    }
+    double _doortoneedle = 0;
+    if (door_time.HasValue && needle.HasValue)
+    {
+        _doortoneedle = needle.Value.Subtract(door_time.Value).TotalMinutes;
+    }
+    double _tpaverbaltodoor = 0;
+    if (tpaverbaltime.HasValue && door_time.HasValue)
+    {
+        _tpaverbaltodoor = tpaverbaltime.Value.Subtract(door_time.Value).TotalMinutes;
+    }
+    double needletodoor = 0;
+    if (needle.HasValue && door_time.HasValue)
+    {
+        needletodoor = needle.Value.Subtract(door_time.Value).TotalMinutes;
+    }
+
+}
+<div class="row case-review-tab">
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+        <div class="form-group row">
+            @Html.LabelFor(m => m.cas_response_date_consult, new { @class = "control-label col-sm-5" })
+            <div class="col-sm-7">
+                @Html.TextBoxFor(m => m.cas_response_date_consult, new { @class = "form-control datepicker readonly", @Value = Model.cas_billing_date_of_consult != null ? Model.cas_billing_date_of_consult?.ToString("MM/dd/yyyy") : DateTime.Now.ToEST().ToString("MM/dd/yyyy") })
+                @Html.ValidationMessageFor(model => model.cas_response_date_consult, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            @Html.LabelForWithSuffix(m => m.cas_response_phy_key, new { @class = "control-label col-md-2 col-lg-3 col-sm-3 col-xs-6 readonly" })
+            <div class="col-lg-2 col-md-3 col-sm-2 col-xs-6">
+                <a href='@Url.Action("_caseAssignmentHistory", new { id = Model.cas_key,@class="readonly" })'
+                   class="loadModelPopup pull-right control-label no-bold">History</a>
+            </div>
+            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-12">
+                <select id="cas_phy" name="" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.cas_phy_key : "")" disabled></select>
+            </div>
+        </div>
+        @if (Model.cas_metric_tpa_consult == true)
+        {
+            <div class="form-group row">
+                <label class="control-label col-sm-5">Start Time to Needle Time:(< 40 Minutes)</label>
+                <div class="col-sm-7">
+                    @{
+                        if (isStartToNeedleTime)
+                        {
+                            <input style="color:red;font-weight:bold" type="text" value="@start_to_needle" class="form-control" readonly>
+                        }
+                        else
+                        {
+                            <input type="text" value="@start_to_needle" class="form-control" readonly>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-sm-5">Time First Login Attempt to Needle Time:(< 30 Minutes)</label>
+                <div class="col-sm-7">
+                    @{
+                        if (isTimeFirstToNeedleTime)
+                        {
+                            <input style="color:red;font-weight:bold" type="text" value="@loginAttempt" class="form-control" readonly>
+                        }
+                        else
+                        {
+                            <input type="text" value="@loginAttempt" class="form-control" readonly>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-sm-5">Alteplase Early Mix Decision to Needle Time:(< 15 minutes)</label>
+                <div class="col-sm-7">
+                    @{
+                        if (isTPAToNeedleTime)
+                        {
+                            <input style="color:red;font-weight:bold" type="text" value="@tpaOrder" class="form-control" readonly>
+                        }
+                        else
+                        {
+                            <input type="text" value="@tpaOrder" class="form-control" readonly>
+                        }
+                    }
+                </div>
+            </div>
+        }
+        <div class="form-group row">
+            <label class="control-label col-sm-5">Start to Stamp Time: <span>(< 1 minute)</span></label>
+            <div class="col-sm-7">
+                @{
+                    if (isStartToStamp)
+                    {
+                        <input style="color:red;font-weight:bold" type="text" value="@start_to_stamp" class="form-control" readonly>
+                    }
+                    else
+                    {
+                        <input type="text" value="@start_to_stamp" class="form-control" readonly>
+                    }
+                }
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-5">Start to Login Time: (< 12 minutes)</label>
+            <div class="col-sm-7">
+                @{
+                    if (isStartToLoginTime)
+                    {
+                        <input style="color:red;font-weight:bold" type="text" value="@start_to_login" class="form-control" readonly>
+                    }
+                    else
+                    {
+                        <input type="text" value="@start_to_login" class="form-control" readonly>
+                    }
+                }
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-5">Stamp to Login Time: (< 10 minutes)</label>
+            <div class="col-sm-7">
+                @{
+                    if (isstampToLoginTime)
+                    {
+                        <input style="color:red;font-weight:bold" type="text" value="@stamp_to_login" class="form-control" readonly>
+                    }
+                    else
+                    {
+                        <input type="text" value="@stamp_to_login" class="form-control" readonly>
+                    }
+                }
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-5">TS Activation Time (Arrival to Start Time): (< 10 minutes)</label>
+            <div class="col-sm-7">
+                @{
+                    if (isarivalTostartTime)
+                    {
+                        <input style="color:red;font-weight:bold" type="text" value="@arival_to_starttime" class="form-control" readonly>
+                    }
+                    else
+                    {
+                        <input type="text" value="@arival_to_starttime" class="form-control" readonly>
+                    }
+                }
+            </div>
+        </div>
+
+        @* Added By Axim *@
+        <div class="form-group row">
+            <label class="control-label col-sm-5">CPOE Order to Needle Time:</label>
+            <div class="col-sm-7">
+                @{
+                    <input type="text" value="@CPOEordertoNeedleTime" class="form-control" readonly>
+                }
+            </div>
+        </div>
+        @* Ended By Axim *@
+
+        <div class="form-group row patient-type">
+            <label class="control-label col-xl-5 col-sm-5 col-lg-12 text-danger">Workflow Type:</label>
+            <div class="col-sm-7 col-xl-7 col-lg-12">
+                @*@Html.RadioButtonListFor(m => m.cas_patient_type, patientType, new { @disabled = "true" })*@
+                <strong>@typename.Value</strong>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-5">First Time Login Attempt to Video Start Time: (< 0 minutes)</label>
+            <div class="col-sm-7">
+                @{
+                    if (isfirstTimeLoginAttemtToVideostartTime)
+                    {
+                        <input style="color:red;font-weight:bold" type="text" value="@firstTimeLoginAttemtToVideoStartTime" class="form-control" readonly>
+                    }
+                    else
+                    {
+                        <input type="text" value="@firstTimeLoginAttemtToVideoStartTime" class="form-control" readonly>
+                    }
+                }
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-5">Video Start to Video End Time:</label>
+            <div class="col-sm-7">
+                <input type="text" value="@VideoStartTime_VideoEndTime" class="form-control" readonly>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-5">Time First Login Attempt to NIHSS Start Assessment Time: (< 10 minutes)</label>
+            <div class="col-sm-7">
+                @{
+                    if (isfirstTimeLoginToNIHSSassTime)
+                    {
+                        <input style="color:red;font-weight:bold" type="text" value="@firstTimeLoginAttemtToNIHSSassTime" class="form-control" readonly>
+                    }
+                    else
+                    {
+                        <input type="text" value="@firstTimeLoginAttemtToNIHSSassTime" class="form-control" readonly>
+                    }
+                }
+            </div>
+        </div>
+        @if (Model.cas_metric_tpa_consult == true)
+        {
+            <div class="form-group row">
+                <label class="control-label col-sm-5">@arivaltoneedlelabel</label>
+                <div class="col-sm-7">
+                    @{
+                        if (isNeedleTime)
+                        {
+                            <input style="color:red;font-weight:bold" type="text" value="@arival_to_needletime" class="form-control" readonly>
+                        }
+                        else
+                        {
+                            <input type="text" value="@arival_to_needletime" class="form-control" readonly>
+                        }
+                    }
+                </div>
+            </div>
+            if (Model.cas_metric_symptom_onset_during_ed_stay)
+            {
+                <div class="form-group row">
+                    <label class="control-label col-sm-5">Symptom to Needle Time: (< 30 minutes)</label>
+                    <div class="col-sm-7">
+                        @{
+                            if (issymptomtime)
+                            {
+                                <input style="color:red;font-weight:bold" type="text" value="@symptom_to_needletime" class="form-control" readonly>
+                            }
+                            else
+                            {
+                                <input type="text" value="@symptom_to_needletime" class="form-control" readonly>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        }
+        <div class="form-group row">
+            <label class="control-label col-sm-5">Reason for Alteplase/Activase Delay:</label>
+            <div class="col-sm-7">
+                <strong id="showtpadelayreasons"></strong>
+            </div>
+        </div>
+        <div class='form-group row tpa-consult-group @(isNeedleTimeTPA ? "text-danger" : "")'>
+            <label class="control-label col-sm-5">Alteplase/Activase Delay Notes: </label>
+            <div class="col-xl-7 col-sm-7 col-lg-12">
+                @Html.TextAreaFor(m => m.cas_billing_tpa_delay_notes, new { @class = "form-control readonly" })
+                <div id="cas_billing_tpa_delay_notes-error" class="error_msg" style="display:none;">
+                    <label for="cas_billing_tpa_delay_notes">This field is required</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+        <div class="form-group row">
+            <label class="control-label col-sm-4">Case Type:</label>
+            <div class="col-sm-8">
+                @if (dictCaseTypes.ContainsKey(Model.cas_ctp_key))
+                {
+                    <input type="text" class="form-control readonly" disabled="disabled" value="@dictCaseTypes[Model.cas_ctp_key]" />
+                }
+                else
+                {
+                    <input type="text" class="form-control readonly" disabled="disabled" value="" />
+                }
+            </div>
+        </div>
+        <div class="form-group row">
+            @Html.LabelForWithSuffix(m => m.cas_response_reviewer, new { @class = "control-label col-sm-4" })
+            <div class="col-sm-8">
+                <input type="hidden" name="cas_response_reviewer" value="" id="cas_response_reviewer">
+                <div id="divReviewers" class="case-multiselect">
+                    <select id="casereviewers" class="form-control active readonly" multiple="multiple">
+                        @if (listReviewers != null)
+                        {
+                            foreach (var item in listReviewers)
+                            {
+                                var selected = false;
+
+                                if (arr != null && arr.Contains(item.Id))
+                                {
+                                    selected = true;
+                                }
+                                <option value="@item.Id" selected="@selected">@item.FirstName  @item.LastName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-4 control-label">Medical Director:</label>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.cas_response_case_research, new { @class = "form-control readonly" })
+                @Html.ValidationMessageFor(model => model.cas_response_case_research, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row  @( User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) ? "d-none": "")">
+            <input type="hidden" name="cas_typeof_correspondence" id="cas_typeof_correspondence" class="cas_typeof_correspondence" value="" />
+            <div class="col-sm-12">
+                <table class="table table-bordered table-responsive table-wrapper-scroll-y my-custom-scrollbar">
+                    <thead>
+                        <tr>
+                            <th colspan="6">
+                                <button type="button" class="btn btn-sm btn-dark readonly" style="float:right;" id="addcontactinfo">Add Record</button>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="font-size:small">Date and Time of Contact</th>
+                            <th>Type of Correspondence</th>
+                            <th colspan="3">Comments</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactdatatable"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="form-group row  @( User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) ? "d-none": "")">
+            <label class="control-label col-sm-4">QPS Assessment:</label>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(model => model.cas_response_case_qps_assessment, new { @class = "form-control readonly" })
+                @Html.ValidationMessageFor(model => model.cas_response_case_qps_assessment, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row @( User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) ? "d-none": "")">
+            <label class="control-label col-sm-4">Facility Communication:</label>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(model => model.cas_review_facility_communication, new { @class = "form-control readonly" })
+                @Html.ValidationMessageFor(model => model.cas_review_facility_communication, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row @( User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) ? "d-none": "")">
+            <label class="control-label col-sm-4">Internal Notes:</label>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(model => model.cas_review_internal_notes, new { @class = "form-control readonly" })
+                @Html.ValidationMessageFor(model => model.cas_review_internal_notes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4">Facility Requested Review:</label>
+            <div class="col-sm-8">
+                @Html.RadioButtonListFor(m => m.cas_response_case_facility_request_reviewed, dicOptions, new { @class = "readonly" })
+                @Html.ValidationMessageFor(model => model.cas_response_case_facility_request_reviewed, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            @{
+                if (Model.cas_response_case_qps_reviewed == 1)
+                {
+                    <input type="hidden" id="cas_response_case_qps_reviewed" name="cas_response_case_qps_reviewed" value="1" />
+                }
+                else
+                {
+                    <input type="hidden" id="cas_response_case_qps_reviewed" name="cas_response_case_qps_reviewed" value="" />
+                }
+            }
+            <label class="control-label col-sm-4">QPS Review Completed:</label>
+            <div class="checkbox col-sm-2">
+                <input type="checkbox" id="response_case_qps_reviewed" data-IgnoreAutoSave="true" class="track_change readonly" value="1" @( Model.cas_response_case_qps_reviewed == 1 ? "checked='checked'" : "")>
+            </div>
+            @* Added by Axim *@
+            <div class="col-sm-6 col-xl-6 col-lg-6" id="QPSReviewCompleted" style="display:@QPStimeStampdisplay">
+                @if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()))
+                {
+                    <div class="timer-container">
+                        @Html.FormattedDateTextBoxFor(m => m.cas_review_qps_reviewed_completed, new { @class = "form-control timepicker" })
+                        <div class="est-container">
+                            <span>@timeZone</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="timer-container">
+                        @Html.FormattedDateTextBoxFor(m => m.cas_review_qps_reviewed_completed, new { @class = "form-control format-date", @readOnly = "readOnly" })
+                        <div class="est-container">
+                            <span>@timeZone</span>
+                        </div>
+                    </div>
+                }
+            </div>
+            @* Ended By Axim *@
+        </div>
+
+        <div class="form-group row">
+            @{
+                if (Model.cas_operations_review_completed == 1)
+                {
+                    <input type="hidden" id="cas_operations_review_completed" name="cas_operations_review_completed" value="1" />
+                }
+                else
+                {
+                    <input type="hidden" id="cas_operations_review_completed" name="cas_operations_review_completed" value="" />
+                }
+            }
+            <label class="control-label col-sm-4">Operations Review Completed:</label>
+            <div class="checkbox col-sm-8">
+                <input type="checkbox" id="operations_review_completed" data-IgnoreAutoSave="true" class="track_change readonly" value="1" @( Model.cas_operations_review_completed == 1 ? "checked='checked'" : "")>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4">Operations Review:</label>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(model => model.cas_operations_review, new { @class = "form-control readonly" })
+                @Html.ValidationMessageFor(model => model.cas_operations_review, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4">QPS Assigned:</label>
+            <div class="col-sm-8">
+                <input type="text" value="@(qpsname !=null ? qpsname : "")" class="form-control" readonly />
+                <input type="hidden" id="cas_qps_assigned" name="cas_qps_assigned" value="@(qpsnumber !=null ? qpsnumber : "")" class="form-control" readonly />
+                @*@Html.DropDownListFor(m => m.cas_qps_assigned, qpslist, "Select QPS Assigned", new { @class = "form-control readonly" })*@
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-12">
+                @{
+                    var checkWorkIds = Model.cas_work_flow_ids;
+
+                    if (isStartToNeedleTime || isTimeFirstToNeedleTime || isTPAToNeedleTime || isStartToStamp || isStartToLoginTime || isstampToLoginTime || isarivalTostartTime || isfirstTimeLoginAttemtToVideostartTime || isfirstTimeLoginToNIHSSassTime || isNeedleTime)
+                    {
+                        ViewBag.isFoundIds = checkWorkIds;
+                    }
+                    else
+                    {
+
+                    }
+                }
+
+            </div>
+        </div>
+
+        @{
+            if (Model.cas_patient_type == 3)
+            {
+                <div class="form-group row rca">
+                    @Html.Partial("_triage")
+                </div>
+            }
+            else if (Model.cas_patient_type == 1)
+            {
+                <div class="form-group row rca">
+                    @Html.Partial("_ems")
+                </div>
+            }
+            else if (Model.cas_patient_type == 2)
+            {
+                <div class="form-group row rca">
+                    @Html.Partial("_inpatient")
+                </div>
+            }
+        }
+    </div>
+
+    <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="countermeasuretable table-wrapper-scroll-y my-custom-scrollbar" id="dynamictable">
+
+        </div>
+    </div>
+    <div class="col-sm-12 col-xs-12 col-md-12 col-lg-12 col-xl-12">
+
+        @{
+            string text = "Alteplase/Activase Administration Timeline";
+            string greens = "#19e366";
+            string yellows = "#e1ed00";
+            string reds = "#ed0000";
+            string workflowtype = typename.Value;
+            bool tPACandidate = Model.cas_metric_tpa_consult;
+            var _startime = Convert.ToDateTime(Model.cas_response_ts_notification).FormatTime();
+            var _logntime = Convert.ToDateTime(Model.cas_response_first_atempt).FormatTime();
+            var _nihsstime = Convert.ToDateTime(Model.cas_metric_assesment_time_est).FormatTime();
+            var _tpaverbalordertime = Convert.ToDateTime(Model.cas_metric_tpa_verbal_order_time_est).FormatTime();
+            var _needletime = Convert.ToDateTime(Model.cas_metric_needle_time_est).FormatTime();
+        }
+
+        @if (tPACandidate == true)
+        {
+
+            if (workflowtype == "EMS" || workflowtype == "Triage/Walk-In")
+            {
+                #region ems or triage diagram
+                string dtnorstn = "";
+                var _arivaltime = "";
+                if (Model.cas_metric_symptom_onset_during_ed_stay)
+                {
+                    _arivaltime = Convert.ToDateTime(Model.cas_metric_symptom_onset_during_ed_stay_time_est).FormatTime();
+                    dtnorstn = "STN";
+                }
+                else
+                {
+                    _arivaltime = Convert.ToDateTime(Model.cas_metric_door_time_est).FormatTime();
+                    dtnorstn = "DTN";
+                }
+
+                int _starttoarival = Convert.ToInt32(starttoarival);
+                int logintodoor = Convert.ToInt32(_logintodoor);
+                int nihsstodoor = Convert.ToInt32(_nihsstodoor);
+                int tpaverbaltodoor = Convert.ToInt32(_tpaverbaltodoor);
+                int _needletodoor = Convert.ToInt32(needletodoor);
+                int _doortonedle = Convert.ToInt32(_doortoneedle);
+                int _arivaltovideoendtime = Convert.ToInt32(arivaltovideoendtime);
+                #endregion
+
+                <div class="container" id="timelinecapture">
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:center;margin-top:1%;">
+                            <strong style="background-color:#607d8b38">@text</strong>
+                        </div>
+                    </div>
+                    <div class="graph">
+                        <!--Section to draw the empty arrow-->
+                        <div class="arrow-body"></div>
+                        <div class="arrow-right"></div>
+                        <!--Arrow Section end here-->
+                        <!--Section to add the items in arrow-->
+                        <div class="graph-items-block">
+                            <!--Section that will contain the circles inside the arrow body-->
+                            <div class="graph-items__circle_container">
+                                <!--Circles Repeater here-->
+
+
+                                <div class="graph-items__rectangle_item text-center" style="background:@greens;"><span style="line-height:50px;">Stroke Alert Start</span></div>
+                                <div class="graph-items__circle_item" style="background:@greens;">
+                                    <ul><li style="line-height:100px;">0</li></ul>
+                                    <!--Square outside arrow above/belore circle connecting to circle line-->
+                                    @if (Model.cas_metric_symptom_onset_during_ed_stay)
+                                    {
+                                        <div class="graph-items__circle_item-square text-center">@_arivaltime Symptom During ED-Stay</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="graph-items__circle_item-square text-center">@_arivaltime Arrived via @workflowtype</div>
+                                    }
+
+                                </div>
+                                @if (_starttoarival <= 30 && _starttoarival >= 0)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@_starttoarival</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_startime Start-Time</div>
+                                    </div>
+                                }
+                                else if (_starttoarival < 0)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@_starttoarival</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_startime PTA</div>
+                                    </div>
+                                }
+                                else if (_starttoarival > 30 && _starttoarival <= 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@yellows">
+                                        <ul><li style="line-height:100px;">@_starttoarival</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_startime Start-Time</div>
+                                    </div>
+                                }
+                                else if (_starttoarival > 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@reds">
+                                        <ul><li style="line-height:100px;">@_starttoarival</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_startime Start-Time</div>
+                                    </div>
+                                }
+                                @if (logintodoor <= 30)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@logintodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_logntime Login-Time</div>
+                                    </div>
+                                }
+                                else if (logintodoor > 30 && logintodoor <= 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@yellows">
+                                        <ul><li style="line-height:100px;">@logintodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_logntime Login-Time</div>
+                                    </div>
+                                }
+                                else if (logintodoor > 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@reds">
+                                        <ul><li style="line-height:100px;">@logintodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_logntime Login-Time</div>
+                                    </div>
+                                }
+                                @if (nihsstodoor <= 30)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@nihsstodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_nihsstime NIHSS-Time</div>
+                                    </div>
+                                }
+                                else if (nihsstodoor > 30 && nihsstodoor <= 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@yellows">
+                                        <ul><li style="line-height:100px;">@nihsstodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_nihsstime NIHSS-Time</div>
+                                    </div>
+                                }
+                                else if (nihsstodoor > 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@reds">
+                                        <ul><li style="line-height:100px;">@nihsstodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_nihsstime NIHSS-Time</div>
+                                    </div>
+                                }
+                                @if (tpaverbaltodoor <= 30)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@tpaverbaltodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_tpaverbalordertime Alteplase/Activase verbal-order-Time</div>
+                                    </div>
+                                }
+                                else if (tpaverbaltodoor > 30 && tpaverbaltodoor <= 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@yellows">
+                                        <ul><li style="line-height:100px;">@tpaverbaltodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_tpaverbalordertime Alteplase/Activase verbal-order-Time</div>
+                                    </div>
+                                }
+                                else if (tpaverbaltodoor > 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@reds">
+                                        <ul><li style="line-height:100px;">@tpaverbaltodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_tpaverbalordertime Alteplase/Activase verbal-order-Time</div>
+                                    </div>
+                                }
+                                @if (_needletodoor <= 30)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@_needletodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_needletime Needle-Time</div>
+                                    </div>
+                                }
+                                else if (_needletodoor > 30 && _needletodoor <= 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@yellows">
+                                        <ul><li style="line-height:100px;">@_needletodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_needletime Needle-Time</div>
+                                    </div>
+                                }
+                                else if (_needletodoor > 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@reds">
+                                        <ul><li style="line-height:100px;">@_needletodoor</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_needletime Needle-Time</div>
+                                    </div>
+                                }
+                                @if (_doortonedle <= 30)
+                                {
+                                    <div class="graph-items__circle_item text-center" id="restart" style="background:@greens; border-radius:0;line-height:100px;">
+                                        @dtnorstn:@_doortonedle
+                                    </div>
+                                }
+                                else if (_doortonedle > 30 && _doortonedle <= 45)
+                                {
+
+                                    <div class="graph-items__circle_item text-center" id="restart" style="background:@yellows; border-radius:0;line-height:100px;">
+                                        @dtnorstn:@_doortonedle
+                                    </div>
+                                }
+                                else if (_doortonedle > 45)
+                                {
+                                    <div class="graph-items__circle_item text-center" id="restart" style="background:@reds; border-radius:0;line-height:100px;">
+                                        @dtnorstn:@_doortonedle
+                                    </div>
+                                }
+                                <!--Circle Repeater ends here-->
+                            </div>
+
+                            <!--Circle section ends here-->
+                        </div>
+                        <!--Items Section Ends here-->
+                    </div>
+                </div>
+            }
+            else if (workflowtype == "Inpatient")
+            {
+
+                #region Inpatient Diagram
+
+                var _lastknownwelltime = Convert.ToDateTime(Model.cas_metric_lastwell_date_est).FormatTime();
+                double _knownweltimetostarttime = 0;
+                if (lastknownwel_time.HasValue && start_time.HasValue)
+                {
+                    _knownweltimetostarttime = start_time.Value.Subtract(lastknownwel_time.Value).TotalMinutes;
+                }
+                int knownweltimetostarttime = Convert.ToInt32(_knownweltimetostarttime);
+                double _knownweltimetologintime = 0;
+                if (lastknownwel_time.HasValue && login_time.HasValue)
+                {
+                    _knownweltimetologintime = login_time.Value.Subtract(lastknownwel_time.Value).TotalMinutes;
+                }
+                int knownweltimetologintime = Convert.ToInt32(_knownweltimetologintime);
+                double _knownweltimetonihss = 0;
+                if (lastknownwel_time.HasValue && nihssstarttime.HasValue)
+                {
+                    _knownweltimetonihss = nihssstarttime.Value.Subtract(lastknownwel_time.Value).TotalMinutes;
+                }
+                int knownweltimetonihss = Convert.ToInt32(_knownweltimetonihss);
+                double _knownweltimetotpaverbal = 0;
+                if (tpaverbaltime.HasValue && lastknownwel_time.HasValue)
+                {
+                    _knownweltimetotpaverbal = tpaverbaltime.Value.Subtract(lastknownwel_time.Value).TotalMinutes;
+                }
+                int knownweltimetotpaverbal = Convert.ToInt32(_knownweltimetotpaverbal);
+                double _knownweltimetoneedle = 0;
+                if (needle.HasValue && lastknownwel_time.HasValue)
+                {
+                    _knownweltimetoneedle = needle.Value.Subtract(lastknownwel_time.Value).TotalMinutes;
+                }
+                int knownweltimetoneedle = Convert.ToInt32(_knownweltimetoneedle);
+                #endregion
+
+                <div class="container" id="timelinecapture">
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:center;margin-top:1%;">
+                            <strong style="background-color:#607d8b38">@text</strong>
+                        </div>
+                    </div>
+                    <div class="graph">
+                        <!--Section to draw the empty arrow-->
+                        <div class="arrow-body"></div>
+                        <div class="arrow-right"></div>
+                        <!--Arrow Section end here-->
+                        <!--Section to add the items in arrow-->
+                        <div class="graph-items-block">
+                            <!--Section that will contain the circles inside the arrow body-->
+                            <div class="graph-items__circle_container">
+                                <!--Circles Repeater here-->
+
+
+                                <div class="graph-items__rectangle_item text-center" style="background:@greens;"><span style="line-height:50px;">Stroke Alert Start</span></div>
+                                <div class="graph-items__circle_item" style="background:@greens;">
+                                    <ul><li style="line-height:100px;">0</li></ul>
+                                    <!--Square outside arrow above/belore circle connecting to circle line-->
+                                    <div class="graph-items__circle_item-square text-center">@_lastknownwelltime LKW-Time @workflowtype</div>
+                                </div>
+                                @if (knownweltimetostarttime < 0)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@knownweltimetostarttime</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_startime PTA</div>
+                                    </div>
+                                }
+                                else if (knownweltimetostarttime >= 0 && knownweltimetostarttime <= 30)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@knownweltimetostarttime</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_startime Start-Time</div>
+                                    </div>
+                                }
+                                else if (knownweltimetostarttime > 30 && knownweltimetostarttime <= 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@yellows">
+                                        <ul><li style="line-height:100px;">@knownweltimetostarttime</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_startime Start-Time</div>
+                                    </div>
+                                }
+                                else if (knownweltimetostarttime > 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@reds">
+                                        <ul><li style="line-height:100px;">@knownweltimetostarttime</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_startime Start-Time</div>
+                                    </div>
+                                }
+                                @if (knownweltimetologintime <= 30)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@knownweltimetologintime</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_logntime Login-Time</div>
+                                    </div>
+                                }
+                                else if (knownweltimetologintime > 30 && knownweltimetologintime <= 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@yellows">
+                                        <ul><li style="line-height:100px;">@knownweltimetologintime</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_logntime Login-Time</div>
+                                    </div>
+                                }
+                                else if (knownweltimetologintime > 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@reds">
+                                        <ul><li style="line-height:100px;">@knownweltimetologintime</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_logntime Login-Time</div>
+                                    </div>
+                                }
+                                @if (knownweltimetonihss <= 30)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@knownweltimetonihss</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_nihsstime NIHSS-Time</div>
+                                    </div>
+                                }
+                                else if (knownweltimetonihss > 30 && knownweltimetonihss <= 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@yellows">
+                                        <ul><li style="line-height:100px;">@knownweltimetonihss</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_nihsstime NIHSS-Time</div>
+                                    </div>
+                                }
+                                else if (knownweltimetonihss > 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@reds">
+                                        <ul><li style="line-height:100px;">@knownweltimetonihss</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_nihsstime NIHSS-Time</div>
+                                    </div>
+                                }
+                                @if (knownweltimetotpaverbal <= 30)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@knownweltimetotpaverbal</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_tpaverbalordertime Alteplase/Activase order-Time</div>
+                                    </div>
+                                }
+                                else if (knownweltimetotpaverbal > 30 && knownweltimetotpaverbal <= 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@yellows">
+                                        <ul><li style="line-height:100px;">@knownweltimetotpaverbal</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_tpaverbalordertime Alteplase/Activase order-Time</div>
+                                    </div>
+                                }
+                                else if (knownweltimetotpaverbal > 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@reds">
+                                        <ul><li style="line-height:100px;">@knownweltimetotpaverbal</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_tpaverbalordertime Alteplase/Activase order-Time</div>
+                                    </div>
+                                }
+                                @if (knownweltimetoneedle <= 30)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@greens">
+                                        <ul><li style="line-height:100px;">@knownweltimetoneedle</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_needletime Needle-Time</div>
+                                    </div>
+                                }
+                                else if (knownweltimetoneedle > 30 && knownweltimetoneedle <= 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@yellows">
+                                        <ul><li style="line-height:100px;">@knownweltimetoneedle</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_needletime Needle-Time</div>
+                                    </div>
+                                }
+                                else if (knownweltimetoneedle > 45)
+                                {
+                                    <div class="graph-items__circle_item" style="background:@reds">
+                                        <ul><li style="line-height:100px;">@knownweltimetoneedle</li></ul>
+                                        <!--Square outside arrow above/belore circle connecting to circle line-->
+                                        <div class="graph-items__circle_item-square text-center">@_needletime Needle-Time</div>
+                                    </div>
+                                }
+                                @if (knownweltimetoneedle <= 30)
+                                {
+                                    <div class="graph-items__circle_item text-center" id="restart" style="background:@greens; border-radius:0;line-height:100px;">
+                                        LTN:@knownweltimetoneedle
+                                    </div>
+                                }
+                                else if (knownweltimetoneedle > 30 && knownweltimetoneedle <= 45)
+                                {
+
+                                    <div class="graph-items__circle_item text-center" id="restart" style="background:@yellows; border-radius:0;line-height:100px;">
+                                        LTN:@knownweltimetoneedle
+                                    </div>
+                                }
+                                else if (knownweltimetoneedle > 45)
+                                {
+                                    <div class="graph-items__circle_item text-center" id="restart" style="background:@reds; border-radius:0;line-height:100px;">
+                                        LTN:@knownweltimetoneedle
+                                    </div>
+                                }
+                                <!--Circle Repeater ends here-->
+                            </div>
+
+                            <!--Circle section ends here-->
+                        </div>
+                        <!--Items Section Ends here-->
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div id="timelinecapture" class="col-md-2"></div>
+        }
+    </div>
+</div>
+<link href="~/Content/case/arrowDiagram.css" rel="stylesheet" />
+
+<script>
+    $(document).ready(function () {
+        $("#ContactDetailGrid").kendoGrid({
+            sortable: false
+        });
+    });
+    $(document).ready(function () {
+         if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.MedicalStaff.ToDescription()))' == 'True') {
+             $('.readonly').prop('disabled', true);
+             $('.inpatient').find('input').prop('disabled',true)
+             $('.triage').find('input').prop('disabled',true)
+             $('.ems').find('input').prop('disabled',true)
+             $('.other').find('input[type=checkbox]').prop('disabled', true);
+
+            }
+
+        if ($("#cas_response_review_initiated").is(':checked')) {
+            $("#cas_response_case_number").attr("readonly", false);
+        }
+        $('#createForm').validate({
+            rules: {
+                cas_response_case_number: {
+                    required: function (element) {
+                        if ($("#cas_response_review_initiated").is(':checked')) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }
+            }
+        });
+        if (@isarival== true) {
+            $('.gotVal_rad').prop('checked', true);
+            $('.childarivaldelay').show(200);
+            $('.hideShowUl').show(200);
+        }
+        if (@isnihss== true) {
+            $('.timeFirst').prop('checked', true);
+            $('.childtimefirst').show(200);
+        }
+        if (@isvideostart==true)
+        {
+            $('.videostart').prop('checked', true);
+            $('.childVideoStrt').show(200);
+        }
+        if (@isneedle== true) {
+            $('.needleTime').prop('checked', true);
+            $('.childarrivalneedle').show(200);
+            if ($("#8").is(':checked')) {
+                $('.childmedicaldecisionmaking').show(200);
+            } else {
+                $('.childmedicaldecisionmaking').hide(200);
+            }
+            if ($("#10").is(':checked')) {
+                $('.childrelatedlab').show(200);
+            } else {
+                $('.childrelatedlab').hide(200);
+            }
+        }
+    });
+    $("#operations_review_completed").click(function () {
+        if ($(this).is(":checked")) {
+            $("#cas_operations_review_completed").val(1)
+        } else {
+            $("#cas_operations_review_completed").val("")
+        }
+    });
+    $("#response_case_qps_reviewed").click(function () {
+        var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm:ss");
+        if ($(this).is(":checked")) {
+            $("#cas_response_case_qps_reviewed").val(1)
+            $("#cas_review_qps_reviewed_completed").removeAttr('readonly');
+            $("#cas_review_qps_reviewed_completed").val(currentDateTime);
+            $("#QPSReviewCompleted").show();
+        } else {
+            $("#cas_response_case_qps_reviewed").val("")
+            $("#QPSReviewCompleted").hide();
+        }
+    });
+    $("#btnShow").click(function () {
+        if (@isarival== true) {
+            $('.gotVal_rad').prop('checked', true);
+            $('.childarivaldelay').show(200);
+            $('.hideShowUl').show(200);
+        }
+        if (@isnihss== true) {
+            $('.timeFirst').prop('checked', true);
+            $('.childtimefirst').show(200);
+        }
+        if (@isvideostart==true)
+        {
+            $('.videostart').prop('checked', true);
+            $('.childVideoStrt').show(200);
+        }
+        if (@isneedle== true) {
+            $('.needleTime').prop('checked', true);
+            $('.childarrivalneedle').show(200);
+        }
+
+    });
+    var trcount = 1;
+    $('#countermeasureEndChild').click(function () {
+        var Status = 0;
+        RootCauseTable(Status);
+    });
+    $(".endChild input[type='text']").focusout(function () {
+        var Status = 0;
+        RootCauseTable(Status);
+    });
+    function RootCauseTable(Status) {
+        var cas_key = $.trim($("#createForm").find("#cas_key").val()).toInt();
+        @*var cas_key = @Model.cas_key;*@
+        var ArrFinal = [];
+        if (Status == 0) {
+            var idsrootvalue = [];
+            $(".idsrootvalue").each(function () {
+                idsrootvalue.push($(this).val());
+            });
+            var rootcause = [];
+            $(".rootcause").each(function () {
+                rootcause.push($(this).val());
+            });
+            var proposedcounter = [];
+            $(".proposedcounter").each(function () {
+                proposedcounter.push($(this).val());
+            });
+            var responsibleparty = [];
+            $(".responsibleparty").each(function () {
+                responsibleparty.push($(this).val());
+            });
+            var proposedduedate = [];
+            var duedate = document.getElementsByName('propduedateval');
+            for (var i = 0; i < duedate.length; i++) {
+                proposedduedate.push(duedate[i].value);
+            }
+            var completeddate = [];
+            var compdate = document.getElementsByName('copddateval');
+            for (var i = 0; i < compdate.length; i++) {
+                completeddate.push(compdate[i].value);
+            }
+            var idrootcause = [];
+            $(".idrootcause").each(function () {
+                idrootcause.push($(this).val());
+            });
+            var ExistedRootValues = [];
+            for (var i = 0; i < idsrootvalue.length; i++) {
+                ExistedRootValues.push({ Id: idsrootvalue[i], RootCause: rootcause[i], ProposedCountermeasure: proposedcounter[i], ResponsibleParty: responsibleparty[i], ProposedDueDate: proposedduedate[i], CompletedDate: completeddate[i], RootId: idrootcause[i] });
+            }
+            var arrinputtext = [];
+            $(".endChild input[type='text']").each(function () {
+                if ($.trim($(this).val()) != "") {
+                    var id = $(this).data('inputid');
+                    if ($(this).val() == $(this).data('oldval')) {
+                        arrinputtext.push({ Id: '' + id + '', RootCause: $(this).data('oldval'), ProposedCountermeasure: '', ResponsibleParty: '', ProposedDueDate: '', CompletedDate:'', RootId: 'undefined' });
+                    } else {
+                        arrinputtext.push({ Id: '' + id + '', RootCause: $(this).val(), ProposedCountermeasure: '', ResponsibleParty: '', ProposedDueDate: '', CompletedDate: '', RootId: 'undefined' });
+                    }
+                }
+            });
+            var arrinputcheck = [];
+            $(".endChild input[type='checkbox']:checked").each(function () {
+                arrinputcheck.push({ Id: $(this).val(), RootCause: $(this).parent('label').text(), ProposedCountermeasure: '', ResponsibleParty: '', ProposedDueDate: '', CompletedDate: '', RootId: 'undefined' });
+            });
+            var Concatarr = arrinputtext.concat(arrinputcheck);
+            var ConcatarrLoop = arrinputtext.concat(arrinputcheck);
+            var existedcount = ExistedRootValues.length;
+            if (existedcount == 0) {
+                for (var i = 0; i < Concatarr.length; i++) {
+                    ArrFinal.push({ Id: Concatarr[i].Id, RootCause: Concatarr[i].RootCause, ProposedCountermeasure: '', ResponsibleParty: '', ProposedDueDate: '', CompletedDate: '', RootId: 'undefined' });
+                }
+            } else {
+                for (var i = 0; i < Concatarr.length; i++) {
+                        for (var z = 0; z < ExistedRootValues.length; z++) {
+                            if (parseInt(ExistedRootValues[z].Id) == parseInt(Concatarr[i].Id)) {
+                                var id = Concatarr[i].Id;
+                                var index = ConcatarrLoop.map(function (x) { return x.Id; }).indexOf(id);
+                                if (index > -1) {
+                                    ConcatarrLoop.splice(index, 1);
+                                }
+                                break;
+                            }
+
+                    }
+                }
+                ArrFinal = ExistedRootValues.concat(ConcatarrLoop);
+            }
+            DisplayTable(ArrFinal);
+             DisableCounterForPhyAndPatner();
+        }
+        else if (Status == 1) {
+            $.ajax({
+                cache: false,
+                async: true,
+                type: "POST",
+                url: '/Case/GetRootRecord?id=' + cas_key,
+                success: function (data) {
+                    $.each(data, function (key, value) {
+                        ArrFinal.push({ Id: value.rca_rootcause_id, RootCause: value.rca_root_cause, ProposedCountermeasure: value.rca_proposed_countermeasure, ResponsibleParty: value.rca_responsible_party, ProposedDueDate: value.rca_proposed_due_date, CompletedDate: value.rca_completed_date, RootId: value.rca_Id })
+                    });
+                    DisplayTable(ArrFinal);
+                    DisableCounterForPhyAndPatner();
+                },
+                error: function () {
+
+                }
+
+            });
+        }
+    }
+    function DisableCounterForPhyAndPatner() {
+         if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))' == 'True') {
+                 $('#dynamictable > table').find('.readonly').prop('disabled', true)
+            }
+    }
+    function DisplayTable(ArrFinal = []) {
+            var countcomp = 1;
+            var arrcountcomp = [];
+            var count2 = 1;
+            var arrcount2 = [];
+            var html = '';
+            html += '<table class="table table-bordered table-hover table-striped mb-0 myTable">';
+            html += '<thead>';
+            html += '<tr>';
+            html += '<th>Root Cause</th>';
+            html += '<th>Countermeasure(s)</th>';
+            html += '<th>Responsible Party</th>';
+            html += '<th>Proposed Due Date</th>';
+            html += '<th>Completed Date</th>';
+            html += '<th>Action</th>'
+            html += '</tr>';
+            html += '</thead>';
+            html += '<tbody>';
+            $.each(ArrFinal, function (key, value) {
+                html += '<tr>';
+                html += '<td><input type="hidden" value="' + value.Id + '" class="form-control idsrootvalue " name="idsrootvalue" /><textarea class="form-control rootcause readonly" name="rootcausevalue" maxlength="250" >' + value.RootCause + '</textarea></td>';
+                html += '<td><input type="text" value="' + value.ProposedCountermeasure + '" class="form-control proposedcounter readonly" name="propcountermsureval" /></td>';
+                html += '<td><input type="text" value="' + value.ResponsibleParty + '" class="form-control responsibleparty readonly" name="responsibleprtyval" /></td>';
+                if (value.ProposedDueDate == undefined) {
+                    html += '<td><input type="text" value="" class="form-control readonly" name="propduedateval" id="Datecker' + count2 + '" /></td>';
+                } else {
+                    html += '<td><input type="text" value="' + value.ProposedDueDate + '" class="form-control readonly" name="propduedateval" id="Datecker' + count2 + '" /></td>';
+                }
+                if (value.CompletedDate == undefined) {
+                    html += '<td><input type="text" value="" class="form-control readonly" name="copddateval" id="Datecomp' + countcomp + '" /></td>';
+                } else {
+                    html += '<td><input type="text" value="' + value.CompletedDate + '" class="form-control readonly" name="copddateval" id="Datecomp' + countcomp + '" /></td>';
+                }
+                html += '<td><input type="hidden" value="' + value.RootId + '" class="idrootcause " /><input type="button" class="btn btn-dark btn-sm readonly" id="' + trcount + 'whichtr" data-id="' + value.RootId + '" onclick="btnremove(' + value.RootId + ',' + trcount + ')" value="Remove" /></td>'
+                html += '</tr>';
+                arrcount2.push(count2);
+                arrcountcomp.push(countcomp);
+                count2++;
+                countcomp++;
+                trcount++;
+            });
+            html += ' </tbody>';
+            html += '</table>';
+            $(".countermeasuretable").empty();
+            $(".countermeasuretable").append(html);
+            $.each(arrcount2, function (key, value) {
+                $('#Datecker' + value + '').removeClass('datepicker').kendoDatePicker();
+            });
+            $.each(arrcountcomp, function (key, value) {
+            $('#Datecomp' + value + '').removeClass('datepicker').kendoDatePicker();
+            });
+            if (ArrFinal.length == 0) {
+                $(".countermeasuretable").empty();
+            }
+
+    }
+    function btnremove(id, tr) {
+        var rowCount = $('.myTable tr').length;
+        var whichtr = $('#' + tr + 'whichtr').closest("tr");
+        if (id == undefined) {
+            deletetablerow(id, whichtr, rowCount)
+        } else {
+            deletetablerow(id, whichtr, rowCount)
+        }
+
+    }
+    function deletetablerow(id, whichtr, rowCount) {
+        if (id == undefined) {
+            $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+                "<span>Are you sure you want to remove this row?</span>",
+                function (e) {
+                    whichtr.remove();
+                    if (rowCount == 2) {
+                        $(".countermeasuretable").empty();
+                    }
+                    $("#divModelPopUp").modal("hide");
+                });
+        } else {
+            var DeletetuneUrl = '/Case/DeleteRCARootCause?id=' + id;
+            $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+                "<span>Are you sure you want to remove this row?</span>",
+                function (e) {
+                    $.ajax({
+                        url: DeletetuneUrl,
+                        success: function (response) {
+                            if (response == "Success") {
+                                whichtr.remove();
+                                if (rowCount == 2) {
+                                    $(".countermeasuretable").empty();
+                                }
+                                $("#divModelPopUp").modal("hide");
+                            }
+                            else {
+                                $("#divModelPopUp").modal("hide");
+                            }
+                        }
+                    });
+                });
+        }
+    }
+
+    $("#addcontactinfo").click(function () {
+        var Status = 0;
+        ContactInfoTable(Status);
+    })
+    var rownum = 1;
+    function ContactInfoTable(Status) {
+        if (Status == 0) {
+            var row = parseInt($('#contactdatatable tr').length);
+            var html = '';
+            html += '<tr>';
+            html += '<td><input type="text" name="cas_datetime_of_contact" id="cas_datetime_of_contact" class="form-control readonly datetimepicker' + row + '" value="" /></td>';
+            html += '<td><select class="form-control readonly typeof_correspondence"><option value="">-- Select --</option><option value="email">Email</option><option value="phone">Phone</option><option value="text">Text</option><option value="other">Other</option></select></td>';
+            html += '<td colspan="3"><textarea name="cas_contact_comments" id="cas_contact_comments" class="form-control readonly" rows="3" cols="50"></textarea></td>';
+            html += '<td><input type="button" class="btn btn-sm btn-dark readonly" id="' + rownum + 'whichtr" onclick="remcontactinfo(' + rownum + ')" value="Remove" /></td>';
+            html += '</tr>';
+            rownum++;
+            $("#contactdatatable").append(html);
+            $(".datetimepicker" + row).kendoTimePicker({
+                open: function (e) {
+                    e.preventDefault();
+                    var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm");
+                    this.element.first().val(currentDateTime);
+                    var timePicker = this.element.first();
+                    ShowHideTimeZone(timePicker);
+                },
+                close: function (e) {
+                    e.preventDefault(); //prevent popup closing
+                }
+            });
+
+        } else {
+            var cas_datetime = "@Model.cas_datetime_of_contact".split('{/!/}');
+            var cas_correspondence = "@Model.cas_typeof_correspondence".split(',');
+            var cas_comments = "@Model.cas_contact_comments".split('{/!/}');
+            if (cas_datetime[0] != "")
+            {
+                for (var i = 0; i < cas_datetime.length; i++)
+                {
+                    var row = parseInt($('#contactdatatable tr').length);
+                    var email = '';
+                    var phone = '';
+                    var text = '';
+                    var other = '';
+                    if (cas_correspondence[i] === "email") {
+                        email = 'selected';
+                    } else if (cas_correspondence[i] === "phone") {
+                        phone = 'selected';
+                    } else if (cas_correspondence[i] === "text") {
+                        text = 'selected';
+                    } else if (cas_correspondence[i] === "other") {
+                        other = 'selected';
+                    }
+                    var html = '';
+                    html += '<tr>';
+                    html += '<td style="font-size:small;"><input type="text" name="cas_datetime_of_contact" id="cas_datetime_of_contact" class="form-control readonly datetimepicker' + row + '" value="' + cas_datetime[i] + '" /></td>';
+                    html += '<td><select class="form-control readonly typeof_correspondence"><option value="">-- Select --</option><option value="email" ' + email +'> Email</option > <option value="phone" ' + phone + '>Phone</option> <option value="text" ' + text + '>Text</option> <option value="other" ' + other + '>Other</option></select ></td > ';
+                    html += '<td colspan="3"><textarea name="cas_contact_comments" id="cas_contact_comments" class="readonly form-control" rows="3" cols="50">' + cas_comments[i]+'</textarea></td>';
+                    html += '<td><input type="button" class="readonly btn btn-sm btn-dark" id="' + rownum + 'whichtr" onclick="remcontactinfo(' + rownum + ')" value="Remove" /></td>';
+                    html += '</tr>';
+                    rownum++;
+                    $("#contactdatatable").append(html);
+                    $(".datetimepicker" + row).kendoTimePicker({
+                        open: function (e) {
+                            e.preventDefault();
+                            var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm");
+                            this.element.first().val(currentDateTime);
+                            var timePicker = this.element.first();
+                            ShowHideTimeZone(timePicker);
+                        },
+                        close: function (e) {
+                            e.preventDefault(); //prevent popup closing
+                        }
+                    });
+                }
+            }
+        }
+    }
+    function remcontactinfo(row) {
+        var whichtr = $('#' + row + 'whichtr').closest("tr");
+        whichtr.remove();
+    }
+    function savetypeofcorrespondense() {
+        var value = "";
+        $(".typeof_correspondence").each(function () {
+            value += $(this).val() + ",";
+        });
+        $(".cas_typeof_correspondence").val(value);
+    }
+</script>
+
+

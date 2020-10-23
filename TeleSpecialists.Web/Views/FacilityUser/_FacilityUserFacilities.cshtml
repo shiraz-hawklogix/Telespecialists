@@ -1,0 +1,113 @@
+﻿<div class="row">
+    <div class="col-12">
+        <a class="btn btn-dark loadModelPopup" id="ealert-add-facility" 
+           href='@Url.Action("AddFacilities", "FacilityUser", new {UserFullName = ViewBag.UserFullName, userKey = ViewBag.UserKey})'>
+        Add Facility</a>
+    </div>
+</div>
+<div class="pt-1 customGridHeader">
+    <div id="facilitiesGrid" class="kendo-ui-grid-control">
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        getAssignedFacilities();
+    });
+
+    function getAssignedFacilities() {
+         var user_key = '@(ViewBag.UserKey)';
+         $("#facilitiesGrid").kendoGrid({
+            dataSource: {
+                page: KendoGet("Facility", "page"),
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetAllFacilitiesForNavigator", "FacilityUser")',
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        options = KendoKeepState("Facility", options, true);
+                        if (user_key !== "") {
+                            if (options.filter === undefined)
+                                options.filter = {};
+
+                            if (options.filter.filters === undefined)
+                                options.filter.filters = [];
+
+                            if (options.filter.logic === undefined)
+                                options.filter.logic = "and";
+
+                            options.filter.filters.push({ field: "efa_user_key", operator: "eq", "value": user_key });
+                        }
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                 },
+                pageSize: GetKendoPageSize("Facility", "RecPerPage", true),
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true
+            },
+            filterable: true,
+            sortable: true,
+            scrollable: true,
+            resizable: true,
+            pageable: {
+                refresh: true,
+                pageSizes: true,
+                buttonCount: 5
+            },
+            dataBound: function (e) {
+                SetKendoTotalCount("Facility", $('#facilitiesGrid').data("kendoGrid").dataSource.total());
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+            },
+             columns: [
+                { hidden: true, field: "efa_user_key" },
+                { hidden: true, field: "efa_fac_key" },
+                {
+                    field: "fac_name",
+                    title: "Name"
+                },
+                @*{
+                    title: "Actions", width: '150px',
+                    template: "<a class='btn btn-dark loadModelPopup' title='Edit' href='@(Url.Action("EditFacility", "FacilityUser"))?efa_key=#= efa_key#'>Edit</a> "                                
+                }*@
+                 {
+                     title: "Actions", width: '150px',
+                     template: "<a class='btn btn-dark' title='Edit' href='javascript:;'  onclick='removeAssociatedFacility(#= efa_key#)' title='Remove'>Remove</a> "
+                 }
+                
+            ]
+        });
+    }
+    function removeAssociatedFacility(id) {
+        $("#mainContentArea").find("#validationSummary").empty();
+
+        var url = "@Url.Action("RemvoeAssignedFacility", "FacilityUser")";
+            $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+                "<span>Are you sure you want to remove this facility from the list?</span>",
+            function () {
+                $.get(url, { id: id }, function (response) {
+                    $("#divModelPopUp").modal("hide");
+                    if (response.success) {
+                        getAssignedFacilities();                            
+                    }
+                    else {
+                        $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                    }
+                })
+            });
+     }
+</script>
+
+

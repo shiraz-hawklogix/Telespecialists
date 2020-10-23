@@ -1,0 +1,204 @@
+﻿@model TeleSpecialists.BLL.ViewModels.PhysicianCaseListing
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@{
+    /**/
+
+    if (Model != null)
+    {
+        if (Model.CTACases.Any())
+        {
+            <div class="tb-container">
+                <div>
+                    <h5 style="background-color: #d3d3d3;border-radius: 4px;font-weight: bold;padding: 10px;margin: 0px;">CTA/P to be Reviewed</h5>
+                    <div class="tb-wrapper" id="cta-P-cases-listing">
+                        <table class="table-striped" style="background-color: white;">
+                            <thead class="mt-2">
+                                <tr>
+                                    <th scope="col" class="text-dark bold list-item p-2" style="width:90%;font-size: 15px;">Facility</th>
+                                    <th scope="col" class="text-dark bold list-item p-2" style="width:8%;font-size: 15px;">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.CTACases)
+                                {
+                                    <tr>
+                                        <td class="text-dark list-item p-2" valign="top">
+
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    <span class="fa fa-times" style="cursor:pointer;" onclick="onRemoveFromCTA(@item.CaseKey)"></span>
+                                                </div>
+                                                <div class="col-10 p-0">
+                                                    <a href="@Url.Action("Edit", "Case", new { id = item.CaseKey })?showPopupOnLoad=true" class="text-dark loadLinkAsync">
+                                                        @item.FacilityName
+                                                    </a>
+                                                </div>
+                                            </div>
+
+
+                                        </td>
+                                        <td class="text-dark list-item p-2 " valign="top">@(Functions.GetSubtractedDateFormated(item.CaseStartTime, DateTime.Now.ToEST()))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <br />
+        }
+
+        if (Model.QueueCases.Any())
+        {
+            <div class="tb-container">
+                <div>
+                    <h5 style="background-color: #d3d3d3;border-radius: 4px;font-weight: bold;padding: 10px;margin: 0px;">Pending Cases</h5>
+                    <div class="tb-wrapper" id="queue-cases-listing">
+                        <table class="table-striped queue-listing" style="background-color: white;">
+                            <thead class="mt-2">
+                                <tr>
+                                    <th scope="col" class="text-dark bold list-item p-2" style="width:50%;font-size: 15px;">Facility</th>
+                                    <th scope="col" class="text-dark bold list-item p-2 nowrap" style="width:30%;font-size: 15px;">Patient Name</th>
+                                    <th scope="col" class="text-dark bold list-item p-2" style="width:20%;font-size: 15px;">Status</th>
+                                    <th scope="col" class="text-dark bold list-item p-2 " style="width:10%;font-size: 15px;">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.QueueCases)
+                                {
+                                    <tr>
+                                        <td class="text-dark list-item p-2" valign="top">
+                                            <a href="@Url.Action("Edit", "Case", new { id = item.CaseKey })?showPopupOnLoad=true" class="text-dark loadLinkAsync ">
+                                                @item.FacilityName
+                                            </a>
+                                        </td>
+                                        <td class="text-dark list-item p-2" valign="top">  @item.PatientName</td>
+                                        <td class="text-dark list-item p-2" valign="top">
+                                            @{
+                                                CaseStatus status = (CaseStatus)item.CaseStatus;
+                                            }
+                                            @status.ToDescription()
+                                        </td>
+                                        <td class="text-dark list-item p-2 " valign="top">@(Functions.GetSubtractedDateFormated(item.CaseStartTime, DateTime.Now.ToEST()))</td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <br />
+        }
+        if (Model.FacilityList.Any())
+        {
+            <div class="tb-container">
+                <div>
+                    <h5 style="background-color: #d3d3d3;border-radius: 4px;font-weight: bold;padding: 10px;margin: 0px;">Pending Onboarding</h5>
+                    <div class="tb-wrapper" id="cta-P-onboarding-listing">
+                        <table class="table-striped" style="background-color: white;">
+                            <thead class="mt-2">
+                                <tr>
+                                    <th scope="col" class="text-dark bold list-item p-2" style="width:90%;font-size: 15px;">Facility</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.FacilityList)
+                                {
+                                    <tr>
+                                        <td class="text-dark list-item p-2" valign="top" data-id="@item.FacilityId">
+                                            @{
+                                                var initial_date = Convert.ToDateTime(item.fap_Credentials_confirmed_date);
+                                                DateTime initial_date_7_days = initial_date.AddDays(7);
+                                                DateTime startDate = initial_date_7_days;
+                                                var stopDate = startDate.AddDays(7);
+                                                var extend_Date_14 = startDate.AddDays(14);
+                                                var current_date = DateTime.Now.ToEST();
+
+                                                for (var day = startDate.Date; day <= stopDate; day = day.AddDays(1))
+                                                {
+                                                    if (initial_date_7_days > current_date)
+                                                    {
+                                                        <a style="color:black!important" href="javascript:; " class="text-dark loadLinkAsync" onclick="OnBoardingData('@item.fap_key','/Facility/Onboarded')"><b>@item.FacilityName</b></a>
+                                                        @*<a style="color:black!important" href="@Url.Action("Onboarded", "Facility", new { Id = item.fap_key })" class="text-dark loadLinkAsync">
+                                                                <b>@item.FacilityName</b>
+                                                            </a>*@
+                                                        break;
+                                                    }
+                                                    else if (stopDate > current_date)
+                                                    {
+                                                        <a style="color:#E8AC41!important" href="javascript:; " class="text-dark loadLinkAsync" onclick="OnBoardingData('@item.fap_key','/Facility/Onboarded')"><b>@item.FacilityName</b></a>
+                                                        @*<a style="color:#E8AC41!important" href="@Url.Action("Onboarded", "Facility", new { Id = item.fap_key })" class="text-dark loadLinkAsync">
+                                                                <b>@item.FacilityName</b>
+                                                            </a>*@
+                                                        break;
+                                                    }
+
+                                                    else
+                                                    {
+                                                        <a style="color:red!important" href="javascript:; " class="text-dark loadLinkAsync" onclick="OnBoardingData('@item.fap_key','/Facility/Onboarded')"><b>@item.FacilityName</b></a>
+                                                        @*<a style="color:red!important" href="@Url.Action("Onboarded", "Facility", new { Id = item.fap_key })" class="text-dark loadLinkAsync">
+                                                                <b>@item.FacilityName</b>
+                                                            </a>*@
+                                                        break;
+                                                    }
+
+
+                                                }
+                                            }
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+@*Changes for 532*@
+@if (Model.CTACases.Count() > 0)
+{
+    <script>
+    function onRemoveFromCTA(key) {
+        if (key != undefined) {
+            var caskey = key
+            var url = '@Url.Action("RemoveCaseFromCTAQueue", "Case")';
+
+            $.post(url, {
+                casKey: caskey
+            },
+                function (response) {
+                    var updated = response.updated;
+                    if (updated) {
+                        refreshCTACaseList();
+                        var ctaButtons = $(".ctabtn");
+                        var inctaTextBox = $("#cas_metric_in_cta_queue");
+                        if (inctaTextBox != undefined && inctaTextBox != null) {
+                            $(inctaTextBox).val(false);
+                        }
+
+                        if (ctaButtons.length > 0) {
+                            var casKeyOnForm = $.trim($("#createForm").find("#cas_key").val());
+                            if (casKeyOnForm != "") {
+
+                                if (key.toString() == casKeyOnForm) {
+                                    $(ctaButtons).prop("disabled", false);
+                                }
+                            }
+                        }
+
+                    }
+                }
+            );
+        }
+    }
+
+    </script>
+}
+
+

@@ -1,0 +1,232 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+
+@model TeleSpecialists.BLL.Model.@case
+
+@{
+    var userInitials = ViewBag.user_Initials as List<SelectListItem>;
+    var tPA_List = ViewBag.tPA_List as IEnumerable<SelectListItem>;
+    var userType = ViewBag.UserType as List<SelectListItem>;
+    var caseStatus = ViewBag.CaseStatus as List<SelectListItem>;
+    PageSource source = ViewBag.source;
+    if (source != PageSource.SignOutListing)
+    {
+        if (!ViewBag.showFollowUp)
+        {
+            var dashboardCaseTypes = new List<int> { (int)CaseType.StrokeAlert, (int)CaseType.StatEEG, (int)CaseType.StatConsult };
+            userType = userType.Where(x => dashboardCaseTypes.Contains(int.Parse(x.Value))).ToList();
+        }
+    }
+
+
+    var comparsionOprList = Enum.GetValues(typeof(ComparisonOperator)).Cast<ComparisonOperator>()
+                         .Select(m => new SelectListItem
+                         {
+                             Text = m.ToDescription(),
+                             Value = m.ToString()
+                         });
+}
+
+
+
+<div class="modal" id="caseAdvanceSearch" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <form id="frmAdvanceSearch" method="post">
+
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Advanced Search</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="form-horizontal">
+
+                        <div id="validationSummary">
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-10 offset-sm-1">
+
+                                @if (source != PageSource.SignOutListing)
+                                {
+                                    <div class="form-group row">
+                                        @Html.Label("Case Number:", htmlAttributes: new { @class = "control-label col-3" })
+                                        <div class="col-9">
+                                            @Html.TextBoxFor(model => model.cas_case_number, new { @class = "form-control type_integer", @data_operator = "and" })
+                                        </div>
+                                    </div>
+                                }
+                                <div class="form-group row">
+                                    @Html.Label("Case Types:", htmlAttributes: new { @class = "control-label col-3" })
+                                    <div class="col-9" id="divuserTypeFilter">
+                                        <select id="userTypeFilter" class="form-control active" multiple="multiple">
+                                            @foreach (var item in userType)
+                                            {
+                                                <option value="@item.Value">@item.Text</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    @Html.Label("Patient Name:", htmlAttributes: new { @class = "control-label col-3" })
+                                    <div class="col-9">
+                                        @Html.TextBoxFor(model => model.cas_patient, new { @class = "form-control", @data_operator = "or" })
+                                    </div>
+                                </div>
+                                @if (source == PageSource.SignOutListing)
+                                {
+                                    <div class="form-group row">
+                                        @Html.Label("Date of Consult:", htmlAttributes: new { @class = "control-label col-3" })
+                                        <div class="col-9">
+                                            @Html.TextBoxFor(model => model.cas_billing_date_of_consult, new { @class = "form-control datepicker", @data_operator = "or" })
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="form-group row">
+                                        @Html.Label("Date:", htmlAttributes: new { @class = "control-label col-3" })
+                                        <div class="col-9">
+                                            @Html.TextBoxFor(model => model.cas_created_date, new { @class = "form-control datepicker", @data_operator = "or" })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        @Html.Label("Facility:", htmlAttributes: new { @class = "control-label col-3", @data_operator = "or" })
+                                        <div class="col-9">
+                                            @Html.DropDownListFor(model => model.cas_fac_key, null, "", new { @class = "dropDownList form-control" })
+                                        </div>
+                                    </div>
+                                }
+
+
+                                @if (ViewBag.showFollowUp)
+                                {
+                                    <div class="form-group row">
+                                        @Html.Label("Follow-Up:", htmlAttributes: new { @class = "control-label col-3", @data_operator = "or" })
+                                        <div class="col-9">
+                                            <select id="cas_billing_visit_type_form" data-role="dropdownlist" class="form-control staticDropDown">
+                                                <option value="">All</option>
+                                                <option value="@FollowUpTypes.SignOff.ToDescription()" @(Model?.cas_billing_visit_type == FollowUpTypes.SignOff.ToDescription() ? "selected" : "")> @FollowUpTypes.SignOff.ToDescription() </option>
+                                                <option value="@FollowUpTypes.FollowUp.ToDescription()" @(Model?.cas_billing_visit_type == FollowUpTypes.FollowUp.ToDescription() ? "selected" : "")> @FollowUpTypes.FollowUp.ToDescription()</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (source != PageSource.SignOutListing)
+                                {
+                                    <div class="form-group row">
+                                        @Html.Label("Physician:", htmlAttributes: new { @class = "control-label col-3" })
+                                        <div class="col-9" id="divuserInitialFilter">
+                                            <select id="userInitialFilter" class="form-control active" multiple="multiple">
+                                                @foreach (var item in userInitials)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        @Html.Label("eAlert:", htmlAttributes: new { @class = "control-label col-3" })
+                                        <div class="col-9" id="diveAlertFilter">
+                                            <select id="eAlertFilter" class="form-control active" multiple="multiple">
+                                                <option value="true">Yes</option>
+                                                <option value="false">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (source == PageSource.CaseListing)
+                                {
+                                    <div class="form-group row">
+                                        @Html.Label("tPA:", htmlAttributes: new { @class = "control-label col-3" })
+                                        <div class="col-9" id="divTpaFilter">
+                                            <select id="TpaFilter" class="form-control active" multiple="multiple">
+                                                @foreach (var item in tPA_List)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (source == PageSource.Dashboard)
+                                {
+                                    <div class="form-group row">
+                                        @Html.Label("TS Response Time:", htmlAttributes: new { @class = "control-label col-3" })
+                                        <div class="col-3">
+                                            @Html.DropDownList("advcmp_ResponseTime_Cmp", comparsionOprList, "--Select--", new { @class = "form-control" })
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="timerMask form-control" data-format="HH:mm:ss" data-template="HH : mm : ss" data-parent="advcmp_ResponseTime_Cmp" />
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-group row">
+                                        @Html.Label("Start to Stamp:", htmlAttributes: new { @class = "control-label col-3" })
+                                        <div class="col-3">
+                                            @Html.DropDownList("advcmp_StartToStamp_Cmp", comparsionOprList, "--Select--", new { @class = "form-control" })
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="timerMask form-control" data-format="HH:mm:ss" data-template="HH : mm : ss" data-parent="advcmp_StartToStamp_Cmp" />
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-group row">
+                                        @Html.Label("Start to Accepted:", htmlAttributes: new { @class = "control-label col-3" })
+                                        <div class="col-3">
+                                            @Html.DropDownList("advcmp_StartToAccept_Cmp", comparsionOprList, "--Select--", new { @class = "form-control" })
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="text" class="timerMask form-control" data-format="HH:mm:ss" data-template="HH : mm : ss" data-parent="advcmp_StartToAccept_Cmp" />
+                                        </div>
+
+                                    </div>
+
+                                }
+
+                                @if (source == PageSource.SignOutListing)
+                                {
+                                    <div class="form-group row">
+                                        @Html.Label("Status:", htmlAttributes: new { @class = "control-label col-3" })
+                                        <div class="col-9" id="divCaseStatus">
+                                            <select id="caseStatusFilter" class="form-control active" multiple="multiple">
+                                                @foreach (var item in caseStatus)
+                                                {
+                                                    <option value="@item.Value">@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div> 
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <a class="btn btn-link" data-dismiss="modal">Close</a>
+                    <input type="submit" class="btn btn-dark" value="Search" />
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    initComboDate('.timerMask'); 
+</script>

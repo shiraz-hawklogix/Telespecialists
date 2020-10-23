@@ -1,0 +1,38 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@{
+    if (!User.Identity.IsAuthenticated)
+    {
+        Layout = "~/Views/Shared/_Layout_Anonymous.cshtml";
+    }
+}
+
+
+
+
+<div class="container-fluid">
+    <div class="row mt-5">
+        <div class="col-md-12 text-center">
+            <div class="panel panel-danger">
+                <div class="panel-body">
+                    <h3>@Html.Raw(ViewBag.Title)</h3>
+                    <div>
+                        <br />
+                        <br />
+                        <b>@Html.Raw(ViewBag.Message)</b>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <br />
+                <a href="@Url.Action("Login","Account")" class="btn btn-primary">Login</a>
+            }
+        </div>
+    </div>
+</div>
+<br />

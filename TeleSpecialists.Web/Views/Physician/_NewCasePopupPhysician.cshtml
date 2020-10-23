@@ -1,0 +1,49 @@
+﻿
+
+@model TeleSpecialists.BLL.Model.@case
+
+<div class="modal-dialog modal-lg blink_border" id="newcasePopupAlert">
+    <div class="modal-content">
+        <input type="hidden" name="cas_key" id="cas_key" value="@Model.cas_key" />
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">
+                @ViewBag.CaseType
+            </h4>          
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body" style="min-height:200px;">
+
+            <div>
+                @Model.facility.fac_name
+            </div>
+            <div>
+                @ViewBag.CaseType
+            </div>
+            <div>
+                Case #@Model.cas_case_number
+            </div>
+           
+
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer" style="justify-content:flex-start">
+            <div class="row" style="width:100%;">
+
+                <div class="col-8">
+                    Would you like to accept this case?
+                </div>
+                <div class="col-4 text-right">
+                    <a class="btn btn-link" data-dismiss="modal" id="btnRejectNewCasePopup">Reject</a>
+                    <input type="button" class="btn btn-dark" id="btnAcceptNewCasePopup" value="Accept" />
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+</div>

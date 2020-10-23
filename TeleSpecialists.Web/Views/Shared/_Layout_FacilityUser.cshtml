@@ -1,0 +1,198 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using Microsoft.AspNet.Identity;
+@using TeleSpecialists.BLL;
+
+@{
+    var loggedInUser = ViewBag.loggedInUser;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="~/telerCare.ico" />
+    <title>TeleSpecialists - @ViewBag.Title</title>
+    <!-- Enum Collections -->
+    <script type="text/javascript">
+        var caseTypeEnum = @Html.Raw(TeleSpecialists.BLL.Helpers.Functions.ConvertToJson(typeof(CaseType)));
+        var caseStatusEnum = @Html.Raw(TeleSpecialists.BLL.Helpers.Functions.ConvertToJson(typeof(CaseStatus)));
+
+        var enableJSLogging = @(Settings.EnableJavascriptConsoleLogging.ToString().ToLower());
+
+    </script>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/Content/kendo/css")
+
+    @Scripts.Render("~/bundles/jquery")
+
+    @if (Settings.RPCMode == RPCMode.SignalR)
+    {
+        <script src="~/signalr/hubs"></script>
+    }
+
+
+    @if (!Request.IsAjaxRequest())
+    {
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/kendo")
+    @Scripts.Render("~/bundles/five9")
+
+    <script src="~/Scripts/ckeditor/ckeditor.js"></script>
+
+</head>
+<body class="body_bg">
+
+    <input type="hidden" id="IsPhysician" value="@(User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())  ? 1 : 0)" />
+    <input type="hidden" value='@Html.Raw(Scripts.Render("~/bundles/jqueryval").ToHtmlString().Replace("\n",""))' id="hdnJQueryValidations" />
+    <input type="hidden" id="activetab" value="">
+    <input type="hidden" id="title-prefix" value="TeleSpecialist - ">
+    <input type="hidden" id="hiddenReportText" />
+    <input type="hidden" id="hdnUser" value="@(loggedInUser?.Id)" />
+
+    <nav class=" row navbar main-menu navbar-expand-lg navbar-light bg-light mr-1">
+        <div class="navbar-brand">
+            <a class="navbar-brand loadLinkAsync" href="@Url.Action("Index", "Home")">
+                <img class="img-responsive img-sm-resp teleCareLog" src="~/Content/images/logo-header.png" />
+            </a>
+        </div>
+        @*
+            For small devices / screens
+        *@
+        <div class="col small-devices-user-loginStats">
+            <div class="row">
+                <div class="col-12 align-self-center">
+                    <div class="welcome_text">Welcome </div>
+                    <div class="welcome_text">@(loggedInUser?.FirstName) @(loggedInUser?.LastName)</div>
+                    <div class="datetime">Date: <span class="SystemDate" id="SystemDate">@DateTime.Now.ToEST().ToString("MMM dd,yyyy")</span></div>
+                    <div class="datetime">Time: <span class="SystemTime" id="SystemTime">@DateTime.Now.ToEST().ToString("HH:mm:ss")</span> ET</div>
+                </div>
+            </div>
+        </div>
+        <div class="navbar-collapse collapse col-lg-6 ">
+        </div>
+        @*
+            For normal devices / screens
+        *@
+        <div class="col-4 text-right normal-device-user-loginStats">
+            <div class="row">
+                <div class="col-4 physicianCurrentStatus">
+                    @{Html.RenderAction("_CurrentStatus", "Physician"); }
+                </div>
+                <div class="col-8 align-self-center">
+                    <div class="welcome_text">Welcome</div>
+                    <div class="welcome_text">@(loggedInUser?.FirstName) @(loggedInUser?.LastName)</div>
+                    <div class="datetime">Date: <span class="SystemDate" id="SystemDate">@DateTime.Now.ToEST().ToString("MMM dd,yyyy")</span></div>
+                    <div class="datetime">Time: <span class="SystemTime" id="SystemTime">@DateTime.Now.ToEST().ToString("HH:mm:ss")</span> ET</div>
+                </div>
+            </div>
+        </div>
+
+    </nav>
+
+    <div class="navbar navbar-expand-sm header_bottom">
+        <div class="col-lg-8 col-md-5">
+            <div class="nav-item">
+                <!-- breadcrumb here-->
+            </div>
+        </div>
+        <div class="col-md-7 col-lg-4 text-right">
+            <div class="nav-item nav-item-login">
+                <span id="layout-status">
+                </span>
+                <a href="@Url.Action("ChangePassword", "Manage")" class="btn-sm font_11px loadLinkAsync"><span class="change_pp"></span>Change Password</a>
+                <a href="@Url.Action("Signout", "Account")" class="btn-sm font_11px" id="signout"><span class="signout"></span>Sign Out</a>
+            </div>
+        </div>
+    </div>
+    <div id="divModelPopUp" class="modal" data-backdrop="static" data-keyboard="false">
+
+    </div>
+
+    <div id="divModelLessPopup" data-reload="1" data-backdrop="false">
+
+    </div>
+
+    <div class="container-fluid h-100 mb-3" id="mainContentArea">
+        <div class="row mr-0">
+            @{
+                var colWidthClass = "col-sm-12";
+                var style = "";
+                if (loggedInUser != null)
+                {
+                    if (loggedInUser.EnableFive9)
+                    {
+                        colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12"; // "col-sm-9 col-lg-10 col-md-8";
+                        style = ""; // "padding-left:0px;margin-left:0";
+                        <div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 no-padding">
+                            @*col-sm-3 col-lg-2 col-md-4*@
+                            @{Html.RenderAction("_index", "Phonebar"); }
+                        </div>
+                    }
+                }
+
+                <div class="@colWidthClass" style="@style">
+                    <br />  @*class="d-none d-xl-block d-lg-block"*@
+                    <div id="validationSummary">
+                    </div>
+                    <input type="hidden" value="@Request.RawUrl" id="hdnCurrentUrl" />
+                    <input type="hidden" value="0" id="hdnDisableLoader" />
+                    <div id="divContentArea">
+                        @RenderBody()
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span class="text-muted">Copyright @DateTime.Now.Year TeleSpecialists, LLC. All rights reserved.</span>
+    </footer>
+
+    @RenderSection("scripts", required: false)
+
+    <script type="text/javascript">
+        showSystemTime();
+        $('.main-menu.navbar a').on('click', function () {
+            if ($('.navbar-toggler').css('display') != 'none') {
+                $('.navbar-toggler').trigger("click");
+            }
+        });
+        function showSystemTime() {
+            var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(TeleSpecialists.BLL.Settings.DefaultTimeZone));
+            $(".SystemTime").html(currentDateTime.format("HH:mm:ss"));
+            $(".SystemDate").html(currentDateTime.format("MMM DD,YYYY"));
+            if (showSystemTime.To != undefined)
+            window.clearTimeout(showSystemTime.To);
+            showSystemTime.To = window.setTimeout(showSystemTime, 1000);
+        }
+
+        function parseDateTime(pDateTime) {
+            var dateTime = moment(pDateTime).utcOffset(@Functions.GetTimeZoneOffset(TeleSpecialists.BLL.Settings.DefaultTimeZone));
+            return dateTime;
+        }
+
+        function formattedDateTime(pDateTime) {
+            var dateTime = kendo.toString(kendo.parseDate(pDateTime), "MM/dd/yyyy HH:mm:ss");
+            return dateTime;
+        }
+    </script>
+
+   
+
+        @if (Settings.RPCMode != RPCMode.Disabled)
+        {
+            @Scripts.Render("~/bundles/hubs")
+        }
+    
+
+    <div id="processing" class="loading" style="display:none"></div>
+</body>
+</html>
+

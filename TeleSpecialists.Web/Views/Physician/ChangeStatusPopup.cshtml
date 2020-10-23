@@ -1,0 +1,102 @@
+﻿@using TeleSpecialists.BLL.Model;
+@using Microsoft.AspNet.Identity;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model IEnumerable<physician_status>
+
+@{
+    ViewBag.Title = "Physician Status";
+    var physician = ViewBag.physician as AspNetUser;
+
+}
+
+
+
+<div class="modal-dialog modal-lg" id="changePhysicianStatus">
+
+    <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title"> Click to Change Status of Dr. @physician.LastName</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+
+            <div id="validationSummary">
+
+            </div>
+
+            @foreach (var item in Model)
+            {
+                <div class="m-4 d-inline-block">
+                    <button class="round-button status-button update-Status" data-status="@item.phs_key" style="background-color: @item.phs_color_code">@item.phs_name</button>
+                </div>
+            }
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal">Close</a>
+                <input type="submit" class="btn btn-dark" value="Save" id="btnChangeStatusSave" disabled="disabled" />
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+     var isPhysician = @User.IsInRole("Physician").ToString().ToLower();
+
+    $(".update-Status").off("click").click(function () {
+        $("#changePhysicianStatus").find(".round-button").removeClass("poup-current-status");
+        $(this).addClass("poup-current-status");
+        $("#changePhysicianStatus").find("#validationSummary").empty();
+        $("#changePhysicianStatus").find("#btnChangeStatusSave").enable();
+
+    });
+
+    $("#btnChangeStatusSave").off("click").click(function () {      
+        var element = $("#changePhysicianStatus").find(".poup-current-status");
+        $("#changePhysicianStatus").find("#validationSummary").empty();
+
+        if (element.length == 0) {
+            $("#changePhysicianStatus").find("#validationSummary").empty().showBSDangerAlert("", "Select a status to proceeed");
+        }
+        var selectedValue = element.data("status");
+
+        var userId = "@ViewBag.Id";
+        var url = "@Url.Action("SetStatus")";
+        //
+        
+        $.post(url, { id: selectedValue, userId: userId }, function (response) {
+            if (response.success) {
+                $("#divModelPopUp").modal("hide");
+               // loadPageAsync('/Physician/Status');
+
+                var loggedinuserId = '@User.Identity.GetUserId()';
+                 if (userId == loggedinuserId) {
+
+                     refreshCurrentPhyStatus();
+                }
+                 else {
+
+                    fetchData();
+                 }
+            }
+            else {
+                $("#changePhysicianStatus").find("#validationSummary").empty().showBSDangerAlert("", response.message);
+            }
+        });
+
+    });
+
+   
+
+
+
+</script>

@@ -1,0 +1,237 @@
+﻿@model TeleSpecialists.BLL.Model.workflow
+@{
+    ViewBag.Title = "Edit Workflow";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@using (Html.BeginForm("Edit", "Workflow", FormMethod.Post, new { @class = "form-horizontal", @id = "createForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-sm-10 offset-sm-1">
+            <h2>Edit Workflow Details</h2>
+            <hr />
+        </div>
+    </div>
+
+    @Html.HiddenFor(model => model.wfl_key)
+
+    <div class="row">
+        <div class="col-sm-10 offset-sm-1">
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Title: </label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(x => x.wfl_name, new { @class = "form-control", @disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.wfl_name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Description: </label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(x => x.wfl_description, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.wfl_description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Is Active: </label>
+                <div class="col-sm-8">
+                    @Html.CheckBoxFor(x => x.wfl_is_active, new { @class = "" })
+                    @Html.ValidationMessageFor(model => model.wfl_is_active, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 offset-sm-5 text-right">
+            <a class="btn btn-link" href="@Url.Action("Index")">Cancel</a>
+            <input type="submit" value="Save" class="btn btn-dark" />
+        </div>
+    </div> 
+    
+    <hr />
+
+
+    <div class="pt-2 customGridHeader">
+        <div id="kendoDataGrid">
+        </div>
+    </div>
+
+
+}
+
+
+@Html.Partial("_EditLineItem")
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        function LoadLevels() {
+            $('#wfd_lvl_key').kendoDropDownList({
+                dataTextField: "Text",
+                dataValueField: "Value",
+                dataSource: new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            type: "GET",
+                            url: "/Lookup/GetLevels",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: 'json'
+                        }
+                    }
+                }),
+                optionLabel: "-- Select Level --"
+            });
+        }
+
+        function LoadRoles() {
+            $('#wfd_role').kendoDropDownList({
+                valuePrimitive: true,
+                dataTextField: "Text",
+                dataValueField: "Value",
+                dataSource: new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            type: "GET",
+                            url: "/Lookup/GetRoles",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: 'json'
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                }),
+                optionLabel: "-- Select Role --",
+            });
+        }
+
+        var lineItemModel = kendo.data.Model.define({
+            id: "wfd_key",
+            fields: {
+                wfd_key: { editable: false, nullable: true },
+                wfd_wfl_key: { validation: { required: true } },
+                wfd_lvl_key: { validation: { required: true } },
+                wfd_role: { nullable: true },
+                wfd_is_active: { type: "boolean" },
+                wfd_role_name: { editable: false },
+                wfd_create_by: { editable: false, nullable: true },
+                wfd_created_on: { editable: false, type: "date" },
+                wfd_modified_by: { editable: false, nullable: true },
+                wfd_modified_on: { nullable: false, type: "date" }
+            }
+        });
+
+        var lineItemDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetWorkflowSteps", new { entityKey = Model.wfl_key })',
+                    contentType: "application/json",
+                    type: "POST",
+                    complete: function (jqXhr, textStatus) {
+                    }
+                },
+                create: {
+                    url: '@Url.Action("CreateLineItem")',
+                    type: "POST",
+                    complete: function (e) {
+                        refreshGrid();
+                    }
+                },
+                update: {
+                    url: '@Url.Action("EditLineItem")',
+                    type: "POST",
+                    complete: function (e) {
+                        refreshGrid();
+                    }
+                },
+                parameterMap: function (options, operation) {
+                    if (operation === "create" || operation === "update") {
+                        options.wfd_wfl_key = $('#wfl_key').val();
+                        options.wfd_created_date = kendo.toString(kendo.parseDate(options.wfd_created_date), "G");
+                        options.wfd_role_name = $('#wfd_role :selected').text();
+                        return options;
+                    }
+
+                    return kendo.stringify(options);
+                }
+            },
+            error: function (xhr, error) {
+                console.debug(xhr); console.debug(error);
+            },
+            schema: {
+                model: lineItemModel,
+                data: "Data",
+                total: "Total",
+            },
+            pageSize: 10,
+            serverPaging: true,
+            serverFiltering: true,
+            serverSorting: true
+        });
+
+        function refreshGrid() {
+            $("#kendoDataGrid").data("kendoGrid").dataSource.read();
+            $('#kendoDataGrid').data('kendoGrid').refresh();
+        }
+
+        $(document).ready(function () {
+
+            $("#kendoDataGrid").kendoGrid({
+                dataSource: lineItemDataSource,
+                //selectable: true,
+                filterable: true,
+                sortable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                columns: [
+                    { hidden: true, field: "wfd_key" },
+                    { title: "#", template: "#= ++record #", width: '4%' },
+                    { field: "lvl_name", title: "Level" },
+                    { field: "wfd_role_name", title: "Roles" },
+                    //{ field: "wfd_is_active", title: "Active", template: '<input type="checkbox" #= wfd_is_active ? "checked=checked" : "" # disabled="disabled" ></input>' },
+                    { command: [{name: "edit" }]}
+                ],
+                dataBinding: function () {
+                    record = (this.dataSource.page() - 1) * this.dataSource.pageSize();
+                },
+                editable: {
+                    mode: "popup",
+                    template: $("#_EditLineItem").html(),
+                    window: {
+                        animation: false,
+                        width: "600px"
+                    }
+                },
+                edit: function (e) {
+                    if (e.model.isNew()) {
+                        $(".k-window-title").text("Add");
+                        $(".k-grid-update").text("Add");
+                        LoadLevels();
+                        LoadRoles();
+                    } else {
+                        $(".k-window-title").text("Edit");
+                        $(".k-grid-update").text("Update");
+                        LoadLevels();
+                        LoadRoles();
+                    }
+
+                    $('.k-edit-form-container').css({ width: '600px' });
+                    $('.k-window-content').css({ overflow: 'hidden' });
+                },
+                toolbar: [{ name: "create", text: "Add Workflow Step" }]
+            });
+
+        });
+
+    </script>
+}
+

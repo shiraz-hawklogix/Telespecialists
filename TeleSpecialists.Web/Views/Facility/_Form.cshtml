@@ -1,0 +1,523 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@model TeleSpecialists.BLL.Model.facility
+
+@{
+
+    var userQPS = User.IsInRole(UserRoles.QPS.ToDescription());
+    var userVPQuality = User.IsInRole(UserRoles.VPQuality.ToDescription());
+    var userQualityDirector = User.IsInRole(UserRoles.QualityDirector.ToDescription());
+
+    var dicOptions = new Dictionary<string, string>();
+    dicOptions.Add("true", "Yes");
+    dicOptions.Add("false", "No");
+
+    var IsEdit = (bool)ViewBag.Edit;
+
+    var cartNumberList = new List<string>();
+    if (!string.IsNullOrEmpty(Model.fac_cart_numbers))
+    {
+        cartNumberList = Model.fac_cart_numbers.Split('#').ToList();
+    }
+
+    #region facility contract
+
+    var serviceTypeList = ViewBag.ServiceTypes as Dictionary<string, string>;
+    var coverageTypeList = ViewBag.CoverageTypes as Dictionary<string, string>;
+
+    String[] selectedServices = "".Split(',');
+    if (Model.facility_contract?.fct_selected_services != null)
+    {
+        selectedServices = Model.facility_contract?.fct_selected_services.Split(',');
+    }
+
+    #endregion
+}
+
+<div class="ajaxForm" id="divFacilityForm">
+    @*Starting form here*@
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(m => m.fac_key)
+        @Html.HiddenFor(m => m.fac_created_by)
+        @Html.HiddenFor(m => m.fac_created_date)
+        <div class="form-horizontal">
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="row">
+                <div class="@(ViewBag.Edit ? "col-md-6 col-sm-12" : "col-md-5 col-sm-11 col-offset-1")">
+
+                    <div class="form-group row">
+                        @Html.Label("Name:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_name, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.fac_name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("System:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_ucd_key_system" name="fac_ucd_key_system" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fac_ucd_key_system : 0)"></select>
+                            @Html.ValidationMessageFor(model => model.fac_ucd_key_system, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Regional:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_ucd_region_key" name="fac_ucd_region_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fac_ucd_region_key : 0)"></select>
+                            @Html.ValidationMessageFor(model => model.fac_ucd_region_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Address Line 1:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_address_line1, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.fac_address_line1, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("Address Line 2:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_address_line2, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.fac_address_line2, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("City:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_city, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.fac_city, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("State:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_stt_key" name="fac_stt_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fac_stt_key : 0)"></select>
+                            @Html.ValidationMessageFor(model => model.fac_stt_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("ZIP/Postal Code:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_zip, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.fac_zip, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("Time Zone:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_timezone" data-enable="true" name="fac_timezone" data-searchfilter="true" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fac_timezone : "")"></select>
+                            @Html.ValidationMessageFor(model => model.fac_timezone, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("MD-Staff Source Name:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_md_staff_source_name, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("MD-Staff Source ID:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_md_staff_reference_source_id, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                        </div>
+                    </div>
+                    @* Added BY Axim 24-08-2020 *@
+                    <div class="form-group row">
+                        @Html.Label("TS Account ID #:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_ts_account_ID, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    @* Ended BY Axim 24-08-2020 *@
+                    <div class="form-group row">
+                        @Html.HiddenFor(m => m.facility_contract.fct_key)
+                        @Html.HiddenFor(m => m.facility_contract.fct_start_date)
+                        @Html.HiddenFor(m => m.facility_contract.fct_end_date)
+                        @Html.HiddenFor(m => m.facility_contract.fct_created_by)
+                        @Html.HiddenFor(m => m.facility_contract.fct_created_date)
+
+                        @Html.LabelForWithSuffix(model => model.facility_contract.fct_selected_services, htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+
+                        <div class="col-lg-8 col-md-12 col-xs-12" id="SelectedServices">
+                            @Html.HiddenFor(m => m.facility_contract.fct_selected_services)
+                            @foreach (var item in serviceTypeList)
+                            {
+                                <div class="form-check-inline">
+                                    <label><input type="checkbox" @(selectedServices.Contains(item.Key) ? "checked" : "") value="@item.Key" /> &nbsp;@(item.Value)</label>
+                                </div>
+                            }
+                            @Html.ValidationMessageFor(model => model.facility_contract.fct_selected_services, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.LabelForWithSuffix(model => model.facility_contract.fct_cvr_key, htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+
+                            @Html.RadioButtonListFor(m => m.facility_contract.fct_cvr_key, coverageTypeList)
+                            @Html.ValidationMessageFor(model => model.facility_contract.fct_cvr_key, "", new { @class = "text-danger d-block position-relative", @style = "top:-13px" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="control-label col-lg-4 col-md-12 col-xs-12"></label>
+                        <div class="checkboxcol-lg-8 col-md-12 col-xs-12">
+                            <label class="checkbox">
+                                @Html.CheckBoxFor(model => model.fac_is_active) &nbsp;Active
+                            </label>
+                            @Html.ValidationMessageFor(model => model.fac_is_active, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="control-label col-lg-4 col-md-12 col-xs-12"></label>
+                        <div class="checkboxcol-lg-8 col-md-12 col-xs-12">
+                            <label class="checkbox">
+                                @Html.CheckBoxFor(model => model.fac_go_live) &nbsp;GoLive
+                            </label>
+                            @Html.ValidationMessageFor(model => model.fac_go_live, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @*<div class="form-group row">
+                        <label class="control-label col-lg-4 col-md-12 col-xs-12"></label>
+                        <div class="checkboxcol-lg-8 col-md-12 col-xs-12">
+                            <label class="checkbox">
+                                @Html.CheckBoxFor(model => model.fac_is_pac) &nbsp; Sleep
+                            </label>
+                            @Html.ValidationMessageFor(model => model.fac_is_pac, "", new { @class = "text-danger" })
+                        </div>
+                    </div>*@
+
+                </div>
+                <div class="@(ViewBag.Edit ? "col-md-6 col-sm-12" : "col-md-5 col-sm-11 col-offset-1")">
+
+                    <div class="form-group row">
+                        @Html.Label("Facility Type:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_fct_key" name="fac_fct_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fac_fct_key : 0)"></select>
+                            @Html.ValidationMessageFor(model => model.fac_fct_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="divFreeStandingFac">
+                        @Html.Label("Main Facility:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_freestanding_fac_key" name="fac_freestanding_fac_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fac_freestanding_fac_key : Guid.Empty)"></select>
+                            @Html.ValidationMessageFor(model => model.fac_freestanding_fac_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Stroke Designation:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_sct_key" name="fac_sct_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fac_sct_key : 0)"></select>
+                            @Html.ValidationMessageFor(model => model.fac_sct_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    @if (IsEdit)
+                    {
+                        <div class="form-group row">
+                            @Html.Label("QPS:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                            <div class="col-lg-8 col-md-12 col-xs-12">
+                                @*@Html.DropDownListFor(model => model.qps_number, ViewBag.QPS_Numbers_List as IEnumerable<SelectListItem>, new { @class = "form-control addValidation" })*@
+                                <select id="qps_number" name="qps_number" class="form-control addValidation">
+                                    @{
+                                        foreach (var item in ViewBag.QPS_Numbers_List)
+                                        {
+                                            <option value="@item.Value" selected="@item.Selected">@item.Text</option>
+                                        }
+                                    }
+                                </select>
+                                @Html.ValidationMessageFor(model => model.qps_number, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group row">
+                        @Html.Label("EMR Type:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_cst_key" name="fac_cst_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fac_cst_key : 0)"></select>
+                            @Html.ValidationMessageFor(model => model.fac_cst_key, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @if (IsEdit)
+                    {
+                        <div class="form-group row">
+                            @Html.Label("EMR Portal:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                            <div class="col-lg-8 col-md-12 col-xs-12">
+                                @Html.TextBoxFor(model => model.fac_emr, new { @class = "form-control addValidation" })
+                                @Html.ValidationMessageFor(model => model.fac_emr, "", new { @class = "text-danger" })
+                                <span id="emrValidationInfo" class="font-italic" style="display:none">
+                                    Valid URLs starts with http/https like 'https://www.example.com'
+                                </span>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="form-group row">
+                        @Html.Label("Note Template Used:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.RadioButtonListFor(m => m.fac_not_templated_used, dicOptions)
+                            @Html.ValidationMessageFor(model => model.fac_not_templated_used, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                        @Html.Label("EMR Specifics:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_emr_portal, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.fac_emr_portal, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                        @Html.Label("Transfer Process:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.TextAreaFor(model => model.fac_transfer_process, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.fac_transfer_process, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row" style="display:none">
+                        @Html.Label("AI Software:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_ai_software, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        @Html.Label("AI Software:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_ai_software_ddl" name="fac_ai_software_ddl" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fac_ai_software_ddl : 0)"></select>
+                            @Html.ValidationMessageFor(model => model.fac_ai_software, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("TPA Orderset:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_tpa_orderset, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Imaging Protocol:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.TextAreaFor(model => model.fac_imaging_protocol, new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Bed Size:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            <select id="fac_ucd_bed_size" name="fac_ucd_bed_size" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.fac_ucd_bed_size : 0)"></select>
+                            @Html.ValidationMessageFor(model => model.fac_ucd_bed_size, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="form-group row">
+                        @Html.Label("Cart Type:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                        <div class="col-lg-8 col-md-12 col-xs-12">
+                            @Html.EditorFor(model => model.fac_cart_type, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.fac_cart_type, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.HiddenFor(m => m.fac_cart_numbers)
+                        <a href="#" class="btn btn-dark" id="btnAddCartNumber">Add Cart Number</a>
+                    </div>
+
+                    <div class="form-group row">
+                        <table class="table">
+                            <tr>
+                                <th>Cart #</th>
+                                <th>Action</th>
+                            </tr>
+
+                            <tbody id="tblCartNumbersTemplate" style="display:none">
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <a href="#" onclick="javascript:deleteCartNumberItem(this)">Delete</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody id="tblCartNumbersBody">
+                                @foreach (var item in cartNumberList)
+                                {
+                                    <tr>
+                                        <td>@item</td>
+                                        <td>
+                                            <a href="#" onclick="javascript:deleteCartNumberItem(this)">Delete</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+                <div class="@(ViewBag.Edit ? "col-11" : "col-10 col-offset-1")">
+                    <div class="form-group row">
+                        <div class="col-lg-6 col-sm-6 offset-md-6 offset-xl-6 offset-lg-6 offset-sm-6  text-right">
+                            <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index")">Cancel</a>
+                            <input type="submit" value="Save" class="btn btn-dark" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+
+</div>
+
+
+<div class="modal" data-backdrop="static" data-keyboard="false" id="cartNumberFormModel">
+
+
+    <div class="modal-dialog modal-md">
+        
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Cart Number</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div id="validationSummary">
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-10 offset-sm-1">
+                                <div class="form-group row">
+                                    @Html.Label("Cart Number", htmlAttributes: new { @class = "control-label col-lg-4 col-sm-12" })
+                                    <div class="col-lg-8 col-sm-12">
+                                        <input type="text" class="form-control"  id="cart_number" name="cart_number" />
+                                        
+                                        @Html.ValidationMessage("cart_number", "", new { @class = "text-danger" })
+                                    </div>
+                                </div>                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-link" data-dismiss="modal">Close</a>
+                    <input type="button" id="btnSaveCartNumber" class="btn btn-dark" value="Save" />
+                </div>
+            </div>
+
+    </div>
+
+</div>
+
+<script>
+    $("#divFacilityForm>form").off("submit").submit(function (e) {
+        e.preventDefault();
+
+        var selectedValues = [];
+        $("#SelectedServices input:checked").each(function () {
+            selectedValues.push($(this).val());
+        });
+
+        $("#facility_contract_fct_selected_services").val(selectedValues.join(","));
+
+       // cart numbers code start
+        var cartNumbers = [];
+        $("#tblCartNumbersBody tr").each(function () {
+            cartNumbers.push($(this).find("td:eq(0)").text());
+
+        });
+        $("#fac_cart_numbers").val(cartNumbers.join("#"));
+        // cart numbers code end
+    });
+
+    $("#btnSaveCartNumber").off("click").click(function (e) {
+
+        e.preventDefault();
+       
+
+        var isValid = true; //
+        var cart_number = $.trim($("#cart_number").val());
+        if (cart_number == "") {
+            $("#cartNumberFormModel").find("#validationSummary").empty().showBSDangerAlert("", "cart number is required");
+            isValid = false;
+        }
+
+        if (isValid) {
+            var html = $("#tblCartNumbersTemplate").clone()
+                .find("td:eq(0)").text(cart_number).end()             
+                ;
+
+            $("#tblCartNumbersBody").prepend(html.html());
+            $("#cartNumberFormModel").modal("hide");
+        }
+    });
+
+    $("#btnAddCartNumber").off("click").click(function () {
+        $("#cart_number").val("");
+        $("#cartNumberFormModel").modal("show");
+    });
+    $("#fac_ai_software_ddl").off("change").change(function () {
+        var New_value = $("#fac_ai_software_ddl option:selected");
+        var vals = New_value.text();
+        if (vals == "-- Select --") {
+            vals = "";
+        }
+        $("#fac_ai_software").val(vals);
+    });
+    function deleteCartNumberItem(e) {
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm", "Are you sure to delete selected record?", function () {
+            $(e).parents("tr").remove();
+            $("#divModelPopUp").modal("hide");
+        });
+    }
+
+    function on_facility_type_change() {
+        var selectedText = $.trim($("#fac_fct_key option:selected").text());
+        var systemId = $("#fac_ucd_key_system").val().toInt();
+        if (selectedText.toLowerCase().indexOf("free standing") != -1 && systemId > 0) {
+            $("#divFreeStandingFac").removeClass("d-none");
+            $("#fac_freestanding_fac_key").fillKendoDropDown("/LookUp/GetSystemFacility?Id=" + systemId.toString(), "fac_name", "fac_key", "--Select--");
+        }
+        else {
+            $("#divFreeStandingFac").addClass("d-none");
+        }
+    }
+
+    $("#fac_fct_key,#fac_ucd_key_system").off("change").change(function () {
+        on_facility_type_change();
+    });
+
+
+    $(document).ready(function () {
+
+        if (@userQPS.ToString().ToLower() || @userVPQuality.ToString().ToLower() || @userQualityDirector.ToString().ToLower()) {
+            $('#divFacilityForm input').disable();
+            $('#divFacilityForm textarea').disable();
+            $('#divFacilityForm select').disable();
+        }
+    });
+</script>
+

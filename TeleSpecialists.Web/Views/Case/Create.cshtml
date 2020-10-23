@@ -1,0 +1,740 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL;
+@using System;
+
+@model TeleSpecialists.BLL.Model.@case
+@{
+    ViewBag.Title = "Create Case";
+    ViewBag.CurrentView = "Create";
+    var guid = Guid.NewGuid().ToString();
+}
+
+<div class="ajaxForm" id="basic">
+    <form method="post" class="form-horizontal" id="createForm" action="@(Url.Action("Create"))">
+        <input type="hidden" name="AddNumber" id="AddNumber" value="0">
+        <input type="hidden" name="cas_cancelled_type" id="cas_cancelled_type"/>
+        <input type="hidden" name="IsAutoSave" id="IsAutoSave" value="0">
+        <input type="hidden" id="five9_intial_utc_time" value="@(Model.cas_time_stamp.HasValue ? Model.cas_time_stamp.Value.FormatDateTime() : "")" />
+        <input type="hidden" id="five9_start_time" value="@(Model.cas_time_stamp.HasValue ? Model.cas_time_stamp.Value.FormatDateTime() : "")" />
+        <input type="hidden" id="cas_pct_key" name="cas_pct_key" value="@guid" />
+        @Html.Partial("_CaseForm", Model)
+        @Html.Partial("_caseCancellationReason")
+    </form>
+</div>
+<div class="row">
+    <div class="col-6 offset-6">
+        <div id="physicianStatusGrid">
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-2 btn-copy-popup">
+        <input type="button" value="Copy" class="btn btn-dark" id="btnCopy" disabled="disabled" />
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-8 col-xs-5 btn-save-close-cancel">
+        <a href="@Url.Action("Index")" class="btn btn-link CaseCancelled">Cancel</a>
+        <input type="button" class="btn btn-dark" value="Save" id="btnSave" />
+        <input type="button" class="btn btn-dark" value="Save & Close" id="btnSaveClose" />
+    </div>
+    <div class="col-1"></div>
+</div>
+
+@Html.Partial("_CaseCopyPopup")
+
+
+<div id="div15MinuteRulePopUp" class="modal" data-backdrop="static" data-keyboard="false"></div>
+<script type="text/javascript">
+
+
+    var acceptedStatusIndex = 2;
+    var currentFacilityOffset = @(Functions.GetTimeZoneOffset(Settings.DefaultTimeZone));
+    var previousCaseStatus = null;
+    var physicianFromStatusGrid = null;
+    var checkDuplicatePhysician = false;
+    var physicianDropDown = null;
+    var caseTypeDropDown = null;
+    var caseStatusDropDown = null;
+    var facilityDropdown = null;
+
+    var uclData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.UclData, Newtonsoft.Json.Formatting.Indented));
+
+    $(document).ready(function () {
+        $(window).on('beforeunload', function () {
+            clearSoftSaveCase();
+        });
+
+        $("#cas_cst_key-list").remove();
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+
+        if ($("#five9_intial_utc_time").val() != '') {
+            startTimerFromDate($("#five9_intial_utc_time").val(), $("#startTimer"), false);
+            $(".performance-container").removeClass("d-none");
+        }
+        else {
+            $(".performance-container").addClass("d-none");
+        }
+        maskPhoneNumber();
+
+        $("#cas_phy_key").attr("disabled", "disabled");
+        if (caseStatusDropDown != null) {
+            caseStatusDropDown.unbind("change", null);
+            caseStatusDropDown.data("kendoDropDownList").destroy();
+        }
+
+          caseStatusDropDown = $("#cas_cst_key").fillKendoDropDown("/LookUp/GetCaseStatus?allowCompleteOption=false", "ucd_title", "ucd_key", "-- Select --", function () {
+            if ($("#cas_phy_key").val() == "" || $("#cas_phy_key").val() == null || $("#cas_phy_key").val() == "00000000-0000-0000-0000-000000000000") {
+                $("#cas_cst_key_listbox .k-item").eq(acceptedStatusIndex).hide();
+            }
+
+           // ticket 529
+            var caseTypeDll = getUclDataByType(uclData, @(UclTypes.CaseType.ToInt()));
+            var result = null;
+             if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))' == 'True' )
+            {
+              result = caseTypeDll.filter(function (el) {
+              return el.ucd_key != @CaseType.StrokeAlert.ToInt() &&  el.ucd_key != @CaseType.StatConsult.ToInt();
+             });
+            }
+
+            if (caseTypeDropDown != null) {
+                caseTypeDropDown.unbind("change", caseTypeChangeHandler);
+                caseTypeDropDown.data("kendoDropDownList").destroy();
+            }
+             caseTypeDropDown = $("#cas_ctp_key").fillStaticKendoDropDown(result == null || result == undefined ?caseTypeDll:result, "ucd_title", "ucd_key", "-- Select --",
+                function () {
+                    caseTypeChangeHandler();
+                    loadPhysicianDropDown('@Model.cas_fac_key');
+                });
+
+
+            caseTypeDropDown.unbind("change").bind('change', function (e) {
+                caseTypeChangeHandler();
+                // Check duplicate records.
+                if ($("#cas_ctp_key").val() != caseTypeEnum.StrokeAlert)
+                    clearSoftSaveCase();
+
+                if ($("#cas_fac_key").val()) {
+                    if ($.trim($("#cas_fac_key").val()) != "" && $("#cas_fac_key").val() != "00000000-0000-0000-0000-000000000000") {
+                        showDuplicateCheckPopup($("#cas_fac_key").val());
+                        loadPhysicianDropDown($("#cas_fac_key").val());
+                    }
+                }
+                loadFacilityDropdown($("#cas_ctp_key").val());
+
+            });
+
+
+        });
+
+        
+        loadFacilityDropdown(@Model.cas_ctp_key);
+        function loadFacilityDropdown(cas_ctp) {
+            var caseType = cas_ctp;
+            if (caseType == null || caseType == undefined) {
+                caseType = @Model.cas_ctp_key;
+            }
+            if (caseType == @CaseType.RoutineConsultNew.ToInt() 
+                || caseType == @CaseType.RoutineConsultFollowUp.ToInt()  
+                || caseType == @CaseType.StatEEG.ToInt() 
+                || caseType == @CaseType.RoutineEEG.ToInt()  
+                || caseType == @CaseType.LongTermEEG.ToInt() )
+            {
+                facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetTeleNeuroFacility?phoneNumber=@Model.cas_ani", "fac_name", "fac_key", "--Select--", function () {
+                    window.setTimeout(function () {
+                        var selectedFacility = $.trim($("#cas_fac_key").val());
+                        if (selectedFacility != "") {
+                            loadFacilityTimeZone(selectedFacility);
+                            showDuplicateCheckPopup(selectedFacility);
+                            GetFacilityCart(selectedFacility);
+                        }
+                    }, 50);
+                });
+            }
+            else {
+                facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilities?phoneNumber=@Model.cas_ani", "fac_name", "fac_key", "--Select--", function () {
+                    window.setTimeout(function () {
+                        var selectedFacility = $.trim($("#cas_fac_key").val());
+                        if (selectedFacility != "") {
+                            loadFacilityTimeZone(selectedFacility);
+                            showDuplicateCheckPopup(selectedFacility);
+                            GetFacilityCart(selectedFacility);
+                        }
+                    }, 50);
+                });
+            }
+
+        }
+
+        caseStatusDropDown.unbind("change").bind('change', function (e) {
+            previousCaseStatus = $("#cas_cst_key").val();
+            enableSaveSend();
+            SavePhysicianCaseTemp();
+        });
+
+
+
+        $("#general_cas_identification_type").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.IdentificationType.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+        //cas_caller_source_key
+        var caller_source = $("#cas_caller_source_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.CallerSource.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+
+         var cart_location = $("#cas_cart_location_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.CartLocation.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+
+        caller_source.bind('change', function (e) {
+
+            $("#div_cas_caller_source_text").hide();
+            var value = $(this).find("option:selected").text();
+            if ($.trim(value).toLowerCase() == 'other') {
+                $("#div_cas_caller_source_text").show();
+            }
+        });
+
+        @* TCARE - 472 *@
+        cart_location.bind('change', function (e) {
+
+            $("#div_cas_cart_location_text").hide();
+            var value = $(this).find("option:selected").text();
+            if ($.trim(value).toLowerCase() == 'other') {
+                $("#div_cas_cart_location_text").show();
+            }
+        });
+
+        // loadPhysicianStatues('@Model.cas_fac_key');
+
+
+
+        facilityDropDown.unbind("change").bind("change", function (e) {
+            $("#btnCopy").disable(); // making the button disabled by default.
+            if ($.trim($("#cas_fac_key").val()) == "" || $("#cas_fac_key").val() == "00000000-0000-0000-0000-000000000000") {
+                $('#cas_phy_key').data('kendoDropDownList').enable(false);
+            }
+            else {
+                $("#cas_phy_key").removeAttr("disabled");
+                $("#cas_phy_key").val("");
+                loadPhysicianDropDown($("#cas_fac_key").val());
+                showDuplicateCheckPopup($("#cas_fac_key").val());
+                loadFacilityTimeZone($("#cas_fac_key").val());
+                 GetFacilityCart($("#cas_fac_key").val());
+            }
+        });
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $(".eta_validation").change(function () {
+            var minutes = $(this).val().toInt();
+            if (minutes > 10) {
+                $("#cas_eta_errormsg").show();
+                previousCaseStatus = $("#cas_cst_key").val();
+                $('#cas_cst_key').data('kendoDropDownList').value(caseStatusEnum.Cancelled);
+            }
+            else {
+                $("#cas_eta_errormsg").hide();
+                if (previousCaseStatus != null)
+                $('#cas_cst_key').data('kendoDropDownList').value(previousCaseStatus);
+            }
+        });
+
+        $("#cas_phy_has_technical_issue").change(function () {
+            if ($(this).prop("checked")) {
+                if ($.trim($("#cas_phy_technical_issue_date_est").val()) == "") {
+                    var currentDateTime = moment().utcOffset(currentFacilityOffset).format("MM/DD/YYYY HH:mm:ss");
+
+                    $("#cas_phy_technical_issue_date_est").val(currentDateTime);
+                }
+                $("#div_cas_phy_technical_issue_date_est").show();
+                $("#cas_phy_technical_issue_date_est_errormsg").show();
+            }
+            else {
+                $("#div_cas_phy_technical_issue_date_est").hide();
+                $("#cas_phy_technical_issue_date_est_errormsg").hide();
+            }
+        });
+
+        //
+        $(".loadLinkAsync").off("click").on("click", function () {
+            clearSoftSaveCase();
+        });
+
+        $(".CaseCancelled").off("click").on("click", function (e) {
+            e.preventDefault();
+            $("#divModelPopUp").empty().showConfirmPopUp("Confirm", "<span>Are you sure you want to close this case without saving?</span>", function () {
+                clearSoftSaveCase();
+                    var url = '@Url.Action("Index")';
+                    $("#divModelPopUp").modal("hide");
+                    loadPageAsync(url);
+                }, "Yes", function () {
+                $("#divModelPopUp").modal("hide");
+            });
+        });
+        $("input[type=text]").keyup(function (event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+            }
+        });
+        // counter up timer.
+        //kendoTimePicker
+        $(".timepicker").kendoTimePicker({
+            open: function (e) {
+                e.preventDefault();
+
+                var currentDateTime = moment().utcOffset(currentFacilityOffset).format("MM/DD/YYYY HH:mm:ss");
+                this.element.first().attr("data-utc_time", new Date().toUTCString());
+                this.element.first().val(currentDateTime);
+
+                var timePicker = this.element.first();
+                ShowHideTimeZone(timePicker);
+            }
+        });
+        $(".timepicker").kendoMaskedTextBox({
+            mask: "00/00/0000 00:00:00"
+        });
+
+        enableSaveSend();
+    });
+   
+   function GetFacilityCart(cas_key) {
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/Case/GetFacilityCart?key=' + cas_key,
+            success: function (data) {
+                var fac_cart = [];
+                $.each(data, function (key, val) {
+                    if (val) {
+                        fac_cart = val.split('#');
+                    }
+                })
+                var html = "";
+                html += '<option value="">-- Select --</option>';
+                if (fac_cart.length > 0) {
+                    for (var i = 0; i < fac_cart.length; i++) {
+                        var sel = "";
+                        var isExist = '@Model.cas_cart';
+                        if (isExist) {
+                            if (fac_cart[i] === isExist) {
+                                sel = 'selected';
+                            }
+                        }
+                        html += '<option value="' + fac_cart[i] + '" ' + sel + '>' + fac_cart[i] + '</option>';
+                    }
+                }
+                html += '<option value="other">Other</option>';
+                $("#casecart").empty();
+                $("#casecart").append(html);
+            },
+            error: function () {
+
+            }
+
+        });
+    }
+
+    function loadFacilityTimeZone(id) {
+        if ($.trim(id) != "" && id != "00000000-0000-0000-0000-000000000000") {
+            var url = "@Url.Action("GetFacilityTimeZone")";
+            var stamp_time = $.trim($("#five9_intial_utc_time").val());
+
+            $.get(url, { id: id, inputDateTime: stamp_time }, function (response) {
+                if (response.success) {
+                    changeAbbrivation(response.abbrivation);
+                    $("#hdnFacilityTimeZone").val(response.timeZone);
+                    $("#FacilityTimeZone").val(response.timeZone);
+                    $("#hdnFacilityTimeZoneOffSet").val(response.timeZoneOffset);
+                    $("#btnCopy").enable();
+
+                    if (response.convertedTime != "") {
+                        $("#five9_start_time").val(response.convertedTime);
+                    }
+                    // handling arrival time conversion after facility is changed
+                    var arrivalTime = $.trim($("#cas_metric_door_time_est").val());
+                    if (arrivalTime != "") {
+                        $("#cas_metric_door_time_est").val(arrivalTime.toFacilityTimeZone(currentFacilityOffset,response.timeZoneOffset));
+                    }
+
+                    // handling physician technical time conversion after facility is changed
+                    var phyTechicalIssueDate = $.trim($("#cas_phy_technical_issue_date_est").val());
+                    if (phyTechicalIssueDate != "") {
+                        $("#cas_phy_technical_issue_date_est").val(phyTechicalIssueDate.toFacilityTimeZone(currentFacilityOffset, response.timeZoneOffset));
+                    }
+
+                    // handling cas_callback_response_time_est
+
+                    var callback_response_time = $.trim($("#cas_callback_response_time_est").val());
+                    if (callback_response_time != "") {
+                        $("#cas_callback_response_time_est").val(callback_response_time.toFacilityTimeZone(currentFacilityOffset, response.timeZoneOffset));
+                    }
+
+                    currentFacilityOffset = response.timeZoneOffset;
+                }
+                else {
+                    $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "An error has occurred while converting time to facility time zone, please contact support");
+                }
+                enableSaveSend();
+            });
+        }
+    }
+
+    function loadPhysicianDropDown(fac_key) {
+        var caseTypeValue = "";
+        if ($("#cas_ctp_key").val() != null)
+            caseTypeValue = $("#cas_ctp_key").val();
+        else
+            caseTypeValue = "@Model.cas_ctp_key";
+
+        if (fac_key != undefined && fac_key != "00000000-0000-0000-0000-000000000000") {
+            var url = "@Url.Action("GetPhysiciansForCases")";
+            url = url + "?fac_key=" + fac_key + "&cType_key=" + caseTypeValue + "&softSaveGuid=@guid" ;
+            $.get(url, function (response) {
+
+                if (response != undefined && response != null) {
+                    var schedulePhy = [];
+                    if (response.data != null) {
+                        schedulePhy = response.data.filter(function (el) {
+                            return el.FinalSorted
+                        });
+                    }
+                    $("#physicianStatusGrid").html(response.htmlData);
+                    if (physicianDropDown != null && physicianDropDown != undefined) {
+                        physicianDropDown.unbind('change', null);
+                        physicianDropDown.data("kendoDropDownList").destroy();
+                    }
+                    physicianDropDown = $("#cas_phy_key").fillStaticKendoDropDown(response.data, "FullName", "AspNetUser_Id", "-- Select --", function () {
+                        $('#cas_phy_key').data('kendoDropDownList').enable(true);
+                        if (schedulePhy != null && schedulePhy != undefined && $("#cas_ctp_key").val() == caseTypeEnum.StrokeAlert) {
+                            if (typeof schedulePhy === 'string') {
+                                $('#cas_phy_key').data('kendoDropDownList').value(schedulePhy);
+                                window.setTimeout(function () {
+                                    $('#cas_phy_key').change();
+                                }, 500);
+                            }
+                            else if (schedulePhy.length > 0) {
+                                physicianFromStatusGrid = schedulePhy[0].AspNetUser_Id;
+                                checkDuplicatePhysician = true;
+                                $('#cas_phy_key').data('kendoDropDownList').value(schedulePhy[0].AspNetUser_Id);
+                                window.setTimeout(function () {
+                                    $('#cas_phy_key').change();
+                                }, 500);
+                            }
+                            else {
+                                clearSoftSaveCase();
+                            }
+
+                        }
+                        else {
+                            $("#cas_cst_key_listbox .k-item").eq(acceptedStatusIndex).hide();
+                            $('#cas_cst_key').data('kendoDropDownList').value(caseStatusEnum.Open);
+                            $('#cas_phy_key').data('kendoDropDownList').value("");
+                            clearSoftSaveCase();
+                        }
+
+                        enableSaveSend();
+
+                    });
+
+                    physicianDropDown.bind("change", function (e) {
+                        var val = $(this).val();
+                        if (val == null || val == "" || val == undefined) {
+                            $("#cas_cst_key_listbox .k-item").eq(acceptedStatusIndex).hide();
+                            var open = @CaseStatus.Open.ToInt();
+                            $('#cas_cst_key').data('kendoDropDownList').value(open);
+                        }
+                        else {
+                            $("#cas_cst_key_listbox .k-item").eq(acceptedStatusIndex).show();
+                            var inprogress = @CaseStatus.WaitingToAccept.ToInt();
+                            $('#cas_cst_key').data('kendoDropDownList').value(inprogress);
+                            CheckPhysicianRule();
+                            enableSaveSend();
+                        }
+                        SavePhysicianCaseTemp();
+
+                    });
+                }
+            });
+        }
+    }
+    @*function loadPhysicianStatues(id, casType) {
+        if ($.trim(id) != "" && id != "00000000-0000-0000-0000-000000000000") {
+            var url = "@Url.Action("_PhysicianStatusList")";
+            url = url + "?fac_key=" + id + "&cType_key=" + casType;
+            //url = url + "?fac_key=" + id;
+            $.get(url, function (response) {
+                if ($.trim(response.firstPhy) != "") {
+                    $('#cas_phy_key').data('kendoDropDownList').value(response.firstPhy);
+                    window.setTimeout(function () {
+                        $('#cas_phy_key').change();
+                    }, 500);
+                }
+                else {
+                    $('#cas_cst_key').data('kendoDropDownList').value(caseStatusEnum.Open);
+                }
+                $("#physicianStatusGrid").html(response.htmlData);
+            });
+        }
+    }
+    function loadPhysicianDropDown(id) {
+        var fac_key = id;
+        if (id != "" && id != "00000000-0000-0000-0000-000000000000") {
+            $("#cas_phy_key").removeAttr("disabled");
+        }
+        else {
+            $("#cas_phy_key").attr("disabled","disabled");
+            return;
+        }
+        var caseTypeValue = "";
+        if ($("#cas_ctp_key").val() != null)
+            caseTypeValue = $("#cas_ctp_key").val();
+        else
+            caseTypeValue = "@Model.cas_ctp_key";
+
+        var physicianDropDown = $("#cas_phy_key").fillKendoDropDown("/LookUp/GetPhysicians?fac_key=" + fac_key + "&fac_Type_key=" + caseTypeValue, "Name", "Id", "-- Select --", function () {
+            loadPhysicianStatues(id, caseTypeValue);
+        });
+        physicianDropDown.off("change").on("change", function (e) {
+            var val = $(this).val();
+            if ($.trim(val) == "") {
+                var open = @CaseStatus.Open.ToInt();
+                $('#cas_cst_key').data('kendoDropDownList').value(open);
+            }
+            else {
+                var inprogress = @CaseStatus.WaitingToAccept.ToInt();
+                $('#cas_cst_key').data('kendoDropDownList').value(inprogress);
+                CheckPhysicianRule();
+            }
+        });
+    }*@
+    function showDuplicateCheckPopup(id) {
+        var url = "/Case/_CheckDuplicateCaseByFacility";
+        $.get(url, { facilityId: id }, function (response) {
+            if (response != null) {
+                if (response.trim() != "") {
+                    $("#divModelPopUp").css("left", "0px");
+                    $("#divModelPopUp").css("top", "0px");
+                    $("#divModelPopUp").empty().html(response);
+                    $("#divModelPopUp").modal("show");
+                    $('#divModelPopUp').draggable({
+                        handle: "#checkDuplicateCasePopup .modal-header",
+                        cursor: "all-scroll"
+                    });
+                }
+            }
+        });
+    }
+    //$("#btnCopy").off("click").click(copyCase);
+    document.getElementById('btnCopy').addEventListener('click', function () {
+        copyCase();
+    });
+    document.getElementById('btnCopyOK').addEventListener('click', function () {
+        var textis = $('#txtAreaCopy').val();
+        console.log('value is : ' + $('#txtAreaCopy').val());
+        var createdId = "txtAreaJS";
+        var textarea = document.createElement("textarea");
+        textarea.id = createdId;
+        // Place in top-left corner of screen regardless of scroll position.
+        textarea.style.position = 'fixed';
+        textarea.style.top = 0;
+        textarea.style.left = 0;
+
+        // Ensure it has a small width and height. Setting to 1px / 1em
+        // doesn't work as this gives a negative w/h on some browsers.
+        textarea.style.width = '1px';
+        textarea.style.height = '1px';
+
+        // We don't need padding, reducing the size if it does flash render.
+        textarea.style.padding = 0;
+
+        // Clean up any borders.
+        textarea.style.border = 'none';
+        textarea.style.outline = 'none';
+        textarea.style.boxShadow = 'none';
+
+        // Avoid flash of white box if rendered for any reason.
+        textarea.style.background = 'transparent';
+        document.querySelector("body").appendChild(textarea);
+        var _createdId = document.getElementById(createdId);
+        _createdId.value = textis;
+        _createdId.select();
+        //$('#txtAreaCopy').select();
+        try {
+            var status = document.execCommand('copy');
+            if (!status) {
+                logToConsole("Cannot copy text");
+            } else {
+                logToConsole("The text is now on the clipboard");
+                document.body.removeChild(_createdId);
+            }
+        } catch (err) {
+            logToConsole('Unable to copy.');
+        }
+    });
+
+    $("#btnSave, #btnSaveClose,#btnSaveSend").off("click").click(function () {
+        $(".error_msg").hide();
+        $("#hdnSaveAndSend").val("0");
+        $("#RedirectPage").val("0");
+        var isSaveAndClose = false;
+
+        if ($(this).attr("id") === "btnSaveSend") {
+            $("#hdnSaveAndSend").val("1");
+        }
+
+        if ($(this).attr("id") === "btnSaveClose") {
+            isSaveAndClose = true;
+            $("#RedirectPage").val("1");
+        }
+
+        if (!validateGeneralTabForm(isSaveAndClose,false, true)) {
+            return false;
+        }
+
+        if (!$("#createForm").valid()) {
+            $("#createForm").validate();
+        }
+        else {
+
+            var IsPhyBusy = false;
+            // temporary disabling it, to exclude it from production deployment
+            //if ($.trim($("#cas_ctp_key").val()).toInt() == caseTypeEnum.StrokeAlert &&
+            //    $("#cas_phy_key").val() != "" &&
+            //    $("#cas_phy_key").val() == physicianFromStatusGrid &&
+            //    checkDuplicatePhysician)
+            //{
+            //    // logic for handling duplicate physician
+            //    var checkPhysicianForCaseData = checkPhysicianForCase($("#cas_phy_key").val());
+            //    if (checkPhysicianForCaseData.IsBusy) {
+            //        IsPhyBusy = true;
+            //    }
+
+            //}
+
+            if (!IsPhyBusy) {
+
+                var saveNumber = @(ViewBag.SaveNumber ? "true" : "false");
+                if (saveNumber) {
+                    $("#divModelPopUp").empty().showConfirmPopUp("Confirm", "<span>Would you like to add '@Model.cas_ani' to '" + $("#cas_fac_key option:selected").text() + "' facility?</span>", function () {
+                        $("#AddNumber").val("1");
+                        submitCaseChanges();
+                    }, "Add", function () {
+                        $("#divModelPopUp").modal("hide");
+                        submitCaseChanges();
+                    });
+                }
+                else {
+                    submitCaseChanges();
+                    if ($("#five9_intial_utc_time").val() != '') {
+                        startTimerFromDate($("#five9_intial_utc_time").val(), $("#startTimer"), true);
+                    }
+                }
+            }
+            else {
+                $("#divModelPopUp").empty().showConfirmPopUpWithYesNo("Case already assigned to physician",
+                    "<span>Selected physician has already been assigned to case " + checkPhysicianForCaseData.CaseNumber + " within  the last " + checkPhysicianForCaseData.WaitingToAcceptTime + ". Do you wish to continue assigning this physician?</span>",
+                    function () {
+                    checkDuplicatePhysician = false;
+                        submitCaseChanges();
+                    }, function () {
+                        checkDuplicatePhysician = true;
+                        $("#divModelPopUp").modal("hide");
+                        loadPhysicianDropDown($("#cas_fac_key").val());
+                    });
+            }
+        }
+    });
+
+
+    function ClickToDial(number, isenabled) {
+        if (number != "" && isenabled.toLowerCase() == "true") {
+            DialNumber(number);
+        }
+    }
+
+    function submitCaseChanges() {
+        var currentStatus = $.trim($("#cas_cst_key").val()).toInt();
+        if (currentStatus == caseStatusEnum.Cancelled) {
+            $('#toolTipCancel').show();
+            $('#popupModelCaseCancel').modal({
+                'show': true,
+                backdrop: 'static',
+                keyboard: false
+            });
+        }
+        else {
+            $("#createForm").submit();
+        }
+    }
+
+    $('#SaveCaseCancel').click(function () {
+        $('#popupModelCaseCancel').modal("hide");
+        $("#createForm").submit();
+    });
+
+    $('.cas_cancelled_list').change(function () {
+        var valueText = $("#cas_cancelled_list :selected").text();
+        $('#cas_cancelled_type').val(valueText);
+    });
+
+    function CheckPhysicianRule() {
+        if ($("#cas_ctp_key").val() == @CaseType.StrokeAlert.ToInt()) {// stroke alert
+            var selectedPhysician = $("#cas_phy_key").val();
+            var hdn = $("#SelectedVal").val();
+
+            if (selectedPhysician != hdn) {
+                $("#SelectedVal").val(selectedPhysician);
+                $('#cas_cst_key').data('kendoDropDownList').value(caseStatusEnum.WaitingToAccept); // safe check just to make sure that the status should we waiting to accept in case if the physician is assigned to it
+                var params = {
+                    physicianKey: $("#cas_phy_key").val()
+                };
+                $.ajax({
+                    type: 'get',
+                    url: '/Case/Check15MinuteRule',
+                    data: params,
+                    success: function (data) {
+                        if (data.success) {
+                            $('#cas_cst_key').data('kendoDropDownList').value(caseStatusEnum.WaitingToAccept); // safe check just to make sure that the status should we waiting to accept in case if the physician is assigned to it
+                            $("#div15MinuteRulePopUp").empty().showConfirmPopUp("Confirm", "<span>This Physician has already been assigned a Stroke Alert within the last 15 minutes. Do you still want to assign this case to the physician?</span>", function () {
+                                $("#div15MinuteRulePopUp").modal("hide");
+                                $('#cas_cst_key').data('kendoDropDownList').value(caseStatusEnum.WaitingToAccept);
+                            }, "Yes", function () {
+                                $("#div15MinuteRulePopUp").modal("hide");
+                                $('#cas_phy_key').data('kendoDropDownList').value("");
+                                $('#cas_cst_key').data('kendoDropDownList').value(caseStatusEnum.Open);
+                                $("#SelectedVal").val("");
+                            });
+                        }
+                    }
+                 });
+            }
+        }
+    }
+
+    function SavePhysicianCaseTemp() {
+        if (
+            ($("#cas_phy_key").val() != "" || SavePhysicianCaseTemp.previousPhysician != $("#cas_phy_key").val()) ||
+            (SavePhysicianCaseTemp.previousPhysician == $("#cas_phy_key").val() && $("#cas_phy_key").val() != "" && SavePhysicianCaseTemp.previousCaseStatus != $("#cas_cst_key").val())
+            ) {
+
+            var url = "@Url.Action("Save","PhysicianCaseTemp")";
+            SavePhysicianCaseTemp.previousPhysician = $("#cas_phy_key").val();
+            SavePhysicianCaseTemp.previousCaseStatus = $("#cas_cst_key").val();
+        $.post(url, {
+            pct_guid: "@guid",
+            pct_ctp_key: $("#cas_ctp_key").val(),
+            pct_phy_key: SavePhysicianCaseTemp.previousPhysician,
+            pct_cst_key: SavePhysicianCaseTemp.previousCaseStatus
+        }, function (response) {
+
+           });
+        }
+    }
+
+    function clearSoftSaveCase() {
+         var url = "@Url.Action("Delete","PhysicianCaseTemp")";
+        $.post(url, { Id: "@guid"}, function (response) { })
+    }
+
+</script>
+
+
+

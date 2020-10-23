@@ -1,0 +1,139 @@
+﻿@model TeleSpecialists.Models.ApplicationRole
+@{
+    ViewBag.Title = "Edit Role";    
+}
+<div class="ajaxForm">
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="row">
+            <div class="col-sm-10 offset-sm-1">
+                <h2>Edit Role Details</h2>
+                <hr />
+            </div>
+        </div>
+
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="row">
+            <div class="col-sm-10 offset-sm-1">
+                <div class="form-group row">
+                    <label class="control-label col-sm-3 col-2">Role: </label>
+                    <div class="col-sm-8">
+                        
+                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @id = "rolename", @placeholder = "Role Name", @readonly = "readonly" } })                        
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-sm-3 col-2">Description: </label>
+                    <div class="col-sm-8">
+                        @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", @id = "roledescription", @placeholder = "Role Description" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-6 col-sm-6 btn-cancel-save-offset text-right">
+                <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Roles", "Admin")">Cancel</a>
+                <input type="submit" value="Save" class="btn btn-dark" />
+            </div>
+
+        </div>
+    }
+    </div>
+
+<div class="row mt-5">
+    <div class="col-sm-10 offset-sm-1">
+
+        <div class="pt-1 customGridHeader">
+            <div id="users_grid">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+        var roleId = "@Model.Id";
+
+        $(document).ready(function () {
+
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+            $("#users_grid").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetUsers", "Admin")',
+                            contentType: "application/json",
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+
+                            if (roleId !== "") {
+                                if (options.filter === undefined)
+                                    options.filter = {};
+
+                                if (options.filter.filters === undefined)
+                                    options.filter.filters = [];
+
+                                if (options.filter.logic === undefined)
+                                    options.filter.logic = "and";
+
+                                options.filter.filters.push({ field: "RoleId", operator: "eq", "value": roleId });
+                            }
+
+                            //RoleId                            
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                    },
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true
+                },
+                filterable: true,
+                sortable: true,
+                scrollable: true,
+                resizable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                dataBound: function (e) {
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                },
+                columns: [
+                    { hidden: true, field: "Id" },
+                    { field: "UserName", title: "Username", width: '100px'},
+                    { field: "FirstName", title: "First Name", width: '100px'},
+                    { field: "LastName", title: "Last Name", width: '100px'}, 
+                    {
+                        field: "IsActive", title: "Active", width:'80px',
+                        template: '<input type="checkbox" #= IsActive ? "checked=checked" : "" # disabled="disabled" ></input>'
+                    }                                     
+                ]
+            });
+
+
+
+        });
+
+</script>

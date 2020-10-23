@@ -1,0 +1,2804 @@
+﻿@model TeleSpecialists.BLL.Model.@case
+@using System;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@{
+    DateTime CPOEDatetime = Convert.ToDateTime("10/02/2020");
+    var cpoe_order = "false";
+    if (Model.cas_created_date > CPOEDatetime)
+    {
+        cpoe_order = "true";
+    }
+
+    DateTime attestation = Convert.ToDateTime("10/02/2020");
+    var attestation_order = "false";
+    var attestation_danger = "";
+    if (Model.cas_created_date > attestation)
+    {
+        attestation_order = "true";
+        attestation_danger = "text-danger";
+    }
+
+    bool isStateConsultCase = false;
+    isStateConsultCase = Model.cas_ctp_key == CaseType.StatConsult.ToInt();
+
+    var isSuperAdmin = User.IsInRole(UserRoles.SuperAdmin.ToDescription());
+
+    TeleSpecialists.Models.ApplicationUser loggedInUser = ViewBag.loggedInUser;
+    var dicOptions = new Dictionary<string, string>();
+    dicOptions.Add("true", "Yes");
+    dicOptions.Add("false", "No");
+
+    var ctaDisabled = "";
+    if (Model.cas_metric_in_cta_queue)
+    {
+        ctaDisabled = "disabled";
+    }
+
+    var thrombectomyMedicalDecisionMaking = Enum.GetValues(typeof(ThrombectomyMedicalDecisionMaking)).Cast<ThrombectomyMedicalDecisionMaking>()
+        .Select(m => new
+        {
+            Key = Convert.ToInt32(m).ToString(),
+            Value = m.ToDescription()
+        }).ToDictionary(m => m.Key, m => m.Value);
+
+    var patientType = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
+        .Select(m => new
+        {
+            Key = Convert.ToInt32(m).ToString(),
+            Value = m.ToDescription()
+        }).ToDictionary(m => m.Key, m => m.Value);
+
+    var patientGender = Enum.GetValues(typeof(Gender)).Cast<Gender>()
+        .Select(m => new
+        {
+            Key = Convert.ToChar(m).ToString().Trim(),
+            Value = m.ToDescription()
+        }).OrderByDescending(m => m.Key)
+        .ToDictionary(m => m.Key, m => m.Value);
+
+
+    var weightUnits = Enum.GetValues(typeof(WeightUnit)).Cast<WeightUnit>()
+        .Select(m => new SelectListItem
+        {
+            Value = m.ToString(),
+            Text = m.ToDescription(),
+            Selected = (Model != null ? Model.cas_metric_weight_unit == m.ToString() : false)
+        });
+
+    var LB2S2CriteriValues = Enum.GetValues(typeof(LB2S2CriteriaOptions)).Cast<LB2S2CriteriaOptions>()
+        .Select(m => new
+        {
+            Key = Convert.ToInt32(m).ToString(),
+            Value = m.ToDescription()
+        })
+        .OrderBy(m => m.Value.IndexOf(LB2S2CriteriaOptions.UNK.ToDescription()))
+        .ThenBy(m => m.Value.IndexOf(LB2S2CriteriaOptions.No.ToDescription()))
+        .ToDictionary(m => m.Key, m => m.Value);
+
+
+
+    var attributes = Model.cas_metric_documentation_end_time_est.HasValue ? (object)new { @class = "form-control format-date", readOnly = "readonly" } : (object)new { @class = "form-control timepicker" };
+
+    string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+    if (Model.facility != null)
+    {
+        if (!string.IsNullOrEmpty(Model.facility.fac_timezone))
+        {
+            facilityTimeZone = Model.facility.fac_timezone;
+        }
+    }
+
+    //Getting timezone abbrivation.
+    var timeZone = Functions.GetTimeZoneAbbreviation(facilityTimeZone);
+
+    //Added by axim 11-08-2020
+    var antiplatelet = "false";
+    var anticoagunt = "false";
+    if (Model.cas_anticoagulant_use != null && Model.cas_anticoagulant_use == true)
+    {
+        anticoagunt = "true";
+    }
+    if (Model.cas_antiplatelet_use != null && Model.cas_antiplatelet_use == true)
+    {
+        antiplatelet = "true";
+    }
+    //added on 24-08-2020 Axim
+    DateTime tpacheckdate = Convert.ToDateTime("08/28/2020");
+    var checkdatetpa = false;
+    if (Model.cas_created_date > tpacheckdate)
+    {
+        checkdatetpa = true;
+    }
+
+    var ctHeadReview = "false";
+    if (Model.cas_metric_ct_head_review != null && Model.cas_metric_ct_head_review == false)
+    {
+        ctHeadReview = "true";
+    }
+    var advancedImaging = "false";
+    if (Model.cas_metric_advanced_imaging_personally != null && Model.cas_metric_advanced_imaging_personally == false)
+    {
+        advancedImaging = "true";
+    }
+    var tPAordered = "false";
+    if (Model.cas_metric_tpa_ordered_personally != null && Model.cas_metric_tpa_ordered_personally == false)
+    {
+        tPAordered = "true";
+    }
+    var vizappUsage = "false";
+    if (Model.cas_metric_viz_app_usage != null && Model.cas_metric_viz_app_usage == false)
+    {
+        vizappUsage = "true";
+    }
+
+    var CTHeadReview = Enum.GetValues(typeof(CTHeadReviewPersonally)).Cast<CTHeadReviewPersonally>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList CTHeadReviewList = new SelectList(CTHeadReview, "key", "title");
+
+    var AdvancedImaging = Enum.GetValues(typeof(AdvancedImagingPersonally)).Cast<AdvancedImagingPersonally>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList AdvancedImagingList = new SelectList(AdvancedImaging, "key", "title");
+
+    var tPAOrderedPersonally = Enum.GetValues(typeof(tPAORderedPersonally)).Cast<tPAORderedPersonally>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList tPAOrderedPersonallyList = new SelectList(tPAOrderedPersonally, "key", "title");
+
+    var VizAppUsage = Enum.GetValues(typeof(VizAppUsagePersonally)).Cast<VizAppUsagePersonally>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList VizAppUsageList = new SelectList(VizAppUsage, "key", "title");
+
+    var displayvizApp = "false";
+    if (Model.facility.fac_ai_software_ddl == 343)
+    {
+        displayvizApp = "true";
+    }
+
+}
+
+@*Handling Default values when the case type is not a stroke alert*@
+@if (Model.cas_ctp_key != CaseType.StrokeAlert.ToInt())
+{
+    @Html.HiddenFor(m => m.cas_metric_ct_head_has_no_acture_hemorrhage)
+    @Html.HiddenFor(m => m.cas_metric_discussed_with_neurointerventionalist)
+    @Html.HiddenFor(m => m.cas_metric_physician_recommented_consult_neurointerventionalist)
+    @Html.HiddenFor(m => m.cas_metric_physician_notified_of_thrombolytics)
+    @Html.HiddenFor(m => m.cas_metric_last_seen_normal)
+    @Html.HiddenFor(m => m.cas_metric_non_tpa_reason_key)
+    @Html.HiddenFor(m => m.cas_metric_tpaDelay_key)
+    @Html.HiddenFor(m => m.cas_patient_type)
+    @Html.HiddenFor(m => m.cas_metric_in_cta_queue);
+}
+
+<div class="form-group row metrics-billing-tab">
+    @{
+        if (Model.cas_ctp_key == CaseType.StatConsult.ToInt() || Model.cas_ctp_key == CaseType.TransferAlert.ToInt())
+        {
+
+            @Html.FormattedDateTextBoxFor(m => m.cas_metric_stamp_time_est, new { @class = "d-none" })
+
+            <div class="col-xl-4 col-lg-4 col-md-12 first-col">
+                <div class="form-group row">
+                    @Html.LabelForWithSuffix(m => m.cas_response_ts_notification, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12" })
+                    <div class="col-sm-8 col-xl-8 col-lg-12">
+
+                        @if (isSuperAdmin)
+                        {
+                            <div class="timer-container">
+                                @Html.FormattedDateTextBoxFor(m => m.cas_response_ts_notification, new { @class = "form-control timepicker" })
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="timer-container">
+                                @Html.FormattedDateTextBoxFor(m => m.cas_response_ts_notification, new { @class = "form-control", @readOnly = "readOnly" })
+
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+                        }
+
+                        @Html.ValidationMessageFor(model => model.cas_response_ts_notification, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">Callback Response Time: </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="timer-container">
+                            <input type="text" id="metric_cas_callback_responsetime" name="cas_callback_response_time_est" value="@(Model.cas_callback_response_time_est?.FormatDateTime())" class="form-control timepicker" />
+
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">
+                        Video Start Time:
+                    </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(m => m.cas_metric_video_start_time_est, new { @class = "form-control timepicker" })
+
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+                        <div id="cas_metric_video_start_time_est-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_video_start_time_est">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">
+                        Video End Time:
+                    </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(m => m.cas_metric_video_end_time_est, new { @class = "form-control timepicker" })
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+                        <div id="cas_metric_video_end_time_est-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_video_end_time_est">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription())) ? "d-none" : "")">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 ">Reason for Login Delay: </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <select id="cas_billing_lod_key" name="cas_billing_lod_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.cas_billing_lod_key : 0)"></select>
+                        @Html.ValidationMessageFor(model => model.cas_billing_lod_key, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription())) ? "d-none" : "")">
+                    @Html.LabelForWithSuffix(m => m.cas_metric_notes, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12" + (Model.CaseInterval.StampToLoginMinutes > 10.0 ? " text-danger" : ""), @id = "cas_metric_notes_label" })
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @if (Model.CaseInterval.StampToLoginMinutes > 10.0)
+                        {
+                            @Html.TextAreaFor(m => m.cas_metric_notes, new { @class = "form-control", @data_is_required = "true" })
+                        }
+                        else
+                        {
+                            @Html.TextAreaFor(m => m.cas_metric_notes, new { @class = "form-control" })
+                        }
+
+                        <div id="cas_metric_notes-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_notes">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row @(isStateConsultCase ? "" : "d-none")">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 @(Model.CaseInterval.StartToCallbackMinutes > 15.0 ? "text-danger" : "")" id="metric_cas_callback_notes_label">Callback Response Delay Notes: </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @if (Model.CaseInterval.StartToCallbackMinutes > 15.0)
+                        {
+                            @*@Html.TextAreaFor(x => x.cas_callback_notes, new { @class = "form-control", @row = "2", @data_is_required = "true" })*@
+                            <textarea id="metric_cas_callback_notes" name="cas_callback_notes" class="form-control" rows="2" data-is-required="true">@Model.cas_callback_notes</textarea>
+                        }
+                        else
+                        {
+                            @*@Html.TextAreaFor(x => x.cas_callback_notes, new { @class = "form-control", @row = "2" })*@
+                            <textarea id="metric_cas_callback_notes" class="form-control" name="cas_callback_notes" rows="2">@Model.cas_callback_notes</textarea>
+                        }
+
+                        <div id="metric_cas_callback_notes-error" class="error_msg" style="display:none;">
+                            <label for="metric_cas_callback_notes">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        else if (Model.cas_ctp_key == CaseType.StrokeAlert.ToInt())
+        {
+            <div class="col-xl-4 col-lg-4 col-md-12 first-col">
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">
+                        Last Known Well:
+                    </label>
+                    <div class="col-sm-8 col-xl-8 col-lg-12">
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(m => m.cas_metric_lastwell_date_est, new { @class = "form-control timepicker disabled", id = "cas_metric_lastwell_date_est" })
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+                        <div class="col-12 text-left pt-2 pl-0">
+                            @Html.RadioButtonFor(m => m.cas_metric_is_lastwell_unknown, "true", new { htmlAttributes = new { @class = "disabled", id = "cas_metric_is_lastwell_unknown" } })
+                            @*<input type="radio" name="cas_metric_is_lastwell_unknown" id="cas_metric_is_lastwell_unknown" value="@Model.cas_metric_is_lastwell_unknown" />*@
+                            Unknown
+                        </div>
+                        <div id="cas_metric_lastwell_date_est-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_lastwell_date_est">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @Html.LabelForWithSuffix(m => m.cas_response_ts_notification, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12" })
+                    <div class="col-sm-8 col-xl-8 col-lg-12">
+
+                        @if (isSuperAdmin)
+                        {
+                            <div class="timer-container">
+                                @Html.FormattedDateTextBoxFor(m => m.cas_response_ts_notification, new { @class = $"form-control timepicker" })
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="timer-container">
+                                @Html.FormattedDateTextBoxFor(m => m.cas_response_ts_notification, new { @class = $"form-control", @readOnly = "readOnly" })
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+                        }
+
+                        @Html.ValidationMessageFor(model => model.cas_response_ts_notification, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row patient-type">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Workflow Type:</label>
+                    <div class="col-sm-8 col-xl-8 col-lg-12">
+
+                        @Html.RadioButtonListFor(m => m.cas_patient_type, patientType, new { @class = "disabled" })
+                        <div class="error_msg" style="display:none;">
+                            <label>This field is required</label>
+                        </div>
+                        <div id="cas_patient_type-error" class="error_msg" style="display:none;">
+                            <label for="cas_patient_type">This field is required</label>
+                        </div>
+
+                        @*@Html.ValidationMessageFor(model => model.cas_patient_type, "", new { @class = "text-danger" })*@
+
+                    </div>
+                </div>
+                <div class="form-group row metric_door_time" id="metric_door_time_container">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">
+                        Arrival Time:
+                    </label>
+                    <div class="col-sm-8 col-xl-8 col-lg-12">
+                        @Html.HiddenFor(m => m.cas_metric_door_time)
+
+                        <div class="timer-container">
+                            <input type="text" id="cas_metric_door_time_est" name="cas_metric_door_time_est" value="@(Model.cas_metric_door_time_est.HasValue ? Model.cas_metric_door_time_est.Value.FormatDateTime() : "")" class="form-control timepicker" />
+
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+
+                        <div id="cas_metric_door_time_est-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_door_time_est">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row" id="symptoms_onset_during_ed_stay">
+
+                    <div class="col-xl-4 col-sm-4 col-lg-12">
+                        <label class="control-label" style="display: inline;">
+                            Symptom Onset During ED Stay:
+                        </label>
+
+                        @Html.CheckBoxFor(m => m.cas_metric_symptom_onset_during_ed_stay, htmlAttributes: new { @style = "vertical-align: bottom; margin-bottom: 3px; ", @class = "disabled" })
+
+                    </div>
+                    <div class="col-sm-8 col-xl-8 col-lg-12 symptoms_onset_during_ed_stay" style="display:none">
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(m => m.cas_metric_symptom_onset_during_ed_stay_time_est, new { @class = "form-control timepicker", id = "symptoms_onset_during_ed_stay_timestamp" })
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+                        <div id="symptoms_onset_during_ed_stay_timestamp-error" class="error_msg" style="display:none;">
+                            <label for="symptoms_onset_during_ed_stay_timestamp">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @Html.LabelForWithSuffix(m => m.cas_metric_stamp_time, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12" })
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <input type="hidden" id="cas_metric_stamp_time_utc" value="@Model.cas_metric_door_time" />
+
+                        @if (isSuperAdmin)
+                        {
+                            <div class="timer-container">
+                                @Html.FormattedDateTextBoxFor(m => m.cas_metric_stamp_time_est, new { @class = "form-control timepicker" })
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+
+                        }
+                        else
+                        {
+                            <div class="timer-container">
+                                @Html.FormattedDateTextBoxFor(m => m.cas_metric_stamp_time_est, new { @class = "form-control format-date", @readonly = "readonly" })
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+                        }
+
+                        @Html.ValidationMessageFor(model => model.cas_metric_stamp_time_est, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">
+                        Time First Login Attempt:
+                    </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @if (Model.cas_phy_has_technical_issue && !User.IsInRole("Administrator") && !User.IsInRole("Super Admin"))
+                        {
+                            <div class="timer-container">
+                                @Html.FormattedDateTextBoxFor(m => m.cas_response_first_atempt, new { @class = "form-control format-date timepicker", @data_SaveAsUTC = true, @readonly = "readonly" })
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="timer-container">
+                                @Html.FormattedDateTextBoxFor(m => m.cas_response_first_atempt, new { @class = "form-control timepicker", @data_SaveAsUTC = true })
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+
+                        }
+
+                        <div id="cas_response_first_atempt-error" class="error_msg" style="display:none;">
+                            <label for="cas_response_first_atempt">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">
+                        Video Start Time:
+                    </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(m => m.cas_metric_video_start_time_est, new { @class = "form-control timepicker" })
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+
+                        <div id="cas_metric_video_start_time_est-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_video_start_time_est">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Date of Birth: </label>
+                    <div class="col-sm-8">
+                        <input type="text" id="metric_cas_dob" value="@(Model.cas_billing_dob?.FormatDate())" class="form-control datepicker" />
+                        @*@Html.TextBoxFor(m => m.cas_billing_dob, new { @class = "form-control datepicker", id = "billing_cas_dob" })*@
+                        <div id="metric_cas_dob-error" class="error_msg" style="display:none;">
+                            <label>This field is required</label>
+                        </div>
+                        <div id="metric_cas_dob-invalid" class="error_msg" style="display:none;">
+                            <label>Invalid Date of Birth</label>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.cas_billing_dob, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Patient Is: </label>
+                    <div class="col-sm-8 patientGender">
+                        @Html.RadioButtonListFor(m => m.cas_metric_patient_gender, patientGender, new { @class = "disabled" })
+                        <div class="error_msg" style="display:none;">
+                            <label>This field is required</label>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.cas_metric_patient_gender, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row">
+                    @Html.LabelForWithSuffix(m => m.cas_metric_symptoms, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12 text-danger" })
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @Html.TextAreaFor(m => m.cas_metric_symptoms, new { @class = "form-control" })
+                        <div id="cas_metric_symptoms-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_symptoms">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">HPI: </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @Html.TextAreaFor(m => m.cas_metric_hpi, new { @class = "form-control", @rows = "6" })
+                        <div class="text-danger">
+                            <label class="error">200 characters minimum (<span class="hpiCount">0</span>)</label>
+                        </div>
+
+                        <div id="cas_metric_hpi-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_symptoms">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                @* Added By Axim *@
+                <div class="container">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-6">Past Medical History: </label>
+                    <div class="form-group row">
+                        <div class="col-6">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-6">HTN: </label>
+                            @Html.RadioButtonListFor(m => m.cas_HTN, dicOptions, new { @class = "cas_HTN" })
+                        </div>
+                        <div class="col-6">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-6">DM: </label>
+                            @Html.RadioButtonListFor(m => m.cas_DM, dicOptions, new { @class = "cas_DM" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-6">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-12">HLD: </label>
+                            @Html.RadioButtonListFor(m => m.cas_HLD, dicOptions, new { @class = "cas_HLD" })
+                        </div>
+                        <div class="col-6">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-12">Afib: </label>
+                            @Html.RadioButtonListFor(m => m.cas_Afib, dicOptions, new { @class = "cas_Afib" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-6">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-12">CAD: </label>
+                            @Html.RadioButtonListFor(m => m.cas_CAD, dicOptions, new { @class = "cas_CAD" })
+                        </div>
+
+                        <div class="col-6">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-12">Stroke: </label>
+                            @Html.RadioButtonListFor(m => m.cas_Stroke, dicOptions, new { @class = "cas_Stroke" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="control-label col-xl-4 col-sm-4 col-lg-12">Antiplatelet use: </label>
+                        <div class="col-sm-8" id="divantiplateletuse">
+                            @Html.RadioButtonListFor(m => m.cas_antiplatelet_use, dicOptions, new { @class = "cas_antiplatelet_use" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="antiplateletusediv" style="display:none">
+                        <label class="control-label col-xl-4 col-sm-4 col-lg-12"></label>
+                        <div class="form-group col-xl-7 col-sm-6 col-lg-12">
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.cas_antiplatelet_use_text, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="control-label col-xl-4 col-sm-4 col-lg-12">Anticoagulant use: </label>
+                        <div class="col-sm-8" id="divanticoagulantuse">
+                            @Html.RadioButtonListFor(m => m.cas_anticoagulant_use, dicOptions, new { @class = "cas_anticoagulant_use" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="anticoagulantusediv" style="display:none">
+                        <label class="control-label col-xl-4 col-sm-4 col-lg-12"></label>
+                        <div class="form-group col-xl-7 col-sm-6 col-lg-12">
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.cas_anticoagulant_use_text, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @* Ended By Axim *@
+                <div class="form-group row">
+                    @Html.LabelFor(m => m.cas_metric_assesment_time_est, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12 text-danger" })
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(m => m.cas_metric_assesment_time_est, new { @class = "form-control timepicker" })
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+                        <div id="cas_metric_assesment_time_est-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_assesment_time_est">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription())) ? "d-none" : "")">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 ">Reason for Login Delay: </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <select id="cas_billing_lod_key" name="cas_billing_lod_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.cas_billing_lod_key : 0)"></select>
+                        @Html.ValidationMessageFor(model => model.cas_billing_lod_key, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription())) ? "d-none" : "")">
+                    @Html.LabelForWithSuffix(m => m.cas_metric_notes, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12" + (Model.CaseInterval.StampToLoginMinutes > 10.0 ? " text-danger" : ""), @id = "cas_metric_notes_label" })
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @if (Model.CaseInterval.StampToLoginMinutes > 10.0)
+                        {
+                            @Html.TextAreaFor(m => m.cas_metric_notes, new { @class = "form-control", @data_is_required = "true" })
+                        }
+                        else
+                        {
+                            @Html.TextAreaFor(m => m.cas_metric_notes, new { @class = "form-control" })
+                        }
+
+                        <div id="cas_metric_notes-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_notes">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            bool show_TPA_EarlyOrderIndicator = false;
+            if (Model.cas_metric_last_seen_normal.Equals(LB2S2CriteriaOptions.No.ToInt())
+            && Model.cas_metric_has_hemorrhgic_history.Equals(LB2S2CriteriaOptions.No.ToInt())
+            && Model.cas_metric_has_recent_anticoagulants.Equals(LB2S2CriteriaOptions.No.ToInt())
+            && Model.cas_metric_has_major_surgery_history.Equals(LB2S2CriteriaOptions.No.ToInt())
+            && Model.cas_metric_has_stroke_history.Equals(LB2S2CriteriaOptions.No.ToInt()))
+            {
+                show_TPA_EarlyOrderIndicator = true;
+            }
+            <div class="col-xl-4 col-lg-4 col-md-12 second-col">
+                <label class="control-label mb-0">LB2S2 Criteria for tPA Early mixing</label>
+                <div class="bg-light-blue col-12" id="lb2s2-contianer">
+                    <div class="form-group row">
+                        <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Last Seen Normal Outside of 4.5 Hours</label>
+                        <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                            @Html.RadioButtonListFor(m => m.cas_metric_last_seen_normal, LB2S2CriteriValues, new { @class = "disabled" })
+                            @Html.ValidationMessageFor(model => model.cas_metric_last_seen_normal, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">History of Hemorrhagic Complications or Intracranial Hemorrhage</label>
+                        <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                            @Html.RadioButtonListFor(m => m.cas_metric_has_hemorrhgic_history, LB2S2CriteriValues, new { @class = "disabled" })
+                            @Html.ValidationMessageFor(model => model.cas_metric_has_hemorrhgic_history, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Recent Anticoagulants</label>
+                        <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                            @Html.RadioButtonListFor(m => m.cas_metric_has_recent_anticoagulants, LB2S2CriteriValues, new { @class = "disabled" })
+                            @Html.ValidationMessageFor(model => model.cas_metric_has_recent_anticoagulants, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">History of Recent Major Surgery</label>
+                        <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                            @Html.RadioButtonListFor(m => m.cas_metric_has_major_surgery_history, LB2S2CriteriValues, new { @class = "disabled" })
+                            @Html.ValidationMessageFor(model => model.cas_metric_has_major_surgery_history, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">History of Recent Stroke</label>
+                        <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                            @Html.RadioButtonListFor(m => m.cas_metric_has_stroke_history, LB2S2CriteriValues, new { @class = "disabled" })
+                            @Html.ValidationMessageFor(model => model.cas_metric_has_stroke_history, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row p-0 m-0 text-right @(show_TPA_EarlyOrderIndicator ? "" : "d-none")" id="early-tpa-order-indicator">
+                    <label class="col-12 bold text-danger">Place early tPA Order</label>
+                </div>
+                @if (User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))
+                {
+                    <div class="form-group row" id="tpaVerbalTime" style="display:none;">
+                        @*<label class="control-label col-xl-4 col-sm-4 col-lg-12">
+                                Alteplase Early Mix Decision:
+                            </label>
+                            <div class="col-xl-8 col-sm-8 col-lg-12">
+                                <div class="timer-container">
+                                    @Html.FormattedDateTextBoxFor(m => m.cas_metric_tpa_verbal_order_time_est, new { @class = "form-control timepicker" })
+                                    <div class="est-container">
+                                        <span>@timeZone</span>
+                                    </div>
+                                </div>
+                                <div id="cas_metric_tpa_verbal_order_time_est-error" class="error_msg" style="display:none;">
+                                    <label for="cas_metric_tpa_verbal_order_time_est">This field is required</label>
+                                </div>
+                            </div>*@
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group row" id="tpaVerbalTime" style="display:none;">
+                        <label class="control-label col-xl-4 col-sm-4 col-lg-12">
+                            Alteplase Early Mix Decision:
+                        </label>
+                        <div class="col-xl-8 col-sm-8 col-lg-12">
+                            <div class="timer-container">
+                                @Html.FormattedDateTextBoxFor(m => m.cas_metric_tpa_verbal_order_time_est, new { @class = "form-control timepicker" })
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+                            <div id="cas_metric_tpa_verbal_order_time_est-error" class="error_msg" style="display:none;">
+                                <label for="cas_metric_tpa_verbal_order_time_est">This field is required</label>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">tPA Candidate:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @Html.RadioButtonListFor(m => m.cas_metric_tpa_consult, dicOptions, new { @class = "disabled" })
+                        @Html.ValidationMessageFor(model => model.cas_metric_tpa_consult, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group row tpa-consult-group" style="display:none">
+                    @*@Html.LabelFor(m => m.cas_metric_pa_ordertime, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12" })*@
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12" id="cpoeOrder_Time">tPA CPOE Order Time:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(m => m.cas_metric_pa_ordertime_est, new { @class = "form-control timepicker" })
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+                        <div id="cas_metric_pa_ordertime_est-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_pa_ordertime_est">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row tpa-consult-group" style="display:none">
+                    @*@Html.LabelForWithSuffix(m => m.cas_metric_needle_time, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12 text-danger" })*@
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Needle Time:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(m => m.cas_metric_needle_time_est, new { @class = "form-control timepicker" })
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+
+                        <div id="cas_metric_needle_time_est-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_needle_time_est">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class=" col-xl-4 col-sm-4 col-lg-12"></div>
+                    <div class="col-xl-8 col-sm-8 col-lg-12 ">
+                        <div class="border border-danger w-90">
+                            @if (Model.cas_cst_key != CaseStatus.Complete.ToInt() && Model.cas_cst_key != CaseStatus.Cancelled.ToInt())
+                            {
+                                <div class="ml-1">
+                                    <span id="elapsedFromArrival" class="text-danger">
+                                        <strong>Elapsed Time From Arrival:</strong>
+                                        <span id="custom" class="elapsed-time">
+                                            <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="ml-1">
+                                    <span id="elapsedFromStamp" class="text-danger">
+                                        <strong>Elapsed Time From Stamp:</strong>
+                                        <span id="custom" class="elapsed-time">
+                                            <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="ml-1">
+                                    <span id="elapsedFromStamp" class="text-danger">
+                                        <strong>Elaspsed Time From Stamp:</strong>
+                                        <span>@Model.CaseInterval.ElapsedFromStamp</span>
+                                    </span>
+                                </div>
+                                <div class="ml-1">
+                                    <span id="elapsedFromStamp" class="text-danger">
+                                        <strong>Elaspsed Time From Arrival:</strong>
+                                        <span>@Model.CaseInterval.ElapsedFromArrival</span>
+                                    </span>
+                                </div>
+                            }
+                            <div class="ml-1">
+                                <span id="elapsedFromNeedle" class="text-danger">
+                                    <strong>Arrival to Needle Time:</strong>
+                                    <span id="custom" class="elapsed-time">
+                                        <span>@Model.CaseInterval.ArrivalToNeedle</span>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="ml-1">
+                                <span id="elapsedFromStamp" class="text-danger">
+                                    <strong>Bedside Response Time:</strong>
+                                    <span id="custom" class="elapsed-time">
+                                        <span>@Model.CaseInterval.StampToLogin</span>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">Weight Noted by Staff:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="row w-101">
+                            <div class="col-6">
+                                @Html.TextBoxFor(m => m.cas_metric_weight, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.cas_metric_weight, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-6">
+                                @Html.DropDownListFor(m => m.cas_metric_weight_unit, weightUnits, "--Select--", new { data_role = "dropdownlist", @class = "form-control staticDropDown disabled" })
+                                @Html.ValidationMessageFor(m => m.cas_identification_type, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row @(Model.cas_metric_weight.HasValue ? Model.cas_metric_weight.Value <= 0 ? "d-none" : "" : "d-none" )" id="cas_metrics_dose_container">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">Total Dose:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="row form-group">
+                            <div class="col-6">
+                                @Html.TextBoxFor(m => m.cas_metric_total_dose, new { @class = "form-control", id = "cas_metric_total_dose" })
+                            </div>
+                            <div class="col-6">
+                                mg
+                            </div>
+                        </div>
+                    </div>
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">Bolus:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="row form-group">
+                            <div class="col-6">
+                                @Html.TextBoxFor(m => m.cas_metric_bolus, new { @class = "form-control", id = "cas_metric_bolus" })
+                            </div>
+                            <div class="col-6">
+                                mg
+                            </div>
+                        </div>
+                    </div>
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">Infusion:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="row form-group">
+                            <div class="col-6">
+                                @Html.TextBoxFor(m => m.cas_metric_infusion, new { @class = "form-control" })
+                            </div>
+                            <div class="col-6">
+                                mg
+                            </div>
+                        </div>
+                    </div>
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12">Discard Quantity:</label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="row form-group">
+                            <div class="col-6">
+                                @Html.TextBoxFor(m => m.cas_metric_discard_quantity, new { @class = "form-control" })
+                            </div>
+                            <div class="col-6">
+                                mg
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">
+                        Video End Time:
+                    </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(m => m.cas_metric_video_end_time_est, new { @class = "form-control timepicker" })
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+                        <div id="cas_metric_video_end_time_est-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_video_end_time_est">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row tpa-consult-group">
+                    @if (Model.CaseInterval.IsNeedleTimeTPA)
+                    {
+                        <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger" id="cas_metric_tpaDelay_key_label">Reason for tPA Delay:</label>
+                    }
+                    else
+                    {
+                        <label class="control-label col-xl-4 col-sm-4 col-lg-12" id="cas_metric_tpaDelay_key_label">Reason for tPA Delay:</label>
+                    }
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <select id="cas_metric_tpaDelay_key" name="cas_metric_tpaDelay_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.cas_metric_tpaDelay_key : 0)"></select>
+                        <div id="cas_metric_tpaDelay_key-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_tpaDelay_key">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="cas_metric_tpaDelayNotes_key_label" class='form-group row tpa-consult-group @(Model.CaseInterval.IsNeedleTimeTPA ? "text-danger" : "")'>
+                    <label class="control-label col-sm-4">tPA Delay Notes: </label>
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        @Html.TextAreaFor(m => m.cas_billing_tpa_delay_notes, new { @class = "form-control" })
+                        <div id="cas_billing_tpa_delay_notes-error" class="error_msg" style="display:none;">
+                            <label for="cas_billing_tpa_delay_notes">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row non-tpa-consult-group">
+                    @Html.LabelFor(m => m.cas_metric_non_tpa_reason_key, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12 text-danger" })
+                    <div class="col-xl-8 col-sm-8 col-lg-12">
+                        <div class="form-group">
+                            <select id="cas_metric_non_tpa_reason_key" name="cas_metric_non_tpa_reason_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.cas_metric_non_tpa_reason_key : 0)"></select>
+                        </div>
+                        <div id="divNonTPACandidateOther" class="form-group" style="display:none;">
+                            @Html.TextAreaFor(m => m.cas_metric_non_tpa_reason_text, new { @class = "form-control", @placeholder = "Reason" })
+                        </div>
+                        <div id="cas_metric_non_tpa_reason_key-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_non_tpa_reason_key">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+
+                @* Added By Axim 25-09-2020 *@
+                <div id="attestation">
+                    <label class="control-label col-sm-4 @attestation_danger">Attestations: </label>
+                    <div id="attestation-error" class="error_msg" style="display:none;">
+                        <label for="attestation">This field is required</label>
+                    </div>
+                    <div class="container" style="background-color:orange">
+
+                        <div class="form-group row pt-3">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-3">I reviewed CT head personally: </label>
+                            <div class="col-3">
+                                @Html.RadioButtonListFor(m => m.cas_metric_ct_head_review, dicOptions, new { @class = "cas_metric_ct_head_review" })
+                            </div>
+
+                            <div class="col-5" id="divCThead_review" style="display:none">
+                                @Html.DropDownListFor(m => m.cas_metric_ct_head_review_reason, CTHeadReviewList, new { @id = "ddlCThead", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group row" id="divCTheadReviewPersonally" style="display:none">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-12"></label>
+                            <div class="form-group col-xl-8 col-sm-8 col-lg-12">
+                                <div class="input-group">
+                                    @Html.TextAreaFor(m => m.cas_metric_ct_head_review_text, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-3">I ordered advanced imaging personally: </label>
+                            <div class="col-3">
+                                @Html.RadioButtonListFor(m => m.cas_metric_advanced_imaging_personally, dicOptions, new { @class = "cas_metric_advanced_imaging_personally" })
+                            </div>
+                            <div class="col-5" id="divAdvancedImaging_review" style="display:none">
+                                @Html.DropDownListFor(m => m.cas_metric_advanced_imaging_personally_review, AdvancedImagingList, new { @id = "ddlAdvancedimaging", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group row" id="divAdvanceimagingPersonally" style="display:none">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-12"></label>
+                            <div class="form-group col-xl-8 col-sm-8 col-lg-12">
+                                <div class="input-group">
+                                    @Html.TextAreaFor(m => m.cas_metric_advanced_imaging_personally_text, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row" id="divtPAorderedPersonally_Main">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-3">I ordered tPA personally: </label>
+                            <div class="col-3">
+                                @Html.RadioButtonListFor(m => m.cas_metric_tpa_ordered_personally, dicOptions, new { @class = "cas_metric_tpa_ordered_personally" })
+                            </div>
+                            <div class="col-5" id="divtPAordered_review" style="display:none;margin-bottom:10px;">
+                                @Html.DropDownListFor(m => m.cas_metric_tpa_ordered_personally_review, tPAOrderedPersonallyList, new { @id = "ddltPAordered", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group row" id="divtPAorderedPersonally" style="display:none">
+                            <label class="control-label col-xl-4 col-sm-4 col-lg-12"></label>
+                            <div class="form-group col-xl-8 col-sm-8 col-lg-12">
+                                <div class="input-group">
+                                    @Html.TextAreaFor(m => m.cas_metric_tpa_ordered_personally_text, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.facility.fac_ai_software_ddl == 343)
+                        {
+                            <div class="form-group row" id="divVizappReview_Main">
+                                <label class="control-label col-xl-4 col-sm-4 col-lg-3">I used VIZ app to review the images and initiate communication with on ground team: </label>
+                                <div class="col-3">
+                                    @Html.RadioButtonListFor(m => m.cas_metric_viz_app_usage, dicOptions, new { @class = "cas_metric_viz_app_usage" })
+                                </div>
+                                <div class="col-5" id="divVizApp_review" style="display:none">
+                                    @Html.DropDownListFor(m => m.cas_metric_viz_app_usage_review, VizAppUsageList, new { @id = "ddlVizApp", @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="form-group row" id="divVizappReview" style="display:none">
+                                <label class="control-label col-xl-4 col-sm-4 col-lg-12"></label>
+                                <div class="form-group col-xl-8 col-sm-8 col-lg-12">
+                                    <div class="input-group">
+                                        @Html.TextAreaFor(m => m.cas_metric_viz_app_usage_text, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @* Ended BY Axim 25-09-020 *@
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-12 third-col">
+                @* added by axim 21-08-2020 *@
+                <div class="accordion" id="DivContraindicationsMain">
+                    <div class="card z-depth-0 bordered">
+                        <div class="card-header" id="headingOne">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne"
+                                        aria-expanded="true" aria-controls="collapseOne" id="tpa_btn_contraindications">
+                                    <i class="fa fa-plus" style="color:black;font-weight:bold;" id="btn_collapse">&nbsp;tPA Contraindications</i>
+                                </button>
+                            </h5>
+                            <div id="tpacontraindications-error" class="error_msg" style="display:none;">
+                                <label for="tpacontraindications">This field is required</label>
+                            </div>
+                        </div>
+                        <div id="collapseOne" class="collapse show " aria-labelledby="headingOne"
+                             data-parent="#DivContraindicationsMain">
+                            <div class="card-body bg-light-blued col-12">
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Last Known Well > 4.5 hours</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_time_of_set == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_time_of_set" class="cas_metric_has_time_of_set" value="@item.Key" id="cas_metric_has_time_of_set_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_time_of_set" class="cas_metric_has_time_of_set" value="@item.Key" id="cas_metric_has_time_of_set_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">CT Head showing hemorrhage</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_ct_head_hemorrhage == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_ct_head_hemorrhage" class="cas_metric_has_ct_head_hemorrhage" value="@item.Key" id="cas_metric_has_ct_head_hemorrhage_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_ct_head_hemorrhage" class="cas_metric_has_ct_head_hemorrhage" value="@item.Key" id="cas_metric_has_ct_head_hemorrhage_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Ischemic stroke within 3 months</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_ischemic_stroke == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_ischemic_stroke" class="cas_metric_has_ischemic_stroke" value="@item.Key" id="cas_metric_has_ischemic_stroke_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_ischemic_stroke" class="cas_metric_has_ischemic_stroke" value="@item.Key" id="cas_metric_has_ischemic_stroke_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Severe head trauma within 3 months</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_severe_head_trauma == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_severe_head_trauma" class="cas_metric_has_severe_head_trauma" value="@item.Key" id="cas_metric_has_severe_head_trauma_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_severe_head_trauma" class="cas_metric_has_severe_head_trauma" value="@item.Key" id="cas_metric_has_severe_head_trauma_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Intracranial/intraspinal surgery within 3 months</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_intracranial_surgery == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_intracranial_surgery" class="cas_metric_has_intracranial_surgery" value="@item.Key" id="cas_metric_has_intracranial_surgery_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_intracranial_surgery" class="cas_metric_has_intracranial_surgery" value="@item.Key" id="cas_metric_has_intracranial_surgery_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">History of intracranial hemorrhage</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_intracranial_hemorrhage == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_intracranial_hemorrhage" class="cas_metric_has_intracranial_hemorrhage" value="@item.Key" id="cas_metric_has_intracranial_hemorrhage_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_intracranial_hemorrhage" class="cas_metric_has_intracranial_hemorrhage" value="@item.Key" id="cas_metric_has_intracranial_hemorrhage_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Symptoms and signs consistent with an SAH</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_symptoms_SAH == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_symptoms_SAH" class="cas_metric_has_symptoms_SAH" value="@item.Key" id="cas_metric_has_symptoms_SAH_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_symptoms_SAH" class="cas_metric_has_symptoms_SAH" value="@item.Key" id="cas_metric_has_symptoms_SAH_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">GI malignancy or GI bleed within 21 days</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_GI_malignancy == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_GI_malignancy" class="cas_metric_has_GI_malignancy" value="@item.Key" id="cas_metric_has_GI_malignancy_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_GI_malignancy" class="cas_metric_has_GI_malignancy" value="@item.Key" id="cas_metric_has_GI_malignancy_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Coagulopathy: Platelets <100 000/mm<sup>3</sup>, INR >1.7, aPTT>40 s, or PT >15 s</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_coagulopathy_platelets == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_coagulopathy_platelets" class="cas_metric_has_coagulopathy_platelets" value="@item.Key" id="cas_metric_has_coagulopathy_platelets_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_coagulopathy_platelets" class="cas_metric_has_coagulopathy_platelets" value="@item.Key" id="cas_metric_has_coagulopathy_platelets_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Treatment dose of LMWH within the previous 24 hrs</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_treatment_LMWH == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_treatment_LMWH" class="cas_metric_has_treatment_LMWH" value="@item.Key" id="cas_metric_has_treatment_LMWH_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_treatment_LMWH" class="cas_metric_has_treatment_LMWH" value="@item.Key" id="cas_metric_has_treatment_LMWH_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Use of NOACs in past 48 hours</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_use_NOAC == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_use_NOAC" class="cas_metric_has_use_NOAC" value="@item.Key" id="cas_metric_has_use_NOAC_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_use_NOAC" class="cas_metric_has_use_NOAC" value="@item.Key" id="cas_metric_has_use_NOAC_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Glycoprotein IIb/IIIa receptor inhibitors use</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_glycoprotein_IIB == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_glycoprotein_IIB" class="cas_metric_has_glycoprotein_IIB" value="@item.Key" id="cas_metric_has_glycoprotein_IIB_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_glycoprotein_IIB" class="cas_metric_has_glycoprotein_IIB" value="@item.Key" id="cas_metric_has_glycoprotein_IIB_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Symptoms consistent with infective endocarditis</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_symptoms_endocarditis == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_symptoms_endocarditis" class="cas_metric_has_symptoms_endocarditis" value="@item.Key" id="cas_metric_has_symptoms_endocarditis_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_symptoms_endocarditis" class="cas_metric_has_symptoms_endocarditis" value="@item.Key" id="cas_metric_has_symptoms_endocarditis_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Suspected aortic arch dissection</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_suspected_aortic_arch == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_suspected_aortic_arch" class="cas_metric_has_suspected_aortic_arch" value="@item.Key" id="cas_metric_has_suspected_aortic_arch_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_suspected_aortic_arch" class="cas_metric_has_suspected_aortic_arch" value="@item.Key" id="cas_metric_has_suspected_aortic_arch_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="control-label col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-8">Intra-axial intracranial neoplasm</label>
+                                    <div class="col-xs-12 col-sm-6 col-lg-12 col-xl-6 col-md-4">
+                                        @{
+                                            foreach (var item in LB2S2CriteriValues)
+                                            {
+                                                if (Model.cas_metric_has_intracranial_neoplasm == Convert.ToInt16(item.Key))
+                                                {
+                                                    <input type="radio" name="cas_metric_has_intracranial_neoplasm" class="cas_metric_has_intracranial_neoplasm" value="@item.Key" id="cas_metric_has_intracranial_neoplasm_@item.Key" checked /> @item.Value
+                                                }
+                                                else
+                                                {
+                                                    <input type="radio" name="cas_metric_has_intracranial_neoplasm" class="cas_metric_has_intracranial_neoplasm" value="@item.Key" id="cas_metric_has_intracranial_neoplasm_@item.Key" /> @item.Value
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @* ended by axim 21-08-2020 *@
+                <div class="form-group row pt-4 mb-0">
+                    <label class="control-label col-sm-12 text-danger">CT Head: [At least one must be checked to complete a case]</label>
+                    <div class="col-sm-12">
+                        <div class="form-check">
+                            @Html.CheckBoxFor(m => m.cas_metric_ct_head_has_no_acture_hemorrhage, new { @class = "form-check-input" })
+                            <label class="form-check-label">
+                                Showed No Acute Hemorrhage or Acute Core Infarct
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            @Html.CheckBoxFor(m => m.cas_metric_ct_head_is_reviewed, new { @class = "form-check-input" })
+                            <label class="form-check-label">
+                                Reviewed
+                            </label>
+                            <div id="divReviewedText" class="form-group @(Model.cas_metric_ct_head_is_reviewed == true ? "" : "d-none")">
+                                @Html.TextAreaFor(m => m.cas_metric_ct_head_reviewed_text, new { @class = "form-control", @placeholder = "Report" })
+                            </div>
+                        </div>
+
+                        <div class="form-check">
+                            @Html.CheckBoxFor(m => m.cas_metric_ct_head_is_not_reviewed, new { @class = "form-check-input" })
+                            <label class="form-check-label">
+                                Not Reviewed
+                            </label>
+                        </div>
+                        <div id="cas_metric_ct_head_has_no_acture_hemorrhage-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_ct_head_has_no_acture_hemorrhage">Please check at least one of the above</label>
+                        </div>
+                    </div>
+                </div>
+                @{
+                    var showAdvanceImaging = Model.cas_metric_thrombectomy_medical_decision_making == ThrombectomyMedicalDecisionMaking.LowerLikelihoodOfLargeVesselOcclusiveButFollowingStatStudiesAreRecommended.ToInt() ||
+
+                    Model.cas_metric_thrombectomy_medical_decision_making == ThrombectomyMedicalDecisionMaking.ClinicalPresentationIsSuggestiveOfLargeVesselOcclusiveDisease_RecommendationsAreAsFollows.ToInt();
+                }
+                <div class="form-group row mb-0">
+                    <label class="control-label col-sm-12 text-danger">Thrombectomy Medical Decision Making: [At least one must be checked to complete a case]</label>
+                    <div class="col-sm-12" id="thrombectomyChecks">
+                        @Html.RadioButtonListFor(m => m.cas_metric_thrombectomy_medical_decision_making, thrombectomyMedicalDecisionMaking, new { @class = "disabled" })
+                        <div id="cas_metric_thrombectomy_medical_decision_making-error" class="error_msg" style="display:none;">
+                            <label>Please check at least one of the above</label>
+                        </div>
+
+                        <div id="ctabtn" class="@( showAdvanceImaging? "d-none":"")">
+                            <button @ctaDisabled id="ctabtn1" type="button" class="btn btn-sm btn-danger ctabtn" style="padding:0px; width:75px;">CTA</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="advanceImaging" class="@((!showAdvanceImaging)? "d-none":"")">
+                    <div class="form-group row mb-0">
+                        <div class="col-sm-12">
+                            <label class="control-label">
+                                Advanced Imaging:
+                            </label>
+                            <button @ctaDisabled id="ctabtn2" type="button" class="btn btn-sm btn-danger ctabtn" style="padding:0px; width:75px;">CTA</button>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(m => m.cas_metric_advance_imaging_cta_head_and_neck, new { @class = "form-check-input" })
+                                <label class="form-check-label">
+                                    CTA Head and Neck
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                @Html.CheckBoxFor(m => m.cas_metric_advance_imaging_ct_perfusion, new { @class = "form-check-input" })
+                                <label class="form-check-label">
+                                    CT Perfusion
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                @Html.CheckBoxFor(m => m.cas_metric_advance_imaging_to_be_reviewed_by_ed_provider_and_nir, new { @class = "form-check-input" })
+                                <label class="form-check-label">
+                                    Advanced Imaging to be Reviewed by ED Provider and NIR
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                @Html.CheckBoxFor(m => m.cas_metric_advance_imaging_is_suggestive_of_large_vessel_occlusion, new { @class = "form-check-input" })
+                                <label class="form-check-label">
+                                    Advanced Imaging is Suggestive of Large Vessel Occlusion, Neurointerventional Specialist to be Consulted
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                @Html.CheckBoxFor(m => m.cas_metric_advance_imaging_reviewed_no_indication_of_large_vessel_occlusive_thrombus, new { @class = "form-check-input" })
+                                <label class="form-check-label">
+                                    Reviewed, No Indication of Large Vessel Occlusive Thrombus, Patient is not an NIR Candidate
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*Addition of new fields*@
+                <div id="radiologist_callback_for_review_of_advance_imaging_container" class="form-group row @*@(Model.cas_metric_advance_imaging_not_obtained ? " d-none" : "" )*@">
+                    <label class="control-label col-xl-8 col-sm-8 col-lg-12">
+                        Radiologist Call Back for Review of Advanced Imaging:
+                        <a class="fa fa-phone text-body ml-1 mr-1 mt-1 edMainLink @(loggedInUser.EnableFive9 ? "edMainLinkClick" : "")" href="javascript:void(0)" data-type="Radiology"></a>
+                    </label>
+                    <div class="col-xl-4 col-sm-4 col-lg-12">
+                        @Html.RadioButtonListFor(m => m.cas_metric_radiologist_callback_for_review_of_advance_imaging, dicOptions, new { @class = "disabled" })
+                        <div id="cas_metric_radiologist_callback_for_review_of_advance_imaging-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_radiologist_callback_for_review_of_advance_imaging">This field is required</label>
+                        </div>
+                        @*@Html.ValidationMessageFor(model => model.cas_metric_radiologist_callback_for_review_of_advance_imaging, "", new { @class = "text-danger" })*@
+                    </div>
+                    <div class="col-xl-8 col-sm-8 col-lg-12 d-none" id="divRadiologistCallbackNotes">
+                        @Html.TextAreaFor(model => model.cas_metric_radiologist_callback_for_review_of_advance_imaging_notes, 3, 5, htmlAttributes: new { style = "width: 100%; max-width: 100%;" })
+                        <div id="cas_metric_radiologist_callback_for_review_of_advance_imaging_notes-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_radiologist_callback_for_review_of_advance_imaging_notes">This field is required</label>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-8 col-sm-8 col-lg-12 d-none" id="divRadiologistCallbackDate">
+                        @*@Html.TextBoxFor(model => model.cas_metric_radiologist_callback_for_review_of_advance_imaging_date, new  { @class= "form-control timepicker" })*@
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(model => model.cas_metric_radiologist_callback_for_review_of_advance_imaging_date, new { @class = "form-control timepicker" })
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+                        <div id="cas_metric_radiologist_callback_for_review_of_advance_imaging_date-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_radiologist_callback_for_review_of_advance_imaging_date">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="control-label col-xl-8 col-sm-8 col-lg-12">
+                        Neuro Interventional Case:
+                    </label>
+                    <div class="col-xl-4 col-sm-4 col-lg-12">
+                        @Html.RadioButtonListFor(m => m.cas_metric_is_neuro_interventional, dicOptions, new { @class = "disabled" })
+                        <div id="cas_metric_is_neuro_interventional-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_is_neuro_interventional">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row @(Model.cas_metric_is_neuro_interventional.HasValue && Model.cas_metric_is_neuro_interventional.Value == true ? "" : "d-none")"
+                     id="metric_discussed_neurointerventionalist_container">
+                    <label class="control-label col-xl-8 col-sm-8 col-lg-12 text-danger">Discussed with Neurointerventionalist?</label>
+                    <div class="col-xl-4 col-sm-4 col-lg-12">
+                        @Html.RadioButtonListFor(m => m.cas_metric_discussed_with_neurointerventionalist, dicOptions, new { @class = "disabled" })
+                        @Html.ValidationMessageFor(model => model.cas_metric_discussed_with_neurointerventionalist, "", new { @class = "text-danger" })
+                    </div>
+                    @*Addition of new fields*@
+                    <div class="col-xl-8 col-sm-8 col-lg-12" id="divMetricDiscussedNeurointerventionalistNotes">
+                        @Html.TextAreaFor(model => model.cas_metric_discussed_with_neurointerventionalist_notes, 3, 5, htmlAttributes: new { style = "width: 100%; max-width: 100%;" })
+                        <div id="cas_metric_discussed_with_neurointerventionalist_notes-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_discussed_with_neurointerventionalist_notes">This field is required</label>
+                        </div>
+                    </div>
+                    <div class="col-xl-8 col-sm-8 col-lg-12 d-none" id="divMetricDiscussedNeurointerventionalistDate">
+                        @*@Html.TextBoxFor(model => model.cas_metric_discussed_with_neurointerventionalist_date, new { @class = "form-control timepicker" })*@
+                        <div class="timer-container">
+                            @Html.FormattedDateTextBoxFor(model => model.cas_metric_discussed_with_neurointerventionalist_date, new { @class = "form-control timepicker" })
+                            <div class="est-container">
+                                <span>@timeZone</span>
+                            </div>
+                        </div>
+                        <div id="cas_metric_discussed_with_neurointerventionalist_date-error" class="error_msg" style="display:none;">
+                            <label for="cas_metric_discussed_with_neurointerventionalist_date">This field is required</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="metric_physician_checkboxes" style="display:none;">
+                    <div class="form-group">
+                        <div class="row">
+                            <label class="control-label col-xl-8 col-sm-8 col-lg-12 text-danger">
+                                @*TCARE-457
+                                    ER Physician Notified of the Decision on Thrombolytics Management
+                                *@
+                                ED Physician Notified of Diagnostic Impression and Management Plan:
+                            </label>
+                            <div class="col-xl-4 col-sm-4 col-lg-12">
+                                @Html.RadioButtonListFor(m => m.cas_metric_physician_notified_of_thrombolytics, dicOptions, new { @class = "disabled" })
+                                <div id="cas_metric_physician_notified_of_thrombolytics-error" class="error_msg" style="display:none;">
+                                    <label for="cas_metric_discussed_with_neurointerventionalist_date">This field is required</label>
+                                </div>
+                            </div>
+                            <div class="col-xl-8 col-sm-8 col-lg-12 d-none" id="divPhysicianNotifiedOfThrombolyticsNotes">
+                                @Html.TextAreaFor(model => model.cas_metric_physician_notified_of_thrombolytics_notes, 3, 5, htmlAttributes: new { style = "width: 100%; max-width: 100%;" })
+                                <div id="cas_metric_physician_notified_of_thrombolytics_notes-error" class="error_msg" style="display:none;">
+                                    <label for="cas_metric_physician_notified_of_thrombolytics_notes">This field is required</label>
+                                </div>
+                            </div>
+                            <div class="col-xl-8 col-sm-8 col-lg-12 d-none" id="divPhysicianNotifiedOfThrombolyticsDate">
+                                @*@Html.TextBoxFor(model => model.cas_metric_physician_notified_of_thrombolytics_date, new { @class = "form-control timepicker" })*@
+                                <div class="timer-container">
+                                    @Html.FormattedDateTextBoxFor(model => model.cas_metric_physician_notified_of_thrombolytics_date, new { @class = "form-control timepicker" })
+                                    <div class="est-container">
+                                        <span>@timeZone</span>
+                                    </div>
+                                </div>
+                                <div id="cas_metric_physician_notified_of_thrombolytics_date-error" class="error_msg" style="display:none;">
+                                    <label for="cas_metric_physician_notified_of_thrombolytics_date">This field is required</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group d-none">
+                        <div class="row">
+                            <label class="control-label col-xl-8 col-sm-8 col-lg-12">
+                                ER Physician Recommended to Consult Neurointerventionalist Physician If the Advanced Imaging Suggestive of Large Vessel Occlusive Thrombotic Disease
+                            </label>
+                            <div class="col-xl-4 col-sm-4 col-lg-12">
+                                @Html.RadioButtonListFor(m => m.cas_metric_physician_recommented_consult_neurointerventionalist, dicOptions, new { @class = "disabled" })
+                                <div id="cas_metric_physician_recommented_consult_neurointerventionalist-error" class="error_msg" style="display:none;">
+                                    <label for="cas_metric_physician_recommented_consult_neurointerventionalist">This field is required</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.FormattedDateTextBoxFor(m => m.cas_response_ts_notification, new { @class = "d-none" })
+            @Html.FormattedDateTextBoxFor(m => m.cas_metric_stamp_time_est, new { @class = "d-none" })
+        }
+    }
+</div>
+
+<script>
+    //$(document).ready(function () {
+
+    //   // $("input:radio[name=cas_metric_tpa_consult]:first").prop("checked", true).trigger("click");
+    //});
+        patientTypeChange();
+        tpaCandidateChange();
+        historyRadioButtonChanges();
+
+        if (@antiplatelet == true) {
+            $("#antiplateletusediv").show();
+        }
+        if (@anticoagunt == true) {
+            $("#anticoagulantusediv").show();
+    }
+
+    if (@ctHeadReview) {
+        $("#divCThead_review").show();
+        if ($("#ddlCThead").val() == "3") {
+            $("#divCTheadReviewPersonally").show();
+        }
+    }
+    if (@advancedImaging) {
+        $("#divAdvancedImaging_review").show();
+        if ($("#ddlAdvancedimaging").val() == "4") {
+            $("#divAdvanceimagingPersonally").show();
+        }
+    }
+    if (@tPAordered) {
+        $("#divtPAordered_review").show();
+        if ($("#ddltPAordered").val() == "3") {
+            $("#divtPAorderedPersonally").show();
+        }
+    }
+    if (@vizappUsage) {
+        $("#divVizApp_review").show();
+        if ($("#ddlVizApp").val() == "5") {
+            $("#divVizappReview").show();
+        }
+    }
+
+        //added by axim 21-08-2020
+    var tpadatevaluecheck = '@checkdatetpa'.toLowerCase();
+    var defaulttPA = false;
+    if ($('input:radio[name=cas_metric_tpa_consult]:checked').val() == "true") {
+        if (tpadatevaluecheck == "true") {
+            $("#btn_collapse").addClass("text-danger");
+            $(".cas_metric_has_time_of_set,.cas_metric_has_ct_head_hemorrhage,.cas_metric_has_ischemic_stroke,.cas_metric_has_severe_head_trauma,.cas_metric_has_intracranial_surgery,.cas_metric_has_intracranial_hemorrhage,.cas_metric_has_symptoms_SAH,.cas_metric_has_GI_malignancy,.cas_metric_has_coagulopathy_platelets,.cas_metric_has_treatment_LMWH,.cas_metric_has_use_NOAC,.cas_metric_has_glycoprotein_IIB,.cas_metric_has_symptoms_endocarditis,.cas_metric_has_suspected_aortic_arch,.cas_metric_has_intracranial_neoplasm").attr('required', '');
+        }
+        $("#tpa_btn_contraindications").removeClass("collapsed");
+        $("#tpa_btn_contraindications").attr("aria-expanded", 'true');
+        $("#collapseOne").addClass("collapse show");
+        if (@cpoe_order) {
+            $("#cpoeOrder_Time").addClass("text-danger");
+        }
+        $("#divtPAorderedPersonally_Main").show();
+        if ($('#ddltPAordered').val() == "3") {
+            $("#divtPAorderedPersonally").show();
+        }
+    }
+    else {
+        $("#btn_collapse").removeClass("text-danger");
+        $(".cas_metric_has_time_of_set,.cas_metric_has_ct_head_hemorrhage,.cas_metric_has_ischemic_stroke,.cas_metric_has_severe_head_trauma,.cas_metric_has_intracranial_surgery,.cas_metric_has_intracranial_hemorrhage,.cas_metric_has_symptoms_SAH,.cas_metric_has_GI_malignancy,.cas_metric_has_coagulopathy_platelets,.cas_metric_has_treatment_LMWH,.cas_metric_has_use_NOAC,.cas_metric_has_glycoprotein_IIB,.cas_metric_has_symptoms_endocarditis,.cas_metric_has_suspected_aortic_arch,.cas_metric_has_intracranial_neoplasm").removeAttr('required');
+        $("#tpa_btn_contraindications").addClass("collapsed");
+        $("#tpa_btn_contraindications").attr("aria-expanded", 'false');
+        $("#collapseOne").removeClass("collapse show");
+        $("#collapseOne").addClass("collapse");
+        if ('@(Model.cas_metric_has_time_of_set == null && Model.cas_metric_has_ct_head_hemorrhage == null &&
+             Model.cas_metric_has_ischemic_stroke == null && Model.cas_metric_has_severe_head_trauma == null &&
+             Model.cas_metric_has_intracranial_surgery == null && Model.cas_metric_has_intracranial_hemorrhage == null
+             && Model.cas_metric_has_symptoms_SAH == null && Model.cas_metric_has_GI_malignancy == null &&
+             Model.cas_metric_has_coagulopathy_platelets == null && Model.cas_metric_has_treatment_LMWH == null &&
+             Model.cas_metric_has_use_NOAC == null && Model.cas_metric_has_glycoprotein_IIB == null &&
+             Model.cas_metric_has_symptoms_endocarditis == null && Model.cas_metric_has_suspected_aortic_arch == null
+             && Model.cas_metric_has_intracranial_neoplasm == null)' == "True") {
+            tpacontraindicationsDefaultNo();
+            defaulttPA = true;
+        }
+        $("#divtPAorderedPersonally_Main").hide();
+        $("#divtPAorderedPersonally").hide();
+    }
+    if (defaulttPA) {
+        setTimeout(function () {
+            tpacontraindicationsDefaultUnknown();
+        }, 5000);
+    }
+        $(".collapse.show").each(function () {
+            $(this).prev(".card-header").find(".fa").addClass("fa-minus").removeClass("fa-plus");
+        });
+        // Toggle plus minus icon on show hide of collapse element
+        $(".collapse").on('show.bs.collapse', function () {
+            $(this).prev(".card-header").find(".fa").removeClass("fa-plus").addClass("fa-minus");
+        }).on('hide.bs.collapse', function () {
+            $(this).prev(".card-header").find(".fa").removeClass("fa-minus").addClass("fa-plus");
+        });
+
+        //ended by axim 21-08-2020
+        $(".cas_metric_has_time_of_set,.cas_metric_has_ct_head_hemorrhage,.cas_metric_has_ischemic_stroke,.cas_metric_has_severe_head_trauma,.cas_metric_has_intracranial_surgery,.cas_metric_has_intracranial_hemorrhage,.cas_metric_has_symptoms_SAH,.cas_metric_has_GI_malignancy,.cas_metric_has_coagulopathy_platelets,.cas_metric_has_treatment_LMWH,.cas_metric_has_use_NOAC,.cas_metric_has_glycoprotein_IIB,.cas_metric_has_symptoms_endocarditis,.cas_metric_has_suspected_aortic_arch,.cas_metric_has_intracranial_neoplasm").off("change").change(function () {
+            var metric_value = $(this).val();
+            if (metric_value == 1 && $('input:radio[name=cas_metric_tpa_consult]:checked').val() == "true") {
+                $("#divModelPopUp").empty().showAlertPopUp("TPA Contraindicated",
+                    "This patient has an absolute contraindication to tPA. Are you sure you want to continue with tPA?",
+                    function () {
+                        $("#divModelPopUp").modal("hide");
+                    }
+                );
+            }
+    });
+
+    $('input:radio[name=cas_metric_tpa_consult]').off("change").change(function () {
+        resetTpaCandidatehiddenFields();
+        var currvalue = $(this).val();
+        if (currvalue == "true") {
+            if (tpadatevaluecheck == "true") {
+                $("#btn_collapse").addClass("text-danger");
+                $(".cas_metric_has_time_of_set,.cas_metric_has_ct_head_hemorrhage,.cas_metric_has_ischemic_stroke,.cas_metric_has_severe_head_trauma,.cas_metric_has_intracranial_surgery,.cas_metric_has_intracranial_hemorrhage,.cas_metric_has_symptoms_SAH,.cas_metric_has_GI_malignancy,.cas_metric_has_coagulopathy_platelets,.cas_metric_has_treatment_LMWH,.cas_metric_has_use_NOAC,.cas_metric_has_glycoprotein_IIB,.cas_metric_has_symptoms_endocarditis,.cas_metric_has_suspected_aortic_arch,.cas_metric_has_intracranial_neoplasm").attr('required', '');
+            }
+            $("#tpa_btn_contraindications").removeClass("collapsed");
+            $("#tpa_btn_contraindications").attr("aria-expanded", 'true');
+            $("#collapseOne").addClass("collapse show");
+            if (@cpoe_order) {
+                $("#cpoeOrder_Time").addClass("text-danger");
+            }
+            tpacontraindicationsDefaultNo();
+            $("#divtPAorderedPersonally_Main").show();
+            if ($('#ddltPAordered').val() == "3" && $("#divtPAordered_review").css("display").toLowerCase() != "none") {
+                $("#divtPAorderedPersonally").show();
+            }
+        }
+        else {
+            $("#btn_collapse").removeClass("text-danger");
+            $(".cas_metric_has_time_of_set,.cas_metric_has_ct_head_hemorrhage,.cas_metric_has_ischemic_stroke,.cas_metric_has_severe_head_trauma,.cas_metric_has_intracranial_surgery,.cas_metric_has_intracranial_hemorrhage,.cas_metric_has_symptoms_SAH,.cas_metric_has_GI_malignancy,.cas_metric_has_coagulopathy_platelets,.cas_metric_has_treatment_LMWH,.cas_metric_has_use_NOAC,.cas_metric_has_glycoprotein_IIB,.cas_metric_has_symptoms_endocarditis,.cas_metric_has_suspected_aortic_arch,.cas_metric_has_intracranial_neoplasm").removeAttr('required');
+            tpacontraindicationsDefaultUnknown();
+            $("#tpa_btn_contraindications").addClass("collapsed");
+            $("#tpa_btn_contraindications").attr("aria-expanded", 'false');
+            $("#collapseOne").removeClass("collapse show");
+            $("#collapseOne").addClass("collapse");
+            $("#divtPAorderedPersonally_Main").hide();
+            $("#divtPAorderedPersonally").hide();
+        }
+    });
+        //ended by axim 21-08-2020
+        $(".cas_antiplatelet_use").on("change").change(function () {
+            var _value = $(this).val();
+            if (_value == "true") {
+                $("#antiplateletusediv").show();
+            }
+            else {
+                $("#antiplateletusediv").hide();
+            }
+        });
+
+        $(".cas_anticoagulant_use").on("change").change(function () {
+            var _value = $(this).val();
+            if (_value == "true") {
+                $("#anticoagulantusediv").show();
+            }
+            else {
+                $("#anticoagulantusediv").hide();
+            }
+    });
+
+    //Added by Axim 25-09-2020
+
+    $("#ddlCThead").on("change").change(function () {
+        var _value = $(this).val();
+        if (_value == "3") {
+            $("#divCTheadReviewPersonally").show();
+        }
+        else {
+            $("#divCTheadReviewPersonally").hide();
+        }
+    });
+    $("#ddlAdvancedimaging").on("change").change(function () {
+        var _value = $(this).val();
+        if (_value == "4") {
+            $("#divAdvanceimagingPersonally").show();
+        }
+        else {
+            $("#divAdvanceimagingPersonally").hide();
+        }
+    });
+    $("#ddltPAordered").on("change").change(function () {
+        var _value = $(this).val();
+        if (_value == "3") {
+            $("#divtPAorderedPersonally").show();
+        }
+        else {
+            $("#divtPAorderedPersonally").hide();
+        }
+    });
+    $("#ddlVizApp").on("change").change(function () {
+        var _value = $(this).val();
+        if (_value == "5") {
+            $("#divVizappReview").show();
+        }
+        else {
+            $("#divVizappReview").hide();
+        }
+    });
+
+    $(".cas_metric_ct_head_review").on("change").change(function () {
+        var _value = $(this).val();
+        if (_value == "true") {
+            $("#divCThead_review").hide();
+            $("#divCTheadReviewPersonally").hide();
+        }
+        else {
+            $("#divCThead_review").show();
+            if ($("#ddlCThead").val() == "3") {
+                $("#divCTheadReviewPersonally").show();
+            }
+        }
+    });
+
+    $(".cas_metric_advanced_imaging_personally").on("change").change(function () {
+        var _value = $(this).val();
+        if (_value == "true") {
+            $("#divAdvancedImaging_review").hide();
+            $("#divAdvanceimagingPersonally").hide();
+        }
+        else {
+            $("#divAdvancedImaging_review").show();
+            if ($("#ddlAdvancedimaging").val() == "4") {
+                $("#divAdvanceimagingPersonally").show();
+            }
+        }
+    });
+
+    $(".cas_metric_tpa_ordered_personally").on("change").change(function () {
+        var _value = $(this).val();
+        if (_value == "true") {
+            $("#divtPAordered_review").hide();
+            $("#divtPAorderedPersonally").hide();
+        }
+        else {
+            $("#divtPAordered_review").show();
+            if ($("#ddltPAordered").val() == "3") {
+                $("#divtPAorderedPersonally").show();
+            }
+        }
+    });
+    $(".cas_metric_viz_app_usage").on("change").change(function () {
+        var _value = $(this).val();
+        if (_value == "true") {
+            $("#divVizApp_review").hide();
+            $("#divVizappReview").hide();
+        }
+        else {
+            $("#divVizApp_review").show();
+            if ($("#ddlVizApp").val() == "5") {
+                $("#divVizappReview").show();
+            }
+        }
+    });
+    //ended by Axim 25-09-2020
+        @{
+            if (Model.cas_cst_key != CaseStatus.Complete.ToInt() && Model.cas_cst_key != CaseStatus.Cancelled.ToInt())
+            {
+
+                if (Model.cas_metric_stamp_time.HasValue)
+                {
+                      <Text>
+        upTime('@(Model.cas_metric_stamp_time.Value.FormatDateTime())', $("#elapsedFromStamp"));
+                    </Text>
+                }
+
+
+                if (Model.cas_metric_door_time.HasValue)
+                {
+                    <Text>
+        upTime('@(Model.cas_metric_door_time.Value.FormatDateTime())', $("#elapsedFromArrival"));
+                     </TEXT>
+                }
+            }
+         }
+        var showNonTPAOther = @((ViewBag.IsOther != null ? Convert.ToString(ViewBag.IsOther).ToLower() : false.ToString().ToLower()));
+        if (showNonTPAOther) {
+            $("#divNonTPACandidateOther").show();
+        }
+
+        $('input:radio[name=cas_patient_type]').off("click").on("click", patientTypeChange);
+        $('input:radio[name=cas_metric_tpa_consult]').off("click").on("click", tpaCandidateChange);
+        $('.bg-light-blue input:radio').off("click").on("click", historyRadioButtonChanges);
+        $("#cas_metric_non_tpa_reason_key").off("change").change(function () {
+            if ($(this).text().toLowerCase() != "other") {
+                $("#cas_metric_non_tpa_reason_text").val("");
+            }
+        });
+        //Added by Axim 25-08-2020
+        function tpacontraindicationsDefaultNo() {
+            $('#cas_metric_has_time_of_set_0').prop("checked", true);
+            $('#cas_metric_has_ct_head_hemorrhage_0').prop("checked", true);
+            $('#cas_metric_has_ischemic_stroke_0').prop("checked", true);
+            $('#cas_metric_has_severe_head_trauma_0').prop("checked", true);
+            $('#cas_metric_has_intracranial_surgery_0').prop("checked", true);
+            $('#cas_metric_has_intracranial_hemorrhage_0').prop("checked", true);
+            $('#cas_metric_has_symptoms_SAH_0').prop("checked", true);
+            $('#cas_metric_has_GI_malignancy_0').prop("checked", true);
+            $('#cas_metric_has_coagulopathy_platelets_0').prop("checked", true);
+            $('#cas_metric_has_treatment_LMWH_0').prop("checked", true);
+            $('#cas_metric_has_use_NOAC_0').prop("checked", true);
+            $('#cas_metric_has_glycoprotein_IIB_0').prop("checked", true);
+            $('#cas_metric_has_symptoms_endocarditis_0').prop("checked", true);
+            $('#cas_metric_has_suspected_aortic_arch_0').prop("checked", true);
+            $('#cas_metric_has_intracranial_neoplasm_0').prop("checked", true);
+        }
+        function tpacontraindicationsDefaultUnknown() {
+            $('#cas_metric_has_time_of_set_2').prop("checked", true);
+            $('#cas_metric_has_ct_head_hemorrhage_2').prop("checked", true);
+            $('#cas_metric_has_ischemic_stroke_2').prop("checked", true);
+            $('#cas_metric_has_severe_head_trauma_2').prop("checked", true);
+            $('#cas_metric_has_intracranial_surgery_2').prop("checked", true);
+            $('#cas_metric_has_intracranial_hemorrhage_2').prop("checked", true);
+            $('#cas_metric_has_symptoms_SAH_2').prop("checked", true);
+            $('#cas_metric_has_GI_malignancy_2').prop("checked", true);
+            $('#cas_metric_has_coagulopathy_platelets_2').prop("checked", true);
+            $('#cas_metric_has_treatment_LMWH_2').prop("checked", true);
+            $('#cas_metric_has_use_NOAC_2').prop("checked", true);
+            $('#cas_metric_has_glycoprotein_IIB_2').prop("checked", true);
+            $('#cas_metric_has_symptoms_endocarditis_2').prop("checked", true);
+            $('#cas_metric_has_suspected_aortic_arch_2').prop("checked", true);
+            $('#cas_metric_has_intracranial_neoplasm_2').prop("checked", true);
+        }
+        //Ended BY Axim 25-08-2020
+        //bg-light-blue input:radio
+        function patientTypeChange() {
+            if ($('input:radio[name=cas_patient_type]:checked').val() != undefined) {
+                if ($('input:radio[name=cas_patient_type]:checked').val() == @(TeleSpecialists.BLL.Helpers.PatientType.Inpatient.ToInt())) {
+                    $("#cas_metric_door_time_est").attr("data-currentVal", $.trim($("#cas_metric_door_time_est").val()));
+                    $(".metric_door_time input").val("");
+                    $(".metric_door_time").hide();
+                    $("#metric_physician_checkboxes").hide();
+                    $("#symptoms_onset_during_ed_stay").hide();
+                }
+                else {
+                    $(".metric_door_time").show();
+                    if ($("#metric_physician_checkboxes:visible").length == 0) {
+                        var currentValue = $.trim($("#cas_metric_door_time_est").attr("data-currentVal"));
+                        if (currentValue != "") {
+                            $(".metric_door_time input").val(currentValue);
+                        }
+                    }
+
+                    $("#metric_physician_checkboxes").show();
+                    $("#symptoms_onset_during_ed_stay").show();
+                }
+            }
+            else {
+                $('#metric_physician_checkboxes').css('display', 'block')
+            }
+        }
+        function historyRadioButtonChanges() {
+            if ($(".bg-light-blue input:radio[value=true]:checked").length > 0) {
+                $("#tpaVerbalTime").hide();
+            }
+            else {
+                $("#tpaVerbalTime").show();
+            }
+        }
+    function tpaCandidateChange() {
+            if ($('input:radio[name=cas_metric_tpa_consult]:checked').val() == "false") {
+                //$("#cas_metric_pa_ordertime_est").val("");
+                //$("#cas_metric_needle_time_est").val("");
+                $("#tpaVerbalTime").find("label").removeClass("text-danger");
+                $("#cas_metric_tpa_verbal_order_time_est-error").hide();
+                $(".tpa-consult-group").hide();
+                $(".non-tpa-consult-group").show();
+
+            }
+            else {
+                $("#tpaVerbalTime").find("label").addClass("text-danger");
+                $(".tpa-consult-group").show();
+                $(".non-tpa-consult-group").hide();
+
+            }
+            var model = $("#createForm").serialize();
+            $.post('@Url.Action("ChangeTemplate")',
+                model,
+                function (response) {
+                    if (response.result) {
+                        $("#templates").html(response.view);
+                        $("#TemplateEntityType").val(response.template);
+                    }
+                }
+            );
+        }
+        function resetTpaCandidatehiddenFields() {
+            if ($('input:radio[name=cas_metric_tpa_consult]:checked').val() == "false") {
+                $("#cas_metric_pa_ordertime_est").val("");
+                $("#cas_metric_needle_time_est").val("");
+                $("#cas_metric_tpaDelay_key").data('kendoDropDownList').value("");
+                $("#cas_billing_tpa_delay_notes").val("");
+            }
+            else {
+                if ($("#cas_metric_non_tpa_reason_key").data('kendoDropDownList') != undefined)
+                    $("#cas_metric_non_tpa_reason_key").data('kendoDropDownList').value("");
+                $("#cas_metric_non_tpa_reason_text").val("");
+            }
+        }
+
+        $('#createForm').validate({
+            rules: {
+                cas_metric_weight: {
+                    required: function (element) {
+                        if ($("#cas_metric_weight_unit").val() != "") {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                },
+
+                cas_metric_weight_unit: {
+                    required: function (element) {
+                        if ($("#cas_metric_weight").val() != "") {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }
+
+            }
+        });
+
+        $('input:radio[name=cas_metric_is_neuro_interventional]').change(function () {
+
+            if (this.value == 'true') {
+                $("#divMetricDiscussedNeurointerventionalistDate").addClass("d-none");
+                $("#divMetricDiscussedNeurointerventionalistNotes").removeClass("d-none");
+            }
+            else if (this.value == 'false') {
+                $("#divMetricDiscussedNeurointerventionalistDate").addClass("d-none");
+                $("#divMetricDiscussedNeurointerventionalistNotes").addClass("d-none");
+            }
+        });
+
+        if ($('#cas_metric_is_neuro_interventional').is(":checked") == true) {
+
+            //cas_metric_discussed_with_neurointerventionalist
+            if ($('#cas_metric_discussed_with_neurointerventionalist').is(":checked") == true) {
+                $("#divMetricDiscussedNeurointerventionalistDate").removeClass("d-none");
+                $("#divMetricDiscussedNeurointerventionalistNotes").addClass("d-none");
+            }
+            else {
+                $("#divMetricDiscussedNeurointerventionalistDate").addClass("d-none");
+                $("#divMetricDiscussedNeurointerventionalistNotes").removeClass("d-none");
+            }
+            //$("#divMetricDiscussedNeurointerventionalistDate").addClass("d-none");
+            //$("#divMetricDiscussedNeurointerventionalistNotes").removeClass("d-none");
+        }
+        else {
+
+        }
+
+
+        //Addition of new fields
+        $('input:radio[name=cas_metric_discussed_with_neurointerventionalist]').change(function () {
+
+            if (this.value == 'true') {
+                $("#divMetricDiscussedNeurointerventionalistDate").removeClass("d-none");
+                $("#divMetricDiscussedNeurointerventionalistNotes").addClass("d-none");
+            }
+            else if (this.value == 'false') {
+                $("#divMetricDiscussedNeurointerventionalistNotes").removeClass("d-none");
+                $("#divMetricDiscussedNeurointerventionalistDate").addClass("d-none");
+            }
+        });
+        //New
+
+        if ($('input:radio[name=cas_metric_physician_notified_of_thrombolytics]:checked').val() != undefined) {
+            if ($('#cas_metric_physician_notified_of_thrombolytics').is(":checked") == true) {
+                $("#divPhysicianNotifiedOfThrombolyticsDate").removeClass("d-none");
+                $("#cas_metric_physician_notified_of_thrombolytics_date").removeClass("d-none");
+            }
+            else {
+                $("#cas_metric_physician_notified_of_thrombolytics_notes").removeClass("d-none");
+                $("#divPhysicianNotifiedOfThrombolyticsNotes").removeClass("d-none");
+            }
+        }
+
+        $('input:radio[name=cas_metric_physician_notified_of_thrombolytics]').change(function () {
+
+            if (this.value == 'true') {
+                $("#divPhysicianNotifiedOfThrombolyticsDate").removeClass("d-none");
+                $("#cas_metric_physician_notified_of_thrombolytics_date").removeClass("d-none");
+                $("#cas_metric_physician_notified_of_thrombolytics_notes").addClass("d-none");
+                $("#divPhysicianNotifiedOfThrombolyticsNotes").addClass("d-none");
+
+            }
+            else if (this.value == 'false') {
+                $("#divPhysicianNotifiedOfThrombolyticsNotes").removeClass("d-none");
+                $("#cas_metric_physician_notified_of_thrombolytics_notes").removeClass("d-none");
+                $("#cas_metric_physician_notified_of_thrombolytics_date").addClass("d-none");
+                $("#divPhysicianNotifiedOfThrombolyticsDate").addClass("d-none");
+            }
+
+        });
+
+
+        if ($('input:radio[name=cas_metric_radiologist_callback_for_review_of_advance_imaging]:checked').val() != undefined) {
+            if ($('#cas_metric_radiologist_callback_for_review_of_advance_imaging').is(":checked") == true) {
+                $("#divRadiologistCallbackDate").removeClass("d-none");
+                $("#cas_metric_radiologist_callback_for_review_of_advance_imaging_date").removeClass("d-none");
+            }
+            else {
+                $("#cas_metric_radiologist_callback_for_review_of_advance_imaging_notes").removeClass("d-none");
+                $("#divRadiologistCallbackNotes").removeClass("d-none");
+            }
+        }
+
+
+        $('input:radio[name=cas_metric_radiologist_callback_for_review_of_advance_imaging]').change(function () {
+
+            if (this.value == 'true') {
+                $("#divRadiologistCallbackDate").removeClass("d-none");
+                $("#cas_metric_radiologist_callback_for_review_of_advance_imaging_date").removeClass("d-none");
+
+                $("#cas_metric_radiologist_callback_for_review_of_advance_imaging_notes").addClass("d-none");
+                $("#divRadiologistCallbackNotes").addClass("d-none");
+            }
+            else if (this.value == 'false') {
+                $("#divRadiologistCallbackNotes").removeClass("d-none");
+                $("#cas_metric_radiologist_callback_for_review_of_advance_imaging_notes").removeClass("d-none");
+
+                $("#cas_metric_radiologist_callback_for_review_of_advance_imaging_date").addClass("d-none");
+                $("#divRadiologistCallbackDate").addClass("d-none");
+            }
+        });
+
+        $('#cas_metric_is_lastwell_unknown').click(function () {
+            if (this.previous) {
+                this.checked = false;
+            }
+            this.previous = this.checked;
+        });
+        $('#cas_metric_weight , #cas_metric_weight_unit').on('change', function () {
+            var limitExceeded = false;
+            var currentWeight = $('#cas_metric_weight').val();
+            var weightUnit = $("#cas_metric_weight_unit").val();
+            var weightInKg = currentWeight;
+            if (currentWeight != "" && weightUnit != "") {
+                currentWeight = parseFloat(currentWeight);
+                if (weightUnit == "lbs") {
+                    if (currentWeight > 220)
+                        limitExceeded = true;
+                    else
+                        weightInKg = currentWeight / 2.205;
+                }
+                else {
+                    if (currentWeight > 100)
+                        limitExceeded = true;
+                }
+                if (!limitExceeded) {
+                    var totalDose = weightInKg * 0.9;
+                    $("#cas_metric_total_dose").val(totalDose.toFixed(1));
+                    //$("#cas_metric_total_dose").val(Math.round(totalDose * 10) / 10);
+                    var blouse = (totalDose * 10) / 100;
+                    $("#cas_metric_bolus").val(blouse.toFixed(1));
+                    $("#cas_metric_infusion").val((totalDose - blouse).toFixed(1));
+                    $("#cas_metric_discard_quantity").val((100 - totalDose).toFixed(1));
+
+                }
+                else {
+                    $("#cas_metric_total_dose").val("90.0");
+                    $("#cas_metric_bolus").val("9.0");
+                    $("#cas_metric_infusion").val("81.0");
+                    $("#cas_metric_discard_quantity").val("10.0");
+                }
+
+                $('#cas_metrics_dose_container').removeClass("d-none");
+            } else {
+                $('#cas_metrics_dose_container').addClass("d-none");
+                $('#cas_metrics_dose_container input').each(function () {
+                    $(this).val("");
+                });
+            }
+        });
+
+        function validateMetricsRequiredFields(isCaseCompleteCall) {
+
+            var result = true;
+            var cas_metric_door_time_est = true;
+
+            var cas_metric_lastwell_date_est = true;
+            var cas_patient_type = true;
+            var cas_response_first_atempt = true;
+            var cas_metric_video_start_time_est = true;
+            var cas_metric_video_end_time_est = true;
+            var cas_metric_symptoms = true;
+            var cas_metric_hpi = true;
+            var cas_metric_assesment_time_est = true;
+            var cas_metric_needle_time_est = true;
+            var metric_cas_dob = true;
+            var cas_metric_non_tpa_reason_key = true;
+            var cas_metric_non_tpa_reason_text = true;
+            var cas_metric_physician_notified_of_thrombolytics_date = true;
+            var cas_metric_physician_notified_of_thrombolytics_notes = true;
+            var cas_metric_tpaDelay_key = true;
+            var cas_billing_tpa_delay_notes = true;
+            var cas_metric_notes = true;
+            var cas_callback_notes = true;
+            var cas_metric_tpa_verbal_order_time_est = true;
+            // added by axim 13-08-2020
+            var cas_metric_has_time_of_set = true;
+            var cas_metric_has_ct_head_hemorrhage = true;
+            var cas_metric_has_ischemic_stroke = true;
+            var cas_metric_has_severe_head_trauma = true;
+            var cas_metric_has_intracranial_surgery = true;
+            var cas_metric_has_intracranial_hemorrhage = true;
+            var cas_metric_has_symptoms_SAH = true;
+            var cas_metric_has_GI_malignancy = true;
+            var cas_metric_has_coagulopathy_platelets = true;
+            var cas_metric_has_treatment_LMWH = true;
+            var cas_metric_has_use_NOAC = true;
+            var cas_metric_has_glycoprotein_IIB = true;
+            var cas_metric_has_symptoms_endocarditis = true;
+            var cas_metric_has_suspected_aortic_arch = true;
+            var cas_metric_has_intracranial_neoplasm = true;
+            var cas_metric_pa_ordertime_est = true;
+            var cas_metric_ct_head_review = true;
+            var cas_metric_advanced_imaging_personally = true;
+            var cas_metric_tpa_ordered_personally = true;
+            var cas_metric_viz_app_usage = true;
+            //ended by axim 13-08-2020
+
+            if ($.trim($("#cas_cst_key").val()).toInt() == caseStatusEnum.Cancelled) {
+                return true;
+            }
+
+            // ADDED BY AXIM  tpa contraindications values check
+            if (tpadatevaluecheck == "true") {
+                if ($('input:radio[name=cas_metric_tpa_consult]:checked').val() == "true") {
+                    if ($('input:radio[name=cas_metric_has_time_of_set]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_time_of_set]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_time_of_set = false;
+                        }
+                    }
+
+                    if ($('input:radio[name=cas_metric_has_ct_head_hemorrhage]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_ct_head_hemorrhage]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_ct_head_hemorrhage = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_ischemic_stroke]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_ischemic_stroke]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_ischemic_stroke = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_severe_head_trauma]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_severe_head_trauma]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_severe_head_trauma = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_intracranial_surgery]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_intracranial_surgery]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_intracranial_surgery = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_intracranial_hemorrhage]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_intracranial_hemorrhage]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_intracranial_hemorrhage = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_symptoms_SAH]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_symptoms_SAH]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_symptoms_SAH = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_GI_malignancy]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_GI_malignancy]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_GI_malignancy = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_coagulopathy_platelets]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_coagulopathy_platelets]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_coagulopathy_platelets = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_treatment_LMWH]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_treatment_LMWH]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_treatment_LMWH = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_use_NOAC]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_use_NOAC]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_use_NOAC = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_glycoprotein_IIB]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_glycoprotein_IIB]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_glycoprotein_IIB = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_symptoms_endocarditis]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_symptoms_endocarditis]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_symptoms_endocarditis = false;
+                        }
+                    } cas_metric_has_intracranial_neoplasm
+                    if ($('input:radio[name=cas_metric_has_suspected_aortic_arch]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_suspected_aortic_arch]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_suspected_aortic_arch = false;
+                        }
+                    }
+                    if ($('input:radio[name=cas_metric_has_intracranial_neoplasm]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_intracranial_neoplasm]:checked').val() == undefined) {
+                            $("#tpacontraindications-error").show();
+                            result = false;
+                            cas_metric_has_intracranial_neoplasm = false;
+                        }
+                    }
+                }
+            }
+            //ended by axim 13-08-2020
+
+            //$(".error_msg").hide();
+            if (($("#metric").css("display").toLowerCase() != "none" || isCaseCompleteCall) && $('a[href="#metric"]').length > 0) {
+                if ($("#cas_ctp_key").val() == caseTypeEnum.StatConsult) {
+                    var callback_notes_required = $("#metric_cas_callback_notes").attr("data-is-required") != undefined ? true : false;
+                    if (callback_notes_required && $.trim($("#metric_cas_callback_notes").val()) == "" && $("#metric_cas_callback_notes").css("display").toLowerCase() != "none") {
+                        result = false;
+                        cas_callback_notes = false;
+                        $("#metric_cas_callback_notes-error").show();
+                    }
+                }
+                if ($("#cas_ctp_key").val() == caseTypeEnum.StrokeAlert) {
+
+                    if ($("#metric_cas_dob").val() != "") {
+                        if (!isValidDOB($("#metric_cas_dob").val())) {
+                            result = false;
+                            metric_cas_dob = false;
+                            $("#metric_cas_dob-invalid").show();
+
+                        }
+                    }
+
+                    //if ($("#metric_physician_checkboxes").css("display").toLowerCase() != "none") {
+                    //    if (!$("#cas_metric_physician_notified_of_thrombolytics").prop("checked")) {
+                    //        $("#cas_metric_physician_notified_of_thrombolytics-error").show();
+                    //        result = false;
+                    //    }
+                    //}
+                    var patientType = $.trim($("input[name='cas_patient_type']:checked").val()).toInt();
+
+                    if (patientType != @PatientType.Inpatient.ToInt()) {
+                        if ($("#cas_metric_door_time_est").val() == "") {
+                            result = false;
+                            cas_metric_door_time_est = false;
+                            $("#cas_metric_door_time_est-error").show();
+                        }
+                    }
+
+                    //TCARE-484
+                    var thrombectomy_medical_decision_making_option = $('input:radio[name=cas_metric_thrombectomy_medical_decision_making]:checked').val();
+                    if (thrombectomy_medical_decision_making_option == undefined || thrombectomy_medical_decision_making_option == null) {
+                        result = false;
+                        $("#cas_metric_thrombectomy_medical_decision_making-error").show();
+                    }
+
+                    if ($.trim($(".patientGender").find("input:checked").val()) == "") {
+                        $(".patientGender").find(".error_msg").show();
+                        result = false;
+                    }
+                    if ($("input[name='cas_metric_is_neuro_interventional']:checked").val() == undefined || $("input[name='cas_metric_is_neuro_interventional']:checked").val() == null) {
+
+                        // TCARE-457 Not required
+                        //result = false;
+                        //$("#cas_metric_is_neuro_interventional-error").show();
+                    }
+
+                    if ($("#cas_metric_lastwell_date_est").val() == "" && $("#cas_metric_is_lastwell_unknown")[0].checked == false) {
+                        result = false;
+                        cas_metric_lastwell_date_est = false;
+                        $("#cas_metric_lastwell_date_est-error").show();
+                    }
+                    if ($("input[name='cas_patient_type']:checked").val() == undefined) {
+                        result = false;
+                        cas_patient_type = false;
+                        $("#cas_patient_type-error").show();
+                    }
+                    if ($("#cas_response_first_atempt").val() == "") {
+                        result = false;
+                        cas_response_first_atempt = false;
+                        $("#cas_response_first_atempt-error").show();
+                    }
+                    if ($("#cas_metric_video_start_time_est").val() == "") {
+                        result = false;
+                        cas_metric_video_start_time_est = false;
+                        $("#cas_metric_video_start_time_est-error").show();
+                    }
+                    if ($("#cas_metric_video_end_time_est").val() == "") {
+                        result = false;
+                        cas_metric_video_end_time_est = false;
+                        $("#cas_metric_video_end_time_est-error").show();
+                    }
+                    if ($.trim($("#cas_metric_symptoms").val()) == "") {
+                        result = false;
+                        cas_metric_symptoms = false;
+                        $("#cas_metric_symptoms-error").show();
+                    }
+                    if ($.trim($("#cas_metric_hpi").val()) == "") {
+                        result = false;
+                        cas_metric_hpi = false;
+                        $("#cas_metric_hpi-error").show();
+                    }
+                    else {
+                        var hpilength = $("#cas_metric_hpi").val();
+                        let remSpaces = hpilength.replace(/\s/g, "");
+                        if (remSpaces.length < 200) {
+                            result = false;
+                            cas_metric_hpi = false;
+
+                        }
+                    }
+                    if ($("#cas_metric_assesment_time_est").val() == "") {
+                        result = false;
+                        cas_metric_assesment_time_est = false;
+                        $("#cas_metric_assesment_time_est-error").show();
+                    }
+                    if (($('#cas_metric_ct_head_has_no_acture_hemorrhage').is(":checked") == false) && ($('#cas_metric_ct_head_is_reviewed').is(":checked") == false) && ($('#cas_metric_ct_head_is_not_reviewed').is(":checked") == false)) {
+                        result = false;
+                        $("#cas_metric_ct_head_has_no_acture_hemorrhage-error").show();
+                    }
+                    if ($("#cas_metric_needle_time_est").val() == "" && $('input:radio[name=cas_metric_tpa_consult]:checked').val() == "true") {
+                        result = false;
+                        cas_metric_needle_time_est = false;
+                        $("#cas_metric_needle_time_est-error").show();
+                    }
+                    //metric_cas_dob
+                    if ($("#metric_cas_dob").val() == "") {
+                        result = false;
+                        metric_cas_dob = false;
+                        $("#metric_cas_dob-error").show();
+                    }
+                    if ($('input:radio[name=cas_metric_tpa_consult]:checked').val() == "false") {
+                        if ($("#cas_metric_non_tpa_reason_key").val() == "") {
+                            result = false;
+                            cas_metric_non_tpa_reason_key = false;
+                            $("#cas_metric_non_tpa_reason_key-error").show();
+                        }
+                        else if ($("#cas_metric_non_tpa_reason_text").css("display").toLowerCase() != "none"
+                            && $("#cas_metric_non_tpa_reason_key").data('kendoDropDownList').text().toLowerCase() == "other"
+                            && $("#cas_metric_non_tpa_reason_text").val() == "") {
+                            result = false;
+                            cas_metric_non_tpa_reason_text = false;
+                            $("#cas_metric_non_tpa_reason_key-error").show();
+                        }
+                    }
+                    //New
+                    if (($('#cas_metric_is_neuro_interventional').is(":checked") == true) && ($('#cas_metric_discussed_with_neurointerventionalist').is(":checked") == true) && ($("#cas_metric_discussed_with_neurointerventionalist_date").val() == "")) {
+                        result = false;
+                        $("#cas_metric_discussed_with_neurointerventionalist_date-error").show();
+                    }
+                    if (($('#cas_metric_is_neuro_interventional').is(":checked") == true) && ($('#cas_metric_discussed_with_neurointerventionalist').is(":checked") == false) && ($("#cas_metric_discussed_with_neurointerventionalist_notes").val() == "")) {
+                        result = false;
+                        $("#cas_metric_discussed_with_neurointerventionalist_notes-error").show();
+                    }
+
+                    if ($.trim($('#metric_physician_checkboxes').css("display")).toLocaleLowerCase() != 'none') {
+
+                        if ($("#cas_metric_physician_notified_of_thrombolytics:checked").length == 0) {
+                            result = false;
+                            $("#cas_metric_physician_notified_of_thrombolytics-error").show();
+                        }
+                        else {
+
+                            if (($('#cas_metric_physician_notified_of_thrombolytics').is(":checked") == true) && ($("#cas_metric_physician_notified_of_thrombolytics_date").val() == "")) {
+                                result = false;
+                                cas_metric_physician_notified_of_thrombolytics_date = false;
+                                $("#cas_metric_physician_notified_of_thrombolytics_date-error").show();
+                            }
+                            if ($('#cas_metric_physician_notified_of_thrombolytics').is(":checked") == false && ($.trim($("#cas_metric_physician_notified_of_thrombolytics_notes").val()) == "")) {
+                                result = false;
+                                cas_metric_physician_notified_of_thrombolytics_notes = false;
+                                $("#cas_metric_physician_notified_of_thrombolytics_notes-error").show();
+                            }
+                        }
+                    }
+                    // TCARE-409
+
+                    if (getDifferenceInMinutes($('#cas_metric_needle_time_est').val(), $("#cas_metric_door_time_est").val()) > 45) {
+                        if ($("#cas_metric_tpaDelay_key").val() == "") {
+                            result = false;
+                            cas_metric_tpaDelay_key = false;
+                            $("#cas_metric_tpaDelay_key-error").show();
+                        }
+                        if ($.trim($("#cas_billing_tpa_delay_notes").val()) == "") {
+                            result = false;
+                            cas_billing_tpa_delay_notes = false;
+                            $("#cas_billing_tpa_delay_notes-error").show();
+                        }
+                    }
+
+                }
+                if ($("#cas_ctp_key").val() == caseTypeEnum.StatConsult || $("#cas_ctp_key").val() == caseTypeEnum.TransferAlert) {
+                    if ($("#cas_metric_video_start_time_est").val() == "") {
+                        result = false;
+                        cas_metric_video_start_time_est = false;
+                        $("#cas_metric_video_start_time_est-error").show();
+                    }
+                    if ($("#cas_metric_video_end_time_est").val() == "") {
+                        result = false;
+                        cas_metric_video_end_time_est = false;
+                        $("#cas_metric_video_end_time_est-error").show();
+                    }
+                }
+
+                // Ticket 515 changes
+                    if ($("#tpaVerbalTime").css("display") != "none") {
+                        if ($('input:radio[name=cas_metric_tpa_consult]:checked').val() == "true") {
+                            if ($("#cas_metric_tpa_verbal_order_time_est").val() == "") {
+                                result = false;
+                                cas_metric_tpa_verbal_order_time_est = false;
+                                $("#cas_metric_tpa_verbal_order_time_est-error").show();
+                            }
+                        }
+                    }
+
+                if (@cpoe_order) {
+                    if ($("#cas_ctp_key").val() == caseTypeEnum.StrokeAlert) {
+                        if ($('input:radio[name=cas_metric_tpa_consult]:checked').val() == "true") {
+                            if ($("#cas_metric_pa_ordertime_est").val() == "") {
+                                result = false;
+                                cas_metric_pa_ordertime_est = false;
+                                $("#cas_metric_pa_ordertime_est-error").show();
+                            }
+                        }
+                    }
+                }
+                //if (($("#metric").css("display").toLowerCase() != "none" ||
+                //Added by Axim 25-09-2020
+                if (@attestation_order) {
+                    if ($("#cas_ctp_key").val() == caseTypeEnum.StrokeAlert) {
+                        if ($('input:radio[name=cas_metric_ct_head_review]').length > 0) {
+                            if ($('input:radio[name=cas_metric_ct_head_review]:checked').val() == undefined) {
+                                $("#attestation-error").show();
+                                result = false;
+                                cas_metric_ct_head_review = false;
+                            }
+                        }
+                        if (($("#divCThead_review").css("display").toLowerCase() != "none")) {
+                            if ($('#ddlCThead').val() == "0" || $('#ddlCThead').val() == undefined) {
+                                $("#attestation-error").show();
+                                result = false;
+                                cas_metric_ct_head_review = false;
+                            }
+                        }
+                        if (($("#divCTheadReviewPersonally").css("display").toLowerCase() != "none")) {
+                            if ($('#cas_metric_ct_head_review_text').val() == "") {
+                                $("#attestation-error").show();
+                                result = false;
+                                cas_metric_ct_head_review = false;
+                            }
+                        }
+
+                        if ($('input:radio[name=cas_metric_advanced_imaging_personally]').length > 0) {
+                            if ($('input:radio[name=cas_metric_advanced_imaging_personally]:checked').val() == undefined) {
+                                $("#attestation-error").show();
+                                result = false;
+                                cas_metric_advanced_imaging_personally = false;
+                            }
+                        }
+                        if (($("#divAdvancedImaging_review").css("display").toLowerCase() != "none")) {
+                            if ($('#ddlAdvancedimaging').val() == "0" || $('#ddlAdvancedimaging').val() == undefined) {
+                                $("#attestation-error").show();
+                                result = false;
+                                cas_metric_advanced_imaging_personally = false;
+                            }
+                        }
+                        if (($("#divAdvanceimagingPersonally").css("display").toLowerCase() != "none")) {
+                            if ($('#cas_metric_advanced_imaging_personally_text').val() == "") {
+                                $("#attestation-error").show();
+                                result = false;
+                                cas_metric_advanced_imaging_personally = false;
+                            }
+                        }
+
+                        if ($('input:radio[name=cas_metric_tpa_consult]:checked').val() == "true") {
+                            if ($('input:radio[name=cas_metric_tpa_ordered_personally]').length > 0) {
+                                if ($('input:radio[name=cas_metric_tpa_ordered_personally]:checked').val() == undefined) {
+                                    $("#attestation-error").show();
+                                    result = false;
+                                    cas_metric_tpa_ordered_personally = false;
+                                }
+                            }
+                            if (($("#divtPAordered_review").css("display").toLowerCase() != "none")) {
+                                if ($('#ddltPAordered').val() == "0" || $('#ddltPAordered').val() == undefined) {
+                                    $("#attestation-error").show();
+                                    result = false;
+                                    cas_metric_tpa_ordered_personally = false;
+                                }
+                            }
+                            if (($("#divtPAorderedPersonally").css("display").toLowerCase() != "none")) {
+                                if ($('#cas_metric_tpa_ordered_personally_text').val() == "") {
+                                    $("#attestation-error").show();
+                                    result = false;
+                                    cas_metric_tpa_ordered_personally = false;
+                                }
+                            }
+                        }
+
+                        if (@displayvizApp) {
+                            if ($('input:radio[name=cas_metric_viz_app_usage]').length > 0) {
+                                if ($('input:radio[name=cas_metric_viz_app_usage]:checked').val() == undefined) {
+                                    $("#attestation-error").show();
+                                    result = false;
+                                    cas_metric_viz_app_usage = false;
+                                }
+                            }
+                            if (($("#divVizApp_review").css("display").toLowerCase() != "none")) {
+                                if ($('#ddlVizApp').val() == "0" || $('#ddlVizApp').val() == undefined) {
+                                    $("#attestation-error").show();
+                                    result = false;
+                                    cas_metric_viz_app_usage = false;
+                                }
+                            }
+                            if (($("#divVizappReview").css("display").toLowerCase() != "none")) {
+                                if ($('#cas_metric_viz_app_usage_text').val() == "") {
+                                    $("#attestation-error").show();
+                                    result = false;
+                                    cas_metric_viz_app_usage = false;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //Ended By Axim 25-09-2020
+
+                // TCARE-415 General Tab changes
+
+                var metric_notes_required = $("#cas_metric_notes").attr("data-is-required") != undefined ? true : false;
+                if (metric_notes_required && $.trim($("#cas_metric_notes").val()) == "" && $("#cas_metric_notes").attr("display") != "none") {
+                    result = false;
+                    cas_metric_notes = false;
+                    $("#cas_metric_notes-error").show();
+                }
+            }
+
+            // /// Focusing the first invalid control on the tab
+            if (!result) {
+
+                var element = null;
+
+                if (!cas_metric_lastwell_date_est) {
+                    element = $("#cas_metric_lastwell_date_est");
+                }
+                else if (!cas_patient_type) {
+                    element = $("#cas_patient_type");
+                }
+                else if (!cas_metric_door_time_est) {
+                    element = $("#cas_metric_door_time_est");
+                }
+                else if (!cas_response_first_atempt) {
+                    element = $("#cas_response_first_atempt");
+                }
+                else if (!cas_metric_video_start_time_est) {
+                    element = $("#cas_metric_video_start_time_est");
+                }
+                else if (!metric_cas_dob) {
+                    element = $("#metric_cas_dob");
+                }
+                else if (!cas_metric_symptoms) {
+                    element = $("#cas_metric_symptoms");
+                }
+                else if (!cas_metric_hpi) {
+                    element = $("#cas_metric_hpi");
+                }
+                else if (!cas_metric_assesment_time_est) {
+                    element = $("#cas_metric_assesment_time_est");
+                }
+                else if (!cas_metric_notes) {
+                    element = $("#cas_metric_notes");
+                }
+                else if (!cas_metric_video_end_time_est) {
+                    element = $("#cas_metric_video_end_time_est");
+                }
+                else if (!cas_metric_pa_ordertime_est) {
+                    element = $("#cas_metric_pa_ordertime_est");
+                }
+                else if (!cas_metric_tpa_verbal_order_time_est) {
+                    element = $("#cas_metric_tpa_verbal_order_time_est");
+                }
+                else if (!cas_metric_needle_time_est) {
+                    element = $("#cas_metric_needle_time_est");
+                }
+                else if (!cas_metric_non_tpa_reason_key) {
+                    element = $("#cas_metric_non_tpa_reason_key");
+                }
+                else if (!cas_metric_non_tpa_reason_text) {
+                    element = $("#cas_metric_non_tpa_reason_text");
+                }
+                else if (!cas_metric_physician_notified_of_thrombolytics_date) {
+                    element = $("#cas_metric_physician_notified_of_thrombolytics_date");
+                }
+                else if (!cas_metric_physician_notified_of_thrombolytics_notes) {
+                    element = $("#cas_metric_physician_notified_of_thrombolytics_notes");
+                }
+                else if (!cas_metric_tpaDelay_key) {
+                    element = $("#cas_metric_tpaDelay_key");
+                }
+                else if (!cas_billing_tpa_delay_notes) {
+                    element = $("#cas_billing_tpa_delay_notes");
+                }
+                else if (!cas_metric_video_start_time_est) {
+                    element = $("#cas_metric_video_start_time_est");
+                }
+                else if (!cas_metric_video_end_time_est) {
+                    element = $("#cas_metric_video_end_time_est");
+                }
+                else if (!cas_callback_notes) {
+
+                    if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower())) {
+
+                        var tab = "#metric";
+                        var panId = tab.replace("#", "");
+                        $('.nav-tabs .nav-link').removeClass("active");
+                        $('.tab-content .tab-pane').removeClass("fade in active show");
+                        $('.nav-tabs a[href="' + tab + '"]').addClass("active");
+                        $('.tab-content div[id="' + panId + '"]').addClass("fade in active show");
+                    }
+                    element = $("#metric_cas_callback_notes");
+                }
+                //added by axim 13-08-2020
+                else if (!cas_metric_has_time_of_set) {
+                    element = $("#cas_metric_has_time_of_set");
+                } else if (!cas_metric_has_ct_head_hemorrhage) {
+                    element = $("#cas_metric_has_ct_head_hemorrhage");
+                } else if (!cas_metric_has_ischemic_stroke) {
+                    element = $("#cas_metric_has_ischemic_stroke");
+                } else if (!cas_metric_has_severe_head_trauma) {
+                    element = $("#cas_metric_has_severe_head_trauma");
+                } else if (!cas_metric_has_intracranial_surgery) {
+                    element = $("#cas_metric_has_intracranial_surgery");
+                } else if (!cas_metric_has_intracranial_hemorrhage) {
+                    element = $("#cas_metric_has_intracranial_hemorrhage");
+                } else if (!cas_metric_has_symptoms_SAH) {
+                    element = $("#cas_metric_has_symptoms_SAH");
+                } else if (!cas_metric_has_GI_malignancy) {
+                    element = $("#cas_metric_has_GI_malignancy");
+                } else if (!cas_metric_has_coagulopathy_platelets) {
+                    element = $("#cas_metric_has_coagulopathy_platelets");
+                } else if (!cas_metric_has_treatment_LMWH) {
+                    element = $("#cas_metric_has_treatment_LMWH");
+                } else if (!cas_metric_has_use_NOAC) {
+                    element = $("#cas_metric_has_use_NOAC");
+                } else if (!cas_metric_has_glycoprotein_IIB) {
+                    element = $("cas_metric_has_glycoprotein_IIB");
+                } else if (!cas_metric_has_symptoms_endocarditis) {
+                    element = $("#cas_metric_has_symptoms_endocarditis");
+                } else if (!cas_metric_has_suspected_aortic_arch) {
+                    element = $("#cas_metric_has_suspected_aortic_arch");
+                } else if (!cas_metric_has_intracranial_neoplasm) {
+                    element = $("#cas_metric_has_intracranial_neoplasm");
+                } else if (!cas_metric_tpa_ordered_personally) {
+                    element = $("#cas_metric_tpa_ordered_personally");
+                } else if (!cas_metric_advanced_imaging_personally) {
+                    element = $("#cas_metric_advanced_imaging_personally");
+                } else if (!cas_metric_ct_head_review) {
+                    element = $("#cas_metric_ct_head_review");
+                } else if (!cas_metric_viz_app_usage) {
+                    element = $("#cas_metric_viz_app_usage");
+                }
+                // ended by axim 13-08-2020
+
+                if (element !== null) {
+                    window.setTimeout(function () { $(element).focus(); }, 250);
+                }
+            }
+            return result;
+        }
+
+        function getDifferenceInMinutes(datetime1, datetime2) {
+            var startTime = new Date(datetime1).getTime();
+            var endTime = new Date(datetime2).getTime();
+            var duration = moment.duration(moment(startTime).diff(moment(endTime)));
+            return duration.asMinutes();
+        }
+
+        $('#cas_metric_ct_head_is_reviewed').change(function () {
+            if ($('#cas_metric_ct_head_is_reviewed').is(":checked") == true) {
+                $("#divReviewedText").removeClass("d-none");
+            }
+            else {
+                $("#divReviewedText").addClass("d-none");
+            }
+        });
+
+        $(".ctabtn").click(function () {
+            var caskey = @Model.cas_key;
+            var url = '@Url.Action("AddCaseToCTAQueue", "Case")';
+
+            $.post(url, {
+                casKey: caskey
+            },
+                function (response) {
+                    var updated = response.updated;
+                    if (updated) {
+                        $("#cas_metric_in_cta_queue").val(updated);
+                        $(".ctabtn").prop("disabled", true);
+                        refreshCTACaseList();
+                    }
+                }
+            );
+        });
+
+        $('input:radio[name=cas_metric_thrombectomy_medical_decision_making]').off("click").on("click", thrombectomyMedicalDecisionMakingChange);
+
+        $(document).ready(function () {
+            thrombectomyMedicalDecisionMakingChange();
+        });
+
+        function thrombectomyMedicalDecisionMakingChange() {
+
+            var optionValue = $('input:radio[name=cas_metric_thrombectomy_medical_decision_making]:checked').val();
+
+            if (optionValue == "@ThrombectomyMedicalDecisionMaking.LowerLikelihoodOfLargeVesselOcclusiveButFollowingStatStudiesAreRecommended.ToInt()" ||
+                optionValue == "@ThrombectomyMedicalDecisionMaking.ClinicalPresentationIsSuggestiveOfLargeVesselOcclusiveDisease_RecommendationsAreAsFollows.ToInt()") {
+                $("#advanceImaging").removeClass("d-none");
+                $("#ctabtn").addClass("d-none");
+
+            }
+            else {
+                $("#advanceImaging").addClass("d-none");
+                $("#ctabtn").removeClass("d-none");
+            }
+        }
+
+</script>
+@if (Model.cas_metric_thrombectomy_medical_decision_making == ThrombectomyMedicalDecisionMaking.LowerLikelihoodOfLargeVesselOcclusiveButFollowingStatStudiesAreRecommended.ToInt()
+|| Model.cas_metric_thrombectomy_medical_decision_making == ThrombectomyMedicalDecisionMaking.ClinicalPresentationIsSuggestiveOfLargeVesselOcclusiveDisease_RecommendationsAreAsFollows.ToInt())
+{ }
+

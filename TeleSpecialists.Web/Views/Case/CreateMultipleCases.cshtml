@@ -1,0 +1,1428 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL;
+@using TeleSpecialists.Models;
+
+
+@{
+    ViewBag.Title = "Create Multiple Cases";
+    ViewBag.CurrentView = "Create Consults";
+    var loggedInUser = ViewBag.loggedInUser as ApplicationUser;
+    var VisitTypeList = Enum.GetValues(typeof(FollowUpTypes)).Cast<FollowUpTypes>().Select(m => new { ucd_key = m.ToString(), ucd_title = m.ToDescription() }).OrderBy(m => m.ucd_title);
+    var caseTypeList = new List<CaseType>() { CaseType.LongTermEEG, CaseType.StatEEG, CaseType.RoutineEEG, CaseType.RoutineConsultNew, CaseType.RoutineConsultFollowUp }.Select(m => new { ucd_key = m.ToInt(), ucd_title = m.ToDescription() }).OrderBy(m => m.ucd_title);
+    
+    var now = DateTime.Now.ToEST();
+    var defaultConsultTime = new DateTime(now.Year, now.Month, now.Day, 10, 0, 0);
+
+    var isPhysicianOrPatnerPhysician = false;
+    var physicianCanReadEEGs = loggedInUser.IsEEG;
+    if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+    {
+        isPhysicianOrPatnerPhysician = true;
+    }
+    var userPhysician = User.IsInRole(UserRoles.Physician.ToDescription());
+    var later = now.AddDays(2);
+    var earlier = now.AddDays(-2);
+}
+
+<div class="ajaxForm" id="basic">
+    <div class="col-sm-11">
+        <h2>Create Consults</h2>
+        <hr>
+    </div>
+    @*<form id="frmCreateMultipleCases" method="post">*@
+    <div class="row general-tab">
+        <div class="col-xl-4 col-lg-4 col-md-12 left-panel">
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Facility: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    <select id="cas_fac_key" name="cas_fac_key" class="form-control addValidation" data-searchFilter="true" required></select>
+                    <div id="cas_fac_key-error" class="error_msg" style="display:none;">
+                        <label for="cas_fac_key">This field is required</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Physician: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+                    {
+                        @loggedInUser.FirstName<text>&nbsp;</text> @loggedInUser.LastName
+                        <input type="hidden" value="@loggedInUser.Id" name="cas_phy_key" id="cas_phy_key" />
+
+                    }
+                    else
+                    {
+                        <select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation"></select>
+                    }
+
+                    <div id="cas_phy_key-error" class="error_msg" style="display:none;">
+                        <label for="cas_phy_key">This field is required</label>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Date of Consult: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                    @Html.TextBox("cas_billing_date_of_consult", defaultConsultTime.ToString("MM/dd/yyyy hh:mm:ss"), new { @class = "form-control timepicker" })
+
+                    <div id="cas_billing_date_of_consult-error" class="error_msg" style="display:none;">
+                        <label for="cas_phy_key">This field is required</label>
+                    </div>
+                    <div id="cas_billing_date_of_consult-EarlierDateError" class="error_msg" style="display:none;">
+                        <label for="cas_phy_key" style="font-size:small">Sorry, you can't create a consult earlier than two days, Please contact your administrator.</label>
+                    </div>
+                    <div id="cas_billing_date_of_consult-LaterDateError" class="error_msg" style="display:none;">
+                        <label for="cas_phy_key" style="font-size:small">Sorry, you can't create a consult later than two days, Please contact your administrator.</label>
+                    </div>
+                </div>
+            </div>
+            @* Added BY Axim *@
+            <div class="form-group row">
+                <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Signout not required. I am rounding tomorrow in this facility: </label>
+                <div>
+                    <input type="checkbox" id="cas_commnets_off" name="cas_commnets_off" />
+                </div>
+            </div>
+            @* Added BY Axim *@
+        </div>
+        @*<div class="col-xl-4 col-lg-4 col-md-12 middle-panel">
+                <div class="form-group row">
+                    <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Date of Consult: </label>
+                    <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+                        <input type="text" id="date_of_consult" class="form-control datepicker" />
+                    </div>
+                </div>
+            </div>*@
+        <div class="col-sm-1"></div>
+    </div>
+    <div id="grid"></div>
+    <br />
+
+
+    <div class="col-11">
+        <div class="form-group row">
+            <div class="col-lg-6 col-sm-6 offset-md-6 offset-xl-6 offset-lg-6 offset-sm-6  text-right">
+                <a href="@Url.Action("Index")" class="btn btn-link loadLinkAsync-cancel">Cancel</a>
+                <input class="btn btn-dark" type="button" id="btnSaveAndCreate" value="Save & Create" />
+            </div>
+        </div>
+    </div>
+
+
+    @*</form>*@
+</div>
+
+
+
+<script type="text/javascript">
+
+    var facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetTeleNeuroFacility?phoneNumber=", "fac_name", "fac_key", "-- Select --");
+
+    var visitTypeJson =   @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(VisitTypeList, Newtonsoft.Json.Formatting.Indented));
+    var caseTypeJson =   @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(caseTypeList, Newtonsoft.Json.Formatting.Indented));
+
+    var isTeleNeuro = true;
+    var currentFacilityOffset = @(Functions.GetTimeZoneOffset(Settings.DefaultTimeZone));
+    var isTimeSelected = false;
+
+     var complete_is_locked = @User.IsInRole(UserRoles.Navigator.ToDescription()).ToString().ToLower();
+
+    var codeToHideForFacility = "";
+    var codeToHideForPhysician = "";
+    var caseTypesToHideForPhysician = "";
+        var facilityIsTelenuro = false;
+
+        if (@isPhysicianOrPatnerPhysician.ToString().ToLower() && !@physicianCanReadEEGs.ToString().ToLower()) {
+            codeToHideForPhysician = '@CaseBillingCode.EEG.ToDescription(),@CaseBillingCode.LTMEEG.ToDescription()';
+            caseTypesToHideForPhysician = '@CaseType.LongTermEEG.ToDescription(),@CaseType.RoutineEEG.ToDescription(),@CaseType.StatEEG.ToDescription()';
+        }
+
+
+    function showHideVisitType(bIsTeleNeuro) {
+        if (!bIsTeleNeuro) {
+
+           // $("#grid th:nth(6)").hide();
+            $("#grid [data-container-for='VisitType']").each(function () {
+                var element = $(this).find("input");
+                if (element != undefined) {
+                    element.data('kendoDropDownList').enable(false);
+                   // $("textarea[name='Comments']").attr("disabled", "disabled");
+                }
+
+            })
+        }
+        else {
+          //  $("#grid th:nth(6)").show();
+            $("#grid [data-container-for='VisitType']").each(function () {
+                var element = $(this).find("input");
+                if (element != undefined) {
+                    element.data('kendoDropDownList').enable(true);
+                   // $("textarea[name='Comments']").removeAttr("disabled");
+                }
+            })
+        }
+
+
+        var gridData = $("#grid [data-container-for='VisitType']").find("input").data('kendoDropDownList');
+
+        if (gridData != undefined && gridData != null) {
+
+            gridData.wrapper
+                .kendoTooltip({
+                    content: 'Grayed out if facility is not rounding',
+                    showOn: 'mouseenter click focus',
+                    show: function (e) {
+                        this.popup.element.addClass("toolTipAntiFlicker");
+                        if (!isTeleNeuro && isTeleNeuro != undefined) {
+                            this.content.parent().css("visibility", "visible");
+                        }
+                        else {
+                            this.content.parent().css("visibility", "hidden");
+                        }
+                    },
+
+                    hide: function (e) {
+                        this.content.parent().css("visibility", "hidden");
+
+                    }
+
+                });
+        }
+
+
+
+        if (!bIsTeleNeuro) {
+            $("#grid tbody").find("tr").each(function () {
+                var td = $(this).find("td:nth(6)");
+                if (td.attr("data-container-for") == undefined) {
+                    td.attr("data-previousVal", td.text());
+                    td.html("");
+                }
+            });
+        }
+        else {
+            $("#grid tbody").find("tr").each(function () {
+                var td = $(this).find("td:nth(6)");
+                if (td.attr("data-container-for") == undefined) {
+                    var text = td.attr("data-previousVal");
+                    if ($.trim(text) != "") {
+                        td.html(text);
+                    }
+                }
+            });
+        }
+    }
+
+    function showHideBillingCodes() {
+        var codes = [];
+        var billingCodes = "@CaseBillingCode.CC1_StrokeAlert.ToDescription(),@CaseBillingCode.CC1_STAT.ToDescription()";
+
+        if (codeToHideForFacility.length > 0) {
+            billingCodes = billingCodes + codeToHideForFacility;
+        }
+        if(codeToHideForPhysician.length > 0){
+            billingCodes = billingCodes + "," + codeToHideForPhysician;
+        }
+        codes = billingCodes.split(",");
+
+            $("#grid [data-container-for='BillingCode']").each(function () {
+                var element = $(this).find("input");
+                if (element != undefined) {
+                    var items = element.data('kendoDropDownList').items();
+                    $(items).each(function (i, e) {
+                        $(e).show();
+                        var currentCode = $(e).text();
+
+                        codes.map(function (code, index) {
+
+                            if (code == currentCode) {
+                                $(e).hide();
+                            }
+
+                        });
+
+                    });
+                }
+
+            })
+
+    }
+
+
+    function showHideCaseTypes() {
+
+        //var codes = [];
+        //var billingCodes = "";
+        var caseTypesArray = [];
+        var caseTypes = "";
+
+        if (caseTypesToHideForPhysician.length > 0) {
+            caseTypes = caseTypes + "," + caseTypesToHideForPhysician;
+        }
+        caseTypesArray = caseTypes.split(",");
+
+        $("#grid [data-container-for='CaseType']").each(function () {
+            var element = $(this).find("input");
+            if (element != undefined) {
+                var items = element.data('kendoDropDownList').items();
+                $(items).each(function (i, e) {
+                    $(e).show();
+                    var currentCode = $(e).text();
+
+                    caseTypesArray.map(function (code, index) {
+
+                        if (code == currentCode) {
+                            $(e).hide();
+                        }
+
+                    });
+
+                });
+            }
+
+        })
+
+    }
+
+    function checkFacilityServiceType(facilityKey) {
+        if ($.trim(facilityKey) == "") {
+            isTeleNeuro = true;
+            return;
+        }
+
+        $.ajax({
+            type: 'get',
+            url: '/FacilityContract/CheckFacilityIsTeleneuro?fct_key=' + facilityKey,
+            success: function (data) {
+                isTeleNeuro = data.success;
+                facilityIsTelenuro = data.success;
+               showHideVisitType(isTeleNeuro);
+
+                if (!isTeleNeuro) {
+                    var codestoHide = '@CaseBillingCode.New.ToDescription(),@CaseBillingCode.FU.ToDescription()';
+
+                    codeToHideForFacility = codestoHide;
+                    showHideBillingCodes();
+                }
+                else {
+                    codeToHideForFacility= "";
+                    showHideBillingCodes();
+                }
+
+            }
+        });
+    }
+
+    function checkPhysicianIsEEg(physicianId) {
+
+        if ($.trim(physicianId) == "") {
+            return;
+        }
+
+        $.ajax({
+            type: 'get',
+            url: '@Url.Action("CanReadEEGs","Physician")\\'+physicianId,
+            success: function (data) {
+                if (!data.iseeg) {
+
+                    var codestoHide = '@CaseBillingCode.EEG.ToDescription(),@CaseBillingCode.LTMEEG.ToDescription()';
+                    codeToHideForPhysician = codestoHide;
+                    showHideBillingCodes();
+
+                    var caseTypesToHide = '@CaseType.LongTermEEG.ToDescription(),@CaseType.RoutineEEG.ToDescription(),@CaseType.StatEEG.ToDescription()';
+                    caseTypesToHideForPhysician = caseTypesToHide;
+                    showHideCaseTypes();
+                }
+                else {
+                    codeToHideForPhysician = "";
+                    showHideBillingCodes();
+
+                    caseTypesToHideForPhysician = "";
+                    showHideCaseTypes();
+                }
+            }
+        });
+    }
+
+    facilityDropDown.bind("change", function (e) {
+        var tagName = $.trim($("#cas_phy_key").prop("tagName"));
+        if (tagName.toLowerCase() == "select") {
+            loadPhysicianDropDown($("#cas_fac_key").val());
+        }
+        if (isTimeSelected)
+            loadFacilityTimeZone($("#cas_fac_key").val());
+
+        checkFacilityServiceType($("#cas_fac_key").val());
+
+    });
+    $(".datepicker").kendoDatePicker({
+        open: function (e) {
+            onDatePickerOpen(e);
+        }
+    });
+
+    $(".timepicker").kendoTimePicker({
+        open: function (e) {
+            e.preventDefault();
+            var currentDateTime = moment().utcOffset(currentFacilityOffset).format("MM/DD/YYYY HH:mm:ss");
+                this.element.first().attr("data-utc_time", new Date().toUTCString());
+            this.element.first().val(currentDateTime);
+            isTimeSelected = true;
+        }
+    });
+
+    $(".timepicker").kendoMaskedTextBox({
+        mask: "00/00/0000 00:00:00"
+    });
+
+
+    $('#cas_billing_date_of_consult').focusout(function () {
+        $('#cas_billing_date_of_consult-LaterDateError').hide();
+        $('#cas_billing_date_of_consult-EarlierDateError').hide();
+        $('#btnSaveAndCreate').enable();
+
+        if (@userPhysician.ToString().ToLower())
+        {
+            var consultDate = $('#cas_billing_date_of_consult').val();
+
+            consultDate = new Date(consultDate);
+            var later = new Date('@later.Month/@later.Day/@later.Year 23:59:59');
+            var earlier = new Date('@earlier.Month/@earlier.Day/@earlier.Year 00:00:00');
+
+            if (consultDate > later) {
+                //console.log("GREATER DATE OF CONSULT !!!");
+                $('#cas_billing_date_of_consult-LaterDateError').show();
+                $('#btnSaveAndCreate').disable();
+            }
+            else if (consultDate < earlier) {
+                //console.log("SMALLER DATE OF CONSULT !!!");
+                $('#cas_billing_date_of_consult-EarlierDateError').show();
+                $('#btnSaveAndCreate').disable();
+            }
+            else {
+                $('#btnSaveAndCreate').enable();
+            }
+        }
+    });
+
+    $('#cas_billing_date_of_consult').keyup(function () {
+        $('#cas_billing_date_of_consult-LaterDateError').hide();
+        $('#cas_billing_date_of_consult-EarlierDateError').hide();
+        $('#btnSaveAndCreate').enable();
+
+        if (@userPhysician.ToString().ToLower())
+        {
+            var consultDate = $('#cas_billing_date_of_consult').val();
+
+            consultDate = new Date(consultDate);
+            var later = new Date('@later.Month/@later.Day/@later.Year 23:59:59');
+            var earlier = new Date('@earlier.Month/@earlier.Day/@earlier.Year 00:00:00');
+
+            if (consultDate > later) {
+                //console.log("GREATER DATE OF CONSULT !!!");
+                $('#cas_billing_date_of_consult-LaterDateError').show();
+                $('#btnSaveAndCreate').disable();
+            }
+            else if (consultDate < earlier) {
+                //console.log("SMALLER DATE OF CONSULT !!!");
+                $('#cas_billing_date_of_consult-EarlierDateError').show();
+                $('#btnSaveAndCreate').disable();
+            }
+            else {
+                $('#btnSaveAndCreate').enable();
+            }
+        }
+    });
+    function loadFacilityTimeZone(id) {
+        var billing_consult_time = $.trim($("#cas_billing_date_of_consult").val());
+        if ($.trim(id) != "" && id != "00000000-0000-0000-0000-000000000000" && billing_consult_time != "" ) {
+            var url = "@Url.Action("GetFacilityTimeZone")";
+
+            $.get(url, { id: id, inputDateTime: billing_consult_time }, function (response) {
+                if (response.success) {
+                    currentFacilityOffset = response.timeZoneOffset;
+                    var currentDateTime = moment().utcOffset(currentFacilityOffset).format("MM/DD/YYYY HH:mm:ss");
+                    $("#cas_billing_date_of_consult").val(currentDateTime);
+                }
+            });
+        }
+    }
+
+
+     function loadPhysicianDropDown(id) {
+        if (id != "" && id != "00000000-0000-0000-0000-000000000000") {
+            $("#cas_phy_key").removeAttr("disabled");
+        }
+        else {
+            $("#cas_phy_key").attr("disabled","disabled");
+            return;
+        }
+
+      var physicianDropDown =  $("#cas_phy_key").fillKendoDropDown("/LookUp/GetPhysicians?fac_key=" + id, "Name", "Id", "-- Select --");
+
+         physicianDropDown.bind("change", function (e) {
+
+             var id = $("#cas_phy_key").val();
+             checkPhysicianIsEEg(id);
+
+         });
+    }
+</script>
+<script type="text/javascript">
+    var currentFacilityOffset = @(Functions.GetTimeZoneOffset(Settings.DefaultTimeZone));
+    var dataSourceArray = [];
+    var caseIndex = 0;
+
+    function getBillingDiagnosisCodes() {
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "Get",
+            url: "/Case/getBillingDiagnosisCode",
+            success: function (e) {
+                diagnosisCodeTypeJson = e.codes;
+            },
+            error: function (data) {
+            }
+        });
+    }
+
+    function filldiagnosisCodeHiddenField(index) {
+
+        var DiagnosisCodes = '';
+        var codeLength = $(".cas_billing_diagnosis_" + index + " div").length;
+        if (codeLength > 0) {
+            for (var i = 0; i < codeLength; i++) {
+                DiagnosisCodes += $(".cas_billing_diagnosis_" + index + " div")[i].innerText + "; ";
+            }
+        }
+
+        DiagnosisCodes = DiagnosisCodes.trim();
+        if (DiagnosisCodes.endsWith(';')) {
+            DiagnosisCodes = DiagnosisCodes.substring(0, DiagnosisCodes.length - 1)
+        }
+        if (DiagnosisCodes.startsWith(';')) {
+            DiagnosisCodes = DiagnosisCodes.substring(1, DiagnosisCodes.length)
+        }
+
+        $('.cas_billing_diagnosis_' + index).val(DiagnosisCodes);
+        var model = $('#grid').data().kendoGrid.editable.options.model;
+        model.set('.cas_billing_diagnosis', DiagnosisCodes);
+    }
+
+    function removeDiagnosisCodes(code, index) {
+        var DiagnosisCodes = '';
+        if ($('.cas_billing_diagnosis_' + index).val() == '') {
+            filldiagnosisCodeHiddenField(index);
+        }
+
+        DiagnosisCodes = $('.cas_billing_diagnosis_' + index).val();
+        DiagnosisCodes = DiagnosisCodes.replace(code, '').trim().replace(";;", ";");
+        if (DiagnosisCodes.endsWith(';')) {
+            DiagnosisCodes = DiagnosisCodes.substring(0, DiagnosisCodes.length - 2)
+        }
+        if (DiagnosisCodes.startsWith(';')) {
+            DiagnosisCodes = DiagnosisCodes.substring(2, DiagnosisCodes.length)
+        }
+        $('.cas_billing_diagnosis_' + index).val('');
+        $('.cas_billing_diagnosis_' + index).val(DiagnosisCodes);
+
+        var model = $('#grid').data().kendoGrid.editable.options.model;
+        model.set('.cas_billing_diagnosis', DiagnosisCodes);
+        updateCode(index);
+
+    }
+
+    function updateCode(index) {
+        var _list = "";
+        if ($('.cas_billing_diagnosis_' + index).val() != "") {
+            var diagnose_codes = $('.cas_billing_diagnosis_' + index).val().split(';');
+            for (var i = 0; i < diagnose_codes.length; i++) {
+                var value = diagnose_codes[i];
+                _list = _list + "<div class='diagnosis-code-background'>" + value + "<span class='fa fa-close cross-id' onClick='removeDiagnosisCodes(\"" + value + "\"," + index + ")'><span></div> ";
+            }
+        }
+        $(".case_billing_codes_" + index).html(_list);
+
+    }
+
+    function fillDignosesCode(index) {
+
+        if ($('.cas_billing_diagnosis_' + index).val() == '' || $('.cas_billing_diagnosis_' + index).val() == null) {
+            $(".cas_billing_diagnosis_" + index).html('');
+            return false;
+        }
+        updateCode(index);
+    }
+
+    function updateDiagnosieCode(code, index) {
+        if ($('.cas_billing_diagnosis_' + index).val() == '') {
+            filldiagnosisCodeHiddenField(index);
+        }
+
+        if ($('.cas_billing_diagnosis_' + index).val() == "" || $('.cas_billing_diagnosis_' + index).val() == null) {
+            $('.cas_billing_diagnosis_' + index).val(code.trim())
+        } else {
+            if ($('.cas_billing_diagnosis_' + index).val().indexOf(code) == -1) {
+                $('.cas_billing_diagnosis_' + index).val($('.cas_billing_diagnosis_' + index).val() + '; ' + code.trim());
+                var model = $('#grid').data().kendoGrid.editable.options.model;
+                model.set('.cas_billing_diagnosis', $('.cas_billing_diagnosis_' + index).val());
+            }
+        }
+        $('#IcdDiagnoseCodesId').hide();
+        $('#icd10diagnosis').val('');
+        fillDignosesCode(index);
+    }
+
+    function icd10DiagnosisCodes(e, index) {
+        var value = e.target.value;
+        if (value.trim() == "" || value == null) {
+            $('#IcdDiagnoseCodesId').hide();
+            return false;
+        }
+        $.ajax({
+            type: "GET",
+            url: "/Case/SearchDiagnosisCodes?Id=123&isImpressionChecked=false&Name=" + value.trim(),
+            error: function (xhr, error) {
+            },
+            success: function (response) {
+                if (response.codes.length > 0) {
+                    var _list = "<ul class='diagnose-code-ul'>";
+                    for (var i = 0; i < response.codes.length; i++) {
+                        _list = _list + "<li class='diagnose-code-li' onClick='updateDiagnosieCode(\"" + response.codes[i].title + "\"," + index + ")' >" + response.codes[i].title + "</li><hr> ";
+                    }
+                    _list = _list + "</ul>";
+                    $("#IcdDiagnoseCodesId").html(_list);
+                    $('#IcdDiagnoseCodesId').show();
+                } else {
+                    $('#IcdDiagnoseCodesId').hide();
+                }
+            }
+        });
+    }
+
+    var complete_is_locked = @User.IsInRole(UserRoles.Navigator.ToDescription()).ToString().ToLower();
+    $(document).ready(function () {
+
+        //$(window).click(function () {
+        //    $('#IcdDiagnoseCodesId').hide();
+        //    $('#icd10diagnosis').val('');
+        //});
+
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        dataSource = new kendo.data.DataSource({
+            //dataSource: dataSourceArray,
+            batch: false,
+            transport: {
+
+                read: function (options) {
+                    // asynchonous operation for getting data (e.g. $.ajax)
+                    // then pass data in success or error handler
+                    //   if (dataSourceArray.length > 0) {
+                    options.success(dataSourceArray);
+                    //  }
+                },
+                create: function (e) {
+                    // Assign an ID to the new item.
+
+                    if (e.data.Id == "") {
+
+                        // Save data item to the original datasource.
+                        e.data.isMarkCompleted = $("input[name='isMarkCompleted']").prop("checked");
+                        caseIndex = caseIndex + 1;
+                        e.data.Id = caseIndex;
+                        //e.data.cas_billing_diagnosis = $('.cas_billing_diagnosis_' + caseIndex).val();
+
+                        dataSourceArray.push(e.data);
+                    }
+                    // On success.
+                    e.success(e.data);
+                    // On failure.
+                    //e.error("XHR response", "status code", "error message");
+                }
+
+                , update: function (e) {
+
+                    var index = dataSourceArray.findObjectIndex(e.data.Id, "Id");
+                    e.data.isMarkCompleted = $("input[name='isMarkCompleted']").prop("checked");
+
+                    //if($('.cas_billing_diagnosis_' + e.data.Id).val() == '') {
+                    //    filldiagnosisCodeHiddenField(e.data.Id);
+                    //}
+                    //e.data.cas_billing_diagnosis = $('.cas_billing_diagnosis_' + e.data.Id).val();
+
+                    dataSourceArray[index] = e.data;
+                    e.success();
+                },
+                destroy: function (e) {
+
+                    var index = dataSourceArray.findObjectIndex(e.data.Id, "Id");
+                    //// Locate item in original datasource and remove it.
+                    dataSourceArray.splice(index, 1);
+                    //// On success.
+                    e.success();
+                    // On failure.
+                    // e.error("XHR response", "status code", "error message");
+                }
+            },
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        cas_patient_name: { type: "string" },
+                        CaseType: {
+                            defaultValue: { ucd_key: 0, ucd_title: "" },
+                            //validation: { required: false },
+                        },
+
+                        BillingCode: {
+                            defaultValue: { ucd_key: 0, ucd_title: "" }
+                        },
+
+
+                        cas_billing_dob: { type: "date", nullable: true },
+
+                        IdentificationType: {
+                            defaultValue: { ucd_key: 0, ucd_title: "" }
+                        },
+
+
+                        cas_identification_number: { type: "string" },
+                        cas_billing_diagnosis: { type: "string" },
+                        VisitType: {
+                            defaultValue: { ucd_key: "", ucd_title: "" }
+                        },
+                        isMarkCompleted: { type: "boolean" },
+                        Comments: { type: "string"}
+                    }
+                }
+            }
+        });
+
+        $("#btnSaveAndCreate").off("click").click(function () {
+            postCasesData();
+        });
+       /// Added by Axim
+        $("#cas_commnets_off").off("change").change(function () {
+            var _value;
+            if ($('#cas_commnets_off').is(":checked")) {
+                _value = 'true';
+            }
+            else {
+                _value = 'false';
+            }
+            Commentsoff(_value);
+        });
+        function Commentsoff(value) {
+            var _casetype = $("input[name='CaseType']").val();
+            var newFU = _casetype == @CaseType.RoutineConsultFollowUp.ToInt() || _casetype == @CaseType.RoutineConsultNew.ToInt();
+            if (value == "true" && newFU) {
+                if ($('#cas_commnets_off').is(":checked")) {
+                    $("textarea[name='Comments']").removeAttr("disabled");
+                    $("textarea[name='Comments']").removeClass("border-danger");
+                }
+                else {
+                    $("textarea[name='Comments']").attr('disabled', 'disabled');
+                }
+            }
+            else {
+                var disableElements = _casetype == @CaseType.RoutineEEG.ToInt() || _casetype == @CaseType.StatEEG.ToInt() || _casetype == @CaseType.LongTermEEG.ToInt();
+                if (disableElements) {
+                    $("textarea[name='Comments']").attr('disabled','disabled');
+                }
+                else {
+                    $("textarea[name='Comments']").removeAttr("disabled");
+                    $("textarea[name='Comments']").removeClass("border-danger");
+                }
+            }
+        }
+        //// Ended by Axim
+
+        function validateFormData() {
+            var result = true;
+
+            if ($("#cas_fac_key").val() == "") {
+                result = false;
+                $("#cas_fac_key-error").show();
+            }
+
+
+                if ($.trim($("#cas_phy_key").val()) == "" ) {
+                    result = false;
+                    $("#cas_phy_key-error").show();
+                }
+
+
+
+                if ($("#cas_billing_date_of_consult").val() == "") {
+                    result = false;
+                    $("#cas_billing_date_of_consult-error").show();
+                }
+
+
+            return result;
+        }
+
+        function postCasesData() {
+            $(".error_msg").hide();
+            if (validateFormData() && dataSourceArray.length > 0) {
+                $("#divContentArea").find("input:button, input:submit").disable();
+
+            let NewArray = JSON.parse(JSON.stringify(dataSourceArray));
+
+                for (var i = 0; i < $(NewArray).length; i++) {
+
+                    NewArray[i].Comments = Base64.encode(NewArray[i].Comments);
+                    NewArray[i].cas_identification_number = Base64.encode(NewArray[i].cas_identification_number);
+                    NewArray[i].cas_patient_name = Base64.encode(NewArray[i].cas_patient_name);
+                    NewArray[i].cas_billing_diagnosis = Base64.encode(NewArray[i].cas_billing_diagnosis);
+                }
+
+                $("#divModelPopUp").empty().showConfirmPopUp("Confirm", "<span>Are you sure you want to create cases?</span>", function () {
+                    $("#divModelPopUp").modal("hide");
+                   // code start
+                    //Added BY Axim
+                    var _value;
+                    if ($('#cas_commnets_off').is(":checked")) {
+                        _value = true;
+                    }
+                    else {
+                        _value = false;
+                    }
+                    var postData = {
+                        "cas_fac_key": $("#cas_fac_key").val(),
+                        "cas_phy_key": $("#cas_phy_key").val(),
+                        "cas_billing_date_of_consult": $("#cas_billing_date_of_consult").val(),
+                        "cas_commnets_off": _value,
+                        "Cases": NewArray
+                    };
+                    //Added By Axim
+            $.ajax({
+                url: "@(Url.Action("SaveMultipleCases"))",
+                type: "POST",
+                data: JSON.stringify(postData),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                error: function (xhr, error) {
+                    $("#divModelPopUp").modal("hide");
+                    $("#divContentArea").find("input:button, input:submit").enable();
+                    $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Oops, Something went wrong.<br/>Please retry or contact us if the problem still persist.");
+                    //console.debug(xhr); console.debug(error);
+                },
+                success: function (response) {
+                    $("#divModelPopUp").modal("hide");
+                    if (response.success) {
+
+                        loadPageAsync(response.redirectUrl);
+                    }
+                    else {
+                        $("#divContentArea").find("input:button, input:submit").enable();
+                        $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", response.message);
+                    }
+                }
+                });
+
+                   // code end
+
+                }, "Yes", function () {
+                    window.setTimeout(function () {
+                        $("#divModelPopUp").modal("hide");
+                        $("#divContentArea").find("input:button, input:submit").enable();
+                    }, 100);
+
+            });
+
+            }
+        }
+
+        //<textarea cols="20" id="cas_billing_comments" name="cas_billing_comments" rows="2" style="width:100%; height:100px;"></textarea>
+
+        function commentsField(container, options) {
+            var input = "<textarea placeholder='Comments' class='k-textbox  p-1'  name='" + options.field + "' style='width: 100%;'></textarea>";
+
+            var commentsCounter = `<div class="text-danger"> <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label> </div>`;
+            var wrapper = '<div>';
+            wrapper = wrapper +input + commentsCounter + '</div>';
+            $(wrapper).appendTo(container);
+        }
+
+        function patientNameField(container, options) {
+            var input = $("<input/>");
+            input.attr("name", options.field);
+            input.attr("placeholder", "Last Name, First Name");
+            input.attr("class", "k-input k-textbox");
+            input.appendTo(container);
+        }
+
+        function markCompleteCheckBox(container, options) {
+            var input = $("<input/>");
+            input.attr("type", "checkbox");
+            input.attr("name", options.field);
+            if (complete_is_locked) {
+                input.attr("disabled", "disabled");
+            }
+            input.appendTo(container);
+        }
+
+        function caseTypeDropDown(container, options) {
+              $('<input required name="' + options.field + '"/>')
+                  .appendTo(container)
+                  .fillStaticKendoDropDown(caseTypeJson, "ucd_title", "ucd_key", "-- Select --", showHideCaseTypes);
+
+        }
+
+        function billingCodeDropDown(container, options) {
+            $('<input required name="' + options.field + '"/>')
+                .appendTo(container)
+                .fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.BillingCode.ToInt())", "ucd_title", "ucd_key", "-- Select --",showHideBillingCodes);
+        }
+
+        function identificationTypeDropDown(container, options) {
+            $('<input required name="' + options.field + '"/>')
+                .appendTo(container)
+                .fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.IdentificationType.ToInt())", "ucd_title", "ucd_key", "-- Select --");
+        }
+
+        function visitTypeDropDown(container, options) {
+            $('<input required name="' + options.field + '"/>')
+                .appendTo(container)
+                .fillStaticKendoDropDown(visitTypeJson, "ucd_title", "ucd_key", "-- Select --");
+        }
+
+        function billingdiagnosisCodeEditor(container, options) {
+            if (options.model.id == "") {
+                $("<input class='k-input k-textbox cas_billing_diagnosis_" + (caseIndex + 1) + "' name='" + options.field + "' style='display:none;'>").appendTo(container);
+                $('<input type="text" id="icd10diagnosis" placeholder="Code or name" class="search_field valid"  onkeyup="icd10DiagnosisCodes(event,' + (caseIndex + 1) + ')" autocomplete="off" aria-invalid="false"> <div id="IcdDiagnoseCodesId" style="display:none"></div>').appendTo(container);
+                $("<div class='col-12 pl-0 pr-0 mt-1'><div class='diag-code-div case_billing_codes_" + (caseIndex + 1) + "' id='cas_billing_codes'></div></div>)")
+                    .appendTo(container);
+            } else {
+                $("<input class='k-input k-textbox cas_billing_diagnosis_" + (options.model.id) + "' name='" + options.field + "' value='" + options.model.cas_billing_diagnosis + "' style='display:none;'>").appendTo(container);
+                $('<input type="text" id="icd10diagnosis" placeholder="Code or name" class="search_field valid"  onkeyup="icd10DiagnosisCodes(event,' + (options.model.id) + ')" autocomplete="off" aria-invalid="false"> <div id="IcdDiagnoseCodesId" style="display:block"></div>').appendTo(container);
+                $("<div class='col-12 pl-0 pr-0 mt-1'><div class='diag-code-div case_billing_codes_" + (options.model.id) + "' id='cas_billing_codes'></div></div>)")
+                    .appendTo(container);
+
+                fillDignosesCode(options.model.id);
+            }
+        }
+        
+        $("#grid").kendoGrid({
+            dataSource: dataSource,
+            dataBound: function () {
+                $(".k-grid-add").html('<span class="k-icon k-i-plus"></span>Add New Record');
+                $(".k-grid-delete").html('<span class="k-icon k-i-close"></span>Remove');
+                ////added by asim 26-08-2020
+                $('.k-grid-add').unbind("click");
+                $('.k-grid-add').bind("click", function () {
+                    
+                    if ($("#cas_fac_key").val() == "") {
+                        $("#cas_fac_key-error").show();
+                        setTimeout(function () {
+                            $("#cas_fac_key-error").empty();
+                        }, 3000);
+                        return false;
+                    }
+                    if ($.trim($("#cas_phy_key").val()) == "") {
+                        $("#cas_phy_key-error").show();
+                        setTimeout(function () {
+                            $("#cas_phy_key-error").empty();
+                        }, 3000);
+                        
+                        return false;
+                    }
+                });
+                /////ended by asim
+                //var count = $("#grid th").length;
+                //var $this = this;
+                //window.setTimeout(function () {
+                //    $this.autoFitColumn((count - 1));
+                //}, 100);
+
+            },
+            pageable: false,
+            toolbar: ["create"],
+            edit: function (e) {
+
+                if (e.model.isNew()) {
+                    $(".k-grid-update").text("Add");
+                    
+                } else {
+                    $(".k-grid-update").text("Update");
+                }
+
+                showHideVisitType(isTeleNeuro);
+                showHideBillingCodes();
+                showHideCaseTypes();
+                e.sender.editable.validatable.validate = function () {
+                    return validateGrid(e.sender.editable.element);
+                };
+
+
+                $("input[name='isMarkCompleted']").off("change").change(function () {
+                    e.model.isMarkCompleted = $("input[name='isMarkCompleted']").prop("checked");
+                    e.model.dirty = true;
+                    validateGrid(null);
+                });
+
+                $("input[name='VisitType']").off("change").change(function () {
+                    $("input[name='isMarkCompleted']").change();
+                });
+
+                /// If comments already exists
+                var text = $("textarea[name='Comments']").val();
+
+                    var charactersTyped = text.replace(/\s/g, '').length;
+                    $(".commentsCount").html(charactersTyped);
+
+                $("textarea[name='Comments']").keyup(function () {
+                    var text = $(this).val();
+                    var charactersTyped = text.replace(/\s/g, '').length;
+                    $(".commentsCount").html(charactersTyped);
+                });
+                //added by Axim
+                var _casetype = $("input[name='CaseType']").val();
+                var _value;
+                if ($('#cas_commnets_off').is(":checked")) {
+                    _value = 'true';
+                }
+                else {
+                    _value = 'false';
+                }
+                enableDisableFieldsForEEGs(_casetype);
+                Commentsoff(_value);
+                $("input[name='CaseType']").off("change").change(function () {
+
+                    var casetype = $(this).val();
+                    var _value;
+                    if ($('#cas_commnets_off').is(":checked")) {
+                        _value = 'true';
+                    }
+                    else {
+                        _value = 'false';
+                    }
+                    enableDisableFieldsForEEGs(casetype);
+                    Commentsoff(_value);
+                    $("input[name='isMarkCompleted']").change();
+                });
+                //Ended BY Axim
+                $("input[name='BillingCode']").off("change").change(function () {
+                    $("input[name='isMarkCompleted']").change();
+                });
+            },
+
+
+            columns: [
+                { hidden: true, field: "Id" },
+                //{ hidden: true, field: "cas_phy_key" },
+                //{ hidden: true, field: "cas_billing_date_of_consult" },
+
+                {
+                    editor: patientNameField,
+                    field: "cas_patient_name",
+                    title: "Patient Name", width: "200px"
+                },
+                {
+                    field: "CaseType",
+                    editor: caseTypeDropDown,
+                    template: "#=CaseType.ucd_title#",
+                    title: "Case Type",
+                    width: "270px",
+                    //template: "<span id='spn_cas_ctp_key' >#= dataSourceArray.length > 0 ? cas_ctp_key : ''#</span>"
+                },
+                {
+                    field: "BillingCode",
+                    title: "Billing Code",
+                    width: "220px",
+                    editor: billingCodeDropDown,
+                    template: "#=BillingCode.ucd_title#"
+                },
+                { field: "cas_billing_dob", title: "Date of Birth", width: "200px", template: "#= cas_billing_dob == null ? '' : kendo.toString(cas_billing_dob,'MM/dd/yyyy')#" },
+                {
+                    field: "IdentificationType",
+                    title: "Identification Type",
+                    width: "220px",
+                    editor: identificationTypeDropDown,
+                    template: "#=IdentificationType.ucd_title#"
+                },
+                { field: "cas_identification_number", title: "Identification Number", width: "220px" },
+
+                {
+                    title: "Sign Off or Follow-Up",
+                    field: "VisitType",
+
+                    width: "220px",
+                    editor: visitTypeDropDown,
+                    template: '#=VisitType.ucd_title#'
+
+                },
+                {
+                    title: "Comments/Sign-Out",
+                    field: "Comments",
+                    width: "320px",
+                    editor: commentsField,
+
+                },
+                { field: "cas_billing_diagnosis", title: "Diagnosis", width: "120px" },
+                //{
+                //    editor: billingdiagnosisCodeEditor,
+                //    field: "cas_billing_diagnosis",
+                //    title: "Diagnosis",
+                //    width: "320px",
+                //},
+                { field: "isMarkCompleted", title: "Complete", width: "120px", editor: markCompleteCheckBox,  template: '<input type="checkbox"  name="isMarkCompleted" disabled="disabled" #= isMarkCompleted ? "checked=checked"  : ""  #  ></input>' },
+                { command: ["edit","destroy"], title: "Action", width: "220px" },
+                ],
+            editable: "inline"
+        });
+    });
+
+    function enableDisableFieldsForEEGs(caseType) {
+        var disableElements = caseType == @CaseType.RoutineEEG.ToInt() || caseType == @CaseType.StatEEG.ToInt() || caseType == @CaseType.LongTermEEG.ToInt();
+        var _value;
+        if ($('#cas_commnets_off').is(":checked")) {
+            _value = 'true';
+        }
+        else {
+            _value = 'false';
+        }
+        if (_value == "false") {
+            if (disableElements) {
+                //$("input[name='VisitType']").data("kendoDropDownList").enable(false);
+                $("textarea[name='Comments']").removeClass("border-danger");
+            }
+            else {
+                if (facilityIsTelenuro) {
+                    $("input[name='VisitType']").data("kendoDropDownList").enable(true);
+                }
+                $("textarea[name='Comments']").removeAttr("disabled");
+            }
+        }
+
+    }
+
+
+    function validateGrid(row) {
+        // testObj = e.sender.container;
+        var result = true;
+        $(".border-danger").removeClass("border-danger");
+        //var row = e.sender.editable.element;
+
+        if (row == undefined) {
+            row = $(".k-grid-edit-row");
+        }
+
+        var IsMarkedCompleted = row.find("input[name='isMarkCompleted']").prop("checked");
+        if (IsMarkedCompleted) {
+
+            row.find("[role='gridcell']").each(function () {
+                var item = $(this);
+                var isValid = true;
+
+                var tagName = $.trim(item.find(".k-input").prop("tagName"));
+
+                var textAreaTag = $.trim(item.find("textarea").prop("tagName"));
+
+                if (textAreaTag.toLowerCase() == "textarea") {
+
+                    if (facilityIsTelenuro) {
+
+                        var isDisabled = item.find("textarea").prop("disabled");
+                        if (!isDisabled) {
+                            var billingType = row.find("input[name='BillingCode']").val();
+
+                            if (billingType != @CaseBillingCode.NotSeen.ToInt()) {
+                                var commentsField = item.find("textarea");
+                                var followUp = '@FollowUpTypes.FollowUp.ToDescription().Replace("-","").Replace(" ","")';
+                                var followUpField = row.find("input[name='VisitType']").val();
+                                //New Fu TC strok Stat
+                                var requireForbilling = billingType == @CaseBillingCode.New.ToInt()
+                            || billingType == @CaseBillingCode.FU.ToInt()
+                            || billingType == @CaseBillingCode.TC.ToInt();
+                            @*|| billingType == @CaseBillingCode.CC1_StrokeAlert.ToInt()
+                            || billingType == @CaseBillingCode.CC1_STAT.ToInt();*@
+
+                                if (followUp == followUpField && requireForbilling) {
+                                    var comments = $(commentsField).val();
+
+                                    var charactersTyped = comments.replace(/\s/g, '').length;
+                                    if ($('#cas_commnets_off').is(":checked")) {
+                                        $(commentsField).removeClass("border-danger");
+                                    }
+                                    else {
+                                        if (charactersTyped < 100) {
+
+                                            $(commentsField).addClass("border-danger");
+                                            result = false;
+                                        }
+                                        else {
+                                            $(commentsField).removeClass("border-danger");
+                                        }
+                                    }
+                                }
+                                else {
+                                    $(commentsField).removeClass("border-danger");
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+
+                    if (tagName != "") {
+                        if (tagName.toLowerCase() != "input") {
+                            var isDisabled = item.find("input").prop("disabled");
+                            isValid = $.trim(item.find(".k-input").text()).toLowerCase().indexOf("select") == -1 ? true : false;
+                            if (!isValid && !isDisabled) {
+                                item.find(".k-input").parent().addClass("border-danger");
+                                result = false;
+
+                                ///550
+
+
+                                if (item.find("input[name='VisitType']").length) {
+                                    item.find(".k-input").parent().removeClass("border-danger");
+                                    result = true;
+                                    if (facilityIsTelenuro) {
+                                        var billingCode = row.find("input[name='BillingCode']").val();
+
+                                     @*var checkValidationForSignOffFollowUP = billingCode == @CaseBillingCode.New.ToInt()
+                                         || billingCode == @CaseBillingCode.FU.ToInt()
+                                         || billingCode == @CaseBillingCode.CC1_STAT.ToInt()
+                                         || billingCode == @CaseBillingCode.TC.ToInt()
+                                         || billingCode == @CaseBillingCode.CC1_StrokeAlert.ToInt();*@
+
+                                        if (facilityIsTelenuro) {
+
+                                            if (item.find("input[name='VisitType']").val() == "") {
+                                                item.find(".k-input").parent().addClass("border-danger");
+                                                result = false;
+                                            }
+                                            else {
+                                                item.find(".k-input").parent().removeClass("border-danger");
+
+                                                result = true;
+
+                                            }
+
+
+                                        }
+                                    }
+                                }
+
+                                ///550
+
+
+                            }
+
+                        }
+                        else {
+                            var isPrimaryKeyCol = item.find("[name='Id']").length > 0 ? true : false;
+                            var isTextBox = item.find(".k-input:text").length > 0 ? true : false;
+                            if (isTextBox && !isPrimaryKeyCol) {
+                                isValid = $.trim(item.find(".k-input").val()) == "" ? false : true;
+                                var isDatePicker = item.find("[data-role='datepicker']").length > 0 ? true : false;
+                                if (!isValid) {
+
+                                    if (isDatePicker) {
+                                        item.find(".k-input").parent().addClass("border-danger");
+                                    }
+                                    else {
+
+                                        item.find(".k-input").addClass("border-danger");
+                                    }
+                                    result = false;
+                                }
+                                else {
+                                    if (isDatePicker) {
+                                        if (!isValidDOB(item.find(".k-input").val())) {
+                                            item.find(".k-input").parent().addClass("border-danger");
+                                            result = false;
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+
+
+
+
+            });
+
+
+
+        }
+        else {
+            var isDatePicker = row.find("[data-role='datepicker']").length > 0 ? true : false;
+             var validCaseType = $.trim(row.find("[data-container-for='CaseType']").find(".k-input").text()).toLowerCase().indexOf("select") > -1 ? true : false;
+            if (isDatePicker) {
+                var txtValue = $.trim(row.find("[data-role='datepicker']").val());
+                if (txtValue != "" && !isValidDOB(txtValue)) {
+                    row.find("[data-role='datepicker']").parent().addClass("border-danger");
+                    result = false;
+                }
+            }
+           if(validCaseType) {
+                    result = false;
+                    row.find("[data-container-for='CaseType']").find(".k-input").parent().addClass("border-danger");
+
+            }
+        }
+
+
+        return result;
+
+    }
+
+</script>
+
+<style>
+    #IcdDiagnoseCodesId {
+        border: 1px solid #DCDCDC;
+        overflow-y: auto;
+        height: auto;
+        max-height: 107px;
+        position: absolute;
+        z-index: 1233333333333333333333333333333333;
+        background-color: aliceblue;
+        width: 26.5%;
+    }
+
+
+    .diagnose-code-ul {
+        padding-left: 10px;
+        padding-right: 10px;
+        font-size: 13px;
+        word-break: break-all;
+        width: 500px;
+        max-width: 500px;
+        overflow-x: auto;
+    }
+
+        .diagnose-code-ul li:first-child {
+            margin-top: 5px;
+        }
+
+    .diagnose-code-li {
+        cursor: pointer;
+    }
+
+    hr {
+        margin-top: 0.2rem !important;
+        margin-bottom: 0.2rem !important;
+    }
+
+    .diagnosis-code-background {
+        margin: 5px;
+        width: auto;
+        background: #212529;
+        padding: 3px;
+        font-size: 12px;
+        margin-top: 5px;
+        max-width: 325px;
+        border-radius: 5px;
+        color: white;
+        line-height: 1.5;
+        word-break: break-all;
+    }
+
+    .diag-code-div {
+        width: 100%;
+        height: 100px;
+        max-height: 100px;
+        overflow-y: auto;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+
+    .cross-id {
+        cursor: pointer;
+        position: relative;
+        float: right;
+        /*margin-top:-3px;*/
+    }
+
+    .daignosis-ul-background {
+        padding-left: 0px;
+    }
+
+    #cas_billing_recent_codes {
+        width: auto;
+        height: auto;
+        max-height: 150px;
+        overflow-y: auto;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        min-height: 50px;
+        padding-bottom: 5px;
+    }
+
+    .input-checked-recent {
+        margin-right: 5px;
+    }
+
+    .recent-code-ul {
+        padding-left: 0px;
+        padding-right: 0px;
+        font-size: 14px;
+        word-break: break-all;
+        width: 500px;
+        max-width: 500px;
+        overflow-x: auto;
+        margin-bottom: 5px;
+        margin-left: 5px;
+    }
+
+    .recent-code-li {
+        cursor: pointer;
+        margin-top: 5px;
+        padding-left: 5px;
+        background-color: aliceblue;
+    }
+
+    .search_field {
+        background-image: url(./magnifying_glass.png);
+        background-repeat: no-repeat;
+        background-position: right 10px center !important;
+        padding-right: 14px;
+        display: block;
+        width: 92%;
+        height: calc(2.25rem + 2px);
+        padding: 0.375rem 0.75rem;
+        font-size: 13px;
+        line-height: 1;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        height: 20px;
+    }
+</style>
+
+<style>
+    #diagnosisCode_listbox {
+        font-size: 12px;
+    }
+
+    .k-multiselect > .k-multiselect-wrap > .k-i-close {
+        top: 7px;
+        color: black;
+        margin-right: 10px;
+        font-size: 15px;
+    }
+
+    #comboBox-wrapper .k-multiselect-wrap {
+        height: 150px !important;
+    }
+
+    #diagnosisCode_taglist li {
+        word-break: break-all;
+        text-align: left;
+        margin-top: 2px;
+    }
+</style>

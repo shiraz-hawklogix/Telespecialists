@@ -1,0 +1,158 @@
+﻿@model TeleSpecialists.BLL.Model.Hospital_Protocols
+@{
+    ViewBag.Title = "Edit";
+    var fac_id = ViewBag.fac_keys;
+}
+
+
+<h2>
+    <b>
+        <center>
+            Facility Headers List
+        </center>
+    </b>
+</h2>
+
+<div class="pt-1 customGridHeader">
+    <div id="protocols_grid" class="kendo-ui-grid-control" style="width: 96vw !important;">
+    </div>
+</div>
+<br />
+<div class="pull-right">
+    @*<a href="/Facility/Edit/@ViewBag.fac_keys" class="btn btn-dark loadLinkAsync">Cancel</a>*@
+    <input type="button" class="btn btn-dark loadLinkAsync" id="btnbackprotocolspage" value="Cancel" />
+</div>
+
+
+<input type="hidden" value="@ViewBag.fac_keys" id="fac_value" />
+<script>
+
+            $(document).ready(loadUserPresenceList);
+        $(document).ready(function () {
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        });
+
+        function loadUserPresenceList()
+        {
+
+            //new
+            $("#protocols_grid").kendoGrid({
+                dataSource: {
+                    page: KendoGet("Facility", "page"),
+                    transport: {
+                        read: {
+                                         url: '@Url.Action("GetAllData")',
+                            contentType: "application/json",
+                           data: function () {
+                            var model = {
+                                id: "",
+                            };
+                            model.id = '@fac_id';
+                            return model;
+                        },
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            //options = KendoKeepState("Facility", options, true);
+
+                            //if (options.filter !== undefined && options.filter.filters !== undefined) {
+                            //    $("#searchBox").val(options.filter.filters[0].value);
+                            //    $("#resetSearch").show();
+                            //}
+
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total",
+                    },
+
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true
+                },
+                filterable: true,
+                sortable: true,
+                scrollable: true,
+                resizable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                dataBound: function (e) {
+                    //get All records
+                    SetKendoTotalCount("Facility", $('#protocols_grid').data("kendoGrid").dataSource.total());
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                },
+           columns: [
+               { hidden: true, field: "ID" },
+               { field: "SortNum", title: "Sort#", width: '15px' },
+               { field: "ParameterName", title: "Header Name", width: '50px' },
+               { field: "ParameterName_Info", title: "Detail", width: '120px', template:"#= htmlDecode(ParameterName_Info) #"},
+                    { field: "Facility_Name", title: "Facility Name", width: '70px' },
+                    { field: "Parameter_Add_Date", title: "Add On Date", width: '20px', template: "#= kendo.toString(kendo.parseDate(Parameter_Add_Date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
+                    {
+
+                        title: "Actions", width: '30px', template: "<a class='btn btn-dark btn-sm py-1' title='Edit' href='javascript:;'  onclick='EditProtocolsByID(#=ID#)'>Edit</a> "
+                             + "<a class='btn btn-dark btn-sm py-1' title='Remove' href='javascript:;'  onclick='removePhysicianStatus(#=ID#)'>Remove</a>"
+
+
+                    }
+                ]
+            });
+        }
+
+    function htmlDecode(value) {
+        return value.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    }
+    function removePhysicianStatus(id, bCanDelete) {
+        bCanDelete = true;
+            $("#mainContentArea").find("#validationSummary").empty();
+
+            if (!bCanDelete) {
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", 'Record can not be deleted. Protocols are linked with it');
+                return false;
+
+            }
+
+            var url = "@Url.Action("Remove")";
+             $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+                "<span>Are you sure you want to remove this header</span>",
+                function () {
+                    $.get(url, { id: id }, function (response) {
+                        $("#divModelPopUp").modal("hide");
+                        if (response.success) {
+                            loadUserPresenceList();
+                        }
+                        else {
+                            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                        }
+                    })
+                });
+        }
+    function EditProtocolsByID(id) {
+        var protocolid = parseInt(id);
+        var url = "/HospitalProtocols/EditProtocols/" + protocolid;
+        ShowLoading();
+        $.get(url, function (response) {
+            debugger
+            //$("#ProtocolMain").addClass('d-none');
+            $(".AddEditProtocols").empty();
+            $(".AddEditProtocols").html(response);
+            //$(".AddEditProtocols").removeClass('d-none');
+
+            HideLoading();
+        })
+    }
+    $("#btnbackprotocolspage").off('click').click(function () {
+        GetProtocolsData();
+    });
+</script>
+

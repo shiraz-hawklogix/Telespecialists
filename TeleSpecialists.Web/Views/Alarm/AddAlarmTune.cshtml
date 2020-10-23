@@ -1,0 +1,75 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@model TeleSpecialists.BLL.Model.alarm_tunes
+
+@{
+    ViewBag.Title = "Add Notification Tune";
+    ViewBag.Edit = false;
+
+    //var indexList = Enum.GetValues(typeof(IndexRate)).Cast<IndexRate>().Select(m => new { key = (int)m , title = (int)m });//.OrderBy(m => m.ucd_title);
+}
+<div class="row">
+    <div class="col-md-8 offset-sm-1 showMsg">
+        <strong id="msg"></strong>
+    </div>
+</div>
+@Html.Partial("_addtune", Model)
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        PostForm("regForm", "Informatrion saved successfully. Please wait for admin approval.", "Oops, something went wrong. Please try again later...", function () { });
+    });
+    function PostForm(FomId, SuccessMsg, FailureMessage, CallBack) {
+        $("#" + FomId).on("submit", function (event) {
+            $('#showMsg').hide();
+            event.preventDefault();
+            var fdata = new FormData();
+            var files = $("#fileUpload")[0].files;
+            for (var i = 0; i < files.length; i++) {
+                fdata.append("fileUpload", files[i]);
+            }
+            fdata.append("fileName", $("#filename").val());
+            var frmUrl = $(this).attr('action');
+            $.ajax({
+                type: 'post',
+                url: frmUrl,
+                data: fdata,
+                processData: false,
+                contentType: false,
+                success: function (e) {
+                    if (e === 'success') {
+                        $('#msg').fadeIn();
+                        $("#filename").val('');
+                        $("#fileUpload").replaceWith($("#fileUpload").val('').clone(true));
+                        $(".custom-file-input").val('');
+                        $(".custom-file-input").html('Choose File');
+                        $('#msg').html('Tune saved Successfully.');
+                        $("#msg").css("color", "green");
+                        $('#showMsg').show();
+                        $('#msg').fadeOut(4000);
+                    }
+                    else if (e === 'exist') {
+                        $('#msg').html('File already Exist.Please Try another.');
+                        $("#msg").css("color", "red");
+                        $('#showMsg').show();
+                        $('#msg').fadeIn();
+                    }
+                    else{
+                        $('#msg').html('Record Not saved successfully.Please Try again with correct Data.');
+                        $("#msg").css("color", "red");
+                        $('#showMsg').show();
+                        $('#msg').fadeIn();
+                    }
+
+                }
+            });
+
+        });
+    }
+</script>
+
+
+
+

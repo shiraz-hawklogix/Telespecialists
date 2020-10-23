@@ -1,0 +1,132 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.ViewModels.user_alarm_setting
+@{
+    /**/
+
+    //Layout = null;
+    ViewBag.title = "Alarm Setting";
+    //string _oldval = ViewBag.selected_audio;
+}
+<div class="row">
+    <div class="col-md-8 offset-sm-1 showMsg">
+        <strong id="msg"></strong>
+    </div>
+</div>
+
+<div>
+    @using (Html.BeginForm("AlarmSetting", "Alarm", FormMethod.Post, new { @id = "regForm" }))
+    {
+        <div class="row">
+            <div class="col-md-6 offset-sm-1">
+                <h2>Select Your Default Alarm Tune</h2>
+            </div>
+            <div class="col-sm-10 offset-sm-1">
+                <hr />
+            </div>
+        </div>
+        @Html.AntiForgeryToken()
+        @*<input type="hidden" name="audio_name" id="lbl_file_name" />*@
+        <div class="row" style="overflow-y:auto; height:350px;">
+            <div class="col-sm-10 offset-sm-1">
+                <table width="100%">
+                    @foreach (var item in Model.alarm_list)
+                    {
+                        string _val = item.alt_audio_path + "," + item.alt_selected_audio;
+                        <tr>
+                            <td>
+                                @{
+                                    if (Model.obj_alarm_Setting.als_selected_audio == null)
+                                    {
+                                        @Html.RadioButtonFor(m => item.alt_selected_audio, "", new { @Value = _val, @class = "cls_file_name" })
+                                    }
+                                    else
+                                    {
+                                        @Html.RadioButtonFor(m => item.alt_selected_audio, Model.obj_alarm_Setting.als_selected_audio, new { @Value = _val, @class = "cls_file_name" })
+                                    }
+                                }
+                                <a href="#">@item.alt_file_name</a>
+                            </td>
+                            <td>
+                                <div class="player">
+                                    <audio controls preload="none" class="audiostyle">
+                                        <source src="@item.alt_audio_path" type="audio/mp3" />
+                                    </audio>
+                                </div>
+                            </td>
+                            @*(Default Audio)*@
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-8 offset-sm-1 text-right">
+                <a href="@Url.Action("Index","Home")" class="btn btn-link">Cancel</a>
+                <input type="submit" value="Save" class="btn btn-dark" />
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("audio").on("play", function () {
+            $("audio").not(this).each(function (index, audio) {
+                audio.pause();
+            });
+        });
+        PostFormRegister("regForm", "Informatrion saved successfully. Please wait for admin approval.", "Oops, something went wrong. Please try again later...", function () { });
+    });
+    function PostFormRegister(FomId, SuccessMsg, FailureMessage, CallBack) {
+        $("#" + FomId).on("submit", function (event) {
+            event.preventDefault();
+            var test = $('input[type="radio"]:checked').val();
+            var form = $(this);
+            $.ajax({
+                cache: false,
+                async: true,
+                type: "POST",
+                url: form.attr('action'),
+                data: form.serialize() + "&audio_names="+test,
+                success: function (response) {
+                    
+                    if (response.success) {
+                        // 
+                        var target = form.attr('action');//$this.data("target");
+
+                        if (response.refershPage) {
+                            window.location.href = response.redirectUrl;
+                        }
+                        else {
+                            $("#divModelPopUp").modal("hide");
+                            if (response.message !== "" && response.message !== null) {
+                                $("#mainContentArea").find("#validationSummary").empty().showBSSuccessAlert("", response.message);
+                                $("#divContentArea").find("input:button, input:submit").enable();
+                            }
+
+                            if (response.redirectUrl != "" && response.redirectUrl != null)
+                                loadPageAsync(response.redirectUrl, target);
+                        }
+
+                        refresh();
+                    }
+                    else {
+                        $("#divContentArea").find("input:button, input:submit").enable();
+                        $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Tune Not Selected!");
+                        $("#divModelPopUp").modal("hide");
+                    }
+                },
+                error: function (data) {
+                }
+            });
+        });
+    }
+
+    function refresh() {
+        $.get("/alarm/_refreshAlarm", function (data) {
+            $('.refreshAlarm').html(data);
+        });
+    }
+</script>

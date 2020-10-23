@@ -1,0 +1,118 @@
+﻿
+@{
+    ViewBag.Title = "Import";
+}
+
+<h2>MD Staff Data Sync</h2>
+
+<div class="row">
+    <div class="col-sm-12">
+        <a class="btn btn-dark" id="btnRefresh"  href="#" onclick="return doStuff();">Import Data</a>
+        @*<a class="btn btn-dark" id="btnRefresh" href="#" onclick="bindGrid(); refreshData();">Test Refresh</a>*@
+    </div>
+</div>
+
+<div class="pt-1 customGridHeader">
+    <div id="kendoDataGrid">
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    var importComplete = false;
+
+    $(document).ready(function () {
+        //$("#btnRefresh").click(function (e) {
+        //    doStuff(e);
+        //});
+         document.title = $("#title-prefix").val() + '@ViewBag.Title';
+    });
+
+    function doStuff(e) {
+        //e.preventDefault();
+
+        var url = '@Url.Action("SyncData", new { requestId = @ViewBag.RequestId })';
+        $.get(url).done(function () { importComplete = true; });
+
+        bindGrid();       
+
+        return false;
+    }
+
+    function bindGrid() {
+        $("#kendoDataGrid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetLogs", new { requestId = @ViewBag.RequestId })',
+                        contentType: "application/json",
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                pageSize: 100,
+                serverPaging: false,
+                serverFiltering: false,
+                serverSorting: false
+            },
+            dataBound: function () {
+                if (!importComplete) {
+                    refreshData();
+                }
+                else {
+                    logToConsole('data import is complete');
+                }
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+            },
+            filterable: true,
+            sortable: true,
+            //pageable: {
+            //    refresh: true,
+            //    pageSizes: true,
+            //    buttonCount: 5
+            //},
+            columns: [
+                { hidden: true, field: "dil_key" },
+                { field: "dil_type", title: "Type", filterable: false },
+                { field: "dil_provider", title: "Provider", filterable: false, hidden: true },
+                { field: "dil_created_date", title: "Date", template: "#= formattedDateTime(dil_created_date)#", filterable: false },
+                { field: "dil_message", title: "Message", filterable: false },
+                { field: "dil_created_by", title: "Created By", filterable: false },
+            ]
+        });
+    }
+
+    function refreshData() {
+        try {
+            $('#btnRefresh').remove();
+            //$("#kendoDataGrid").data("kendoGrid").refresh();
+
+           
+
+            var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+            if (currentUrl.indexOf("/mdstaff") > -1 || currentUrl.indexOf("/mdstaff/import") > -1) {                
+                if (refreshData.timeout != undefined)
+                    window.clearTimeout(refreshData.timeout);
+
+                refreshData.timeout = window.setTimeout(function () { bindGrid(); }, 5000);
+                
+            }
+        } catch (e) {
+            logToConsole('ERROR');
+            logToConsole(e);
+        }
+    }
+</script>
+

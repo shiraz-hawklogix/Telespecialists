@@ -1,0 +1,254 @@
+﻿@model TeleSpecialists.BLL.ViewModels.Reports.QualityMetricsAdvance
+<div class="modal" id="qa_AdvanceSearch" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <form id="frmAdvanceSearch" method="post">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Advanced Search</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body" style="max-height: 600px; overflow-y: auto;">
+                    <div class="form-horizontal">
+                        <div id="validationSummary">
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-11" style="margin-left: 3.333333%;">
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="HandleTime" />Handle Time
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.HandleTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.HandleTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="AssignmentTime" value="" />Assignment Time
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.AssignmentTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.AssignmentTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="BedsideResponseTime" value="" />Bedside Response Time
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.BedsideResponseTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.BedsideResponseTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="LogInHandleTime" value="" />Log In Handle Time
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.LogInHandleTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.LogInHandleTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="OnScreenTime" value="" />On Screen Time
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.OnScreenTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.OnScreenTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="ActivationTime" value="" />Activation Time
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.ActivationTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.ActivationTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="ArrivalToNeedleTime" value="" />Arrival To Needle Time
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.ArrivalToNeedleTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.ArrivalToNeedleTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="PhysicianMDM" value="" />Physician MDM
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.PhysicianMDM.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.PhysicianMDM.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="TPAAdministratorTime" value="" />Alteplase early mix decision Time To Needle Time
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.TPAAdministratorTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.TPAAdministratorTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="TSResponseTime" value="" />TS Response Time
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.TSResponseTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.TSResponseTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="VerbalOrderToCPOEOrder" value="" />Alteplase early mix decision To CPOE Order
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.VerbalOrderToCPOEOrder.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.VerbalOrderToCPOEOrder.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="CPOEOrderToNeedle" value="" />CPOE Order to Needle
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.CPOEOrderToNeedle.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.CPOEOrderToNeedle.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="StartAcceptTime" value="" />Start To Accepted
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.StartAcceptTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.StartAcceptTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-6 mt-2">
+                                        <label class="control-label">
+                                            <input type="checkbox" class="cb_benchMarck mr-2" name="SymptomsToNeedleTime" value="" />Symptom To Needle Time
+                                        </label>
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.EnumDropDownListFor(m => m.SymptomsToNeedleTime.ComparisonOperator, new { @class = "form-control", name = "ComparisonOperator", disabled = "disabled" })
+                                    </div>
+                                    <div class="col-3">
+                                        @Html.TextBoxFor(m => m.SymptomsToNeedleTime.TimeToEvaluate, new { @class = "timeToEvaluate timerMask form-control", name = "TimeToEvaluate", placeholder = "HH:MM:SS", disabled = "disabled" })
+                                        <div class="error_msg" style="display:none;">
+                                            <label>This field is required</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <a class="btn btn-link" data-dismiss="modal">Close</a>
+                    <input type="submit" class="btn btn-dark" id="btnAdvanceSearchForm" value="Search" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

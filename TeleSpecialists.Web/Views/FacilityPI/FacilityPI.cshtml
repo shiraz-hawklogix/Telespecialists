@@ -1,0 +1,410 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@{
+    ViewBag.Title = "Facility PI";
+}
+<div class="row">
+    <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12">
+        <div class="form-row col-lg-12">
+            <div class="form-group col-xl-2 col-lg-2 col-md-4 col-sm-4">
+                <select class="form-control" id="ddlfiltertype">
+                    <option value="SelectType">Select Filter Type</option>
+                    <option value="facility">Facility</option>
+                    <option value="system">System</option>
+                    <option value="regional">Regional</option>
+                    <option value="state">State</option>
+                    <option value="QPS">QPS</option>
+                </select>
+            </div>
+            <div class="form-group col-xl-3 col-lg-3 col-md-6 col-sm-6" id="divfacility" style="display:none;">
+                @Html.DropDownList("Facilities", ViewBag.Facilities as IEnumerable<SelectListItem>, new { @class = "form-control Facilities" })
+                @*<select id="Facilities" name="Facilities" class="form-control" data-searchFilter="true" data-selectedValue=""></select>*@
+            </div>
+            <div class="form-group col-xl-3 col-lg-3 col-md-6 col-sm-6" id="divsystem" style="display:none;">
+                <select id="fac_ucd_key_system" name="fac_ucd_key_system" class="form-control"></select>
+            </div>
+            <div class="form-group col-xl-3 col-lg-3 col-md-6 col-sm-6" id="divregional" style="display:none;">
+                <select id="fac_ucd_region_key" name="fac_ucd_region_key" class="form-control"></select>
+            </div>
+            <div class="form-group col-xl-3 col-lg-3 col-md-6 col-sm-6" id="divstate" style="display:none;">
+                <select id="fac_stt_key" name="fac_stt_key" class="form-control"></select>
+            </div>
+            <div class="form-group col-xl-3 col-lg-3 col-md-6 col-sm-6" id="divqps" style="display:none;">
+                @Html.DropDownList("facilityQPS", ViewBag.QPS_Numbers_List as IEnumerable<SelectListItem>, new { @class = "form-control" })
+            </div>
+            @*<div class="form-group col-xl-3 col-lg-3 col-md-6 col-sm-6" id="divyearRange">
+                    <input type="text" id=timeframe name=timeframe placeholder="Select Year" class="form-control dateyearpicker" />
+                </div>*@
+            <div class="form-group col-xl-2 col-lg-2 col-md-4 col-sm-4" id="reporttype">
+                <select class="form-control" id="ddlreporttype">
+                    <option value="">Select Report Type</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="cumulative">Cumulative</option>
+                </select>
+            </div>
+            <div class="form-group row">
+                <div class="col-6 pr-0">
+
+                    <input type="text" id=FromMonth name=FromMonth placeholder="From Month" class="form-control datemonthpicker" />
+                    <span class="text-danger field-validation-error position-absolute" id="txtFromDateError"
+                          style="display:none" data-valmsg-for=FromDate data-valmsg-replace="true">
+                        <span id="FromDate-error" class=""></span>
+                    </span>
+                </div>
+
+                <div class="form-group col-6">
+
+                    <input type="text" id="ToMonth" name="ToMonth" placeholder="To Month" class="form-control datemonthpicker" />
+                </div>
+            </div>
+        </div>
+        <div class="form-row col-lg-12">
+
+        </div>
+    </div>
+    <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12">
+        <div class="form-row float-right col-lg-12 justify-content-end">
+            <div class="form-group" style="margin-right:6%;">
+                <input type="button" class="btn btn-dark" id="btnExportExcel" value="Export to Excel" />
+                <button type="button" class="btn btn-dark" id="btnfacilitydashboardchart">FacilityDashboard Charts</button>
+                <button type="button" class="btn btn-dark" id="btnpiechart">Pie Chart</button>
+                <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+<ul class="nav nav-tabs mt-3" role="tablist" id="menuTabs">
+    <li class="nav-item"><a id="facilitydashboardTabLink" data-toggle="tab" class="nav-link active" href="#facilitydashboard" onclick="showHideTab('#facilitydashboard');">Facility Dashboard</a></li>
+    <li class="nav-item"><a id="tPAcaseanalysisTabLink" data-toggle="tab" class="nav-link" href="#tPAcaseanalysis" onclick="showHideTab('#tPAcaseanalysis');">TPA Case Analysis</a></li>
+    <li class="nav-item"><a id="PITrendsTabLink" data-toggle="tab" class="nav-link" href="#PITrends" onclick="showHideTab('#PITrends');">PI Trends</a></li>
+    <li class="nav-item"><a id="CounterMeasureTabLink" data-toggle="tab" class="nav-link" href="#CounterMeasure" onclick="showHideTab('#CounterMeasure');">CounterMeasures</a></li>
+    <li class="nav-item"><a id="VolumeMetricTabLink" data-toggle="tab" class="nav-link" href="#VolumeMetric" onclick="showHideTab('#VolumeMetric');">Volumetrics</a></li>
+    <li class="nav-item"><a id="StrokeAlertCasesTabLink" data-toggle="tab" class="nav-link" href="#StrokeAlertCases" onclick="showHideTab('#StrokeAlertCases');">StrokeAlert Cases</a></li>
+</ul>
+<div class="tab-content mt-3">
+    <div id="facilitydashboard" role="tabpanel" class="tab-pane fade">
+        @Html.Partial("FacilityDashboard", "FacilityPI")
+    </div>
+    <div id="tPAcaseanalysis" role="tabpanel" class="tab-pane fade">
+        @Html.Partial("tPAcaseanalysis", "FacilityPI")
+    </div>
+    <div id="PITrends" role="tabpanel" class="tab-pane fade">
+        @Html.Partial("PITrends", "FacilityPI")
+    </div>
+    <div id="CounterMeasure" role="tabpanel" class="tab-pane fade">
+        @Html.Partial("CounterMeasure", "FacilityPI")
+    </div>
+    <div id="VolumeMetric" role="tabpanel" class="tab-pane fade">
+        @Html.Partial("VolumeMetric", "FacilityPI")
+    </div>
+    <div id="StrokeAlertCases" role="tabpanel" class="tab-pane fade">
+        @Html.Partial("StrokeAlertCases", "FacilityPI")
+    </div>
+</div>
+<script>
+    var promises = [
+            $.Deferred(),
+            $.Deferred()
+        ];
+    $(document).ready(function () {
+        $('#ddlfiltertype').off("change").change(function () {
+            $("#divfacility,#divsystem,#divregional,#divstate,#divqps").hide();
+            var selectedValue = $(this).val();
+            if (selectedValue == "facility") {
+                $("#fac_ucd_key_system").data("kendoDropDownList").value(-1);
+                $("#fac_ucd_region_key").data("kendoDropDownList").value(-1);
+                $("#fac_stt_key").data("kendoDropDownList").value(-1);
+                var facilityQPS = $("#facilityQPS").val();
+                if (facilityQPS != "0") {
+                    $("#facilityQPS").val("0");
+                }
+                $("#divfacility").show();
+            }
+            else if (selectedValue == "system") {
+
+                $("#Facilities").data("kendoDropDownList").value(-1);
+                $("#fac_ucd_region_key").data("kendoDropDownList").value(-1);
+                $("#fac_stt_key").data("kendoDropDownList").value(-1);
+                var facilityQPS = $("#facilityQPS").val();
+                if (facilityQPS != "0") {
+                    $("#facilityQPS").val("0");
+                }
+                $("#divsystem").show();
+            }
+            else if (selectedValue == "regional") {
+
+                $("#Facilities").data("kendoDropDownList").value(-1);
+                $("#fac_ucd_key_system").data("kendoDropDownList").value(-1);
+                $("#fac_stt_key").data("kendoDropDownList").value(-1);
+                var facilityQPS = $("#facilityQPS").val();
+                if (facilityQPS != "0") {
+                    $("#facilityQPS").val("0");
+                }
+                $("#divregional").show();
+            }
+            else if (selectedValue == "state") {
+
+                $("#Facilities").data("kendoDropDownList").value(-1);
+                $("#fac_ucd_region_key").data("kendoDropDownList").value(-1);
+                $("#fac_ucd_key_system").data("kendoDropDownList").value(-1);
+                var facilityQPS = $("#facilityQPS").val();
+                if (facilityQPS != "0") {
+                    $("#facilityQPS").val("0");
+                }
+                $("#divstate").show();
+            }
+            else if (selectedValue == "QPS") {
+                $("#Facilities").data("kendoDropDownList").value(-1);
+                $("#fac_ucd_region_key").data("kendoDropDownList").value(-1);
+                $("#fac_ucd_key_system").data("kendoDropDownList").value(-1);
+                $("#fac_stt_key").data("kendoDropDownList").value(-1);
+                $("#divqps").show();
+            }
+        });
+
+
+        $("#btnExportExcel").click(function (e) {
+            var tab = $("#activetab").val();
+            if (tab == 'facilitydashboard') {
+                $("#FacilityDashboardGrid").getKendoGrid().saveAsExcel();
+            }
+            else if (tab == 'tPAcaseanalysis') {
+                $("#tPAcaseanalysisGrid").getKendoGrid().saveAsExcel();
+            } else if (tab == 'PITrends') {
+                ;
+                //$("#pitrendsGrid").getKendoGrid().saveAsExcel();
+                //$("#casereviewtrendsGrid").getKendoGrid().saveAsExcel();
+
+                $("#pitrendsGrid").data("kendoGrid").saveAsExcel();
+                $("#casereviewtrendsGrid").data("kendoGrid").saveAsExcel();
+
+                $.when.apply(null, promises)
+                    .then(function (pitrendsworkbook, casereviewtrendsworkbook) {
+
+                        var sheets = [
+                            pitrendsworkbook.sheets[0],
+                            casereviewtrendsworkbook.sheets[0]
+                        ];
+
+                        sheets[0].title = "PI-Trends";
+                        sheets[1].title = "CaseReview-Trends";
+
+                        var workbook = new kendo.ooxml.Workbook({
+                            sheets: sheets
+                        });
+
+                        workbook.toDataURLAsync().then(function (dataURL) {
+                            kendo.saveAs({
+                                dataURI: dataURL,
+                                fileName: "PITrendsAndCaseReviewTrends.xlsx"
+                            });
+                        });
+
+                    });
+
+            } else if (tab == 'VolumeMetric') {
+                $("#VolumeMetricsGrid").getKendoGrid().saveAsExcel();
+            } else if (tab == 'StrokeAlertCases') {
+                $("#StrokeAlertCasesGrid").getKendoGrid().saveAsExcel();
+            }
+
+        });
+
+        $('.dateyearpicker').kendoDatePicker({
+            start: "decade",
+            depth: "decade",
+            format: "yyyy",
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $('.datemonthpicker').kendoDatePicker({
+            start: "year",
+            depth: "year",
+            format: "MMMM yyyy",
+            open: function (e) {
+                onDatePickerOpen(e);
+            }
+        });
+        $(".Facilities").kendoDropDownList({
+            filter: "startswith"
+        })
+        //$("#Facilities").fillKendoDropDown("/FacilityPI/GetFacility", "fac_name", "fac_key", "-- Select Facility--");
+        $("#fac_ucd_key_system").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.System.ToInt())", "ucd_title", "ucd_key", "-- Select System --");
+        $("#fac_ucd_region_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.Regional.ToInt())", "ucd_title", "ucd_key", "-- Select Regional --");
+        $("#fac_stt_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.State.ToInt())", "ucd_title", "ucd_key", "-- Select State --");
+        $('#btnSearch').off("click").click(function () {
+            var tab = $("#activetab").val();
+            var errorMessage = "";
+            if ($("#timeframe").val() == "") {
+                errorMessage = "Enter Year<br/>";
+            }
+            if ($("#FromMonth").val() == "") {
+                errorMessage = "Enter Month<br/>";
+            }
+            if ($("#ToMonth").val() == "") {
+                errorMessage = "Enter Month<br/>";
+            }
+            if (errorMessage == "") {
+                if (tab == 'facilitydashboard') {
+                    loadPIFacilityGridData();
+                }
+                else if (tab == 'tPAcaseanalysis') {
+                    gettPAanaylysis();
+                } else if (tab == 'PITrends') {
+                    getRootCauseTrends();
+                    getCaseReviewTrends();
+                } else if (tab == 'CounterMeasure') {
+                    getCounterMeasures();
+                } else if (tab == 'VolumeMetric') {
+                    getVolumeMetrics();
+                } else if (tab == 'StrokeAlertCases') {
+                    getStrokeAlertCases();
+                }
+
+            }
+            else {
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+            }
+
+
+        });
+
+        var tab = $("#menuTabs .active ").attr("href"); //tab = $("#activetab").val();
+        if (tab == '') {
+            $("#menuTabs").find('.nav-link').first().addClass("active");
+            tab = $("#menuTabs .active ").attr("href");
+        }
+        if (tab != "") {
+            var panId = tab.replace("#", "");
+            $('.nav-tabs .nav-link').removeClass("active");
+            $('.tab-content .tab-pane').removeClass("fade in active show");
+            $('.nav-tabs a[href="' + tab + '"]').addClass("active");
+            $('.tab-content div[id="' + panId + '"]').addClass("fade in active show");
+
+            $("#activetab").val("");
+
+            $("#activetab").val("");
+            window.setTimeout(function () {
+
+                var visibleTabs = [];
+                $("#menuTabs a").each(function (index, item) {
+                    visibleTabs.push($(this).attr("href").replace("#", ""));
+                });
+                $("#VisibleTabs").val(visibleTabs.join(","));
+
+            }, 500);
+
+            showHideTab(tab);
+        }
+
+    })
+
+    function showHideTab(tab) {
+        $('#btnExportExcel').hide();
+        $('#btnpiechart').hide();
+        $("#facilitydashboard").hide();
+        $("#tPAcaseanalysis").hide();
+        $("#PITrends").hide();
+        $("#CounterMeasure").hide();
+        $("#VolumeMetric").hide();
+        $("#StrokeAlertCases").hide();
+        $("#btnfacilitydashboardchart").hide();
+        $("#reporttype").hide();
+        if (tab == '#facilitydashboard') {
+            $('#btnExportExcel').show();
+            //$('#btnpiechart').show();
+            $("#btnfacilitydashboardchart").show();
+            $("#reporttype").show();
+            loadPIFacilityGridData();
+            $("#facilitydashboard").show();
+            $("#activetab").val('facilitydashboard');
+        }
+        else if (tab == '#tPAcaseanalysis') {
+            $('#btnExportExcel').show();
+            $("#mainContentArea").find("#validationSummary").empty();
+            gettPAanaylysis();
+            $("#tPAcaseanalysis").show();
+            $("#activetab").val('tPAcaseanalysis');
+        }
+        else if (tab == '#PITrends') {
+            $('#btnExportExcel').show();
+            $("#mainContentArea").find("#validationSummary").empty();
+            getRootCauseTrends();
+            getCaseReviewTrends();
+            $("#PITrends").show();
+            $("#activetab").val('PITrends');
+        }
+        else if (tab == '#CounterMeasure') {
+            $("#mainContentArea").find("#validationSummary").empty();
+            getCounterMeasures();
+            $("#CounterMeasure").show();
+            $("#activetab").val('CounterMeasure');
+        }
+        else if (tab == '#VolumeMetric') {
+            $('#btnpiechart').show();
+            $('#btnExportExcel').show();
+            $("#mainContentArea").find("#validationSummary").empty();
+            getVolumeMetrics();
+            $("#VolumeMetric").show();
+            $("#activetab").val('VolumeMetric');
+        }
+        else if (tab == '#StrokeAlertCases') {
+            $('#btnpiechart').show();
+            $('#btnExportExcel').show();
+            $("#mainContentArea").find("#validationSummary").empty();
+            getStrokeAlertCases();
+            $("#StrokeAlertCases").show();
+            $("#activetab").val('StrokeAlertCases');
+        }
+    }
+    //$("#timeframe").on('change', function () {
+    //    var facilities = $("#Facilities").val();
+    //    if (facilities != "") {
+    //        var timeframe = $("#timeframe").val();
+    //        var tab = $("#activetab").val();
+    //        if (tab == 'facilitydashboard') {
+    //            $.ajax({
+    //                cache: false,
+    //                async: true,
+    //                type: "POST",
+    //                url: '/FacilityPI/CheckQualityGoalExist',
+    //                data: { facilities: facilities, timeframe: timeframe, quater:"search" },
+    //                success: function (data) {
+    //                    $("#qualityform").show();
+    //                    if (data == "Quality Goals are Not Available") {
+    //                        $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", data);
+    //                        $('#timeframe').val("");
+    //                    } else {
+    //                        $("#mainContentArea").find("#validationSummary").empty();
+    //                    }
+    //                },
+    //                error: function () {
+
+    //                }
+    //            });
+    //        }
+    //    }
+    //});
+    $("#btnpiechart").click(function () {
+        var tab = $("#activetab").val();
+        if (tab == 'facilitydashboard') {
+            GetFacilityDashboardPieChart();
+        }
+        else if (tab == 'tPAcaseanalysis') {
+
+        } else if (tab == 'PITrends') {
+
+        } else if (tab == 'CounterMeasure') {
+
+        } else if (tab == 'VolumeMetric') {
+            GetVolumeMetricPicChart();
+        } else if (tab == 'StrokeAlertCases') {
+            GetStrokeAlertPieChart();
+        }
+    })
+    $("#btnfacilitydashboardchart").click(function () {
+        GetFacilityDashboardAllCharts();
+    })
+</script>

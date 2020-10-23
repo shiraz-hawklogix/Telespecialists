@@ -1,0 +1,187 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@model TeleSpecialists.BLL.Model.post_acute_care
+
+@{
+    ViewBag.Title = "PAC Billing";
+    var dicOptions = new Dictionary<string, string>();
+    dicOptions.Add("true", "Yes");
+    dicOptions.Add("false", "No");
+
+    var isTeleNeuroFacility = false;
+    if (Model.facility != null)
+    {
+        if (Model.facility.facility_contract != null)
+        {
+            if (Model.facility.facility_contract.fct_service_calc != null
+                && Model.facility.facility_contract.fct_service_calc != ""
+                && Model.facility.facility_contract.fct_service_calc.Contains(ContractServiceTypes.TeleNeuro.ToString()))
+            {
+                isTeleNeuroFacility = true;
+            }
+        }
+    }
+
+    IDictionary<string, object> dynamicHtmlAttributesForComment = new Dictionary<string, object>();
+    dynamicHtmlAttributesForComment.Add("style", "width:100%; height:100px;");
+    var BillingCode = new SelectList(
+        new List<SelectListItem>
+        {
+new SelectListItem {Text = "Visit - Video", Value = "1"},
+new SelectListItem {Text = "Visit - No Video", Value = "2"},
+
+            //new SelectListItem {Text = "Initial Visit - Video (High Complexity)", Value = "1"},
+            //new SelectListItem {Text = "Initial Visit - Video (Low Complexity)", Value = "2"},
+            //new SelectListItem {Text = "Initial Visit - No Video", Value = "3"},
+            //new SelectListItem {Text = "Urgent Visit - No Video", Value = "4"},
+            //new SelectListItem {Text = "Urgent Visit - Video", Value = "5"},
+            //new SelectListItem {Text = "Follow Up Visit - Video", Value = "6"},
+
+        }, "Value", "Text");
+
+    var Identification = new SelectList(
+        new List<SelectListItem>
+        {
+new SelectListItem {Text = "MRN", Value = "1"},
+new SelectListItem {Text = "CSN", Value = "2"},
+new SelectListItem {Text = "FIN", Value = "3"},
+        }, "Value", "Text");
+
+
+    var identification = Enum.GetValues(typeof(PACIdentificationTypes)).Cast<PACIdentificationTypes>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList identificationList = new SelectList(identification, "key", "title");
+
+}
+@using (Html.BeginForm( FormMethod.Post))
+{
+     
+<div class="form-group row pac-billing-tab">
+    <div class="col-xl-5  col-lg-6 col-md-12 col-sm-12">
+        <div class="form-group row">
+            <label class="control-label col-sm-4 text-danger">Billing Code: </label>
+            <div class="col-sm-8">
+                @Html.DropDownListFor(m => m.pac_billing_bic_key, BillingCode, "--Select--", new { @class = "form-control", @id = "pac_billing_bic_key", @required = "required" })
+                <div class="error_msg" id="pac_billing_bic_key-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4 text-danger">Date of Consult: </label>
+            <div class="col-sm-8">
+                @Html.FormattedDateTextBoxFor(m => m.pac_date_of_completion, new { @class = "form-control datepicker", name = "pac_date_of_completion", @id = "pac_date_of_completion", @required = "required" })
+                <div class="error_msg" id="pac_date_of_completion-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.pac_date_of_completion, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4 text-danger">Patient Name: </label>
+            <div class="col-sm-8">
+                @Html.TextBoxFor(m => m.pac_patient, new { @class = "form-control", id = "pac_patient", @placeholder = "Last Name, First Name", @required = "required" })
+                <div class="error_msg" id="pac_patient-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.pac_patient, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4 text-danger">Date of Birth: </label>
+            <div class="col-sm-8">
+                @Html.FormattedDateTextBoxFor(m => m.pac_dob, new { @class = "form-control dob", @id = "billing_cas_dob", @value = @Model.pac_billing_dob?.FormatDate(), @required = "required" })
+                <div class="error_msg" id="billing_cas_dob-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.pac_dob, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4 text-danger">Identification Type: </label>
+            <div class="col-sm-8">
+                @Html.DropDownListFor(x => x.pac_identification_type, identificationList, "--Select--", new { @class = "pac_identification_type form-control", @id = "billing_pac_identification_type_id", @required = "required" })
+                <div class="error_msg" id="billing_pac_identification_type_id-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.pac_identification_type, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4 text-danger">Identification Number: </label>
+            <div class="col-sm-8">
+                @Html.TextBoxFor(m => m.pac_identification_number, new { @class = "form-control", id = "pac_identification_number", @required = "required" })
+                <div class="error_msg" id="pac_identification_number-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.pac_identification_number, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-5  col-lg-6 col-md-12 col-sm-12">
+        <div class="form-group row">
+            <label class="control-label col-sm-4 text-danger">Primary Diagnosis: </label>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.pac_billing_diagnosis, new { @class = "form-control", @id = "pac_billing_diagnosis", @required = "required" })
+                <div class="error_msg" id="pac_billing_diagnosis-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-sm-4">Notes: </label>
+            <div class="col-sm-8">
+                @Html.TextAreaFor(m => m.pac_billing_notes, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+</div>
+     
+}
+    <script>
+
+        function validateBillingRequiredFields(isCaseCompleteCall) {
+
+        $(".error_msg").hide();
+
+        var result = true;
+
+        if ($.trim($("#pac_billing_bic_key").val()) == "") {
+            $("#pac_billing_bic_key-error").show();
+            result = false;
+        }
+
+        if ($.trim($("#pac_date_of_completion").val()) == "") {
+            $("#pac_date_of_completion-error").show();
+            result = false;
+        }
+
+        if ($.trim($("#pac_patient").val()) == "") {
+            $("#pac_patient-error").show();
+            result = false;
+        }
+
+        if ($.trim($("#billing_cas_dob").val()) == "") {
+            $("#billing_cas_dob-error").show();
+            result = false;
+        }
+        if ($.trim($("#billing_pac_identification_type_id").val()) == "") {
+            $("#billing_pac_identification_type_id-error").show();
+            result = false;
+        }
+
+        if ($.trim($("#pac_identification_number").val()) == "") {
+            $("#pac_identification_number-error").show();
+            result = false;
+        }
+
+        if ($.trim($("#pac_billing_diagnosis").val()) == "") {
+            $("#pac_billing_diagnosis-error").show();
+            result = false;
+        }
+
+
+        return result;
+    }
+    
+    </script>
+

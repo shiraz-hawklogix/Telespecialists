@@ -1,0 +1,365 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+
+@model TeleSpecialists.BLL.Model.physician_status
+
+<div class="ajaxForm_2">
+
+    @using (Html.BeginForm(new { role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-horizontal">
+            <h4>@ViewBag.Title</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(m => m.phs_key)
+            @Html.HiddenFor(m => m.phs_created_date)
+            @Html.HiddenFor(m => m.phs_created_by)
+            <div class="row offset-sm-1">
+                <div class="col-md-6 col-lg-6 col-sm-12">
+
+
+                    <div class="form-group row">
+                        @Html.Label("Name:", htmlAttributes: new { @class = "control-label col-2" })
+                        <div class="col-10">
+                            @Html.EditorFor(model => model.phs_name, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.phs_name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Color Code:", htmlAttributes: new { @class = "control-label col-2" })
+                        <div class="col-10">
+                            @Html.EditorFor(model => model.phs_color_code, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.phs_color_code, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        @Html.Label("Threshold:", htmlAttributes: new { @class = "control-label col-2" })
+                        <div class="col-10">
+                            @Html.EditorFor(model => model.phs_threshhold_time, new { htmlAttributes = new { @class = "form-control time_control", @data_format = "HH:mm:ss", @data_template = "HH : mm" } })
+                            @Html.ValidationMessageFor(model => model.phs_threshhold_time, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                            <div class="row">
+                                @Html.Label("Move to State:", htmlAttributes: new { @class = "control-label col-4" })
+                                <div class="col-8">
+                                    <select id="phs_move_status_key" name="phs_move_status_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.phs_move_status_key : 0)"></select>
+                                    @Html.ValidationMessageFor(model => model.phs_move_status_key, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12 col-sm-12">
+                            <div class="row">
+                                <div class="col-2 text-center">
+                                    <label class="control-label">After</label>
+                                </div>
+
+                                <div class="col-10">
+                                    @Html.EditorFor(model => model.phs_move_threshhold_time, new { htmlAttributes = new { @class = "form-control time_control", @data_format = "HH:mm:ss", @data_template = "HH : mm: ss" } })
+                                    @Html.ValidationMessageFor(model => model.phs_move_threshhold_time, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>                       
+                        
+                    </div>
+
+
+                    <div class="form-group row">
+                        @Html.Label("Description:", htmlAttributes: new { @class = "control-label col-2" })
+                        <div class="col-10">
+                            @Html.EditorFor(model => model.phs_description, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.phs_description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @if (ViewBag.Edit != null)
+                    {
+                        <div class="form-group row">
+                            @Html.Label("Sort Order:", htmlAttributes: new { @class = "control-label col-2" })
+                            <div class="col-10">
+                                @Html.EditorFor(m => m.phs_sort_order, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.phs_sort_order, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            @Html.Label("Assignment Priority:", htmlAttributes: new { @class = "control-label col-2" })
+                            <div class="col-10">
+                                @Html.EditorFor(m => m.phs_assignment_priority, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.phs_assignment_priority, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+
+
+
+
+                    <div class="form-group row">
+                        <div class="col-10 offset-2">
+                            <div class="checkbox">
+                                <div class="checkbox">
+                                    <label>
+                                        @Html.CheckBoxFor(model => model.phs_is_default) &nbsp;Default
+                                    </label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.phs_is_default, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-10 offset-2">
+                            <div class="checkbox">
+                                <div class="checkbox">
+                                    <label>
+                                        @Html.CheckBoxFor(model => model.phs_is_active) &nbsp;Active
+                                    </label>
+                                </div>
+                                @Html.ValidationMessageFor(model => model.phs_is_active, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-5 col-lg-5 col-sm-12 offset-1">
+
+                    <div class="form-group row">
+                        <label class="checkbox-inline control-label col-4" for="phs_enable_snooze">Snoozed Time: &nbsp;@Html.CheckBoxFor(model => model.phs_enable_snooze)</label>
+
+                        @*<div class="col-2">
+                @Html.EditorFor(model => model.phs_snooze_time, new { htmlAttributes = new { @class = "form-control snooze_settings time_control", @data_format = "HH:mm:ss", @data_template = "HH : mm" } })
+                @Html.ValidationMessageFor(model => model.phs_snooze_time, "", new { @class = "text-danger" })
+            </div>*@
+                        <div class="col-4 text-center">
+                            <label class="control-label">Max Snooze Count</label>
+                        </div>
+
+                        <div class="col-2">
+                            @Html.EditorFor(model => model.phs_max_snooze_count, new { htmlAttributes = new { @class = "form-control snooze_settings", @required = "required", @style = "max-width: 120px" } })
+                            @Html.ValidationMessageFor(model => model.phs_max_snooze_count, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <button class="btn btn-dark snooze_settings"  id="btnAddSnoozeOption">Add Snooze Option</button>                        
+                    </div>
+
+                   
+                      <input type="hidden" id="hdnSnoozeJson" name="hdnSnoozeJson" />
+                    
+
+                    <div class="form-group row">
+                        <table class="table">
+                            <tr>
+                                <th>Snooze Time</th>
+                                <th>Message</th>
+                                <th>Action</th>
+                            </tr>
+                            
+                            <tbody id="tblSnoozeOptionsTemplate" style="display:none">
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <a href="#" onclick="javascript:deleteNewSnozeItem(this)">Delete</a>
+                                        <a href="#" onclick="javascript:editNewSnoozeItem(this)">Edit</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tbody id="tblSnoozeOptionsBody">
+                                @foreach (var item in Model.physician_status_snooze_option)
+                                {
+                                <tr>
+                                    <td>@string.Format("{0:D2}:{1:D2}",  item.pso_snooze_time.Hours, item.pso_snooze_time.Minutes)</td>
+                                    <td>@item.pso_message</td>
+                                    <td>
+                                        <a href="#" onclick="javascript:deleteNewSnozeItem(this)">Delete</a>
+                                        <a href="#" onclick="javascript:editNewSnoozeItem(this)">Edit</a>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                           
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6 offset-sm-5 text-right">
+                    <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index")">Cancel</a>
+                    <input type="submit" value="Save" class="btn btn-dark" />
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@{ Html.RenderAction("SnoozeOptionPopup", new { phs_key = Model.phs_key }); }
+
+<script>
+    $(document).ready(function () {
+        //script of page create and edit page
+
+        initComboDate('.time_control');
+        initComboDate('.popup_time_control');
+
+        timerControlChange('.time_control');
+
+           $("#phs_color_code").kendoColorPicker({
+                value: "#ffffff",
+                buttons: false
+            });
+
+            $("#phs_move_status_key").fillKendoDropDown("/LookUp/GetAllPhysicianStatuses?keyToIgnore=@(Model != null ? Model.phs_key : -1)", "phs_name", "phs_key", "-- Select --");
+
+            // combodate
+        $('.time_control').combodate({
+                firstItem: 'name', //show 'hour' and 'minute' string at first item of dropdown
+                minuteStep: 1
+            });
+
+
+
+            $(".hour").addClass("form-control").css("display", "inline-block");
+            $(".minute").addClass("form-control").css("display", "inline-block");
+            $(".second").addClass("form-control").css("display", "inline-block");
+
+        // end of script
+
+
+        snoozeCallBack();
+
+
+
+    })
+
+   
+
+   
+
+    $("#phs_enable_snooze").off("click").click(snoozeCallBack);
+
+    function snoozeCallBack() {
+        if ($("#phs_enable_snooze").prop("checked")) {
+            $(".snooze_settings").enable();
+           // $("#phs_snooze_time").parent().find("select").enable();
+        }
+        else {
+           // $("#phs_snooze_time").parent().find("select").disable();
+            $(".snooze_settings").disable();
+        }
+    }
+
+    $(".ajaxForm_2").find("form").submit(function (e) {
+        e.preventDefault();
+        $this = $(this);
+
+        var jsonData = [];
+        $("#tblSnoozeOptionsBody tr").each(function () {            
+                var rowElement = $(this);
+                var data = {
+                    pso_snooze_time: rowElement.find("td:eq(0)").text(),
+                    pso_message: rowElement.find("td:eq(1)").text()
+                };
+
+                jsonData.push(data);
+            
+        });
+
+        $("#hdnSnoozeJson").val(JSON.stringify(jsonData));
+
+       
+
+        var element = $(".ajaxForm_2");
+        if ($this.valid()) {
+            element.removeClass("ajaxForm_2");
+            element.addClass("ajaxForm");
+
+        }
+
+    });
+
+    // Snooze Poup Code - Start
+
+    $("#frmSaveSnoozeOption").off("submit").submit(function (e) {
+
+        e.preventDefault();
+        var isValid = true; // will be handled later.
+        timerControlChange('.popup_time_control');
+
+        var snoozeTime = $("#pso_snooze_time").val();
+        var message = $("#pso_message").val();
+
+        
+
+        if (snoozeTime == "00:00:00") {
+
+            $("#snoozeOptionFormModel").find("#validationSummary").empty().showBSDangerAlert("", "Snooze Time is required");
+            isValid = false;
+        }
+        if ($.trim(message) == "") {
+            $("#snoozeOptionFormModel").find("#validationSummary").empty().showBSDangerAlert("", "Message is required");
+            isValid = false;
+        }
+
+        if (isValid) {
+
+            if (snoozeTime.length > 5)
+                snoozeTime = snoozeTime.substr(0, 5); // formatting the time as hh:mm only
+           
+            if (currentRowToEdit != null) {
+                $(currentRowToEdit).parents("tr").find("td:eq(0)").html(snoozeTime)
+                $(currentRowToEdit).parents("tr").find("td:eq(1)").html(message)               
+            }
+            else {
+                var html = $("#tblSnoozeOptionsTemplate").clone()
+                    .find("td:eq(1)").text(message).end()
+                    .find("td:eq(0)").text(snoozeTime).end()
+                    ;
+
+                $("#tblSnoozeOptionsBody").prepend(html.html());
+            }
+
+            $("#snoozeOptionFormModel").modal("hide");
+        }
+    });
+    
+    $("#btnAddSnoozeOption").off("click").click(function (e) {
+        e.preventDefault();
+        $("#snoozeOptionFormModel").find("#validationSummary").empty();
+        currentRowToEdit = null;
+        $("#snoozeOptionFormModel").find(".modal-title").html("Add Snooze Option");
+        $("#frmSaveSnoozeOption").trigger('reset');
+        $("#snoozeOptionFormModel").modal("show");
+    })
+
+    function deleteNewSnozeItem(e) {
+        $("#divModelPopUp").empty().showConfirmPopUp("Confirm", "Are you sure to delete selected record?", function () {
+            $(e).parents("tr").remove();
+            $("#divModelPopUp").modal("hide");
+        });      
+    }
+    var currentRowToEdit = null;
+    function editNewSnoozeItem($this) {
+        $("#snoozeOptionFormModel").find("#validationSummary").empty();
+        currentRowToEdit = $this;
+        $("#snoozeOptionFormModel").find(".modal-title").html("Edit Snooze Option");
+        var snoozeTime = $($this).parents("tr").find("td:eq(0)").text();
+        var snoozeMessage = $($this).parents("tr").find("td:eq(1)").text();
+        $("#pso_message").val(snoozeMessage);
+        $("#pso_snooze_time").val(snoozeTime);
+
+        var formattedDate = getFormattedDate(new Date());
+        $('.popup_time_control').combodate('setValue', new Date(formattedDate + " " + snoozeTime));
+
+        $("#snoozeOptionFormModel").modal("show");
+       
+    }
+    // Snooze Popup Code - End
+</script>

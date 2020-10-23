@@ -1,0 +1,135 @@
+﻿ul {
+    list-style-type: none;
+}
+
+li {
+    list-style-type: none;
+}
+
+#restart:before {
+    content: '\A';
+    display: none;
+}
+
+.my-custom-scrollbar {
+    position: relative;
+    overflow: auto;
+}
+
+.table-wrapper-scroll-y {
+    /*display: block;*/
+    max-height: 400px;
+}
+
+    .table-wrapper-scroll-y thead th {
+        position: sticky;
+        top: 0px;
+        background-color: white;
+    }
+
+/*timeline css*/
+
+body {
+    margin: 0;
+}
+
+.graph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+}
+
+.graph-items-block {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.graph-items__circle_container {
+    width: calc(100% - 100px);
+    height: 200px;
+    display: flex;
+    align-items: center;
+}
+
+.graph-items__circle_item {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #607d8b;
+    margin: 0 20px;
+    position: relative;
+}
+
+    .graph-items__circle_item:nth-child(odd) .graph-items__circle_item-square {
+        position: absolute;
+        top: -100%;
+        width: 150px;
+        height: 50px;
+        border: 1px solid;
+        border-bottom: none;
+    }
+
+    .graph-items__circle_item:nth-child(even) .graph-items__circle_item-square {
+        position: absolute;
+        bottom: -100%;
+        width: 150px;
+        height: 50px;
+        border: 1px solid;
+        border-top: none;
+    }
+
+    .graph-items__circle_item:nth-child(odd):before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: 50%;
+        border-left: 1px solid #000;
+        height: 50px;
+    }
+
+    .graph-items__circle_item:not(:last-child):after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: -40px;
+        border-top: 2px solid #000;
+        width: 40px;
+    }
+
+    .graph-items__circle_item:nth-child(even):before {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        left: 50%;
+        border-left: 1px solid #000;
+        height: 50px;
+    }
+
+.arrow-right {
+    width: 0;
+    height: 0;
+    border-top: 200px solid transparent;
+    border-bottom: 200px solid transparent;
+    border-left: 200px solid #607d8b38;
+}
+
+.arrow-body {
+    height: 200px;
+    width: calc(100% - 200px);
+    background: #607d8b38;
+}
+
+.graph-items__rectangle_item {
+    width: 100px;
+    height: 100px;
+    background: #607d8b;
+    position: relative;
+}
