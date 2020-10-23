@@ -3438,7 +3438,6 @@
     <Content Include="Views\UserProfile\_UserProfileForm.cshtml" />
     <Content Include="Views\Facility\CreateOnboarded.cshtml" />
     <Content Include="Views\Facility\Onboarded.cshtml" />
-    <Content Include="Views\Facility\_CreateOnboardedForm.cshtml" />
     <Content Include="Views\Reports\ActivationTime.cshtml" />
     <Content Include="Views\Reports\ArivalToNeedleTime.cshtml" />
     <Content Include="Views\Reports\ArivalToStartTime.cshtml" />
