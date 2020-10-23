@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TimeZoneNames</name>
+    </assembly>
+    <members>
+        <member name="T:TimeZoneNames.TimeZoneValues">
+            <summary>
+            Represents a set of time zone name values.
+            </summary>
+        </member>
+        <member name="P:TimeZoneNames.TimeZoneValues.Generic">
+            <summary>
+            The time zone name that generically applies.
+            </summary>
+        </member>
+        <member name="P:TimeZoneNames.TimeZoneValues.Standard">
+            <summary>
+            The time zone name that applies during standard time.
+            </summary>
+        </member>
+        <member name="P:TimeZoneNames.TimeZoneValues.Daylight">
+            <summary>
+            The time zone name that applies during daylight saving time.
+            </summary>
+        </member>
+        <member name="T:TimeZoneNames.TZNames">
+            <summary>
+            Provides methods for getting localized names of time zones, and related functionality.
+            </summary>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetTimeZoneIdsForCountry(System.String)">
+            <summary>
+            Gets an array of IANA time zone identifiers for a specific country.
+            </summary>
+            <param name="countryCode">The two character ISO 3166 country code.</param>
+            <returns>An array of IANA time zone identifiers.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetTimeZoneIdsForCountry(System.String,System.DateTimeOffset)">
+            <summary>
+            Gets an array of IANA time zone identifiers for a specific country.
+            </summary>
+            <param name="countryCode">The two character ISO 3166 country code.</param>
+            <param name="threshold">A point in time to filter to.  The resulting list will only contain zones that differ after this point.</param>
+            <returns>An array of IANA time zone identifiers.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetTimeZonesForCountry(System.String,System.String)">
+            <summary>
+            Gets an dictionary of IANA time zone identifiers and their corresponding localized display names, for a specific country.
+            The results are suitable to populate a user-facing time zone selection control.
+            </summary>
+            <param name="countryCode">The two character ISO 3166 country code.</param>
+            <param name="languageCode">The IETF language tag (culture code) to use when localizing the display names.</param>
+            <returns>A dictionary of IANA time zone identifiers and localized display names.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetTimeZonesForCountry(System.String,System.String,System.DateTimeOffset)">
+            <summary>
+            Gets an dictionary of IANA time zone identifiers and their corresponding localized display names, for a specific country.
+            The results are suitable to populate a user-facing time zone selection control.
+            </summary>
+            <param name="countryCode">The two character ISO 3166 country code.</param>
+            <param name="languageCode">The IETF language tag (culture code) to use when localizing the display names.</param>
+            <param name="threshold">A point in time to filter to.  The resulting list will only contain zones that differ after this point.</param>
+            <returns>A dictionary of IANA time zone identifiers and localized display names.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetFixedTimeZoneIds">
+            <summary>
+            Gets a list of IANA time zone identifiers that represent a fixed offset from UTC, including UTC itself.
+            Note that time zones of the form Etc/GMT[+/-]n use an inverted sign from the usual conventions.
+            </summary>
+            <returns>A list of IANA time zone identifiers.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetFixedTimeZoneNames(System.String)">
+            <summary>
+            Gets a dictionary of IANA time zone identifiers that represent a fixed offset from UTC, including UTC itself,
+            along with the corresponding localized display name.
+            Note that time zones of the form Etc/GMT[+/-]n use an inverted sign from the usual conventions.
+            </summary>
+            <param name="languageCode">The IETF language tag (culture code) to use when localizing the display names.</param>
+            <returns>A dictionary of IANA time zone identifiers and localized display names.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetFixedTimeZoneAbbreviations(System.String)">
+            <summary>
+            Gets a dictionary of IANA time zone identifiers that represent a fixed offset from UTC, including UTC itself,
+            along with the corresponding abbreviation, localized when possible.
+            Note that time zones of the form Etc/GMT[+/-]n use an inverted sign from the usual conventions.
+            </summary>
+            <param name="languageCode">The IETF language tag (culture code) to use when localizing the abbreviations.</param>
+            <returns>A dictionary of IANA time zone identifiers and abbreviations.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetNamesForTimeZone(System.String,System.String)">
+            <summary>
+            Gets the localized names for a given IANA or Windows time zone identifier.
+            </summary>
+            <param name="timeZoneId">An IANA or Windows time zone identifier.</param>
+            <param name="languageCode">The IETF language tag (culture code) to use when localizing the display names.</param>
+            <returns>A <see cref="T:TimeZoneNames.TimeZoneValues"/> object containing the localized generic, standard, and daylight names.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetAbbreviationsForTimeZone(System.String,System.String)">
+            <summary>
+            Gets the abbreviations for a given IANA or Windows time zone identifier, localizing them when possible.
+            </summary>
+            <param name="timeZoneId">An IANA or Windows time zone identifier.</param>
+            <param name="languageCode">The IETF language tag (culture code) to use when localizing the abbreviations.</param>
+            <returns>A <see cref="T:TimeZoneNames.TimeZoneValues"/> object containing the localized generic, standard, and daylight abbreviations.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetCountryNames(System.String)">
+            <summary>
+            Gets a dictionary of ISO 3166 country codes and their corresponding localized names.
+            </summary>
+            <param name="languageCode">The IETF language tag (culture code) to use when localizing the country names.</param>
+            <returns>A dictionary of country codes and names.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetDisplayNameForTimeZone(System.String,System.String)">
+            <summary>
+            Gets the localized names for a given IANA or Windows time zone identifier.
+            </summary>
+            <param name="timeZoneId">An IANA or Windows time zone identifier.</param>
+            <param name="languageCode">The IETF language tag (culture code) to use when localizing the display names.</param>
+            <returns>A display name associated with this time zone.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetDisplayNames(System.String,System.Boolean)">
+            <summary>
+            Get display names suitable for use in a single drop-down list to select a time zone.
+            </summary>
+            <param name="languageCode">The IETF language tag (culture code) to use when localizing the display names.</param>
+            <param name="useIanaZoneIds"><c>true</c> to use IANA time zone keys, otherwise uses Windows time zone keys.</param>
+            <returns>A dictionary where the key is the time zone id, and the name is the localized display name.</returns>
+        </member>
+        <member name="M:TimeZoneNames.TZNames.GetLanguageCodes">
+            <summary>
+            Gets a list of all language codes supported by this library.
+            </summary>
+            <returns>A list of language codes.</returns>
+        </member>
+    </members>
+</doc>
