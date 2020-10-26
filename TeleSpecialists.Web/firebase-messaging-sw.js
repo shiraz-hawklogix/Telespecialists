@@ -20,30 +20,30 @@ var firebaseConfig = {
 };
 */
 // msgs with telecare uat
-//const firebaseConfig = {
-//    apiKey: "AIzaSyDHC8RJ-uUoWIo3tYa9zzhVhvTxv5NuZF0",
-//    authDomain: "telecare-3724e.firebaseapp.com",
-//    databaseURL: "https://telecare-3724e.firebaseio.com",
-//    projectId: "telecare-3724e",
-//    storageBucket: "telecare-3724e.appspot.com",
-//    messagingSenderId: "922280291570",
-//    appId: "1:922280291570:web:6ce723cfaeeed0f7c8b46b",
-//    measurementId: "G-8TWCZJP852"
-//};
+const firebaseConfig = {
+    apiKey: "AIzaSyDHC8RJ-uUoWIo3tYa9zzhVhvTxv5NuZF0",
+    authDomain: "telecare-3724e.firebaseapp.com",
+    databaseURL: "https://telecare-3724e.firebaseio.com",
+    projectId: "telecare-3724e",
+    storageBucket: "telecare-3724e.appspot.com",
+    messagingSenderId: "922280291570",
+    appId: "1:922280291570:web:6ce723cfaeeed0f7c8b46b",
+    measurementId: "G-8TWCZJP852"
+};
 
 
 // msgs with telecare production
 
-const firebaseConfig = {
-    apiKey: "AIzaSyD78t_u3xK5eFQZyD95NL3-XGubH6z4XCo",
-    authDomain: "telecare-c852b.firebaseapp.com",
-    databaseURL: "https://telecare-c852b.firebaseio.com",
-    projectId: "telecare-c852b",
-    storageBucket: "telecare-c852b.appspot.com",
-    messagingSenderId: "945324237265",
-    appId: "1:945324237265:web:4ea74b5e9f81f1789f40f0",
-    measurementId: "G-5WF4NMKNWZ"
-};
+//const firebaseConfig = {
+//    apiKey: "AIzaSyD78t_u3xK5eFQZyD95NL3-XGubH6z4XCo",
+//    authDomain: "telecare-c852b.firebaseapp.com",
+//    databaseURL: "https://telecare-c852b.firebaseio.com",
+//    projectId: "telecare-c852b",
+//    storageBucket: "telecare-c852b.appspot.com",
+//    messagingSenderId: "945324237265",
+//    appId: "1:945324237265:web:4ea74b5e9f81f1789f40f0",
+//    measurementId: "G-5WF4NMKNWZ"
+//};
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);

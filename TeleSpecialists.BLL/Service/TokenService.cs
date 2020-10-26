@@ -26,6 +26,7 @@ namespace TeleSpecialists.BLL.Service
             _unitOfWork.Save();
             _unitOfWork.Commit();
         }
+
         public void DeleteRange(IEnumerable<token> id, bool commit = true)
         {
             _unitOfWork.TokenRepository.DeleteRange(id);
@@ -35,6 +36,7 @@ namespace TeleSpecialists.BLL.Service
                 _unitOfWork.Commit();
             }
         }
+
         public void Delete(int id, bool commit = true)
         {
             _unitOfWork.TokenRepository.Delete(id);
@@ -48,6 +50,17 @@ namespace TeleSpecialists.BLL.Service
         public List<token> deleteToken(string UserId, string MachineName)
         {
             var model = _unitOfWork.TokenRepository.Query().Where(x => x.tok_phy_key == UserId && x.tok_machine_name == MachineName).ToList();
+            return model;
+        }
+
+        public List<token> GetAllLoggedInUserToken(string phy_key)
+        {
+            var model = (from t in _unitOfWork.TokenRepository.Query()
+                        join u in _unitOfWork.userVerificationRepoistory.Query() on t.tok_machine_name equals u.MachineName
+                        where u.UserId == phy_key 
+                        && u.IsLoggedIn == true
+                        select t).ToList();
+
             return model;
         }
     }
