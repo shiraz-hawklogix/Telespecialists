@@ -398,10 +398,15 @@ namespace TeleSpecialists.BLL.Service
         {
 
             var facilityPhsycian = _unitOfWork.FacilityPhysicianRepository.Query().Where(x => x.fap_key == entity.fap_key).FirstOrDefault();
-            if(facilityPhsycian != null)
+            if (facilityPhsycian != null)
             {
                 facilityPhsycian.fap_UserName = entity.fap_UserName;
                 facilityPhsycian.fap_is_on_boarded = entity.fap_is_on_boarded;
+                facilityPhsycian.fap_onboarded_by = entity.fap_onboarded_by;
+                facilityPhsycian.fap_onboarded_date = DateTime.Now.ToEST();
+                facilityPhsycian.fap_onboarded_by_name = entity.fap_onboarded_by_name;
+                facilityPhsycian.fap_onboarded_date = DateTime.Now;
+
                 _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
                 if (commitChange)
                 {
