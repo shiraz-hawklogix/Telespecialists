@@ -529,7 +529,43 @@ if (!string.IsNullOrEmpty(ViewBag.NIHSSAssessmentsData) /*&& !Model.case_templat
         </div>
     }
     <br />
-
+    @* Added By Axim 21-10-2020*@
+    @if (Model.cas_metric_has_morbid_symptoms.HasValue && Model.cas_metric_has_morbid_symptoms != 7)
+    {
+        <div>
+            <b>Pre-Morbid Modified Ranking Scale:</b><br />
+        </div>
+        if (Model.cas_metric_has_morbid_symptoms == 0)
+        {
+            <span> No symptoms at all </span><br />
+        }
+        else if (Model.cas_metric_has_morbid_symptoms == 1)
+        {
+            <span> No significant disability despite symptoms; able to carry out all usual duties and activities </span><br />
+        }
+        else if (Model.cas_metric_has_morbid_symptoms == 2)
+        {
+            <span> Slight disability; unable to carry out all previous activities, but able to look after own affairs without assistance </span><br />
+        }
+        else if (Model.cas_metric_has_morbid_symptoms == 3)
+        {
+            <span> Moderate disability; requiring some help, but able to walk without assistance </span><br />
+        }
+        else if (Model.cas_metric_has_morbid_symptoms == 4)
+        {
+            <span> Moderately severe disability; unable to walk and attend to bodily needs without assistance  </span><br />
+        }
+        else if (Model.cas_metric_has_morbid_symptoms == 5)
+        {
+            <span> Severe disability; bedridden, incontinent and requiring constant nursing care and attention </span><br />
+        }
+        else
+        {
+            <span> Dead </span><br />
+        }
+    }
+    <br />
+    @* Ended By Axim 21-10-2020*@
     @if (Model.case_template_stroke_neuro_tpa.csn_patient_family_cosulted.HasValue && Model.case_template_stroke_neuro_tpa.csn_patient_family_cosulted.Value)
     {
         <div>

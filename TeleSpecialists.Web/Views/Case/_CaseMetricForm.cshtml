@@ -19,6 +19,17 @@
         attestation_danger = "text-danger";
     }
 
+    // Added by Axim 21-10-2020
+    DateTime morbidDatetime = Convert.ToDateTime("10/21/2020");
+    var morbid_order = "false";
+    var morbid_Danger = "";
+    if (Model.cas_created_date > morbidDatetime)
+    {
+        morbid_order = "true";
+        morbid_Danger = "text-danger";
+    }
+    //Ended by Axim 21-10-2020
+
     bool isStateConsultCase = false;
     isStateConsultCase = Model.cas_ctp_key == CaseType.StatConsult.ToInt();
 
@@ -687,19 +698,19 @@
                 {
                     <div class="form-group row" id="tpaVerbalTime" style="display:none;">
                         @*<label class="control-label col-xl-4 col-sm-4 col-lg-12">
-                                Alteplase Early Mix Decision:
-                            </label>
-                            <div class="col-xl-8 col-sm-8 col-lg-12">
-                                <div class="timer-container">
-                                    @Html.FormattedDateTextBoxFor(m => m.cas_metric_tpa_verbal_order_time_est, new { @class = "form-control timepicker" })
-                                    <div class="est-container">
-                                        <span>@timeZone</span>
-                                    </div>
-                                </div>
-                                <div id="cas_metric_tpa_verbal_order_time_est-error" class="error_msg" style="display:none;">
-                                    <label for="cas_metric_tpa_verbal_order_time_est">This field is required</label>
-                                </div>
-                            </div>*@
+                    Alteplase Early Mix Decision:
+                </label>
+                <div class="col-xl-8 col-sm-8 col-lg-12">
+                    <div class="timer-container">
+                        @Html.FormattedDateTextBoxFor(m => m.cas_metric_tpa_verbal_order_time_est, new { @class = "form-control timepicker" })
+                        <div class="est-container">
+                            <span>@timeZone</span>
+                        </div>
+                    </div>
+                    <div id="cas_metric_tpa_verbal_order_time_est-error" class="error_msg" style="display:none;">
+                        <label for="cas_metric_tpa_verbal_order_time_est">This field is required</label>
+                    </div>
+                </div>*@
                     </div>
                 }
                 else
@@ -1021,6 +1032,114 @@
                     </div>
                 </div>
                 @* Ended BY Axim 25-09-020 *@
+                @* Added BY Axim 21-10-2020 *@
+                @if (Model.cas_ctp_key == CaseType.StrokeAlert.ToInt())
+                {
+                    <div id="MorbidModule">
+                        <label class="control-label col-sm-8 @morbid_Danger">Pre-Morbid Modified Ranking Scale: </label>
+                        <div id="morbid-error" class="error_msg" style="display:none;">
+                            <label for="MorbidModule">This field is required</label>
+                        </div>
+                        <div class="container" style="background-color:lightgreen">
+                            <div class="form-group row pt-3">
+                                @if (Model.cas_metric_has_morbid_symptoms == 0)
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="0" style="margin-left:10px; margin-top:05px" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="0" style="margin-left:10px; margin-top:05px" />
+                                }
+                                <label class="control-label col-xl-11 col-sm-11 col-lg-11" style="margin-bottom:02px;">No symptoms at all - 0 </label>
+                            </div>
+
+                            <div class="form-group row">
+                                @if (Model.cas_metric_has_morbid_symptoms == 1)
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="1" style="margin-left:10px; margin-top:05px" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="1" style="margin-left:10px; margin-top:05px" />
+                                }
+                                <label class="control-label col-xl-11 col-sm-11 col-lg-11">No significant disability despite symptoms; able to carry out all usual duties and activities - 1  </label>
+                            </div>
+
+                            <div class="form-group row">
+                                @if (Model.cas_metric_has_morbid_symptoms == 2)
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="2" style="margin-left:10px; margin-top:05px" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="2" style="margin-left:10px; margin-top:05px" />
+                                }
+                                <label class="control-label col-xl-11 col-sm-11 col-lg-11">Slight disability; unable to carry out all previous activities, but able to look after own affairs without assistance - 2</label>
+                            </div>
+
+                            <div class="form-group row">
+                                @if (Model.cas_metric_has_morbid_symptoms == 3)
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="3" style="margin-left:10px; margin-top:05px" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="3" style="margin-left:10px; margin-top:05px" />
+                                }
+                                <label class="control-label col-xl-11 col-sm-11 col-lg-11">Moderate disability; requiring some help, but able to walk without assistance - 3 </label>
+                            </div>
+
+                            <div class="form-group row">
+                                @if (Model.cas_metric_has_morbid_symptoms == 4)
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="4" style="margin-left:10px; margin-top:05px" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="4" style="margin-left:10px; margin-top:05px" />
+                                }
+                                <label class="control-label col-xl-11 col-sm-11 col-lg-11">Moderately severe disability; unable to walk and attend to bodily needs without assistance - 4 </label>
+                            </div>
+
+                            <div class="form-group row">
+                                @if (Model.cas_metric_has_morbid_symptoms == 5)
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="5" style="margin-left:10px; margin-top:05px" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="5" style="margin-left:10px; margin-top:05px" />
+                                }
+                                <label class="control-label col-xl-11 col-sm-11 col-lg-11">Severe disability; bedridden, incontinent and requiring constant nursing care and attention - 5 </label>
+                            </div>
+
+                            <div class="form-group row">
+                                @if (Model.cas_metric_has_morbid_symptoms == 6)
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="6" style="margin-left:10px; margin-top:05px" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="6" style="margin-left:10px; margin-top:05px" />
+                                }
+                                <label class="control-label col-xl-11 col-sm-11 col-lg-11">Dead - 6 </label>
+                            </div>
+
+                            <div class="form-group row">
+                                @if (Model.cas_metric_has_morbid_symptoms == 7)
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="7" style="margin-left:10px; margin-top:05px" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" name="cas_metric_has_morbid_symptoms" value="7" style="margin-left:10px; margin-top:05px" />
+                                }
+                                <label class="control-label col-xl-11 col-sm-11 col-lg-11">Information not available at this time </label>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @* Ended By Axim 21-10-2020 *@
             </div>
             <div class="col-xl-4 col-lg-4 col-md-12 third-col">
                 @* added by axim 21-08-2020 *@
@@ -2166,6 +2285,7 @@
             var cas_metric_tpa_ordered_personally = true;
             var cas_metric_viz_app_usage = true;
             //ended by axim 13-08-2020
+            var cas_metric_has_morbid_symptoms = true;
 
             if ($.trim($("#cas_cst_key").val()).toInt() == caseStatusEnum.Cancelled) {
                 return true;
@@ -2498,7 +2618,19 @@
                         }
                     }
                 }
-                //if (($("#metric").css("display").toLowerCase() != "none" ||
+                 //Added By Axim 21-10-2020
+                if (@morbid_order) {
+                    if ($("#cas_ctp_key").val() == caseTypeEnum.StrokeAlert) {
+                        if ($('input:radio[name=cas_metric_has_morbid_symptoms]').length > 0) {
+                            if ($('input:radio[name=cas_metric_has_morbid_symptoms]:checked').val() == undefined) {
+                                $("#morbid-error").show();
+                                result = false;
+                                cas_metric_has_morbid_symptoms = false;
+                            }
+                        }
+                    }
+                }
+                //Ended By Axim 21-10-2020
                 //Added by Axim 25-09-2020
                 if (@attestation_order) {
                     if ($("#cas_ctp_key").val() == caseTypeEnum.StrokeAlert) {
@@ -2733,6 +2865,9 @@
                     element = $("#cas_metric_viz_app_usage");
                 }
                 // ended by axim 13-08-2020
+                else if (!cas_metric_has_morbid_symptoms) {
+                    element = $("#cas_metric_has_morbid_symptoms");
+                }
 
                 if (element !== null) {
                     window.setTimeout(function () { $(element).focus(); }, 250);

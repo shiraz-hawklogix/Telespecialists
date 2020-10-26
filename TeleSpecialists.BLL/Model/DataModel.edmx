@@ -553,6 +553,7 @@
           <Property Name="cas_metric_viz_app_usage_review" Type="int" />
           <Property Name="cas_metric_viz_app_usage_text" Type="varchar(max)" />
           <Property Name="cas_review_qps_reviewed_completed" Type="datetime" />
+          <Property Name="cas_metric_has_morbid_symptoms" Type="int" />
         </EntityType>
         <EntityType Name="case_assign_history">
           <Key>
@@ -5174,6 +5175,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_case_AspNetUsers_Navigator" FromRole="case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_case_AspNetUsers1" FromRole="case" ToRole="AspNetUser" />
           <Property Name="cas_review_qps_reviewed_completed" Type="DateTime" Precision="3" />
+          <Property Name="cas_metric_has_morbid_symptoms" Type="Int32" />
         </EntityType>
         <EntityType Name="facility">
           <Key>
@@ -7441,6 +7443,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="cases">
             <EntityTypeMapping TypeName="DataModel.case">
               <MappingFragment StoreEntitySet="case">
+                <ScalarProperty Name="cas_metric_has_morbid_symptoms" ColumnName="cas_metric_has_morbid_symptoms" />
                 <ScalarProperty Name="cas_review_qps_reviewed_completed" ColumnName="cas_review_qps_reviewed_completed" />
                 <ScalarProperty Name="cas_metric_viz_app_usage_text" ColumnName="cas_metric_viz_app_usage_text" />
                 <ScalarProperty Name="cas_metric_viz_app_usage_review" ColumnName="cas_metric_viz_app_usage_review" />
