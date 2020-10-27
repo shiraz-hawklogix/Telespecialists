@@ -37,9 +37,9 @@ async function Get_Token() {
         //messaging.usePublicVapidKey("BOvSRNGbyCBPiAc8eq9MGz-cPhzBOA4oxkOyHu6p-XW2cT4lWiqBbM7HVU6K9pRINCX-Nu0NlDYOAt-_3D3L7nA");//old telenotificatios db
        // messaging.usePublicVapidKey('BFaRUoKGxUnhw1jL3q-jRuq3X5WwVPB7roHZQKxTUpAfE48sN7G3GWJGGAIIFJHeIuE-DHzqXyeCVe7eG-S1ulQ'); //new telenotificatios db
 
-        //messaging.usePublicVapidKey('BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o'); //telecare uat dbs
+        messaging.usePublicVapidKey('BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o'); //telecare uat dbs
 
-        messaging.usePublicVapidKey('BCt_gF974whazZ4CfseUT5psM9SlWrO2uR12PtqEYOBzRWrnOzU00nNNVb9RA0hDFh7NDvA89vGqxeM4GVOHf-w'); //telecare production dbs
+       // messaging.usePublicVapidKey('BCt_gF974whazZ4CfseUT5psM9SlWrO2uR12PtqEYOBzRWrnOzU00nNNVb9RA0hDFh7NDvA89vGqxeM4GVOHf-w'); //telecare production dbs
 
         const token = await messaging.getToken();
         //alert(token);

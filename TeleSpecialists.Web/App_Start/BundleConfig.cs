@@ -95,10 +95,10 @@ namespace TeleSpecialists
                "~/Content/kendo/kendo.common-bootstrap.min.css",
                "~/Content/kendo/kendo.bootstrap.min.css"));
 
-          //  bundles.Add(new ScriptBundle("~/bundles/firebase").Include(
-          //     "~/Scripts/firebase/js/init.js",
-          //     "~/Scripts/firebase/js/call.js"
-          //));
+            bundles.Add(new ScriptBundle("~/bundles/firebase").Include(
+               "~/Scripts/firebase/js/init.js",
+               "~/Scripts/firebase/js/call.js"
+          ));
         }
     }
 }
