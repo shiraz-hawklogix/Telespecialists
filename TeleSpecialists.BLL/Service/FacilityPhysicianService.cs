@@ -604,7 +604,6 @@ namespace TeleSpecialists.BLL.Service
                     result = result.Where(m => Physicians.Contains(m.fap_user_key));
             }
             #endregion
-
             var finalresult = result.Select(x => new
             {
                 id = x.fap_key,
