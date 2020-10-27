@@ -540,12 +540,12 @@ namespace TeleSpecialists.Controllers
             var phy_ids = firebaseUsers.ToList();
             var paramData = new List<object>();
             paramData.Add(JsonConvert.SerializeObject(phy_ids));
-           // bool sentStatus = true;
-            bool sentStatus = _user_Fcm_Notification.SendNotification(phy_key: model.UserId, caseType: "TwoFactorAuth", Data: paramData);
-            if (sentStatus || !sentStatus)
+            bool sentStatus = true;
+            //bool sentStatus = _user_Fcm_Notification.SendNotification(phy_key: model.UserId, caseType: "TwoFactorAuth", Data: paramData);
+            if (sentStatus)
             {
                 _userVerificationService.SignOutAllUsers(model.UserId);
-                return Json(new { result = true }, JsonRequestBehavior.AllowGet);
+                return Json(new { result = sentStatus }, JsonRequestBehavior.AllowGet);
             }
             #endregion
 

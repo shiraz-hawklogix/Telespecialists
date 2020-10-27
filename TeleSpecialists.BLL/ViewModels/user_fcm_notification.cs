@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using TeleSpecialists.BLL.Helpers;
-using TeleSpecialists.BLL.Model;
 using TeleSpecialists.BLL.Service;
 
 namespace TeleSpecialists.BLL.ViewModels
@@ -31,31 +30,19 @@ namespace TeleSpecialists.BLL.ViewModels
         public List<string> phy_tokens { get; set; }
 
 
-        public object SendToken(string phy_key,string caseType)
+        public object SendToken(string phy_key)
         {
-            List<token> GetDetail = new List<token>();
-            if (caseType == "TwoFactorAuth")
-            {
-                GetDetail = _tokenservice.GetAllLoggedInUserToken(phy_key);
-            }
-            else
-            {
-                GetDetail = _tokenservice.GetAll(phy_key);
-            }
-
-
+           var  GetDetail = _tokenservice.GetAll(phy_key);
             user_fcm_notification user_Fcm_Notification = new user_fcm_notification();
             if (GetDetail.Count > 0)
             {
                 var first = GetDetail.FirstOrDefault();
                 var tokens = GetDetail.Select(m => m.tok_phy_token).ToList();
-                if(caseType != "TwoFactorAuth")
-                {
-                    user_Fcm_Notification.msg_title = "Stroke Alert";
-                    user_Fcm_Notification.msg_body = first.AspNetUser.FirstName + " " + first.AspNetUser.LastName + " You have New Stroke!";
-                    user_Fcm_Notification.notify_img = "https://media.graytvinc.com/images/690*387/Stroke+MGN+graphic.JPG";
-                } 
+
                 user_Fcm_Notification.phy_key = first.tok_phy_key;
+                user_Fcm_Notification.msg_title = "Stroke Alert";
+                user_Fcm_Notification.msg_body = first.AspNetUser.FirstName + " " + first.AspNetUser.LastName + " You have New Stroke!";
+                user_Fcm_Notification.notify_img = "https://media.graytvinc.com/images/690*387/Stroke+MGN+graphic.JPG";
                 user_Fcm_Notification.phy_tokens = tokens;
             }
             return user_Fcm_Notification;
@@ -98,7 +85,7 @@ namespace TeleSpecialists.BLL.ViewModels
                 if (phy_ids != null)
                     user_Fcm_Notification = (user_fcm_notification)SendToken(phy_ids);
                 else
-                    user_Fcm_Notification = (user_fcm_notification)SendToken(phy_key, caseType);
+                    user_Fcm_Notification = (user_fcm_notification)SendToken(phy_key);
                 WebRequest tRequest = WebRequest.Create("https://fcm.googleapis.com/fcm/send");
                 tRequest.Method = "post";
 
@@ -112,18 +99,18 @@ namespace TeleSpecialists.BLL.ViewModels
                 #endregion
 
                 #region Code for telecare  db
-                //serverKey - Key from Firebase cloud messaging server  
-                tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA1rwwbPI:APA91bGBQvXGabgDWOHGz8OEu9-yA7w3QhuXQoeAu9TEPGaEemYdoRXp_PRx1IkhYbGqwvb_xSf3LFk_ZErTSZd7HlehYUXeXxnROuL3Y22fspbWUWUwdVRrNtJHZ_dPL1ykSTLnTskS"));
-                //Sender Id - From firebase project setting  
-                tRequest.Headers.Add(string.Format("Sender: id={0}", "BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o"));
+                ////serverKey - Key from Firebase cloud messaging server  
+                //tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA1rwwbPI:APA91bGBQvXGabgDWOHGz8OEu9-yA7w3QhuXQoeAu9TEPGaEemYdoRXp_PRx1IkhYbGqwvb_xSf3LFk_ZErTSZd7HlehYUXeXxnROuL3Y22fspbWUWUwdVRrNtJHZ_dPL1ykSTLnTskS"));
+                ////Sender Id - From firebase project setting  
+                //tRequest.Headers.Add(string.Format("Sender: id={0}", "BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o"));
                 #endregion
 
                 #region for telecare production
 
                 //serverKey - Key from Firebase cloud messaging server  
-                //tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA3Bm3IdE:APA91bEXYQXLck9ZHvar0W7_KnCLUrgn8oJoFs2A5pt4rHaOq3cN6RruzyOrNqPxHgH5DKQfnhwNLocPJJS5AmiUjvC4q0Hv2aHKqlzGkprQyg0ozaGCUgMHWpPi_F0ywywku3W3SfMw"));
-                ////Sender Id - From firebase project setting  
-                //tRequest.Headers.Add(string.Format("Sender: id={0}", "BCt_gF974whazZ4CfseUT5psM9SlWrO2uR12PtqEYOBzRWrnOzU00nNNVb9RA0hDFh7NDvA89vGqxeM4GVOHf-w"));
+                tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA3Bm3IdE:APA91bEXYQXLck9ZHvar0W7_KnCLUrgn8oJoFs2A5pt4rHaOq3cN6RruzyOrNqPxHgH5DKQfnhwNLocPJJS5AmiUjvC4q0Hv2aHKqlzGkprQyg0ozaGCUgMHWpPi_F0ywywku3W3SfMw"));
+                //Sender Id - From firebase project setting  
+                tRequest.Headers.Add(string.Format("Sender: id={0}", "BCt_gF974whazZ4CfseUT5psM9SlWrO2uR12PtqEYOBzRWrnOzU00nNNVb9RA0hDFh7NDvA89vGqxeM4GVOHf-w"));
                 #endregion
 
                 tRequest.ContentType = "application/json";
@@ -190,7 +177,7 @@ namespace TeleSpecialists.BLL.ViewModels
                 if (phy_ids != null)
                     user_Fcm_Notification = (user_fcm_notification)SendToken(phy_ids);
                 else
-                    user_Fcm_Notification = (user_fcm_notification)SendToken(phy_key,caseType);
+                    user_Fcm_Notification = (user_fcm_notification)SendToken(phy_key);
 
                 var payload = new
                 {
