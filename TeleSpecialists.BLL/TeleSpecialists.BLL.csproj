@@ -358,6 +358,7 @@
     <Compile Include="ViewModels\FacilityBillingByAmount.cs" />
     <Compile Include="ViewModels\FacilityQuestionnaire\PreLiveVM.cs" />
     <Compile Include="ViewModels\FireBaseData.cs" />
+    <Compile Include="ViewModels\PhysicianViewModel.cs" />
     <Compile Include="ViewModels\Physician_billing_rates.cs" />
     <Compile Include="ViewModels\Rapids\EmailInfo.cs" />
     <Compile Include="ViewModels\Reports\OperationOutlier.cs" />
