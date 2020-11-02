@@ -52,7 +52,6 @@
     /*
     function SendNewCaseEmail(data = []) {
         var cas_keys = parseInt(data);
-        debugger
         $.ajax({
             type: "POST",
             url: "Case/SendNewCaseEmail",
@@ -285,7 +284,6 @@
         var data;
         var array = []
         var getdata = [];
-        debugger
         for (var i = 0; i < AllData.length; i++) {
             array.push("" + AllData[i].CaseKey + "");
         }
@@ -297,7 +295,6 @@
         }
 
         for (var i = 0; i < array.length; i++) {
-            debugger
             var isfound = (getdata.indexOf(array[i]) > -1);
             if (!isfound) {
                 difference.push(array[i]);

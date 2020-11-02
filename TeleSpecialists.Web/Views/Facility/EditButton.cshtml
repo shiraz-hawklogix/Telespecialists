@@ -139,7 +139,6 @@
         var url = "/Facility/EditOnboarded/" + onboardid;
         ShowLoading();
         $.get(url, function (response) {
-            debugger
             //$("#OnBoardedMain").addClass('d-none');
             $(".AddEditOnBaorded").empty();
             $(".AddEditOnBaorded").html(response);

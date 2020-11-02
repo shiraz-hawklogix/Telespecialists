@@ -1,0 +1,210 @@
+﻿@model TeleSpecialists.BLL.Model.@case
+@using System;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.Models;
+@{
+    string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+    if (Model.facility != null)
+    {
+        if (!string.IsNullOrEmpty(Model.facility.fac_timezone))
+        {
+            facilityTimeZone = Model.facility.fac_timezone;
+        }
+    }
+    var timeZone = Functions.GetTimeZoneAbbreviation(facilityTimeZone);
+    var qpsList = ViewBag.QPSList;
+}
+
+<div class="form-group row case-premorbid-tab">
+    <div class="col-xl-5  col-lg-6 col-md-12 col-sm-12">
+        <div id="MorbidModule">
+            <label class="control-label col-sm-8">Pre-Morbid Modified Ranking Scale: </label>
+            <div class="container premorbid" style="background-color:lightgreen">
+                <div class="form-group row pt-3">
+                    @if (Model.cas_premorbid_symptoms == 0)
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_0_UP" value="0" style="margin-left:10px; margin-top:05px" checked />
+                    }
+                    else
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_0_UP" value="0" style="margin-left:10px; margin-top:05px" />
+                    }
+                    <label class="control-label col-xl-11 col-sm-11 col-lg-11" style="margin-bottom:02px;">No symptoms at all - 0 </label>
+                </div>
+
+                <div class="form-group row">
+                    @if (Model.cas_premorbid_symptoms == 1)
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_1_UP" value="1" style="margin-left:10px; margin-top:05px" checked />
+                    }
+                    else
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_1_UP" value="1" style="margin-left:10px; margin-top:05px" />
+                    }
+                    <label class="control-label col-xl-11 col-sm-11 col-lg-11">No significant disability despite symptoms; able to carry out all usual duties and activities - 1  </label>
+                </div>
+
+                <div class="form-group row">
+                    @if (Model.cas_premorbid_symptoms == 2)
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_2_UP" value="2" style="margin-left:10px; margin-top:05px" checked />
+                    }
+                    else
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_2_UP" value="2" style="margin-left:10px; margin-top:05px" />
+                    }
+                    <label class="control-label col-xl-11 col-sm-11 col-lg-11">Slight disability; unable to carry out all previous activities, but able to look after own affairs without assistance - 2</label>
+                </div>
+
+                <div class="form-group row">
+                    @if (Model.cas_premorbid_symptoms == 3)
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_3_UP" value="3" style="margin-left:10px; margin-top:05px" checked />
+                    }
+                    else
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_3_UP" value="3" style="margin-left:10px; margin-top:05px" />
+                    }
+                    <label class="control-label col-xl-11 col-sm-11 col-lg-11">Moderate disability; requiring some help, but able to walk without assistance - 3 </label>
+                </div>
+
+                <div class="form-group row">
+                    @if (Model.cas_premorbid_symptoms == 4)
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_4_UP" value="4" style="margin-left:10px; margin-top:05px" checked />
+                    }
+                    else
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_4_UP" value="4" style="margin-left:10px; margin-top:05px" />
+                    }
+                    <label class="control-label col-xl-11 col-sm-11 col-lg-11">Moderately severe disability; unable to walk and attend to bodily needs without assistance - 4 </label>
+                </div>
+
+                <div class="form-group row">
+                    @if (Model.cas_premorbid_symptoms == 5)
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_5_UP" value="5" style="margin-left:10px; margin-top:05px" checked />
+                    }
+                    else
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_5_UP" value="5" style="margin-left:10px; margin-top:05px" />
+                    }
+                    <label class="control-label col-xl-11 col-sm-11 col-lg-11">Severe disability; bedridden, incontinent and requiring constant nursing care and attention - 5 </label>
+                </div>
+
+                <div class="form-group row">
+                    @if (Model.cas_premorbid_symptoms == 6)
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_6_UP" value="6" style="margin-left:10px; margin-top:05px" checked />
+                    }
+                    else
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_6_UP" value="6" style="margin-left:10px; margin-top:05px" />
+                    }
+                    <label class="control-label col-xl-11 col-sm-11 col-lg-11">Dead - 6 </label>
+                </div>
+
+                <div class="form-group row">
+                    @if (Model.cas_premorbid_symptoms == 7)
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_7_UP" value="7" style="margin-left:10px; margin-top:05px" checked />
+                    }
+                    else
+                    {
+                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_7_UP" value="7" style="margin-left:10px; margin-top:05px" />
+                    }
+                    <label class="control-label col-xl-11 col-sm-11 col-lg-11">Information not available at this time </label>
+                </div>
+            </div>
+            <div class="form-group row">
+                @*<label class="control-label col-sm-2 text-danger"> </label>*@
+                <div class="col-sm-12">
+                    @Html.TextAreaFor(m => m.cas_premorbid_symptoms_text, new { @class = "form-control", @placeholder = "Enter Text ..." })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Completed by: </label>
+                <div class="col-sm-8">
+                    @if (User.IsInRole(UserRoles.Physician.ToDescription()))
+                    {
+                        @Html.HiddenFor(x => x.cas_premorbid_completed_by);
+                        @Html.DropDownList("cas_premorbid_completed_by", (IEnumerable<SelectListItem>)qpsList, new { @class = "form-control" ,@disabled = "disabled" })
+                    }
+                    else
+                    {
+                        @Html.DropDownList("cas_premorbid_completed_by", (IEnumerable<SelectListItem>)qpsList, new { @class = "form-control"})
+                    }
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-sm-4">Completed on: </label>
+                <div class="timer-container col-sm-8">
+                    @if (User.IsInRole(UserRoles.Physician.ToDescription()))
+                    {
+                        @Html.FormattedDateTextBoxFor(m => m.cas_premorbid_completed_date, new { @class = "form-control format-date", @readOnly = "readOnly" })
+                        <div class="est-container">
+                            <span>@timeZone</span>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.FormattedDateTextBoxFor(m => m.cas_premorbid_completed_date, new { @class = "form-control timepicker" })
+                        <div class="est-container">
+                            <span>@timeZone</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function validatepremorbidFields(isCaseCompleteCall) {
+        // var result = true;
+        // var cas_premorbid_completed_date = true;
+        // var cas_premorbid_completed_by = true;
+        // var cas_premorbid_symptoms_text = true;
+        //// var cas_premorbid_symptoms = true;
+
+         if ($.trim($("#cas_cst_key").val()).toInt() == caseStatusEnum.Cancelled) {
+             return true;
+         }
+
+        // if ($.trim($("#cas_premorbid_completed_date").val()) == "") {
+        //     // $("#billing_cas_dob-error").show();
+        //     result = false;
+        //     cas_premorbid_completed_date = false;
+        // }
+        // if ($.trim($("#cas_premorbid_symptoms_text").val()) == "") {
+        //     //$("#billing_cas_patient_error").parent().find(".error_msg").show();
+        //     result = false;
+        //     cas_premorbid_symptoms_text = false;
+        // }
+
+        // /// Focusing the first invalid control on the tab
+        // if (!result) {
+
+        //     var element = null;
+
+        //     if (!cas_premorbid_completed_by) {
+        //         element = $("#cas_premorbid_completed_by").parent(".k-dropdown");
+        //     }
+        //     else if (!cas_premorbid_symptoms_text) {
+        //         element = $("#cas_premorbid_symptoms_text");
+        //     }
+        //     else if (!cas_premorbid_completed_date) {
+        //         element = $("#cas_premorbid_completed_date");
+        //     }
+        //     else if (!billing_cas_identification_type) {
+
+        //         if (element !== null) {
+        //             window.setTimeout(function () { $(element).focus(); }, 250);
+        //         }
+        //     }
+
+        //     return result;
+        // }
+    }
+</script>

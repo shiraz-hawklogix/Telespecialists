@@ -225,9 +225,6 @@
                 return;
             var colsChecked = $("#fieldsModel").find("input[type='checkbox']:checked").length;
 
-
-
-
             showAllColumns();
 
             if (colsChecked == 0)
@@ -663,9 +660,10 @@
         }
 
         function loadGridData() {
+            ShowLoading();
             showAllColumns();
 
-         $("#kendoDataGrid").kendoGrid({
+            $("#kendoDataGrid").kendoGrid({
                 excel: {
                     allPages: true,
                     filterable: false,
@@ -686,7 +684,7 @@
                                     EndDate: null,
                                     IncludeTime: false,
                                     AdvanceSearchCriteria: advanceSearchModel,
-                                    BillingCode : null,
+                                    BillingCode: null,
                                     CaseType: null,
                                     QPSNumbers: "",
                                     tPA: "",
@@ -695,7 +693,13 @@
                                     states: ""
                                 };
                                 model.states = $("#fac_stt_key").val();
-                                model.Physicians = $("#Physicians").val();
+                                var Getphysician = $("#Physicians").val();
+                                if (Getphysician == "") {
+                                    $('#Physicians option:not(:selected)').each(function (key, value) {
+                                        Getphysician.push(value.value);
+                                    });
+                                }
+                                model.Physicians = Getphysician;
                                 model.Facilities = $(".Facilities").val();
                                 model.BillingCode = 1;//$("#BillingCode").val();
 
@@ -732,14 +736,14 @@
                                         break;
                                     case "LastSevenDays":
                                         model.StartDate = "@(currentDate.AddDays(-7).ToString())";
-                                        model.EndDate ="@currentDate.ToString()";
+                                        model.EndDate = "@currentDate.ToString()";
                                         break;
                                     case "Last14Days":
                                         model.StartDate = "@(currentDate.AddDays(-14).ToString())";
                                         model.EndDate = "@currentDate.ToString()";
                                         break;
                                     case "LastMonth":
-                                         model.StartDate = "@LMStartDate";
+                                        model.StartDate = "@LMStartDate";
                                         model.EndDate = "@LMEndDate";
                                         break;
                                     case "Last60Days":
@@ -800,8 +804,8 @@
                 groupable: false,
                 filterable: true,
                 sortable: true,
-             resizable: true,
-             dataBound: function (e) {
+                resizable: true,
+                dataBound: function (e) {
 
                     $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
                     // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
@@ -809,26 +813,24 @@
                         var kendoDropDown = $(this).data("kendoDropDownList");
                         if (kendoDropDown)
                             kendoDropDown.bind("open", onDropdDownOpen);
-                 });
-
-                 filterColumns();
+                    });
+                    HideLoading();
+                    filterColumns();
                 },
-             columns: [
-                 { hidden: true, field: "id" },
+                columns: [
+                    { hidden: true, field: "id" },
+                    { hidden: true, field: "NavigatorID" },
                     {
                         title: "<b>Graph</b>", width: '80px',
-                        template: "<input type='button' class='btn btn-dark btn-sm hopitalid' data-hopitalid='#= id #' onclick='showgraph.call(this)' value='View' />"
+                        template: "<input type='button' class='btn btn-dark btn-sm hopitalid Navigator' data-hopitalid='#= id #' data-navigator='#= NavigatorID #' onclick='showgraph.call(this)' value='View' />"
                     },
+                    { field: "Navigator", width: 250, title: "Navigator" },
                     { field: "hospitalname", width: 250, title: "Case Count" },
                     { field: "mean", width: 185, title: "Mean" },
                     { field: "median", width: 185, title: "Median" },
-                    { field: "timecycle", width: 185, title: "Time Frame"},
+                    { field: "timecycle", width: 185, title: "Time Frame" },
                 ]
             });
-
-
-
-
         }
         function validateForm() {
             var selectedOption = $("#ddlTimeFrame").val();
@@ -861,9 +863,11 @@
                 }
             });
         }
-        var showgraph = function (){
+        var showgraph = function () {
             var hospitalid = $(this).data("hopitalid");
+            var NavigatorID = $(this).data("navigator");
             var array = hospitalid.split(',');
+            var Navigator = NavigatorID.split(',');
             var model = {
                 Facilities: "",
                 Physicians: "",
@@ -880,7 +884,7 @@
                 states: ""
             };
             model.states = $("#fac_stt_key").val();
-            model.Physicians = $("#Physicians").val();
+            model.Physicians = Navigator; //$("#Physicians").val();
             model.Facilities = array;//$(this).data("hopitalid");  //$(".Facilities").val();
             model.BillingCode = 1;//$("#BillingCode").val();
             model.CaseType = 9;//$("#CaseTypes").val();
