@@ -167,6 +167,12 @@
     <Compile Include="Model\case_template_statconsult.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\component.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\component_access.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\cwh_data.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -242,6 +248,9 @@
     <Compile Include="Model\rca_counter_measure.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\sp_getMenuAccess_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\token.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -287,6 +296,8 @@
     <Compile Include="Repository\GoalsDataRepository.cs" />
     <Compile Include="Repository\HospitalProtocols.cs" />
     <Compile Include="Repository\ICwhData.cs" />
+    <Compile Include="Repository\MenuAccessRepository.cs" />
+    <Compile Include="Repository\MenuRepository.cs" />
     <Compile Include="Repository\NHRepository.cs" />
     <Compile Include="Repository\OnBoardedRepository.cs" />
     <Compile Include="Repository\PostAcuteCareRepository.cs" />
@@ -316,6 +327,7 @@
     <Compile Include="Service\FacilityPIService.cs" />
     <Compile Include="Service\FireBaseUserMailService.cs" />
     <Compile Include="Service\HospitalprotocolServices.cs" />
+    <Compile Include="Service\MenuService.cs" />
     <Compile Include="Service\NHService.cs" />
     <Compile Include="Service\OnBoardedServices.cs" />
     <Compile Include="Service\PhysicianCaseTempService.cs" />
@@ -346,6 +358,7 @@
     <Compile Include="ViewModels\FacilityBillingByAmount.cs" />
     <Compile Include="ViewModels\FacilityQuestionnaire\PreLiveVM.cs" />
     <Compile Include="ViewModels\FireBaseData.cs" />
+    <Compile Include="ViewModels\PhysicianViewModel.cs" />
     <Compile Include="ViewModels\Physician_billing_rates.cs" />
     <Compile Include="ViewModels\Rapids\EmailInfo.cs" />
     <Compile Include="ViewModels\Reports\OperationOutlier.cs" />

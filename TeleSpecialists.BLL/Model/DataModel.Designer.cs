@@ -1,4 +1,5 @@
-﻿// T4 code generation is enabled for model 'E:\Telespecialists31\Telespecialists\TeleSpecialists.BLL\Model\DataModel.edmx'. 
+
+﻿// T4 code generation is enabled for model 'E:\HawkLogix\Telespecialists\TeleSpecialists.BLL\Model\DataModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

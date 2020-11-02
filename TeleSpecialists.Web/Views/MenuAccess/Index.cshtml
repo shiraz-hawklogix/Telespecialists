@@ -1,0 +1,80 @@
+﻿@model TeleSpecialists.BLL.Model.component_access
+@{
+    ViewBag.Title = "Menu";
+    
+}
+
+    <div class="col-sm-12 col-md-12 col-lg-12">
+        <div class="row">
+            <div class="col-sm-3 col-md-5 col-lg-6"></div>
+            <div class="col-sm-5 col-md-3 col-lg-2">
+                <label class="pull-right"><b>Select Role</b></label>
+            </div>
+
+            <div class="col-sm-4 col-md-4 col-lg-4">
+                @Html.DropDownListFor(model => model.cac_roleid, new SelectList(ViewBag.roles, "Value", "Text"), "Please select", new { @class = "form-control", @id = "cac_roleid", @onchange = "OnRoleChanged(this);" })
+
+                @Html.ValidationMessageFor(model => model.cac_roleid, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <hr />
+        <div class="content2">
+
+            <div id="lstOfItemPlaceHoder">
+
+            </div>
+        </div>
+    </div>
+
+<script>
+    function OnRoleChanged(thisCTRL) {
+
+        if ($(thisCTRL).val() == '') {
+            alert("Please select role")
+        }
+        else {
+            setTimeout(function () {
+                loadData($(thisCTRL).val());
+
+            }, 500);
+        }
+    }
+    function loadData(id) {
+        
+        $.ajax({
+            type: "POST",
+            data: { "ID": id },
+            url: '/MenuAccess/_Index',
+            asyc: false,
+            success: function (response) {
+               
+                $("#lstOfItemPlaceHoder").html('');
+                $("#lstOfItemPlaceHoder").html(response);
+            }
+        });
+    }
+</script>
+<script type="text/javascript">
+    function AllowAccessViewChanged(thisCTRL) {
+        var _menuId = $(thisCTRL).attr("data-action");
+
+        var _checkboxStatus = $(thisCTRL).prop("checked")
+        var roleid = $("#roleId").val();
+
+        var DataObjectForAjaxCall = { MenuId: _menuId, CheckboxStatus: _checkboxStatus, RoleId: roleid };
+        $.ajax({
+            url: '/MenuAccess/CreateComponentAccess',
+            type: "POST",
+            //async: false,
+            data: DataObjectForAjaxCall,
+            success: function (Result) {
+                loadData(roleid);
+                
+            },
+            error: function (Result) {
+
+
+            }
+        });
+    }
+</script>

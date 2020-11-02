@@ -139,6 +139,9 @@
         <EntityTypeShape EntityType="DataModel.Hospital_Protocols" Width="1.5" PointX="0.75" PointY="16.75" />
         <EntityTypeShape EntityType="DataModel.Onboarded" Width="1.5" PointX="18.75" PointY="0.75" />
         <EntityTypeShape EntityType="DataModel.web2campaign_log" Width="1.5" PointX="18.375" PointY="4.75" />
+        <EntityTypeShape EntityType="DataModel.component_access" Width="1.5" PointX="21.625" PointY="11.75" />
+        <EntityTypeShape EntityType="DataModel.component" Width="1.5" PointX="19.375" PointY="11" />
+        <AssociationConnector Association="DataModel.FK_ComponentAccess_Component_Id" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

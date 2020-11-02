@@ -1,0 +1,151 @@
+﻿@{
+    ViewBag.Title = "Menu";
+  
+}
+@if (ViewBag.Message != "" && ViewBag.Message != null)
+{
+    <div class="alert alert-dismissible @((bool)ViewBag.Error ? "alert-danger" : "alert-success")" id="autoclose">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>@((bool)ViewBag.Error ? "Error!" : "Success!")</strong> @ViewBag.Message
+    </div>
+}
+<div class="row">
+   
+        <div class="col-lg-6 col-md-6 col-xs-6">
+            <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create", "Menu")">Add </a>
+        </div>
+    
+    <div class="col-lg-6 col-md-6 col-xs-6">
+        <form id="frmSearch" method="post" class="float-lg-right mr-3">
+            <div class="row pl-3">
+                <div>
+                    <strong>Search</strong><br />
+                    <input type="search" id="searchBox" class="k-textbox form-control-sm " />
+                </div>
+                <div class="pl-1" style="max-width:275px;">
+                    <br />
+                    <input type="button" id="btnSearch" class="btn btn-dark" value="Search" />
+                    <a href="javascript:;" class="btn btn-dark clearLS" id="resetSearch" style="display:none;">Clear Search</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="pt-1 customGridHeader facility-grid-container">
+    <div id="menu_grid">
+    </div>
+</div>
+<script type="text/javascript">
+   
+    $(document).ready(function () {
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        loadMenuData();
+    });
+    function loadMenuData() {
+    $("#menu_grid").kendoGrid({
+                dataSource: {
+                    page: KendoGet("Menu", "page"),
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetAll")',
+                            contentType: "application/json",
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            options = KendoKeepState("Menu", options, true);
+
+                            if (options.filter !== undefined && options.filter.filters !== undefined) {
+                                $("#searchBox").val(options.filter.filters[0].value);
+                                $("#resetSearch").show();
+                            }
+
+                            return kendo.stringify(options);
+                        }
+                    },
+                       schema: {
+                           model: {
+                               id: "com_key",
+                               fields: {
+                                   com_parentcomponentid: { editable: false, nullable: false },
+                                   com_module_name: { editable: false, nullable: false },
+                                   com_page_url: { editable: false, nullable: false },
+                                   com_page_name: { editable: false, nullable: false },
+                                   com_page_title: { editable: false, nullable: false },
+                                   com_page_description: { editable: false, nullable: false },
+                                   com_form_id: { editable: false, nullable: false },
+                                   com_status: { editable: false, nullable: false },
+                                   com_addedby: { editable: false, nullable: false },
+                                   com_addedon: { editable: false, nullable: false },
+                                   com_modifiedby: { editable: false, nullable: false },
+                                   com_modifiedon: { editable: false, nullable: false },
+                                   com_sortorder: { editable: false, nullable: false },
+                                   com_moduleimage: { editable: false, nullable: false },
+
+
+                               }
+                           },
+                        data: "Data",
+                        total: "Total",
+                       },
+                    page: KendoGet("Menu", "page"),
+                    pageSize: GetKendoPageSize("Menu", "RecPerPage", true),
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true
+                },
+                filterable: false,
+                sortable: true,
+                scrollable: true,
+                resizable: true,
+                pageable: {
+                    refresh: true,
+                    pageSizes: true,
+                    buttonCount: 5
+                },
+                dataBound: function (e) {
+                    //get All records
+                    debugger
+                    SetKendoTotalCount("Menu", $('#menu_grid').data("kendoGrid").dataSource.total());
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                   $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+                },
+                columns: [
+                    { hidden: true, field: "com_key" },
+                    { field: "com_module_name", title: "Module Name", width: '200px' },
+                    { field: "com_page_name", title: "Page Name", width: '120px' },
+                    { field: "com_page_title", title: "Page Title", width: '120px' },
+                    { field: "com_page_description", title: "Description", width: '100px' },
+                    {
+                    title: "Actions", width: '150px', width:'135px',
+                        template: "<a class='btn btn-dark btn-sm py-1 temp loadLinkAsync' title='Edit Menu' href='@Url.Action("Edit")/\#= com_key#'>Edit</a> "
+                            + "<a class='btn btn-dark btn-sm py-1' title='Remove' href='javascript:;'  onclick='removeMenuData(#= com_key#, \"#= com_module_name#\")'>Remove</a>"
+                    }
+                ]
+            });
+    }
+       
+    function removeMenuData(id, type) {
+
+            $("#mainContentArea").find("#validationSummary").empty();
+
+            var url = "@Url.Action("Remove")";
+             $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+                 "<span>Are you sure you want to remove this " + type + " from the list?</span>",
+                function () {
+                    $.get(url, { id: id }, function (response) {
+                        $("#divModelPopUp").modal("hide");
+                        if (response.success) {
+                            loadMenuData();
+                        }
+                        else {
+                            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                        }
+                    })
+                });
+        }
+</script>
+
