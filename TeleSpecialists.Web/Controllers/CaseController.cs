@@ -879,7 +879,6 @@ namespace TeleSpecialists.Controllers
         public ActionResult Edit(int id, bool isReadOnly = false)
         {
             isCalculateBill = false;
-            //_caseService.UpdatecasesByWorkFlowID();
             ViewBag.IsReadOnlyCase = isReadOnly;
             if (User.IsInRole(UserRoles.Finance.ToDescription()))
             {
