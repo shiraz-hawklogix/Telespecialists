@@ -20,14 +20,14 @@
     }
 
     // Added by Axim 21-10-2020
-    DateTime morbidDatetime = Convert.ToDateTime("10/21/2020");
-    var morbid_order = "false";
-    var morbid_Danger = "";
-    if (Model.cas_created_date > morbidDatetime)
-    {
-        morbid_order = "true";
-        morbid_Danger = "text-danger";
-    }
+    DateTime morbidDatetime =  Convert.ToDateTime("10/21/2020");
+    var morbid_order =  "false";
+    var morbid_Danger =  "";
+    if ( Model.cas_created_date > morbidDatetime)
+    { 
+        morbid_order =  "true";
+        morbid_Danger =  "text-danger";
+    } 
     //Ended by Axim 21-10-2020
 
     bool isStateConsultCase = false;
