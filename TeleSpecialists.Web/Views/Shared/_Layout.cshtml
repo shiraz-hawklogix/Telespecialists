@@ -685,7 +685,6 @@
                 type: "GET",
                 url: "/Account/CheckLogoutUser",
                 success: function (response) {
-                    debugger;
                     try {
                         if (response.Status == true) {
                             window.location.href = "/Account/Signout"

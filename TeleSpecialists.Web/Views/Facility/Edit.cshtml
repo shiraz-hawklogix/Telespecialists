@@ -413,7 +413,6 @@ else
         GetOnboardingData();
     });
     function GetOnboardingData() {
-        debugger;
         ShowLoading();
         
         var fac_key = '@Model.fac_key';
@@ -471,7 +470,6 @@ else
         });
     }
     function editonboardingData(fac_key, url) {
-        debugger
         if (fac_key == undefined && url == undefined) {
             fac_key = '@Model.fac_key';
             url = "/Facility/EditButton";
@@ -486,7 +484,6 @@ else
 
             },
             success: function (response) {
-                debugger
                 $("#OnBoardedMain").addClass('d-none');
                 $(".AddEditOnBaorded").empty();
                 $(".AddEditOnBaorded").html(response.data);
@@ -561,7 +558,6 @@ else
     }
 
     function editProtocolsData(fac_key, url) {
-        debugger
         if (fac_key == undefined && url == undefined) {
             fac_key = '@Model.fac_key';
             url = "/HospitalProtocols/Edit";
@@ -576,7 +572,6 @@ else
 
             },
             success: function (response) {
-                debugger
                 $("#ProtocolMain").addClass('d-none');
                 $(".AddEditProtocols").empty();
                 $(".AddEditProtocols").html(response.data);

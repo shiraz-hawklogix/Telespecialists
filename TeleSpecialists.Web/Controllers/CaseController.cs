@@ -889,6 +889,25 @@ namespace TeleSpecialists.Controllers
             ViewBag.EnableAutoSave = ApplicationSetting.aps_enable_case_auto_save;
             ViewBag.ShowNotesPopup = ApplicationSetting.aps_cas_facility_popup_on_load;
             //  var viewModel = new CaseViewModel();
+            //Added by Axim 29-10-2020
+            string selected = "";
+            List<string> roless = new List<string>();
+
+            var QPS = UserRoles.QPS.ToDescription();
+            var QualityDirector = UserRoles.QualityDirector.ToDescription();
+            var VPQuality = UserRoles.VPQuality.ToDescription();
+
+            var QPSId = RoleManager.Roles.Where(x => x.Description == QPS).Select(x => x.Id).FirstOrDefault();
+            var QualityDirectorId = RoleManager.Roles.Where(x => x.Description == QualityDirector).Select(x => x.Id).FirstOrDefault();
+            var VPQualityId = RoleManager.Roles.Where(x => x.Description == VPQuality).Select(x => x.Id).FirstOrDefault();
+
+            roless.Add(QPSId);
+            roless.Add(QualityDirectorId);
+            roless.Add(VPQualityId);
+            ViewBag.QPSList = _facilityService.GetUserByRole(roless, selected);
+
+            //Ended By Axim 29-10-2020
+
             try
             {
                 model = _caseService.GetDetails(id);
@@ -1656,7 +1675,8 @@ namespace TeleSpecialists.Controllers
                     model.cas_modified_by = loggedInUser.Id;
                     model.cas_modified_by_name = loggedInUser.FullName;
                     model.cas_modified_date = DateTime.Now.ToEST();
-
+                    //if (model.cas_billing_bic_key == null)
+                    //    model.cas_billing_bic_key = model.cas_billing_bic_key_initial;
                     #region TCARE-484 Advance Imaging Checkboxes
 
                     if (model.cas_metric_thrombectomy_medical_decision_making == null ||
@@ -1888,7 +1908,6 @@ namespace TeleSpecialists.Controllers
 
                     #region handling logging in case of physician updated
 
-
                     // handling status update time of physician
                     HandleCaseStatusCode(model, dbModel);
 
@@ -1900,11 +1919,6 @@ namespace TeleSpecialists.Controllers
                             model.cas_history_physician_initial = _caseService.GetCaseInitials(model.cas_key);
                         }
                     }
-
-
-
-
-
 
                     #endregion
 
