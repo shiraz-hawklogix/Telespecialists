@@ -67,7 +67,6 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<physician_status_snooze> physician_status_snooze { get; set; }
         public virtual DbSet<physician_status_snooze_option> physician_status_snooze_option { get; set; }
         public virtual DbSet<rca_counter_measure> rca_counter_measure { get; set; }
-        public virtual DbSet<token> tokens { get; set; }
         public virtual DbSet<ucl> ucls { get; set; }
         public virtual DbSet<ucl_data> ucl_data { get; set; }
         public virtual DbSet<MDStaffFacility> MDStaffFacilities { get; set; }
@@ -104,6 +103,7 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<web2campaign_log> web2campaign_log { get; set; }
         public virtual DbSet<component_access> component_access { get; set; }
         public virtual DbSet<component> components { get; set; }
+        public virtual DbSet<token> tokens { get; set; }
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {

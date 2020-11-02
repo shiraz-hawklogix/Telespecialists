@@ -957,8 +957,8 @@ namespace TeleSpecialists.Controllers
             _userVerificationService.userSignOut(user.Id.ToString(), PCName, isLogout);
 
             // get delete token from specific Machine
-            var tokens = _tokenservice.deleteToken(user.Id.ToString(), PCName);
-            _tokenservice.DeleteRange(tokens);
+            //var tokens = _tokenservice.deleteToken(user.Id.ToString(), PCName);
+            //_tokenservice.DeleteRange(tokens);
 
             LogAuditRecord(user.UserName, AuditRecordLogStatus.LogOut.ToString());
 

@@ -293,6 +293,7 @@ namespace TeleSpecialists.BLL.Model
         public string cas_premorbid_symptoms_text { get; set; }
         public string cas_premorbid_completed_by { get; set; }
         public Nullable<System.DateTime> cas_premorbid_completed_date { get; set; }
+    
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<case_assign_history> case_assign_history { get; set; }
         public virtual facility facility { get; set; }
