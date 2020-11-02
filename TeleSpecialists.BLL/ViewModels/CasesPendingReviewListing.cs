@@ -40,6 +40,7 @@ namespace TeleSpecialists.BLL.ViewModels
         public string StartTime { get; set; }
         public string FacilityName { get; set; }
         public string Physician_Initials { get; set; }
+        public string Physician_Status { get; set; }
         public string TS_Response_Time { get; set; }
         public string CallBack_Response_Time { get; set; }
         public DateTime Created_Date { get; set; }

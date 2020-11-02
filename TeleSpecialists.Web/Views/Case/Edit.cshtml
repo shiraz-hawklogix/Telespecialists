@@ -3368,7 +3368,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         $("#cas_ctp_key").off("change").change(function () {
 
          BindBillingCodeDropdown($(this).val());
-     });
+        });
           var show = @Model.cas_metric_symptom_onset_during_ed_stay.ToString().ToLower();
 
         SymptomsOnSet(show);
@@ -3416,17 +3416,18 @@ EntityTypes.StateAlertTemplate.ToInt()
     });
 
     // Moving metric tab functionality here . Because some components such as datetime pickter did not render at _caseMetricForm.
-
+    
     function SymptomsOnSet(show) {
         if (show) {
-            $(".symptoms_onset_during_ed_stay").show();
+            $("input[name=cas_patient_type][value='4']").attr('checked', 'checked');
+            $("#symptoms_onset_during_ed_stay").show();
         }
-        else {
-            $(".symptoms_onset_during_ed_stay").hide();
-        }
+        //else {
+        //    $("#symptoms_onset_during_ed_stay").hide();
+        //}
     }
-
-    $("#cas_metric_symptom_onset_during_ed_stay").off('change').change(function () {
+    
+    @*$("#cas_metric_symptom_onset_during_ed_stay").off('change').change(function () {
 
         var show = $(this).prop("checked");
 
@@ -3436,7 +3437,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         }
 
         SymptomsOnSet(show);
-    });
+    });*@
 
     $(".callLink").off("click").click(function () {
 

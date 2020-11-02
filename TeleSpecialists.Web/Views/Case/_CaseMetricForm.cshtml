@@ -379,17 +379,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group row" id="symptoms_onset_during_ed_stay">
+                <div class="form-group row" id="symptoms_onset_during_ed_stay" style="display:none;">
 
                     <div class="col-xl-4 col-sm-4 col-lg-12">
                         <label class="control-label" style="display: inline;">
                             Symptom Onset During ED Stay:
                         </label>
 
-                        @Html.CheckBoxFor(m => m.cas_metric_symptom_onset_during_ed_stay, htmlAttributes: new { @style = "vertical-align: bottom; margin-bottom: 3px; ", @class = "disabled" })
+                        @*@Html.CheckBoxFor(m => m.cas_metric_symptom_onset_during_ed_stay, htmlAttributes: new { @style = "vertical-align: bottom; margin-bottom: 3px; ", @class = "disabled" })*@
 
                     </div>
-                    <div class="col-sm-8 col-xl-8 col-lg-12 symptoms_onset_during_ed_stay" style="display:none">
+                    <div class="col-sm-8 col-xl-8 col-lg-12 symptoms_onset_during_ed_stay">
                         <div class="timer-container">
                             @Html.FormattedDateTextBoxFor(m => m.cas_metric_symptom_onset_during_ed_stay_time_est, new { @class = "form-control timepicker", id = "symptoms_onset_during_ed_stay_timestamp" })
                             <div class="est-container">
@@ -1864,32 +1864,44 @@
         }
         //Ended BY Axim 25-08-2020
         //bg-light-blue input:radio
-        function patientTypeChange() {
-            if ($('input:radio[name=cas_patient_type]:checked').val() != undefined) {
-                if ($('input:radio[name=cas_patient_type]:checked').val() == @(TeleSpecialists.BLL.Helpers.PatientType.Inpatient.ToInt())) {
-                    $("#cas_metric_door_time_est").attr("data-currentVal", $.trim($("#cas_metric_door_time_est").val()));
-                    $(".metric_door_time input").val("");
-                    $(".metric_door_time").hide();
-                    $("#metric_physician_checkboxes").hide();
-                    $("#symptoms_onset_during_ed_stay").hide();
+    function patientTypeChange() {
+        if ($('input:radio[name=cas_patient_type]:checked').val() != undefined) {
+            if ($('input:radio[name=cas_patient_type]:checked').val() == @(TeleSpecialists.BLL.Helpers.PatientType.Inpatient.ToInt())) {
+                $("#cas_metric_door_time_est").attr("data-currentVal", $.trim($("#cas_metric_door_time_est").val()));
+                $(".metric_door_time input").val("");
+                $(".metric_door_time").hide();
+                $("#metric_physician_checkboxes").hide();
+                $("#symptoms_onset_during_ed_stay").hide();
+            } else if ($('input:radio[name=cas_patient_type]:checked').val() == @(TeleSpecialists.BLL.Helpers.PatientType.SymptomOnsetDuringEDStay.ToInt())) {
+                var oldvalue = '@Model.cas_metric_symptom_onset_during_ed_stay_time_est';
+                if (oldvalue != "") {
+                    var formatvalue = moment(oldvalue, 'MM/DD/YYYY HH:mm:ss').format("MM/DD/YYYY HH:mm:ss");
+                    $("#symptoms_onset_during_ed_stay_timestamp").val(formatvalue);
+                } else {
+                    var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm:ss");
+                    $("#symptoms_onset_during_ed_stay_timestamp").val(currentDateTime);
+                    
                 }
-                else {
-                    $(".metric_door_time").show();
-                    if ($("#metric_physician_checkboxes:visible").length == 0) {
-                        var currentValue = $.trim($("#cas_metric_door_time_est").attr("data-currentVal"));
-                        if (currentValue != "") {
-                            $(".metric_door_time input").val(currentValue);
-                        }
-                    }
-
-                    $("#metric_physician_checkboxes").show();
-                    $("#symptoms_onset_during_ed_stay").show();
-                }
+                $("#symptoms_onset_during_ed_stay").show();
+                $(".metric_door_time").show();
             }
             else {
-                $('#metric_physician_checkboxes').css('display', 'block')
+                $(".metric_door_time").show();
+                if ($("#metric_physician_checkboxes:visible").length == 0) {
+                    var currentValue = $.trim($("#cas_metric_door_time_est").attr("data-currentVal"));
+                    if (currentValue != "") {
+                        $(".metric_door_time input").val(currentValue);
+                    }
+                }
+
+                $("#metric_physician_checkboxes").show();
+                $("#symptoms_onset_during_ed_stay").hide();
             }
         }
+        else {
+            $('#metric_physician_checkboxes').css('display', 'block')
+        }
+    }
         function historyRadioButtonChanges() {
             if ($(".bg-light-blue input:radio[value=true]:checked").length > 0) {
                 $("#tpaVerbalTime").hide();
