@@ -44,11 +44,5 @@ namespace TeleSpecialists.BLL.Service
                 _unitOfWork.Commit();
             }
         }
-
-        public List<token> deleteToken(string UserId, string MachineName)
-        {
-            var model = _unitOfWork.TokenRepository.Query().Where(x => x.tok_phy_key == UserId && x.tok_machine_name == MachineName).ToList();
-            return model;
-        }
     }
 }
