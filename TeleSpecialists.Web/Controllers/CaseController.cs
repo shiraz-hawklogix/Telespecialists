@@ -18,7 +18,6 @@ using TeleSpecialists.Web.Hubs;
 using TeleSpecialists.Web.Models;
 using TeleSpecialists.BLL.Service.CaseServices;
 using Kendo.DynamicLinq;
-using System.Web;
 
 namespace TeleSpecialists.Controllers
 {
@@ -1416,11 +1415,40 @@ namespace TeleSpecialists.Controllers
             return Json("error", JsonRequestBehavior.AllowGet);
         }
 
+        public class rca_counter_measure_model
+        {
+            public int rca_Id { get; set; }
+            public int rca_key_id { get; set; }
+            public string rca_root_cause { get; set; }
+            public string rca_proposed_countermeasure { get; set; }
+            public string rca_responsible_party { get; set; }
+            public string rca_proposed_due_date { get; set; }
+            public int? rca_rootcause_id { get; set; }
+            public string rca_completed_date { get; set; }
+        }
+        
+
         public JsonResult GetRootRecord(int id)
         {
             var GetRecord = _rootCauseService.GetDetail(id);
 
-            return Json(GetRecord.Select(x => new
+            List<rca_counter_measure_model> _list = new List<rca_counter_measure_model>();
+            rca_counter_measure_model obj;
+            foreach (var item in GetRecord)
+            {
+                obj = new rca_counter_measure_model();
+
+                obj.rca_rootcause_id = item.rca_rootcause_id;
+                obj.rca_root_cause = item.rca_root_cause;
+                obj.rca_proposed_countermeasure = item.rca_proposed_countermeasure;
+                obj.rca_responsible_party = item.rca_responsible_party;
+                obj.rca_proposed_due_date = item.rca_proposed_due_date == null ? "" : item.rca_proposed_due_date.ToString();
+                obj.rca_completed_date = item.rca_completed_date == null ? "" : item.rca_completed_date.ToString();
+                obj.rca_Id = item.rca_Id;
+                _list.Add(obj);
+            }
+
+            return Json(_list.Select(x => new
             {
                 x.rca_rootcause_id,
                 x.rca_root_cause,
@@ -5788,19 +5816,11 @@ namespace TeleSpecialists.Controllers
         public JsonResult CreateTokens(token model, string phy_token_key)
         {
             string phy_key = User.Identity.GetUserId();
-            // get MachineName
-            string PCName = "";
-            HttpCookie myCookie = Request.Cookies["PCCookieInfo_" + phy_key];
-            if (myCookie != null)
-            {
-                PCName = myCookie.Values["userid"].ToString();
-            }
-            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key, PCName);
+            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key);
             if (GetDetail == null)
             {
                 model.tok_phy_key = phy_key;
                 model.tok_phy_token = phy_token_key;
-                model.tok_machine_name = PCName;
                 _tokenservice.Create(model);
             }
             var detail = _fireBaseUserMailService.GetDetails(phy_key);
@@ -5809,13 +5829,7 @@ namespace TeleSpecialists.Controllers
         public JsonResult DeleteToken(string phy_token_key)
         {
             string phy_key = User.Identity.GetUserId();
-            string PCName = "";
-            HttpCookie myCookie = Request.Cookies["PCCookieInfo_" + phy_key];
-            if (myCookie != null)
-            {
-                PCName = myCookie.Values["userid"].ToString();
-            }
-            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key, PCName);
+            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key);
             if (GetDetail != null)
             {
                 int id = GetDetail.tok_key;

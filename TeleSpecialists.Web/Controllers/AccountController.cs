@@ -35,7 +35,6 @@ namespace TeleSpecialists.Controllers
         private readonly AlarmService _alarmService;
         private readonly UserVerificationService _userVerificationService;
         private readonly user_fcm_notification _user_Fcm_Notification;
-        private readonly TokenService _tokenservice;
         //   private readonly RateService _rateService;
         public AccountController()
         {
@@ -44,7 +43,6 @@ namespace TeleSpecialists.Controllers
             _alarmService = new AlarmService();
             _userVerificationService = new UserVerificationService();
             _user_Fcm_Notification = new user_fcm_notification();
-            _tokenservice = new TokenService();
             //     _rateService = new RateService();
         }
 
@@ -492,7 +490,7 @@ namespace TeleSpecialists.Controllers
             }
             string PCName = GetUniqueMachineInfo(UserId);
 
-            var user =  _userVerificationService.userVerifications(UserId);
+            var user = _userVerificationService.userVerifications(UserId);
             if (settings.aps_enable_logout_from_other_devices && user.Count > 0 && !string.IsNullOrEmpty(PCName) && (string.IsNullOrEmpty(isLogout) || isLogout != "true"))
             {
                 if (user.Where(x => x.IsLoggedIn == true).ToList().Any(x => x.MachineName != PCName))
@@ -540,12 +538,12 @@ namespace TeleSpecialists.Controllers
             var phy_ids = firebaseUsers.ToList();
             var paramData = new List<object>();
             paramData.Add(JsonConvert.SerializeObject(phy_ids));
-           // bool sentStatus = true;
-            bool sentStatus = _user_Fcm_Notification.SendNotification(phy_key: model.UserId, caseType: "TwoFactorAuth", Data: paramData);
-            if (sentStatus || !sentStatus)
+            bool sentStatus = true;
+            //bool sentStatus = _user_Fcm_Notification.SendNotification(phy_key: model.UserId, caseType: "TwoFactorAuth", Data: paramData);
+            if (sentStatus)
             {
                 _userVerificationService.SignOutAllUsers(model.UserId);
-                return Json(new { result = true }, JsonRequestBehavior.AllowGet);
+                return Json(new { result = sentStatus }, JsonRequestBehavior.AllowGet);
             }
             #endregion
 
@@ -564,7 +562,6 @@ namespace TeleSpecialists.Controllers
         public ActionResult getSessionTimeOutValue()
         {
             var UserId = ViewBag.ApplicationSetting as application_setting;
-
             return Json(new { result = UserId.aps_session_timeout_in_minutes }, JsonRequestBehavior.AllowGet);
         }
 
@@ -948,14 +945,7 @@ namespace TeleSpecialists.Controllers
         public ActionResult Signout(string isLogout = "")
         {
             var user = loggedInUser;
-
-            string PCName = GetUniqueMachineInfo(user.Id.ToString());
-            _userVerificationService.userSignOut(user.Id.ToString(), PCName, isLogout);
-
-            // get delete token from specific Machine
-            var tokens = _tokenservice.deleteToken(user.Id.ToString(), PCName);
-            _tokenservice.DeleteRange(tokens);
-
+            _userVerificationService.userSignOut(user.Id.ToString(), GetUniqueMachineInfo(user.Id.ToString()), isLogout);
             LogAuditRecord(user.UserName, AuditRecordLogStatus.LogOut.ToString());
 
             return View();

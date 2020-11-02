@@ -183,7 +183,6 @@ namespace TeleSpecialists.Controllers
         {
             if (ModelState.IsValid)
             {
-                
                 if (_facilityService.IsAlreadyExists(facility))
                     ModelState.AddModelError("fac_name", $"Type {facility.fac_name} already exists");
                 else
@@ -373,7 +372,10 @@ namespace TeleSpecialists.Controllers
 
 
         #region Shiraz Code For OnBoarding
-        
+        //public ActionResult _CreateOnboardedForm(Guid id)
+        //{
+        //    return PartialView();
+        //}
         public ActionResult CreateOnboarded(string fac_key, string issave)
         {
             ViewBag.fac_keys = fac_key;
@@ -396,10 +398,6 @@ namespace TeleSpecialists.Controllers
         {
             Onboarded model = new Onboarded();
             ViewBag.fac_keys = fac_key;
-            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
-                                 .Select(m => new { Value = m.fac_key, Text = m.fac_name })
-                                 .ToList()
-                                 .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
             var result = RenderPartialViewToString("EditButton", model);
             return Json(new { success = true, data = result });
             //return GetViewResult();
@@ -895,36 +893,6 @@ namespace TeleSpecialists.Controllers
             }
             return Json(isValid);
         }
-
-        public ActionResult CopyOnboardTab(int onboardid, List<string> facilities)
-        {
-            try
-            {
-                var model = _OnBoardedServices.GetDetailForOnboarded(onboardid);
-                
-                foreach (var item in facilities)
-                {
-                    Onboarded On_boarded = new Onboarded();
-                    var sortnum = _OnBoardedServices.GetSortNumMaxByFacility(item);
-                    On_boarded.ParameterName = model.ParameterName;
-                    On_boarded.ParameterName_Info = model.ParameterName_Info;
-                    On_boarded.ParameterName_Image = model.ParameterName_Image;
-                    On_boarded.Facility_Name = _facilityService.GetFacilityName(item);
-                    On_boarded.Facility_Id = item;
-                    On_boarded.Parameter_Add_Date = DateTime.Now.ToEST();
-                    On_boarded.SortNum = sortnum == null ? 1 : sortnum + 1;
-                    _OnBoardedServices.Create(On_boarded);
-                }
-                return Json(true, JsonRequestBehavior.AllowGet);
-
-            }
-            catch (Exception e)
-            {
-                return Json(false, JsonRequestBehavior.AllowGet);
-            }
-
-        }
-
         #endregion
 
 

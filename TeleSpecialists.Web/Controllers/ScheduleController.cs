@@ -141,7 +141,7 @@ namespace TeleSpecialists.Controllers
                         //DateTime dddd = startDate.AddDays(endDate.Day);
                         //DateTime middleDate = startDate.AddDays((endDate.Day) / 2);
                         //int month = (startDate.Month + endDate.Month) / 2;
-                        int month = startDate.AddDays(20).Month;
+                        int month = startDate.AddDays(10).Month;
                         var MonthList = _res.Where(u => u.ScheduleDate.Month == month).ToList();
                         if (MonthList.Count > 0)
                         {

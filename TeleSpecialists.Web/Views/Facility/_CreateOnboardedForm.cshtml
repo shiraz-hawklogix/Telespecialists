@@ -3,12 +3,10 @@
 @using TeleSpecialists.BLL.Model;
 @model TeleSpecialists.BLL.Model.Onboarded
 @{
-    List<Onboarded> OnBoardingdataforpopups = ViewBag.onboardingdatas;
+    List<Onboarded> On_Boarded_list = ViewBag.OnBoardingdata;
+    List<Onboarded> OnBoardingdataforpopups = ViewBag.OnBoardingdataforpopup;
 }
 <style>
-    body {
-        font-size:15px !important;
-    }
     /*.shiraz {
         margin: 0;
         padding-top: 0px;
@@ -75,7 +73,7 @@
             <div class="form-group row">
                 <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Facility: </label>
                 <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
-                    @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control cas_fac_key Facilities facility_keys", @multiple = "multiple" })
+                    @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control cas_fac_key", @multiple = "multiple" })
                     <div id="cas_fac_key-error" class="error_msg" style="display:none;">
                         <label for="cas_fac_key">This field is required</label>
                     </div>
@@ -120,8 +118,7 @@
     </div>
     <div class="form-group row">
         <div class="col-12">
-            @*<a class="btn btn-dark loadLinkAsync bthhide" style="display:none!important" href="@Url.Action("CreateOnboarded","Facility", new { fac_key = @ViewBag.fac_keys , issave= "1"})">Add Onboarding</a>*@
-            <input type="button" class="btn btn-dark bthhide" style="display:none!important" value="Add Onboarding" onclick="addOnBoardingData('@ViewBag.fac_keys','1','/Facility/CreateOnboarded')" />
+            <a class="btn btn-dark loadLinkAsync bthhide" style="display:none!important" href="@Url.Action("CreateOnboarded","Facility", new { fac_key = @ViewBag.fac_keys , issave= "1"})">Add Onboarding</a>
             @*<a href="/Facility/Edit/@ViewBag.fac_keys" class="btn btn-dark loadLinkAsync" id="backpage" onclick="funlatecall();">Cancel</a>*@
             <input type="button" class="btn btn-dark loadLinkAsync" id="backpage" onclick="funlatecall();" value="Cancel" />
             <input type="button" value="Preview Onboarding" onclick="openpopup()" ; class="btn btn-dark" id="Previewbtn" />
@@ -231,7 +228,7 @@
         }
         var values = "@ViewBag.FAC_value";
         $.each(values.split(","), function (i, e) {
-            $(".Facilities option[value='" + e + "']").prop("selected", true);
+            $("#Facilities option[value='" + e + "']").prop("selected", true);
         });
         $('#ParameterName').trigger("click");
     });
@@ -242,7 +239,7 @@
     function fun() {
         $("#divimages3").empty();
     }
-    //  $('#graphmodal').modal({ backdrop: 'static', keyboard: false, hide=true })
+      
 </script>
 <script>
     $(function () {
@@ -281,7 +278,7 @@
 <script>
     $(document).ready(function () {
         showCKEditoronboard("ParameterName_Info");
-        $('.Facilities').multiselect({
+        $('#Facilities').multiselect({
             columns: 1,
             placeholder: 'Select Facility',
             selectAll: true,
@@ -315,9 +312,8 @@
 <script>
     function validateFormData() {
         var result = true;
-        var facilities = $('.Facilities').find(":selected").val();
-        
-        if (facilities.length == 0) {
+
+        if ($("#Facilities").val() == "") {
             result = false;
             $("#cas_fac_key-error").show();
             setTimeout(function () {
@@ -328,11 +324,11 @@
     }
     function uplaod() {
         $(".error_msg").hide();
-        
         if (validateFormData() == true) {
             var formData = new FormData();
             var totalFiles = document.getElementById("ParameterName_Image").files.length;
-            for (var i = 0; i < totalFiles; i++) {
+            for (var i = 0; i < totalFiles; i++)
+            {
                 var file = document.getElementById("ParameterName_Image").files[i];
                 formData.append("ParameterName_Image", file);
             }
@@ -346,12 +342,12 @@
             var info = Base64.encode(CKEDITOR.instances["ParameterName_Info"].getData());
             formData.append("parameterinfo", info);
             var cas_fac_Name_arrays = [];
-            $.each($(".facility_keys option:selected"), function () {
+            $.each($(".cas_fac_key option:selected"), function () {
                 cas_fac_Name_arrays.push($(this).text());
             });
             formData.append("cas_fac_Name_array", cas_fac_Name_arrays);
             var cas_fac_key_arrays = [];
-            $.each($(".facility_keys option:selected"), function () {
+            $.each($(".cas_fac_key option:selected"), function () {
                 cas_fac_key_arrays.push($(this).val());
             });
             formData.append("cas_fac_key_arrays", cas_fac_key_arrays);
@@ -363,12 +359,11 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    debugger
                     $('#ParameterName').val('');
                     $("#message").html("");
                     $(".bthhide").trigger("click");
                 },
-                error: function (error) {
+                error: function ( error) {
                     console.log(error);
                 }
 
@@ -380,7 +375,7 @@
         $("#message").html("");
 
     }
-
+ 
 </script>
 
 <script>

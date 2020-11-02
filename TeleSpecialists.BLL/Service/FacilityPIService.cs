@@ -8549,7 +8549,7 @@ namespace TeleSpecialists.BLL.Service
                         if (item.rootcause != null)
                         {
                             var workflowids = item.rootcause;
-                            var ids = workflowids.Split(',');
+                            var ids = workflowids.Split(',').Distinct().ToList();
                             foreach (var id in ids)
                             {
                                 tPACaseAnalysis tpa = new tPACaseAnalysis();

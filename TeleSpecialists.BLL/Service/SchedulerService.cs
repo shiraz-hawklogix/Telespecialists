@@ -44,6 +44,8 @@ namespace TeleSpecialists.BLL.Service
                 model.uss_time_to = model.uss_time_to + TimeSpan.TicksPerDay;
             }
 
+            model.uss_time_to_calc_num = Convert.ToInt64(model.uss_time_to_calc.Value.Year.ToString() + model.uss_time_to_calc.Value.DayOfYear.ToString("000") + model.uss_time_to_calc.Value.TimeOfDay.ToString().Replace(":", "").Substring(0, 4).Trim());
+
             var existingSchdule = _unitOfWork.ScheduleRepository.Query()
                                      .Where(m =>
                                           m.uss_time_from_calc < model.uss_time_to_calc &&
@@ -162,6 +164,8 @@ namespace TeleSpecialists.BLL.Service
             {
                 model.uss_time_to = model.uss_time_to + TimeSpan.TicksPerDay;
             }
+
+            model.uss_time_to_calc_num = Convert.ToInt64(model.uss_time_to_calc.Value.Year.ToString() + model.uss_time_to_calc.Value.DayOfYear.ToString("000") + model.uss_time_to_calc.Value.TimeOfDay.ToString().Replace(":", "").Substring(0, 4).Trim());
 
             var existingSchdule = _unitOfWork.ScheduleRepository.Query()
                                    .Where(m =>

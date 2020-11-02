@@ -553,7 +553,6 @@
           <Property Name="cas_metric_viz_app_usage_review" Type="int" />
           <Property Name="cas_metric_viz_app_usage_text" Type="varchar(max)" />
           <Property Name="cas_review_qps_reviewed_completed" Type="datetime" />
-          <Property Name="cas_metric_has_morbid_symptoms" Type="int" />
         </EntityType>
         <EntityType Name="case_assign_history">
           <Key>
@@ -1735,8 +1734,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="tok_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="tok_phy_key" Type="nvarchar" MaxLength="128" />
           <Property Name="tok_phy_token" Type="nvarchar(max)" />
-          <Property Name="tok_device_type" Type="nvarchar" MaxLength="50" />
-          <Property Name="tok_machine_name" Type="nvarchar" MaxLength="200" />
         </EntityType>
         <EntityType Name="ucl">
           <Key>
@@ -4129,8 +4126,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="tok_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="tok_phy_token" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_token_AspNetUsers" FromRole="token" ToRole="AspNetUser" />
-          <Property Name="tok_device_type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="tok_machine_name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="ucl">
           <Key>
@@ -5175,7 +5170,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_case_AspNetUsers_Navigator" FromRole="case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_case_AspNetUsers1" FromRole="case" ToRole="AspNetUser" />
           <Property Name="cas_review_qps_reviewed_completed" Type="DateTime" Precision="3" />
-          <Property Name="cas_metric_has_morbid_symptoms" Type="Int32" />
         </EntityType>
         <EntityType Name="facility">
           <Key>
@@ -6888,8 +6882,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="tokens">
             <EntityTypeMapping TypeName="DataModel.token">
               <MappingFragment StoreEntitySet="token">
-                <ScalarProperty Name="tok_machine_name" ColumnName="tok_machine_name" />
-                <ScalarProperty Name="tok_device_type" ColumnName="tok_device_type" />
                 <ScalarProperty Name="tok_phy_token" ColumnName="tok_phy_token" />
                 <ScalarProperty Name="tok_phy_key" ColumnName="tok_phy_key" />
                 <ScalarProperty Name="tok_key" ColumnName="tok_key" />
@@ -7443,7 +7435,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="cases">
             <EntityTypeMapping TypeName="DataModel.case">
               <MappingFragment StoreEntitySet="case">
-                <ScalarProperty Name="cas_metric_has_morbid_symptoms" ColumnName="cas_metric_has_morbid_symptoms" />
                 <ScalarProperty Name="cas_review_qps_reviewed_completed" ColumnName="cas_review_qps_reviewed_completed" />
                 <ScalarProperty Name="cas_metric_viz_app_usage_text" ColumnName="cas_metric_viz_app_usage_text" />
                 <ScalarProperty Name="cas_metric_viz_app_usage_review" ColumnName="cas_metric_viz_app_usage_review" />

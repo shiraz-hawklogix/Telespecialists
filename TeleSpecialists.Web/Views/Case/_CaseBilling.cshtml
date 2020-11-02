@@ -28,7 +28,6 @@
     var earlier = now.AddDays(-2);
 }
 @*<input type="hidden" value="" id="billingAssignPhyscian" />*@
-<input type="hidden" value="@Model.cas_billing_bic_key" name="cas_billing_bic_key" id="cas_billing_bic_key_id" />
 <div class="form-group row case-billing-tab">
     <div class="col-xl-5  col-lg-6 col-md-12 col-sm-12">
         <div class="form-group row">
@@ -154,13 +153,13 @@ CaseType.LongTermEEG.ToInt()
                 if (isTeleNeuroFacility)
                 {
                     var billingCodes = new List<int>()
-                                                                                {
-                                                                                    CaseBillingCode.New.ToInt(),
-                                                                                    CaseBillingCode.FU.ToInt(),
-                                                                                    CaseBillingCode.CC1_STAT.ToInt(),
-                                                                                    CaseBillingCode.TC.ToInt(),
-                                                                                    CaseBillingCode.CC1_StrokeAlert.ToInt()
-                                                                                };
+                                                                            {
+                                                                                CaseBillingCode.New.ToInt(),
+                                                                                CaseBillingCode.FU.ToInt(),
+                                                                                CaseBillingCode.CC1_STAT.ToInt(),
+                                                                                CaseBillingCode.TC.ToInt(),
+                                                                                CaseBillingCode.CC1_StrokeAlert.ToInt()
+                                                                            };
                     var currentBillingCode = Model.cas_billing_bic_key.HasValue ? Model.cas_billing_bic_key.Value : 0;
                     if (billingCodes.Contains(currentBillingCode))
                     {
@@ -191,7 +190,7 @@ CaseType.LongTermEEG.ToInt()
 
         <div class="form-group row @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))? "d-none" : "")">
             <label class="control-label col-sm-4">Diagnosis: </label>
-            <div class="col-sm-8">
+            <div class="col-sm-8">            
                 @Html.TextAreaFor(m => m.cas_billing_diagnosis, new { @class = "form-control", rows = "4" })
                 <div class="error_msg" id="cas_billing_diagnosis-error" style="display:none;">
                     <label>This field is required</label>
@@ -234,12 +233,12 @@ CaseType.RoutineConsultFollowUp.ToInt()
 
             @{
                 var templateTypes = new List<int>()
-                                                            {
-                                                            EntityTypes.StrokeAlertTemplateTpa.ToInt(),
-                                                            EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt(),
-                                                            EntityTypes.StrokeAlertTemplateNoTpa.ToInt(),
-                                                            EntityTypes.StrokeAlertTemplateNoTpaTeleStroke.ToInt()
-                                                            };
+                                                        {
+                                                        EntityTypes.StrokeAlertTemplateTpa.ToInt(),
+                                                        EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt(),
+                                                        EntityTypes.StrokeAlertTemplateNoTpa.ToInt(),
+                                                        EntityTypes.StrokeAlertTemplateNoTpaTeleStroke.ToInt()
+                                                        };
 
                 if (!Model.TemplateEntityType.HasValue || !templateTypes.Contains(Model.TemplateEntityType.Value))
                 {
@@ -311,7 +310,7 @@ CaseType.StatConsult.ToInt()
     </div>
 </div>
 <script>
-    //fillDignosesCode();
+    //fillDignosesCode();  
     var caseBillingCodeEnum = @Html.Raw(TeleSpecialists.BLL.Helpers.Functions.ConvertToJson(typeof(CaseBillingCode)));
     oncaseBillingCodeChange(@Model.cas_billing_bic_key);
     $("#cas_billing_bic_key").off("change").change(function () {
