@@ -1,0 +1,114 @@
+﻿@model TeleSpecialists.BLL.Model.component_access
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/jsTree/themes/default/style.min.css" rel="stylesheet" />
+<label>Please Select Role</label>
+<div class="col-md-4 col-sm-4">
+    @Html.DropDownListFor(model => model.cac_roleid, new SelectList(ViewBag.roles, "Value", "Text"), "Please select", new { @class = "form-control", @id = "cac_roleid", @onchange = "OnRoleChanged(this);" })
+
+    @Html.ValidationMessageFor(model => model.cac_roleid, "", new { @class = "text-danger" })
+</div>
+
+<div style="border:1px solid #c5c5c5;height:auto;max-height:420px;overflow-y:auto;overflow-x:hidden;">
+    <div class="form-group col-12 no-padding" style="margin-top:10px;margin-left:-10px;margin-bottom:-10px;">
+        <div class="col-12">
+            <div class="col-xl-12 tree-Container">
+                <ul id="DropdownClassificationFileTreeID" class="ztree"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jsTree3/jstree.js"></script>
+
+
+<script type="text/javascript">
+    function OnRoleChanged(thisCTRL) {
+        var _selectedRole = $(thisCTRL).val();
+        if ($(thisCTRL).val() == '') {
+            alert("Please select role")
+            // $("#lstOfItemPlaceHoder").html('Please select a role.');
+        } else {
+            $.ajax({
+                type: 'POST',
+                data: { "ID": $(thisCTRL).val() },
+                url: '/MenuAccess/ReturnTreeData',
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    console.log(data);
+                    BindModulesTree(data);
+                    DropdownClassificationFileTree(data);
+                }
+            })
+        }
+    };
+</script>
+
+<script type="text/javascript">
+
+    function BindModulesTree(data) {
+        // treeview settings
+        var setting = {
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+
+      
+    }
+</script>
+
+<script type="text/javascript">
+    function DropdownClassificationFileTree(TreeData) {
+        console.log(TreeData);
+        var resetting = false;
+        $('#DropdownClassificationFileTreeID').jstree({
+            "core": {
+                "multiple": true,
+                "check_callback": false,
+                'themes': {
+                    "responsive": true,
+                    'variant': 'larg',
+                    'stripes': false,
+                    'dots': false,
+                    "data": TreeData
+                }
+            },
+            'checkbox': {
+                three_state: true,
+                cascade: 'none'
+            },
+            "types": {
+                "default": {
+                    "icon": "fa fa-folder icon-state-warning icon-lg"
+                },
+                "file": {
+                    "icon": "fa fa-file icon-state-warning icon-lg"
+                }
+            },
+            "plugins": ["dnd", "state", "types", "sort", "checkbox"]
+        });
+        $('#DropdownClassificationFileTreeID').on('select_node.jstree', function (e, data) {
+
+            if (data.node.children.length > 0) {
+                $('#DropdownClassificationFileTreeID').jstree(true).deselect_node(data.node);
+                $('#DropdownClassificationFileTreeID').jstree(true).open_node(data.node);
+
+            }
+        });
+        $('#DropdownClassificationFileTreeID').jstree(true).settings.core.data = TreeData;
+        $('#DropdownClassificationFileTreeID').jstree(true).refresh();
+        $(".btnDialog").click(function () {
+            $("#dialog").toggle();
+            $("#dialog").dialog();
+        });
+    }
+</script>

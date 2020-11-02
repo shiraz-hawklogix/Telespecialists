@@ -102,6 +102,8 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<Hospital_Protocols> Hospital_Protocols { get; set; }
         public virtual DbSet<Onboarded> Onboardeds { get; set; }
         public virtual DbSet<web2campaign_log> web2campaign_log { get; set; }
+        public virtual DbSet<component_access> component_access { get; set; }
+        public virtual DbSet<component> components { get; set; }
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {
@@ -187,6 +189,15 @@ namespace TeleSpecialists.BLL.Model
                 new ObjectParameter("edate", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<UspGetRCIData_Result>("UspGetRCIData", startDateParameter, edateParameter);
+        }
+    
+        public virtual ObjectResult<sp_getMenuAccess_Result> sp_getMenuAccess(string id)
+        {
+            var idParameter = id != null ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_getMenuAccess_Result>("sp_getMenuAccess", idParameter);
         }
     }
 }

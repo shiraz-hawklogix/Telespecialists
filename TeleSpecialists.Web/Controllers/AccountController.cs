@@ -36,6 +36,7 @@ namespace TeleSpecialists.Controllers
         private readonly UserVerificationService _userVerificationService;
         private readonly user_fcm_notification _user_Fcm_Notification;
         private readonly TokenService _tokenservice;
+        private readonly MenuService _menuService;
         //   private readonly RateService _rateService;
         public AccountController()
         {
@@ -45,6 +46,7 @@ namespace TeleSpecialists.Controllers
             _userVerificationService = new UserVerificationService();
             _user_Fcm_Notification = new user_fcm_notification();
             _tokenservice = new TokenService();
+            _menuService = new MenuService();
             //     _rateService = new RateService();
         }
 
@@ -83,6 +85,8 @@ namespace TeleSpecialists.Controllers
                     var IsApiUser = UserManager.GetRoles(user.Id).Contains(UserRoles.TeleCareApi.ToDescription());
                     if (user.IsActive && user.IsDisable == false && user.IsDeleted == false && !IsApiUser)
                     {
+                        var rolesaccess = _menuService.getMenuAccess(user.Roles.Select(x => x.RoleId).FirstOrDefault());
+                        Session["RoleAccess"] = rolesaccess;
                         //If Password was changed by admin OR user is going to login first time
                         if (ApplicationSetting.aps_secuirty_is_reset_password_required && !user.RequirePasswordReset)
                         {
