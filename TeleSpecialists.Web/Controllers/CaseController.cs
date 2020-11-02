@@ -354,7 +354,7 @@ namespace TeleSpecialists.Controllers
         }
         public ActionResult _AdvanceSearch(PageSource source, bool showFollowUp = true)
         {
-            ViewBag.cas_fac_key = _lookUpService.GetAllFacility("").Select(m => new SelectListItem
+            ViewBag.cas_fac_key = _lookUpService.GetAllActnNonActFacility("").Select(m => new SelectListItem
             {
                 Text = m.fac_name,
                 Value = m.fac_key.ToString()
@@ -879,7 +879,7 @@ namespace TeleSpecialists.Controllers
         public ActionResult Edit(int id, bool isReadOnly = false)
         {
             isCalculateBill = false;
-
+            //_caseService.UpdatecasesByWorkFlowID();
             ViewBag.IsReadOnlyCase = isReadOnly;
             if (User.IsInRole(UserRoles.Finance.ToDescription()))
             {
@@ -2146,15 +2146,15 @@ namespace TeleSpecialists.Controllers
                     facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
                                              .Select(x => x.Facility).ToList();
                 }
-                else if (User.IsInRole(UserRoles.QPS.ToDescription()))
+                else if (User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
                 {
-                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
-                                             .Select(x => x.Facility).ToList();
-                }
-                else if (User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
-                {
-                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
-                    .Select(x => x.Facility).ToList();
+                    facilities = _lookUpService.GetAllActnNonActFacility("")
+                                             .Select(x => x.fac_key).ToList();
+                //}
+                //else if ()
+                //{
+                //    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
+                //    .Select(x => x.Facility).ToList();
                 }
                 var res = _caseGridService.GetCaseLisingPageData(request, userId, facilities); //Getting cases for listing
                 var jsonResult = Json(res, JsonRequestBehavior.AllowGet);
@@ -2190,15 +2190,15 @@ namespace TeleSpecialists.Controllers
                     facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
                                              .Select(x => x.Facility).ToList();
                 }
-                else if (User.IsInRole(UserRoles.QPS.ToDescription()))
+                else if (User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
                 {
-                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
-                                             .Select(x => x.Facility).ToList();
-                }
-                else if (User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
-                {
-                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
-                                             .Select(x => x.Facility).ToList();
+                    facilities = _lookUpService.GetAllActnNonActFacility("")
+                                             .Select(x => x.fac_key).ToList();
+                    //}
+                    //else if (User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
+                    //{
+                    //    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
+                    //                             .Select(x => x.Facility).ToList();
                 }
                 var res = _caseGridService.GetCaseDashboardPageData(request, userId, facilities);
                 var jsonResult = Json(res, JsonRequestBehavior.AllowGet);

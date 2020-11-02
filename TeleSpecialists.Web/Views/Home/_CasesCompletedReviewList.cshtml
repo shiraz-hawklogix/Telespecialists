@@ -1,0 +1,174 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@using TeleSpecialists.Models;
+@using Microsoft.AspNet.Identity;
+@{
+    var loggedInUser = ViewBag.loggedInUser as ApplicationUser;
+
+}
+
+<input type="hidden" id="IsQPSQualityDirectororVPQualityReviewComplete" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) ? 1 : 0)" />
+
+<div class="row mt-3">
+    <div class="col-sm-4 col-xl-4 col-lg-4 col-md-4">
+        <select class="form-control" id="ddlQPSlistRC">
+            @{
+                foreach (var item in ViewBag.listqps)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            }
+
+        </select>
+    </div>
+    <div class="col-8 text-right">
+        <div class="nav-wrapper d-inline-block mt-4 mt-lg-0 statsIndicatorCR">
+            <ul class="nav nav-pills CCR_List">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnlastthreeCR">Last 3 Months</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnlasttwoCR">Last 2 Months</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" id="btnlastCR">Last Month</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12 col-xl-12 col-lg-12 col-md-12">
+        <div id="cases-complete-review-container">
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("#cases-complete-review-container").addClass("d-none");
+        if ($("#IsQPSQualityDirectororVPQualityReviewComplete").val() == "1") {
+            $("#cases-complete-review-container").removeClass("d-none");
+            var QPS = $("#ddlQPSlistRC").val();
+            if (QPS == undefined) {
+                QPS = "";
+            }
+
+            refreshCasesCompletedReviewList(QPS, 'Last Month');
+        }
+
+    })
+
+    $("#ddlQPSlistRC").off('change').change(function () {
+
+        var QPS = $("#ddlQPSlistRC").val();
+        var period = $('.CCR_List').find('.nav-link.active').text()
+        refreshCasesCompletedReviewList(QPS, period);
+    })
+
+    function LoadCasesCompletedReviewList() {
+        var period = $('.CCR_List').find('.nav-link.active').text()
+        var QPS = $("#ddlQPSlistRC").val();
+        if (refreshCasesCompletedReviewList.loadTimeout != undefined)
+            window.clearTimeout(refreshCasesCompletedReviewList.loadTimeout);
+
+        refreshCasesCompletedReviewList.loadTimeout = window.setTimeout(function () { refreshCasesCompletedReviewList(QPS, period) }, 5000);
+    }
+
+    function refreshCasesCompletedReviewList(QPS, period) {
+
+        $("#cases-complete-review-container").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetCasesCompletedReviewList", "Reports")',
+                        contentType: "application/json",
+                        type: "POST",
+                        data: { QPS_Key: QPS, period: period },
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                //serverPaging: true,
+                //serverFiltering: true,
+                //serverSorting: true,
+                //pageSize: GetKendoPageSize("QualityReport", "RecPerPage", true),
+                //page: KendoGet("QualityReport", "page")
+                serverPaging: true,
+                pageSize: 10,
+                serverFiltering: false,
+                serverSorting: true,
+            },
+            width: '100%',
+            pageable: {
+                refresh: true,
+                //pageSizes: true,
+                //pageSize: 10
+                pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+            },
+            groupable: false,
+            filterable: true,
+            sortable: true,
+            resizable: true,
+
+            dataBound: function (e) {
+
+                $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+                //LoadCasesCompletedReviewList();
+                //DoRed();
+            },
+            columns: [
+                {
+                    title: "<span class='font-weight-bold' style='font-size: larger;'>Cases Completed Review</span>",
+                    columns: [
+                        { hidden: true, field: "ColorRed" },
+                        { hidden: true, field: "CaseKey" },
+                        { field: "FacilityName", width: 250, title: "Facility" },
+                        { field: "QPS_Name", width: 185, title: "QPS Assigned" },
+                        { field: "DateOfConsult", width: 185, title: "Date of Consult" },
+                        { title: "TC Case Number", template: "<a class='loadLinkAsync' onclick='AssignTabID.call(this)' title='TC Case Number' href='@Url.Action("Edit", "Case")?id=#= CaseKey#&isReadOnly=#= true#'>#=TC_CaseNumber#</a>", width: 185 },
+                    ]
+                }]
+        });
+    }
+    var AssignTabID = function () {
+        localStorage.clickfromhome = "casespendingreview";
+    }
+    /*
+    function DoRed() {
+        $("#cases-complete-review-container tbody tr").each(function (index, element) {
+            var row = $(element);
+            var Cases = row.find("td:nth-child(1)").text();
+            if (Cases == "true") {
+                row.addClass("text-danger font-weight-bold");
+            }
+        });
+    }
+    */
+    $('.statsIndicatorCR .nav-link').off("click").click(function (e) {
+
+        e.preventDefault();
+        var QPS = $("#ddlQPSlistRC").val();
+        if (refreshCasesCompletedReviewList.loadAllTimeout != undefined)
+            window.clearTimeout(refreshCasesCompletedReviewList.loadAllTimeout);
+        $('.nav.CCR_List>li>a').removeClass('active');
+        $(this).addClass('active');
+        refreshCasesCompletedReviewList(QPS,$(this).text());
+    });
+
+</script>
+

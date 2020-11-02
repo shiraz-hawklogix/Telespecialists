@@ -1439,4 +1439,69 @@ ul.navbar-nav {
         width: 100% !important;
     }
 }
+
+.five-9-phoneBar, #cases-complete-review-container, #cases-complete-review-container table {
+    width: 100%;
+}
+
+    #cases-complete-review-container .tb-container {
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        padding: 4px;
+    }
+
+    #cases-complete-review-container .tb-wrapper {
+        max-height: 280px;
+        overflow-x: auto;
+        max-width: 100%;
+        overflow-y: auto;
+    }
+
+    #cases-complete-review-container .list-item {
+        font-size: 12px;
+        overflow: hidden;
+        line-height: 1.6em;
+        vertical-align: middle;
+        text-overflow: ellipsis;
+        border: 1px solid #ccc;
+    }
+
+        #cases-complete-review-container .list-item .case-start-time {
+            min-width: 75px;
+        }
+/*#cases-complete-review-container table {
+    background-color: #f5f5f5;
+}*/
+
+@media (min-width: 991px) and (max-width: 1440px) {
+    #cases-complete-review-container h5 {
+        font-size: 16px !important;
+    }
+
+    .queue-listing {
+        width: 100% !important;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .five-9-phoneBar, #cases-complete-review-container .card {
+        max-height: 288px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        overflow-y: auto;
+    }
+
+    #cases-complete-review-container h5 {
+        padding: 10px !important;
+    }
+
+    #cases-complete-review-container .list-item {
+        font-size: 14px !important;
+        margin: 0px 0px 0.5rem 0px;
+    }
+
+    .queue-listing {
+        width: 100% !important;
+    }
+}
+
 /*End added by ahmad*/
