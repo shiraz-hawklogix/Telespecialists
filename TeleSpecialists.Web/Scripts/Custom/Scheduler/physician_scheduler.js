@@ -1,4 +1,5 @@
 ﻿var schedulerContentTopScroll = 0;
+var selectedEvents = [];
 
 function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
 
@@ -247,13 +248,15 @@ function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
                 }
             },
             dataBound: function (e) {
+                debugger;
+               
                 $(".km-pane-wrapper").css("position", "relative");
                 var events = $('.k-event-template');               
                 var isDayView = $.trim($(".k-state-selected").data("name")).toLowerCase() == "day";
                 var isMonthView = $.trim($(".k-state-selected").data("name")).toLowerCase() == "month";
                 var isWorkWeekView = $.trim($(".k-state-selected").data("name")).toLowerCase() == "workweek";
                 var isWeekView = $.trim($(".k-state-selected").data("name")).toLowerCase() == "week";
-
+                selectedEvents = e.sender._data;
                 var total = 0;
                 for (var i = 0; i < events.length; i += 1) {
                     var currentEvent = $(events[i]);
@@ -373,8 +376,8 @@ function scheduler_view_range(e) {
 
 
     ScheduleCheckLoad();
-    //var ExportToiCal = $("<button id='ScheduleExportToiCal' class='k-button k-save'><span class='k-icon k-i-calendar'></span>Export to iCal</button>");
-    //$(sch.toolbar).prepend(ExportToiCal);
+    var ExportToiCal = $("<button id='ScheduleExportToiCal' onclick='ExportToiCal();' class='k-button k-save'><span class='k-icon k-i-calendar'></span>Export to iCal</button>");
+    $(sch.toolbar).prepend(ExportToiCal);
 
 }
 //$("#ScheduleExportToExcel").on('click', function () {
@@ -569,6 +572,75 @@ function CloseAlert() {
     $('#bAlertId').hide();
 }
 
+function getRandomString(length) {
+    var randomChars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    var result = '';
+    for (var i = 0; i < length; i++) {
+        result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+    }
+    return result;
+}
+
+function ExportToiCal() {
+    var scheduler = $("#scheduler").data("kendoScheduler");
+    var component = new ICAL.Component(['VCALENDAR', [], []]);
+    component.updatePropertyWithValue('PRODID', '-//Google Inc//Google Calendar 70.9054//EN');
+    component.updatePropertyWithValue('VERSION', '2.0');
+
+    var schedulerEvents = scheduler.dataSource.view().toJSON();
+
+    for (var i = 0; i < schedulerEvents.length; i++) {
+        var schedulerEvent = schedulerEvents[i];
+        var vevent = new ICAL.Component('VEVENT');
+        var event = new ICAL.Event(vevent);
+
+        event.uid = schedulerEvent.recurrenceId ? schedulerEvent.recurrenceId : getRandomString(26);
+        if (schedulerEvent.Title.length == 3) {
+            event.summary = schedulerEvent.title.substring(0, 20);
+        } else {
+            event.summary = schedulerEvent.title.substring(0, 19);
+        }
+        
+        event.description = schedulerEvent.fullName;
+        event.startDate  = ICAL.Time.fromDateTimeString(getISOString(schedulerEvent.start, true));
+        event.endDate = ICAL.Time.fromDateTimeString(getISOString(schedulerEvent.end, true));
+
+        if (schedulerEvent.recurrenceRule) {
+            event.component.addProperty(
+                new ICAL.Property(ICAL.parse.property("RRULE:" + schedulerEvent.recurrenceRule)));
+        }
+
+        if (schedulerEvent.recurrenceException) {
+            event.component.addProperty(
+                new ICAL.Property(ICAL.parse.property("EXDATE:" + schedulerEvent.recurrenceException)));
+        }
+
+        if (schedulerEvent.Id) {
+            event.recurrenceId = ICAL.Time.fromDateTimeString(getISOString(schedulerEvent.start, true));
+        }
+   
+        event.component.addPropertyWithValue("DTSTAMP",
+            ICAL.Time.fromDateTimeString(getISOString(new Date(), true)));
+
+        component.addSubcomponent(vevent);
+    }
+
+    console.log(component.toString());
+
+    kendo.saveAs({
+        dataURI: "data:text/calendar," + component.toString(),
+        fileName: "KendoSchedulerCal_" + getISOString(new Date(), true)  + ".ics"
+    });
+}
+
+function getISOString(date, toUTC) {
+    date = toUTC ? kendo.timezone.convert(date, date.getTimezoneOffset(), "Etc/UTC") : date;
+    return kendo.toString(date, "yyyy-MM-ddTHH:mm:ssZ");
+}
+
+function getTimeZone(timezone) {
+    return timezone.toLowerCase() === "z" ? null : timezone;
+}
 
 $(document).ready(function () {
     ScheduleCheckLoad();
