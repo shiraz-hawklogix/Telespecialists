@@ -625,11 +625,11 @@ function ExportToiCal() {
         component.addSubcomponent(vevent);
     }
 
-    console.log(component.toString());
+    //console.log(component.toString());
 
     kendo.saveAs({
         dataURI: "data:text/calendar," + component.toString(),
-        fileName: "KendoSchedulerCal_" + getISOString(new Date(), true)  + ".ics"
+        fileName: "SchedulerCal_" + getISOString(new Date(), true)  + ".ics"
     });
 }
 
