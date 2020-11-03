@@ -64,7 +64,7 @@
     <input type="hidden" id="hiddenReportText" />
     <input type="hidden" id="hdnUser" value="@(loggedInUser?.Id)" />
     <input type="hidden" id="hdnSystemDateTime" value="@DateTime.Now.ToEST().ToString()" />
-    <input type="hidden" id="TwoFactorAuthUser" value="" />   
+    <input type="hidden" id="TwoFactorAuthUser" value="" />
     @*<input type="hidden" id="IsCredentialingTeamorSuperAdmin" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()) ? 1 : 0)" />
         <input type="hidden" id="IsQPSQualityDirectororVPQuality" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) ? 1 : 0)" />*@
 
@@ -113,7 +113,7 @@
                     <li class="nav-item active ">
                         <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Dashboard", "Physician")">Home <span class="sr-only">(current)</span></a>
                     </li>
-                    
+
                 }
                 else if (!User.IsInRole(UserRoles.Finance.ToDescription()) && !User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) && !User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) && !User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) && !User.IsInRole(UserRoles.AOC.ToDescription()) && !User.IsInRole(UserRoles.CapacityResearcher.ToDescription()) && !User.IsInRole(UserRoles.AOC.ToDescription()))
                 {
@@ -559,22 +559,22 @@
                         </div>
                     }
                     @*<div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3">
-                    @{
-                        if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
-                        {
-                            colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
-                            <div id="Credentials-Expiring-container">
-                            </div>
-                        }
-                        if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()))
-                        {
-                            colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
-                             <div id="cases-pending-review-container">
-                             </div>
-                            }
-                        }
+                            @{
+                                if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
+                                {
+                                    colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+                                    <div id="Credentials-Expiring-container">
+                                    </div>
+                                }
+                                if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()))
+                                {
+                                    colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+                                     <div id="cases-pending-review-container">
+                                     </div>
+                                    }
+                                }
 
-                </div>*@
+                        </div>*@
                 }
                 <div class="@colWidthClass" style="@style" id="async-content-container">
                     <br />  @*class="d-none d-xl-block d-lg-block"*@
@@ -627,8 +627,8 @@
                 <div class="card-header pl-3 font-weight-bold" style="background-color:black;color:white;">
                     <h5><span style="color:white" class="font-weight-bold" id=""></span>User Confirmation</h5>
                     @*<span data-dismiss="modal" class="fa fa-close" style="float: right;margin-top: -23px;color: white;cursor: pointer;">
-                        <span></span>
-                    </span>*@
+                            <span></span>
+                        </span>*@
                 </div>
                 <div class="modal-body" style="overflow-y:auto">
 
@@ -1023,7 +1023,7 @@
         }
 
         ///*@
-        
+
         function OnBoardingData(id, url) {
             var Id = parseInt(id);
 
@@ -1073,7 +1073,7 @@
 
             $("#onboardingmodal").modal('hide');
         })
-    
+
     </script>
 
     @if (Settings.RPCMode != RPCMode.Disabled)
@@ -1081,23 +1081,25 @@
         @Scripts.Render("~/bundles/hubs")
     }
     <div id="processing" class="loading" style="display:none"></div>
-    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-messaging.js"></script>
+    <script src="https://rawgit.com/nwcell/ics.js/master/ics.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
+    @*<script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-messaging.js"></script>*@
     <script>
         // const userObject;
-        const config = {
-            apiKey: "AIzaSyDHC8RJ-uUoWIo3tYa9zzhVhvTxv5NuZF0",
-            authDomain: "telecare-3724e.firebaseapp.com",
-            databaseURL: "https://telecare-3724e.firebaseio.com",
-            projectId: "telecare-3724e",
-            storageBucket: "telecare-3724e.appspot.com",
-            messagingSenderId: "922280291570",
-            appId: "1:922280291570:web:6ce723cfaeeed0f7c8b46b",
-            measurementId: "G-8TWCZJP852"
-        };
-       
+        //const config = {
+        //    apiKey: "AIzaSyDHC8RJ-uUoWIo3tYa9zzhVhvTxv5NuZF0",
+        //    authDomain: "telecare-3724e.firebaseapp.com",
+        //    databaseURL: "https://telecare-3724e.firebaseio.com",
+        //    projectId: "telecare-3724e",
+        //    storageBucket: "telecare-3724e.appspot.com",
+        //    messagingSenderId: "922280291570",
+        //    appId: "1:922280291570:web:6ce723cfaeeed0f7c8b46b",
+        //    measurementId: "G-8TWCZJP852"
+        //};
+
 
         // firebase config production
         //const config = {
@@ -1112,12 +1114,12 @@
         //};
 
 
-        firebase.initializeApp(config);
-        firebase.analytics();
+        //firebase.initializeApp(config);
+        //firebase.analytics();
 
     </script>
-    <script src="~/Scripts/firebase/js/custome.js"></script>
-    @Scripts.Render("~/bundles/firebase")
+    @*<script src="~/Scripts/firebase/js/custome.js"></script>
+        @Scripts.Render("~/bundles/firebase")*@
 </body>
 </html>
 

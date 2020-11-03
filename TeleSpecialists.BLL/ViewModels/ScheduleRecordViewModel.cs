@@ -34,11 +34,17 @@ namespace TeleSpecialists.BLL.ViewModels
         public int physcian_count { get; set; }
     }
 
+    //public class FacilityListDayWise
+    //{
+    //    public DateTime date { get; set; }
+    //    public DateTime Start_time { get; set; }
+    //    public DateTime End_time { get; set; }
+    //    public int Physcian_count { get; set; }
+    //}
+
     public class FacilityListDayWise
     {
-        public DateTime date { get; set; }
-        public DateTime Start_time { get; set; }
-        public DateTime End_time { get; set; }
+        public decimal date { get; set; }
         public int Physcian_count { get; set; }
     }
 }

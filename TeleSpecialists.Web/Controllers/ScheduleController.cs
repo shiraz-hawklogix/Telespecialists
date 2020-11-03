@@ -1042,8 +1042,8 @@ namespace TeleSpecialists.Controllers
                     uss_shift_key = model.ShiftId,
 
                    uss_date_num = Convert.ToInt64(model.Start.Date.Year.ToString() + model.Start.Date.DayOfYear.ToString("000")),
-                uss_time_from_calc_num = Convert.ToInt64(model.Start.Year.ToString() + model.Start.DayOfYear.ToString("000") + model.Start.TimeOfDay.ToString().Replace(":", "").Substring(0, 4).Trim()),
-                uss_time_to_calc_num = Convert.ToInt64(model.End.Year.ToString() + model.End.DayOfYear.ToString("000") + model.End.TimeOfDay.ToString().Replace(":", "").Substring(0, 4).Trim()),
+                   uss_time_from_calc_num = Convert.ToInt64(model.Start.Year.ToString() + model.Start.DayOfYear.ToString("000") + model.Start.TimeOfDay.ToString().Replace(":", "").Substring(0, 4).Trim()),
+                   uss_time_to_calc_num = Convert.ToInt64(model.End.Year.ToString() + model.End.DayOfYear.ToString("000") + model.End.TimeOfDay.ToString().Replace(":", "").Substring(0, 4).Trim()),
 
 
             };
