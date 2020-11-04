@@ -104,11 +104,6 @@ namespace TeleSpecialists.Controllers
         {
             Hospital_Protocols model = new Hospital_Protocols();
             ViewBag.fac_keys = fac_key;
-            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
-                                                  .Select(m => new { Value = m.fac_key, Text = m.fac_name })
-                                                  .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
-                                                  .Where(x => x.Value != fac_key)
-                                                  .ToList();
             var result = RenderPartialViewToString("Edit", model);
             return Json(new { success = true, data = result });
         }
@@ -476,35 +471,6 @@ namespace TeleSpecialists.Controllers
             }
             //return GetViewResult();
         }
-        public ActionResult CopyProtocolTab(int protocolsdid, List<string> facilities)
-        {
-            try
-            {
-                var model = _Protocols.GetDetailForProtocols(protocolsdid);
-
-                foreach (var item in facilities)
-                {
-                    Hospital_Protocols protos = new Hospital_Protocols();
-                    var sortnum = _Protocols.GetSortNumMaxByFacility(item);
-                    protos.ParameterName = model.ParameterName;
-                    protos.ParameterName_Info = model.ParameterName_Info;
-                    protos.ParameterName_Image = model.ParameterName_Image;
-                    protos.Facility_Name = _facilityService.GetFacilityName(item);
-                    protos.Facility_Id = item;
-                    protos.Parameter_Add_Date = DateTime.Now.ToEST();
-                    protos.SortNum = sortnum == null ? 1 : sortnum + 1;
-                    _Protocols.Create(protos);
-                }
-                return Json(true, JsonRequestBehavior.AllowGet);
-
-            }
-            catch (Exception e)
-            {
-                return Json(false, JsonRequestBehavior.AllowGet);
-            }
-
-        }
-
         #region ----- Disposable -----
         private bool disposed = false; // to detect redundant calls
         protected override void Dispose(bool disposing)

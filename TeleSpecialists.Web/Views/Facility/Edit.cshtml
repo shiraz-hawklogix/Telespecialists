@@ -31,7 +31,7 @@
         <div class="col-9">
             <div class="row">
                 <div class="d-inline-block">
-                    <strong>Facility:</strong> <span> @Model.fac_name </span>
+                    <strong>Facility:</strong> <span id="fac-name"> @Model.fac_name </span>
                 </div>
 
             </div>
@@ -332,6 +332,20 @@ else
                 'default': 'Search Facility'
             }
         });
+        
+
+        var facility_name = $('#fac-name').text();
+        debugger;
+        for (var i = 0; i < $('.ms-options ul li').length; i++) {
+            if ($($('.ms-options ul li')[i]).attr('data-search-term') == facility_name.toLowerCase().trim()) {
+                //$($('.ms-options ul li')[i]).css("display", "none")
+                $($('.ms-options ul li')[i]).remove();
+            }
+        }
+
+        @*var currentfacility = '@Model.fac_key';
+        $(".cas_fac_key > option[value='" + currentfacility + "']").remove();*@
+         
             document.title = $("#title-prefix").val() + '@ViewBag.Title';
             $("#fac_stt_key").fillKendoDropDown("/LookUp/GetAll?type=@(UclTypes.State.ToInt())", "ucd_title", "ucd_key", "-- Select --");
             $("#fac_timezone").fillKendoDropDown("/LookUp/GetAllTimeZones", "tmz_name", "tmz_key", "-- Select --");
@@ -413,7 +427,6 @@ else
         GetOnboardingData();
     });
     function GetOnboardingData() {
-        debugger;
         ShowLoading();
         
         var fac_key = '@Model.fac_key';
@@ -471,7 +484,6 @@ else
         });
     }
     function editonboardingData(fac_key, url) {
-        debugger
         if (fac_key == undefined && url == undefined) {
             fac_key = '@Model.fac_key';
             url = "/Facility/EditButton";
@@ -486,7 +498,6 @@ else
 
             },
             success: function (response) {
-                debugger
                 $("#OnBoardedMain").addClass('d-none');
                 $(".AddEditOnBaorded").empty();
                 $(".AddEditOnBaorded").html(response.data);
@@ -561,7 +572,6 @@ else
     }
 
     function editProtocolsData(fac_key, url) {
-        debugger
         if (fac_key == undefined && url == undefined) {
             fac_key = '@Model.fac_key';
             url = "/HospitalProtocols/Edit";
@@ -576,7 +586,6 @@ else
 
             },
             success: function (response) {
-                debugger
                 $("#ProtocolMain").addClass('d-none');
                 $(".AddEditProtocols").empty();
                 $(".AddEditProtocols").html(response.data);

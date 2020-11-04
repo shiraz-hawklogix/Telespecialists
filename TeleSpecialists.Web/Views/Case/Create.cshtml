@@ -13,7 +13,7 @@
 <div class="ajaxForm" id="basic">
     <form method="post" class="form-horizontal" id="createForm" action="@(Url.Action("Create"))">
         <input type="hidden" name="AddNumber" id="AddNumber" value="0">
-        <input type="hidden" name="cas_cancelled_type" id="cas_cancelled_type" />
+        <input type="hidden" name="cas_cancelled_type" id="cas_cancelled_type"/>
         <input type="hidden" name="IsAutoSave" id="IsAutoSave" value="0">
         <input type="hidden" id="five9_intial_utc_time" value="@(Model.cas_time_stamp.HasValue ? Model.cas_time_stamp.Value.FormatDateTime() : "")" />
         <input type="hidden" id="five9_start_time" value="@(Model.cas_time_stamp.HasValue ? Model.cas_time_stamp.Value.FormatDateTime() : "")" />
@@ -127,39 +127,20 @@
 
         });
 
-
+        
         loadFacilityDropdown(@Model.cas_ctp_key);
         function loadFacilityDropdown(cas_ctp) {
             var caseType = cas_ctp;
             if (caseType == null || caseType == undefined) {
                 caseType = @Model.cas_ctp_key;
             }
-            if (caseType == @CaseType.RoutineConsultNew.ToInt()
-                || caseType == @CaseType.RoutineConsultFollowUp.ToInt()
-                || caseType == @CaseType.StatEEG.ToInt()
-                || caseType == @CaseType.RoutineEEG.ToInt()
-                || caseType == @CaseType.LongTermEEG.ToInt())
-
+            if (caseType == @CaseType.RoutineConsultNew.ToInt() 
+                || caseType == @CaseType.RoutineConsultFollowUp.ToInt()  
+                || caseType == @CaseType.StatEEG.ToInt() 
+                || caseType == @CaseType.RoutineEEG.ToInt()  
+                || caseType == @CaseType.LongTermEEG.ToInt() )
             {
                 facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetTeleNeuroFacility?phoneNumber=@Model.cas_ani", "fac_name", "fac_key", "--Select--", function () {
-                    window.setTimeout(function () {
-                        var selectedFacility = $.trim($("#cas_fac_key").val());
-                        if (selectedFacility != "") {
-                            loadFacilityTimeZone(selectedFacility);
-                            showDuplicateCheckPopup(selectedFacility);
-                            GetFacilityCart(selectedFacility);
-                        }
-                    }, 50);
-                });
-                    }
-            else if(caseType == @CaseType.StatConsult.ToInt()
-                || caseType == @CaseType.DrtoDr.ToInt()
-                || caseType == @CaseType.NursetoDr.ToInt()
-                || caseType == @CaseType.TestResults.ToInt()
-                || caseType == @CaseType.RadiologyCallback.ToInt()
-                || caseType == @CaseType.TransferAlert.ToInt())
-            {
-                facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilitiesForOthercasetypes?phoneNumber=@Model.cas_ani", "fac_name", "fac_key", "--Select--", function () {
                     window.setTimeout(function () {
                         var selectedFacility = $.trim($("#cas_fac_key").val());
                         if (selectedFacility != "") {
@@ -312,7 +293,7 @@
 
         enableSaveSend();
     });
-
+   
    function GetFacilityCart(cas_key) {
         $.ajax({
             cache: false,
@@ -397,7 +378,6 @@
     }
 
     function loadPhysicianDropDown(fac_key) {
-        debugger
         var caseTypeValue = "";
         if ($("#cas_ctp_key").val() != null)
             caseTypeValue = $("#cas_ctp_key").val();

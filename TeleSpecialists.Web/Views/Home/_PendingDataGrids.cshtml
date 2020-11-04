@@ -4,15 +4,15 @@
 @using TeleSpecialists.Models;
 @using Microsoft.AspNet.Identity;
 @{
-                /**/
+    /**/
 
-                var loggedInUser = ViewBag.loggedInUser as ApplicationUser;
-                var facility = ViewBag.facilities;
-                ViewBag.Facility = facility;
-                var physicians = ViewBag.physician;
-                ViewBag.physicianss = physicians;
-                var qpslist = ViewBag.QPSLIST;
-                ViewBag.listqps = qpslist;
+    var loggedInUser = ViewBag.loggedInUser as ApplicationUser;
+    var facility = ViewBag.facilities;
+    ViewBag.Facility = facility;
+    var physicians = ViewBag.physician;
+    ViewBag.physicianss = physicians;
+    var qpslist = ViewBag.QPSLIST;
+    ViewBag.listqps = qpslist;
 }
 @*<input type="hidden" id="IsCredentialingTeamorSuperAdmin" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()) ? 1 : 0)" />*@
 @*<input type="hidden" id="IsQPSQualityDirectororVPQuality" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) ? 1 : 0)" />*@
@@ -30,6 +30,12 @@
     {
         //colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
         @Html.Partial("_CasesPendingReviewList")
+    }
+
+    if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()))
+    {
+        //colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+        @Html.Partial("_CasesCompletedReviewList")
     }
 
     if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()))

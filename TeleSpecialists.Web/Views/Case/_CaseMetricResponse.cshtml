@@ -1256,14 +1256,14 @@ new SelectListItem {Text = "20", Value = "20"},
         });
     });
     $(document).ready(function () {
-         if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.MedicalStaff.ToDescription()))' == 'True') {
-             $('.readonly').prop('disabled', true);
-             $('.inpatient').find('input').prop('disabled',true)
-             $('.triage').find('input').prop('disabled',true)
-             $('.ems').find('input').prop('disabled',true)
-             $('.other').find('input[type=checkbox]').prop('disabled', true);
+        if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.MedicalStaff.ToDescription()))' == 'True') {
+            $('.readonly').prop('disabled', true);
+            $('.inpatient').find('input').prop('disabled', true)
+            $('.triage').find('input').prop('disabled', true)
+            $('.ems').find('input').prop('disabled', true)
+            $('.other').find('input[type=checkbox]').prop('disabled', true);
 
-            }
+        }
 
         if ($("#cas_response_review_initiated").is(':checked')) {
             $("#cas_response_case_number").attr("readonly", false);
@@ -1282,6 +1282,7 @@ new SelectListItem {Text = "20", Value = "20"},
                 }
             }
         });
+
         var arrayofrca = [];
         if (@isarival== true) {
             $('.gotVal_rad').prop('checked', true);
@@ -1294,8 +1295,7 @@ new SelectListItem {Text = "20", Value = "20"},
             arrayofrca.push($('.timeFirst').val());
             $('.childtimefirst').show(200);
         }
-        if (@isvideostart==true)
-        {
+        if (@isvideostart== true) {
             $('.videostart').prop('checked', true);
             arrayofrca.push($('.videostart').val());
             $('.childVideoStrt').show(200);

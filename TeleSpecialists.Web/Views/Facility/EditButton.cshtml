@@ -4,18 +4,13 @@
     var fac_id = ViewBag.fac_keys;
 }
 
-<h2>
-    <b>
+<h2><b>
         <center>
             Facility Headers List
         </center>
-    </b>
-</h2>
+    </b></h2>
 
 <div class="pt-1 customGridHeader">
-    <div class="alert alert-success d-none" id="showsuccessmessage" role="alert">
-        Header Copied Successfully
-    </div>
     <div id="users_grid" class="kendo-ui-grid-control" style="width: 96vw !important;">
     </div>
 </div>
@@ -26,51 +21,18 @@
 </div>
 
 
-<div class="modal" id="Copyonboardingmodal">
-    <div class="modal-dialog modal-sm"  style=" max-width:532px; ">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4><b>Copy Onboarding</b></h4>
-                <button type="button" id="btnclosemodal" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="showCopyonboardingTab">
-                    <input type="hidden" id="oboardedid" value="" />
-                    @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control btn-space CopyFacilities", @multiple = "multiple" })
-                    <span id="showerrormessage" class="text-danger d-none">Please Select Facility</span>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a class="btn btn-sm btn-dark text-white" id="btncopyonboardtab">Save</a>
-                <a class="btn btn-sm btn-dark text-white" data-dismiss="modal">Cancel</a>
-            </div>
-        </div>
-    </div>
-</div>
-
 <input type="hidden" value="@ViewBag.fac_keys" id="fac_value" />
 <script>
 
             $(document).ready(loadUserPresenceList);
         $(document).ready(function () {
             document.title = $("#title-prefix").val() + '@ViewBag.Title';
-            $('.CopyFacilities').multiselect({
-                columns: 1,
-                placeholder: 'Select Facility',
-                selectAll: true,
-                search: true,
-                searchOptions: {
-                    'default': 'Search Facility'
-                }
-            });
         });
 
         function loadUserPresenceList()
         {
 
-            //new
+            //new           
             $("#users_grid").kendoGrid({
                 dataSource: {
                     page: KendoGet("Facility", "page"),
@@ -102,7 +64,7 @@
                         data: "Data",
                         total: "Total",
                     },
-
+                   
                     serverPaging: true,
                     serverFiltering: true,
                     serverSorting: true
@@ -130,14 +92,15 @@
                { hidden: true, field: "Onboarded_ID" },
                { field: "SortNum", title: "Sort#", width: '15px' },
                { field: "ParameterName", title: "Header Name", width: '50px' },
-               { field: "ParameterName_Info", title: "Detail", width: '100px', template:"#= htmlDecode(ParameterName_Info) #"},
+               { field: "ParameterName_Info", title: "Detail", width: '120px', template:"#= htmlDecode(ParameterName_Info) #"},
                     { field: "Facility_Name", title: "Facility Name", width: '70px' },
                     { field: "Parameter_Add_Date", title: "Add On Date", width: '20px', template: "#= kendo.toString(kendo.parseDate(Parameter_Add_Date, 'yyyy-MM-dd'), 'MM/dd/yyyy') #" },
                     {
 
-                        title: "Actions", width: '50px', template: "<a class='btn btn-dark btn-sm py-1' title='Edit' href='javascript:;'  onclick='EditOnboardingByID(#=Onboarded_ID#)'>Edit</a> "
-                            + "<a class='btn btn-dark btn-sm py-1 ml-2' title='Remove' href='javascript:;'  onclick='removePhysicianStatus(#=Onboarded_ID#)'>Remove</a>"
-                            + "<a class='btn btn-dark btn-sm py-1 ml-2' title='Copy' href='javascript:;'  onclick='CopysingleTab(#=Onboarded_ID#)'>Copy</a>"
+                        title: "Actions", width: '30px', template: "<a class='btn btn-dark btn-sm py-1' title='Edit' href='javascript:;'  onclick='EditOnboardingByID(#=Onboarded_ID#)'>Edit</a> "
+                             + "<a class='btn btn-dark btn-sm py-1' title='Remove' href='javascript:;'  onclick='removePhysicianStatus(#=Onboarded_ID#)'>Remove</a>"
+
+
                     }
                 ]
             });
@@ -176,7 +139,6 @@
         var url = "/Facility/EditOnboarded/" + onboardid;
         ShowLoading();
         $.get(url, function (response) {
-            
             //$("#OnBoardedMain").addClass('d-none');
             $(".AddEditOnBaorded").empty();
             $(".AddEditOnBaorded").html(response);
@@ -187,44 +149,5 @@
     }
     $("#btnbackpage").off('click').click(function () {
         GetOnboardingData();
-    });
-    function CopysingleTab(Id) {
-        var onboardid = parseInt(Id);
-        $("#oboardedid").val(onboardid);
-        $("#Copyonboardingmodal").modal('show');
-    }
-
-    $("#btncopyonboardtab").off('click').click(function () {
-        var onboardid = $("#oboardedid").val();
-        var facilities = $(".CopyFacilities").val();
-        if (facilities != "") {
-            var url = "/Facility/CopyOnboardTab"
-            ShowLoading();
-            $.ajax({
-                type: "POST",
-                url: url,
-                dataType: 'json',
-                data: { onboardid: onboardid, facilities: facilities },
-                error: function (xhr, error) {
-
-                },
-                success: function (response) {
-                    $("#Copyonboardingmodal").modal('hide');
-                    HideLoading();
-                    $(".CopyFacilities").multiselect('reset');
-                    $("#showsuccessmessage").removeClass('d-none');
-                    setTimeout(function () {
-                        $("#showsuccessmessage").addClass('d-none');
-                    }, 3000);
-
-                }
-
-            });
-        } else {
-            $("#showerrormessage").removeClass('d-none');
-            setTimeout(function () {
-                $("#showerrormessage").addClass('d-none');
-            }, 3000);
-        }
     });
 </script>
