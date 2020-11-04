@@ -156,6 +156,7 @@ namespace TeleSpecialists.BLL.Service
                                   && m.AspNetUser.IsDeleted == false
                                   && m.fap_is_active
                                   && m.fap_is_on_boarded
+                                  && m.fap_hide == false
                                   && (applyScheduleFilter == false || schedule.Contains(m.fap_user_key))
                                   select m;
 
@@ -343,6 +344,7 @@ namespace TeleSpecialists.BLL.Service
                              m.fap_user_key == phy_key
                              && m.fap_is_active
                              && m.fap_is_on_boarded
+                             && !m.fap_hide
                              && physicianLicenseStates.Contains(m.facility.fac_stt_key)
                              && (phoneNumber == "" || (facilityContact.cnt_is_active && facilityContact.cnt_is_deleted == false && facilityContact.cnt_mobile_phone == phoneNumber))
                              select m.facility;
@@ -406,7 +408,7 @@ namespace TeleSpecialists.BLL.Service
                 facilityPhsycian.fap_onboarded_date = DateTime.Now.ToEST();
                 facilityPhsycian.fap_onboarded_by_name = entity.fap_onboarded_by_name;
                 facilityPhsycian.fap_onboarded_date = DateTime.Now;
-
+                facilityPhsycian.fap_hide = entity.fap_hide;
                 _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
                 if (commitChange)
                 {

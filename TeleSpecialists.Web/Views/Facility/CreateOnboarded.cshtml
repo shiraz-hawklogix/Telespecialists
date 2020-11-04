@@ -7,7 +7,7 @@
 }
 <style>
     body {
-        font-size:15px !important;
+        font-size:16px !important;
     }
     /*.shiraz {
         margin: 0;
@@ -314,8 +314,9 @@
 </script>
 <script>
     function validateFormData() {
+        debugger
         var result = true;
-        var facilities = $('.Facilities').find(":selected").val();
+        var facilities = $('.facility_keys').val();
         
         if (facilities.length == 0) {
             result = false;
@@ -363,6 +364,7 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
+                    debugger
                     $('#ParameterName').val('');
                     $("#message").html("");
                     $(".bthhide").trigger("click");
