@@ -335,10 +335,11 @@ else
         
 
         var facility_name = $('#fac-name').text();
-
+        debugger;
         for (var i = 0; i < $('.ms-options ul li').length; i++) {
             if ($($('.ms-options ul li')[i]).attr('data-search-term') == facility_name.toLowerCase().trim()) {
-                $($('.ms-options ul li')[i]).css("display", "none")
+                //$($('.ms-options ul li')[i]).css("display", "none")
+                $($('.ms-options ul li')[i]).remove();
             }
         }
 
