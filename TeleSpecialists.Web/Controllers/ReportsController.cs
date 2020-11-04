@@ -69,7 +69,7 @@ namespace TeleSpecialists.Controllers
         }
         public ActionResult PhysicianCredentials()
         {
-            ViewBag.Facilities = _lookUpService.GetAllActnNonActFacility(null)
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
                                              .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                              .ToList()
                                              .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
@@ -83,7 +83,7 @@ namespace TeleSpecialists.Controllers
         }
         public ActionResult FacilityCredentials()
         {
-            ViewBag.Facilities = _lookUpService.GetAllActnNonActFacility(null)
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
                                              .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                              .ToList()
                                              .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
@@ -127,7 +127,7 @@ namespace TeleSpecialists.Controllers
         }
         public ActionResult FacilityBillingReport()
         {
-            ViewBag.Facilities = _lookUpService.GetAllActnNonActFacility("")
+            ViewBag.Facilities = _lookUpService.GetAllFacility("")
                                                .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                .ToList()
                                                .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
@@ -362,7 +362,7 @@ namespace TeleSpecialists.Controllers
             //}
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -404,7 +404,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -510,7 +510,7 @@ namespace TeleSpecialists.Controllers
             //}
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -552,7 +552,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
             var Convertworkflowtype = workflowtype.ToList();
             Convertworkflowtype.RemoveAt(1);
@@ -662,7 +662,7 @@ namespace TeleSpecialists.Controllers
             //}
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -704,7 +704,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -810,7 +810,7 @@ namespace TeleSpecialists.Controllers
             //}
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -852,7 +852,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -958,7 +958,7 @@ namespace TeleSpecialists.Controllers
             }
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -1000,7 +1000,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -1106,7 +1106,7 @@ namespace TeleSpecialists.Controllers
             //}
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -1148,7 +1148,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
             var Convertworkflowtype = workflowtype.ToList();
             Convertworkflowtype.RemoveAt(1);
@@ -1258,7 +1258,7 @@ namespace TeleSpecialists.Controllers
             //}
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -1300,7 +1300,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
             var Convertworkflowtype = workflowtype.ToList();
             Convertworkflowtype.RemoveAt(1);
@@ -1410,7 +1410,7 @@ namespace TeleSpecialists.Controllers
             //}
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -1452,7 +1452,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -1543,7 +1543,7 @@ namespace TeleSpecialists.Controllers
             }
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -1585,7 +1585,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -1685,7 +1685,7 @@ namespace TeleSpecialists.Controllers
             }
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -1725,7 +1725,7 @@ namespace TeleSpecialists.Controllers
             }
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -1771,7 +1771,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -1862,7 +1862,7 @@ namespace TeleSpecialists.Controllers
             }
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -1906,7 +1906,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -2013,7 +2013,7 @@ namespace TeleSpecialists.Controllers
             }
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -2062,7 +2062,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -2169,7 +2169,7 @@ namespace TeleSpecialists.Controllers
             }
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -2218,7 +2218,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -2306,7 +2306,7 @@ namespace TeleSpecialists.Controllers
                 {
                     if (state[0] == 0)
                     {
-                        var facList = _lookUpService.GetAllActnNonActFacility(null)
+                        var facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name });
                         return Json(facList, JsonRequestBehavior.AllowGet);
                     }
@@ -2349,7 +2349,7 @@ namespace TeleSpecialists.Controllers
             }
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -2391,7 +2391,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -2726,20 +2726,6 @@ namespace TeleSpecialists.Controllers
             }
         }
 
-        public ActionResult GetCasesCompletedReviewList(DataSourceRequest request, List<string> QPS_Key, string period)
-        {
-            try
-            {
-                var result = _reportService.GetCasesCompletedReviewList(request, QPS_Key, period);
-                return JsonMax(result, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
         public ActionResult GetPhysicianVolumetricReport(DataSourceRequest request, QualityMetricsViewModel model)
         {
             try
@@ -2769,20 +2755,6 @@ namespace TeleSpecialists.Controllers
             try
             {
                 var result = _reportService.GetOperationsOutliersList(request, period);
-                return JsonMax(result, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        public ActionResult PhysicianColors(int cas_key,string physician)
-        {
-            try
-            {
-                var result = _reportService.PhysicianColors(cas_key, physician);
                 return JsonMax(result, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -2902,7 +2874,7 @@ namespace TeleSpecialists.Controllers
 
         public ActionResult FacilityReportByBilling()
         {
-            ViewBag.Facilities = _lookUpService.GetAllActnNonActFacility(null)
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
                                               .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                               .ToList()
                                               .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
@@ -2935,7 +2907,7 @@ namespace TeleSpecialists.Controllers
         #region Facility Settings Report added by Axim
         public ActionResult facilitySettingsReport()
         {
-            ViewBag.Facilities = _lookUpService.GetAllActnNonActFacility(null)
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
                                               .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                               .ToList()
                                               .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
@@ -2997,7 +2969,7 @@ namespace TeleSpecialists.Controllers
 
         public ActionResult FacilityBillingWithMetrics()
         {
-            ViewBag.Facilities = _lookUpService.GetAllActnNonActFacility(null)
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
                                               .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                               .ToList()
                                               .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
@@ -3051,7 +3023,7 @@ namespace TeleSpecialists.Controllers
             //}
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -3090,7 +3062,7 @@ namespace TeleSpecialists.Controllers
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
-                                          Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
+                                          Value = m.ToDescription()
                                       }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
@@ -3352,7 +3324,7 @@ namespace TeleSpecialists.Controllers
         #region Cancelled Cases Report Added by axim
         public ActionResult CancelledCasesReport()
         {
-            ViewBag.Facilities = _lookUpService.GetAllActnNonActFacility(null)
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
                                               .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                               .ToList()
                                               .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
@@ -3410,7 +3382,7 @@ namespace TeleSpecialists.Controllers
 
         public ActionResult CWHReport()
         {
-            ViewBag.Facilities = _lookUpService.GetAllActnNonActFacility(null)
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
                                  .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                  .ToList()
                                  .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });

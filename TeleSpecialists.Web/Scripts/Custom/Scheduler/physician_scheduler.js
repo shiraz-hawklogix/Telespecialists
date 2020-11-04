@@ -1,5 +1,4 @@
 ﻿var schedulerContentTopScroll = 0;
-var selectedEvents = [];
 
 function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
 
@@ -42,9 +41,9 @@ function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
                         contentType: "application/json",
                         type: "POST",
                         data: function () {
-
+                            
                             var scheduler = $("#scheduler").data("kendoScheduler");
-                            var filterModel = { startDate: null, endDate: null, physicians: null, SchType: null };
+                            var filterModel = { startDate: null, endDate: null, physicians: null, SchType : null};                           
                             filterModel.startDate = formateDate(scheduler.view().startDate());
                             filterModel.endDate = formateDate(scheduler.view().endDate());
                             filterModel.physicians = checkMultiSelctVal($("#comboBox").data("kendoMultiSelect").value());
@@ -59,7 +58,7 @@ function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
                         url: '/Schedule/Update',
                         type: "POST",
                         data: function () {
-                            var filterModel = { SchType: null };
+                            var filterModel = {SchType: null };
                             filterModel.SchType = $('#rdValueId').val();
                             return filterModel;
                         },
@@ -72,7 +71,7 @@ function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
                                 else {
                                     schedulerContentTopScroll = $('.k-scheduler-content').scrollTop();
                                     //console.log("Scroll update: " + schedulerContentTopScroll);
-                                    refreshScheduler();
+                                    refreshScheduler();                                   
                                 }
                             }
                             HideLoading();
@@ -86,7 +85,7 @@ function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
                             filterModel.SchType = $('#rdValueId').val();
                             return filterModel;
                         },
-                        complete: function (e) {
+                        complete: function (e) {                            
                             if (e != null) {
                                 if (e.status == '500')
                                     $(".k-edit-form-container, .km-scroll-container").find("#validationSummary").empty().showBSDangerAlert("", "Error! Please try again.");
@@ -95,7 +94,7 @@ function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
                                 else {
                                     schedulerContentTopScroll = $('.k-scheduler-content').scrollTop();
                                     //console.log("Scroll create: " + schedulerContentTopScroll);
-                                    refreshScheduler();
+                                    refreshScheduler();                                                                       
                                 }
                             }
                             HideLoading();
@@ -248,15 +247,13 @@ function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
                 }
             },
             dataBound: function (e) {
-                debugger;
-
                 $(".km-pane-wrapper").css("position", "relative");
-                var events = $('.k-event-template');
+                var events = $('.k-event-template');               
                 var isDayView = $.trim($(".k-state-selected").data("name")).toLowerCase() == "day";
                 var isMonthView = $.trim($(".k-state-selected").data("name")).toLowerCase() == "month";
                 var isWorkWeekView = $.trim($(".k-state-selected").data("name")).toLowerCase() == "workweek";
                 var isWeekView = $.trim($(".k-state-selected").data("name")).toLowerCase() == "week";
-                selectedEvents = e.sender._data;
+
                 var total = 0;
                 for (var i = 0; i < events.length; i += 1) {
                     var currentEvent = $(events[i]);
@@ -264,7 +261,7 @@ function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
                     var modifiedHtml = initialText.replaceAll("#div#", "<div>").replaceAll("#/div#", "</div>");
                     if (!isDayView) {
                         modifiedHtml = modifiedHtml.replaceAll("<div>", "<div style='display:none'>");
-                    }
+                    }                   
                     currentEvent.html(modifiedHtml);
                 }
                 //added by Bilal
@@ -314,7 +311,7 @@ function initScheduler(isAdmin, currentDate, isMobileDevice, height) {
                         }
                     }
                 }
-
+               
                 scheduler_view_range(e);
             },
             resources: [
@@ -347,7 +344,7 @@ function scheduler_view_range(e) {
     $(sch.toolbar).children().remove("#ScheduleExportToExcel");
     $(sch.toolbar).children().remove("#ScheduleExportToiCal");
     $(sch.toolbar).children().remove("#SchedulePublish");
-
+   
     var isGetAll = false;
     if (e.sender._data.length > 0 && $('#rdValueId').val() == "Physician" && $('#rdSuperAdminValueId').val() == "SuperAdmin" && $.trim($(".k-state-selected").data("name")).toLowerCase() == "month") {
         if (e.sender._data.find(x => x.scheduleGetAll == false) == undefined) {
@@ -368,18 +365,16 @@ function scheduler_view_range(e) {
             var PublishSchedual = $("<a role='button' id='SchedulePublish' disabled  class='k-button btn-published'><span class='fa fa-check-square-o'></span> Published</a>");
             $(sch.toolbar).prepend(PublishSchedual);
         }
-    }
-
-
+    } 
+   
+  
     var ExportToExcel = $("<a role='button' id='ScheduleExportToExcel' href='/Schedule/ExportSchedule?startDate=" + startDate + " &endDate=" + endDate + "&Physicians=" + physicians + "' class='k-button k-excel'><span class='k-icon k-i-file-excel'></span>Export to Excel</a>");
     $(sch.toolbar).prepend(ExportToExcel);
 
-    if ($('#IsPhysician').val() == "1") {
-        var ExportToiCal = $("<button id='ScheduleExportToiCal' onclick='ExportToiCal();' class='k-button k-save'><span class='k-icon k-i-calendar'></span>Export to iCal</button>");
-        $(sch.toolbar).prepend(ExportToiCal);
-    }
-    ScheduleCheckLoad();
 
+    ScheduleCheckLoad();
+    //var ExportToiCal = $("<button id='ScheduleExportToiCal' class='k-button k-save'><span class='k-icon k-i-calendar'></span>Export to iCal</button>");
+    //$(sch.toolbar).prepend(ExportToiCal);
 
 }
 //$("#ScheduleExportToExcel").on('click', function () {
@@ -546,7 +541,7 @@ function PublishSchedule() {
                 $('#alertMessage').html('Schedule of <b>' + scheduleMonthDetails + '</b> published.');
                 $('#bAlertId').show();
                 $('#SchedulePublish').attr("disabled", true);
-                $('#SchedulePublish').removeAttr("onclick");
+                $('#SchedulePublish').removeAttr("onclick");            
                 $('#SchedulePublish').removeClass('btn-un-published');
                 $('#SchedulePublish').addClass('btn-published');
                 $('#SchedulePublish').html('<span class="fa fa-check-square-o"></span> Published');
@@ -563,7 +558,7 @@ function PublishSchedule() {
                 $("#bAlertId").delay(5000).slideUp(200, function () {
                     $(this).hide();
                 });
-            }, 5000);
+            }, 5000); 
         },
         error: function (data) {
         }
@@ -574,76 +569,6 @@ function CloseAlert() {
     $('#bAlertId').hide();
 }
 
-function getRandomString(length) {
-    var randomChars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    var result = '';
-    for (var i = 0; i < length; i++) {
-        result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
-    }
-    return result;
-}
-
-function ExportToiCal() {
-    var scheduler = $("#scheduler").data("kendoScheduler");
-    var component = new ICAL.Component(['VCALENDAR', [], []]);
-    component.updatePropertyWithValue('PRODID', '-//Google Inc//Google Calendar 70.9054//EN');
-    component.updatePropertyWithValue('VERSION', '2.0');
-
-    var schedulerEvents = scheduler.dataSource.view().toJSON();
-
-    for (var i = 0; i < schedulerEvents.length; i++) {
-        var schedulerEvent = schedulerEvents[i];
-        var vevent = new ICAL.Component('VEVENT');
-        var event = new ICAL.Event(vevent);
-
-        event.uid = schedulerEvent.recurrenceId ? schedulerEvent.recurrenceId : getRandomString(26);
-        if (schedulerEvent.Title.length == 3) {
-            event.summary = schedulerEvent.title.substring(0, 20);
-        } else {
-            event.summary = schedulerEvent.title.substring(0, 19);
-        }
-
-        event.description = schedulerEvent.fullName;
-        event.startDate = ICAL.Time.fromDateTimeString(getISOString(schedulerEvent.start, true));
-        event.endDate = ICAL.Time.fromDateTimeString(getISOString(schedulerEvent.end, true));
-
-        if (schedulerEvent.recurrenceRule) {
-            event.component.addProperty(
-                new ICAL.Property(ICAL.parse.property("RRULE:" + schedulerEvent.recurrenceRule)));
-        }
-
-        if (schedulerEvent.recurrenceException) {
-            event.component.addProperty(
-                new ICAL.Property(ICAL.parse.property("EXDATE:" + schedulerEvent.recurrenceException)));
-        }
-
-        if (schedulerEvent.Id) {
-            event.recurrenceId = ICAL.Time.fromDateTimeString(getISOString(schedulerEvent.start, true));
-        }
-
-        event.component.addPropertyWithValue("DTSTAMP",
-            ICAL.Time.fromDateTimeString(getISOString(new Date(), true)));
-
-        component.addSubcomponent(vevent);
-    }
-
-    //console.log(component.toString());
-
-    kendo.saveAs({
-        dataURI: "data:text/calendar," + component.toString(),
-        fileName: "ScheduleiCal_" + getISOString(new Date(), true).replace(/[_\W]+/g, "") + ".ics"
-
-    });
-}
-
-function getISOString(date, toUTC) {
-    date = toUTC ? kendo.timezone.convert(date, date.getTimezoneOffset(), "Etc/UTC") : date;
-    return kendo.toString(date, "yyyy-MM-ddTHH:mm:ssZ");
-}
-
-function getTimeZone(timezone) {
-    return timezone.toLowerCase() === "z" ? null : timezone;
-}
 
 $(document).ready(function () {
     ScheduleCheckLoad();

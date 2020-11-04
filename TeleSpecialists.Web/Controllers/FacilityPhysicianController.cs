@@ -9,7 +9,6 @@ using Microsoft.AspNet.Identity;
 using TeleSpecialists.BLL.Helpers;
 using System.Collections.Generic;
 using System.Data.Entity.Validation;
-using TeleSpecialists.BLL.ViewModels;
 
 namespace TeleSpecialists.Controllers
 {
@@ -452,12 +451,8 @@ namespace TeleSpecialists.Controllers
             return Json(new { success = false, data = string.Join("<br/>", this.GetModalErrors().Values) });
         }
 
-
-        public ActionResult Update(PhysicianViewModel model, string SchType)
-        {
-            _facilityPhysicianService.updatePhysicianPassword(model, true);
-            return View();
-        }
+  
+   
         public ActionResult SetPhyPendingOnboardindFacDate()
         {
             int result = _facilityPhysicianService.SetPhyPendingOnboardindFacDate();

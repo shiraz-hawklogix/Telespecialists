@@ -148,6 +148,7 @@ new SelectListItem { Value="168", Text = "1 Week" }
 <script>
     $("#physicianForm").off("submit").submit(function (e) {
         e.preventDefault();
+        debugger
         var TableData = [];
         $.each($(".Facilities option:selected"), function () {
             var fackey = $(this).val();

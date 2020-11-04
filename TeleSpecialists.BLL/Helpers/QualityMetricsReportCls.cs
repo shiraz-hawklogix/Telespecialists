@@ -12,9 +12,6 @@ namespace TeleSpecialists.BLL.Helpers
         public int hospitals { get; set; }
         public TimeSpan _meantime { get; set; }
         public TimeSpan _mediantime { get; set; }
-        public string  Navigator { get; set; }
-        public string timeframe { get; set; }
-        public string NavigatorID { get; set; }
         //public List<Guid> hospitalid { get; set; }
     }
 }

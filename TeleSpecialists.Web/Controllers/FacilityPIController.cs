@@ -43,7 +43,7 @@ namespace TeleSpecialists.Controllers
             }
             else
             {
-                var facList = _lookUpService.GetAllActnNonActFacility(null)
+                var facList = _lookUpService.GetAllFacility(null)
                                             .Select(m => new SelectListItem
                                             {
                                                 Value = m.fac_key.ToString(),
@@ -97,7 +97,7 @@ namespace TeleSpecialists.Controllers
             }
             else
             {
-                facList = _lookUpService.GetAllActnNonActFacility(null)
+                facList = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
@@ -341,7 +341,7 @@ namespace TeleSpecialists.Controllers
                 }
                 else
                 {
-                    var facList = _lookUpService.GetAllActnNonActFacility(null)
+                    var facList = _lookUpService.GetAllFacility(null)
                                                 .Select(m => new { fac_key = m.fac_key, fac_name = m.fac_name });
                     return Json(facList, JsonRequestBehavior.AllowGet);
                 }

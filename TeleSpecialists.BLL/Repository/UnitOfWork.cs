@@ -138,8 +138,6 @@ namespace TeleSpecialists.BLL.Repository
         private IFacilityQuestionnaireContactRespository _facilityQuestionnaireContactRespository;
         private IFacilityRateRepository _facilityRateRepository;
         private IFacilityAvailabilityRateRepository _facilityAvailabilityRateRepository;
-        private IMenuData _menuRepository;
-        private IMenuAccessData _menuAccessRepository;
 
         public IQueryable<AspNetUser> ApplicationUsers
         {
@@ -240,28 +238,7 @@ namespace TeleSpecialists.BLL.Repository
                 return _aspNetUsersPasswordResetRepository;
             }
         }
-        public IMenuData MenuRepository
-        {
-            get
-            {
-                if (this._menuRepository == null)
-                {
-                    this._menuRepository = new MenuRepository(context);
-                }
-                return _menuRepository;
-            }
-        }
-        public IMenuAccessData MenuAccessRepository
-        {
-            get
-            {
-                if (this._menuAccessRepository == null)
-                {
-                    this._menuAccessRepository = new MenuAccessRepository(context);
-                }
-                return _menuAccessRepository;
-            }
-        }
+
         public IFacilityRepository FacilityRepository
         {
             get

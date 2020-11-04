@@ -45,6 +45,7 @@
         <EntityTypeShape EntityType="DataModel.physician_status_snooze" Width="1.5" PointX="6" PointY="62.125" />
         <EntityTypeShape EntityType="DataModel.physician_status_snooze_option" Width="1.5" PointX="3.75" PointY="77.375" />
         <EntityTypeShape EntityType="DataModel.rca_counter_measure" Width="1.5" PointX="17.25" PointY="52.5" />
+        <EntityTypeShape EntityType="DataModel.token" Width="1.5" PointX="3" PointY="154" />
         <EntityTypeShape EntityType="DataModel.ucl" Width="1.5" PointX="1.5" PointY="84.125" />
         <EntityTypeShape EntityType="DataModel.ucl_data" Width="1.5" PointX="3.75" PointY="82.875" />
         <EntityTypeShape EntityType="DataModel.MDStaffFacility" Width="1.5" PointX="6.75" PointY="13.75" />
@@ -130,6 +131,7 @@
         <AssociationConnector Association="DataModel.FK_post_acute_care_users_AspNetUsers" />
         <AssociationConnector Association="DataModel.FK_Rate_Rate" />
         <AssociationConnector Association="DataModel.FK_resource_scheduler_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_token_AspNetUsers" />
         <AssociationConnector Association="DataModel.FK_user_login_verify_User_Id" />
         <AssociationConnector Association="DataModel.FK_user_schedule_nhalert_AspNetUsers" />
         <AssociationConnector Association="DataModel.FK_user_schedule_sleep_AspNetUsers" />
@@ -137,11 +139,6 @@
         <EntityTypeShape EntityType="DataModel.Hospital_Protocols" Width="1.5" PointX="0.75" PointY="16.75" />
         <EntityTypeShape EntityType="DataModel.Onboarded" Width="1.5" PointX="18.75" PointY="0.75" />
         <EntityTypeShape EntityType="DataModel.web2campaign_log" Width="1.5" PointX="18.375" PointY="4.75" />
-        <EntityTypeShape EntityType="DataModel.component_access" Width="1.5" PointX="21.625" PointY="11.75" />
-        <EntityTypeShape EntityType="DataModel.component" Width="1.5" PointX="19.375" PointY="11" />
-        <AssociationConnector Association="DataModel.FK_ComponentAccess_Component_Id" />
-        <EntityTypeShape EntityType="DataModel.token" Width="1.5" PointX="3" PointY="110.875" />
-        <AssociationConnector Association="DataModel.FK_token_AspNetUsers" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
