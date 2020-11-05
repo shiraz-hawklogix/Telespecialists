@@ -1449,11 +1449,6 @@ namespace TeleSpecialists.Controllers
         public JsonResult GetRootRecord(int id)
         {
             var GetRecord = _rootCauseService.GetDetail(id);
-            foreach(var item in GetRecord)
-            {
-                item.rca_proposed_due_date = item.rca_proposed_due_date.Value.ToEST();
-                item.rca_completed_date = item.rca_completed_date.Value.ToEST();
-            }
 
             List<rca_counter_measure_model> _list = new List<rca_counter_measure_model>();
             rca_counter_measure_model obj;
