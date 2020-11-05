@@ -2956,7 +2956,26 @@ namespace TeleSpecialists.Controllers
         {
             try
             {
-                var result = _reportService.GetUserPresence(request, Physicians, startDate, endDate, ReportType);
+                    var result = _reportService.GetUserPresence(request, Physicians, startDate, endDate, ReportType);
+                    return JsonMax(/*new { Data = result, Total = result.Count()}*/result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult GetUserPresenceGraphReport(DataSourceRequest request,
+                                                      string Physicians,
+                                                      DateTime startDate
+                                                      )
+        {
+            try
+            {
+                
+                var result = _reportService.GetUserPresenceGraph(request, Physicians, startDate);
                 return JsonMax(/*new { Data = result, Total = result.Count()}*/result, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)

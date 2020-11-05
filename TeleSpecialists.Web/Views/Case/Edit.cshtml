@@ -1668,6 +1668,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 if (@isReadOnlyCase.ToString().ToLower()) {
                     $("#activetab").val('#metricResponse');
                 }
+                checkBillingRevisedCode();
                 performCaseCompletion("0");
                 return;
             }
@@ -1688,7 +1689,7 @@ EntityTypes.StateAlertTemplate.ToInt()
              if (@isReadOnlyCase.ToString().ToLower()) {
                  readOnlyAllFields();
             }
-            //checkBillingRevisedCode();
+            checkBillingRevisedCode();
             // temporary disabling it, to exclude it from production deployment
             submitCaseChanges(); // temporary direct call
             //if (checkCaseAlreadyUpdated) {
@@ -1715,8 +1716,8 @@ EntityTypes.StateAlertTemplate.ToInt()
             var billingCode = $("#cas_billing_bic_key3").val();
             if (billingCode !== "") {
                 $('#cas_billing_bic_key').val(billingCode);//.change();
-                $('#cas_billing_bic_key_id').val(billingCode);//.change();
                 $('#cas_billing_bic_key').change();
+                $('#cas_billing_bic_key_id').val(billingCode);//.change();
                 $('#cas_billing_bic_key_id').change();
             }
         }
@@ -1792,10 +1793,10 @@ EntityTypes.StateAlertTemplate.ToInt()
                tabToShow = "#generalTABLink";
                generalTab = false;
             }
-            if (!validatepremorbidFields(true)) {
-                tabToShow = "#premorbidTabLink";
-                premorbidTab = false;
-            }
+            //if (!validatepremorbidFields(true)) {
+            //    tabToShow = "#premorbidTabLink";
+            //    premorbidTab = false;
+            //}
 
             if (tabToShow !== null && tabToShow !== "") {
                 $(tabToShow).tab("show");
@@ -3072,8 +3073,6 @@ EntityTypes.StateAlertTemplate.ToInt()
                         if (!@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) && !@(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
                             onLoadCompleteCode();
                         }
-
-
                     });
                 }
 
@@ -3909,16 +3908,17 @@ EntityTypes.StateAlertTemplate.ToInt()
     })
         //TCARE 559 End
     $('#cas_billing_bic_key3').change(function () {
+        debugger
         $("#cas_billing_bic_key").removeAttr('disabled');
         var oldBillingkey = $("#cas_billing_bic_key").val();
-        console.log('biiling key is ' + oldBillingkey);
+        //console.log('biiling key is ' + oldBillingkey);
         $('#key_revised').val(oldBillingkey);
         var billingCode = $(this).val();
         if (billingCode !== "") {
             $('#cas_billing_bic_key').val(billingCode);//.change();
-            $('#cas_billing_bic_key_id').val(billingCode);//.change();
             $('#cas_billing_bic_key').change();
-            $('#cas_billing_bic_key_id').change();
+            //$('#cas_billing_bic_key_id').val(billingCode);//.change();
+            //$('#cas_billing_bic_key_id').change();
         }
             $('#lblRevised').html('Revised Billing Code Will Update the Billing Code!');
         });

@@ -285,7 +285,7 @@ namespace TeleSpecialists.BLL.Service
                 PhysicianBillingByShiftViewModel obj = new PhysicianBillingByShiftViewModel();
                 DateTime dt = (DateTime)item.cas_physician_assign_date;
                 obj.AssignDate = dt.ToString("M/d/yyy");//DBHelper.FormatDateTime(DbFunctions.TruncateTime(dt).Value, false);//dt.ToString("MM/dd/yyyy");
-                var isExist = scheduleList.Where(x => x.AssignDate == obj.AssignDate).FirstOrDefault();
+                var isExist = scheduleList.Where(x => x.AssignDate == obj.AssignDate && x.PhysicianKey == item.cas_phy_key).FirstOrDefault();
                 if(isExist != null)
                 {
                     obj.Schedule = isExist.Schedule;

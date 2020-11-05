@@ -1037,8 +1037,6 @@ namespace TeleSpecialists.BLL.Service
                             from accepted in _unitOfWork.CaseAssignHistoryRepository.Query().Where(x => x.cah_action == "Accepted" && ca.cas_key == x.cah_cas_key).OrderByDescending(x => x.cah_created_date).Take(1).DefaultIfEmpty()
                             */
 
-
-
                         from waitingToAccept in _unitOfWork.CaseAssignHistoryRepository.Query()
 
                             //from waitingToAccept in _unitOfWork.CaseAssignHistoryRepository.Query().Where(x => x.cah_cas_key == ca.cas_key).Take(1)
@@ -1119,7 +1117,6 @@ namespace TeleSpecialists.BLL.Service
             }
 
             #endregion
-
 
             #region ----- Calculations -----
 
@@ -1209,7 +1206,6 @@ namespace TeleSpecialists.BLL.Service
             });
 
             #endregion
-
 
             #region ----- Advanced Search -----
 
@@ -1337,13 +1333,10 @@ namespace TeleSpecialists.BLL.Service
             return query.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
 
-
-
         public DataSourceResult GetQualityMetrics(DataSourceRequest request, QualityMetricsViewModel model, string facilityAdminId)
         {
             using (var context = new Model.TeleSpecialistsContext())
             {
-
                 context.Configuration.AutoDetectChangesEnabled = false;
                 context.Configuration.ProxyCreationEnabled = false;
                 context.Configuration.LazyLoadingEnabled = false;
@@ -1439,7 +1432,6 @@ namespace TeleSpecialists.BLL.Service
                 #endregion
 
                 #endregion
-
 
                 #region ----- Calculations -----
                 var patientType = PatientType.Inpatient.ToInt();
@@ -1575,7 +1567,6 @@ namespace TeleSpecialists.BLL.Service
                 });
 
                 #endregion
-
 
                 #region ----- Advanced Search -----
 
@@ -1769,49 +1760,46 @@ namespace TeleSpecialists.BLL.Service
             List<UserPresenceListings> UsersList = new List<UserPresenceListings>();
             UserPresenceListings obj;
             //var status = String.Join(",", UserStatus);
-            var status = UserStatus[0].ToString();
-            while (startTime <= endTime)
+            if (UserStatus != null)
             {
-                var SpStartTime = startTime;
-                var SpEndTime = startTime.AddDays(1);
-
-                //for (int i = 0; i < UserStatus.Count; i++)
-                //{
-                UsersList = _unitOfWork.SqlQuery<UserPresenceListings>(string.Format("Exec usp_UserPresence_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}',@reportType='{3}'", SpStartTime, SpEndTime, status, ReportType)).ToList();
-                foreach (var item in UsersList)
+                while (startTime <= endTime)
                 {
-                    obj = new UserPresenceListings();
-                    obj.Id = item.Id;
-                    obj.CreatedDate = item.CreatedDate;
-                    obj.Physician = item.Physician;
-                    obj.Available = item.Available;
-                    //obj.AvailableS = string.Format("{0:00}:{1:00}", obj.Available / 60, obj.Available % 60);
-                    obj.AvailableS = string.Format("{0:D2}:{1:D2}:{2:D2}", (item.Available / 3600), ((item.Available % 3600) / 60), item.Available % 60);
-                    obj.TPA = item.TPA;
-                    //obj.TPAS = string.Format("{0:00}:{1:00}", item.TPA / 3600, (item.TPA % 3600) / 60);
-                    obj.TPAS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.TPA / 3600, (item.TPA % 3600) / 60, item.TPA % 60);
-                    obj.StrokeAlert = item.StrokeAlert;
-                    //obj.StrokeAlertS = string.Format("{0:00}:{1:00}", item.StrokeAlert / 60, item.StrokeAlert % 60);
-                    obj.StrokeAlertS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.StrokeAlert / 3600, (item.StrokeAlert % 3600) / 60, item.StrokeAlert % 60);
-                    obj.Rounding = item.Rounding;
-                    //obj.RoundingS = string.Format("{0:00}:{1:00}", item.Rounding / 60, item.Rounding % 60);
-                    obj.RoundingS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.Rounding / 3600, (item.Rounding % 3600) / 60, item.Rounding % 60);
-                    obj.STATConsult = item.STATConsult;
-                    //obj.STATConsultS = string.Format("{0:00}:{1:00}", item.STATConsult / 60, item.STATConsult % 60);
-                    obj.STATConsultS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.STATConsult / 3600, (item.STATConsult % 3600) / 60, item.STATConsult % 60);
-                    obj.Break = item.Break;
-                    //obj.BreakS = string.Format("{0:00}:{1:00}", item.Break / 60, item.Break % 60);
-                    obj.BreakS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.Break / 3600, (item.Break % 3600) / 60, item.Break % 60);
-                    _list.Add(obj);
+                    var SpStartTime = startTime;
+                    var SpEndTime = startTime.AddDays(1);
+                    for (int i = 0; i < UserStatus.Count; i++)
+                    {
+                        var status = UserStatus[i].ToString();
+                        UsersList = _unitOfWork.SqlQuery<UserPresenceListings>(string.Format("Exec usp_UserPresence_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}',@reportType='{3}'", SpStartTime, SpEndTime, status, ReportType)).ToList();
+                        foreach (var item in UsersList)
+                        {
+                            obj = new UserPresenceListings();
+                            obj.Id = item.Id;
+                            obj.date = item.date;
+                            obj.CreatedDate = item.CreatedDate;
+                            obj.Physician = item.Physician;
+                            obj.Available = item.Available;
+                            obj.AvailableS = string.Format("{0:D2}:{1:D2}:{2:D2}", (item.Available / 3600), ((item.Available % 3600) / 60), item.Available % 60);
+                            obj.TPA = item.TPA;
+                            obj.TPAS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.TPA / 3600, (item.TPA % 3600) / 60, item.TPA % 60);
+                            obj.StrokeAlert = item.StrokeAlert;
+                            obj.StrokeAlertS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.StrokeAlert / 3600, (item.StrokeAlert % 3600) / 60, item.StrokeAlert % 60);
+                            obj.Rounding = item.Rounding;
+                            obj.RoundingS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.Rounding / 3600, (item.Rounding % 3600) / 60, item.Rounding % 60);
+                            obj.STATConsult = item.STATConsult;
+                            obj.STATConsultS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.STATConsult / 3600, (item.STATConsult % 3600) / 60, item.STATConsult % 60);
+                            obj.Break = item.Break;
+                            obj.BreakS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.Break / 3600, (item.Break % 3600) / 60, item.Break % 60);
+                            _list.Add(obj);
+                        }
+                    }
+
+                    startTime = startTime.AddDays(1);
                 }
-                // }
-
-                startTime = startTime.AddDays(1);
             }
-
             var Final_list = _list.Select(x => new
             {
                 x.Id,
+                x.date,
                 x.CreatedDate,
                 x.Physician,
                 x.AvailableS,
@@ -1825,10 +1813,10 @@ namespace TeleSpecialists.BLL.Service
             return Final_list.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
 
-        public DataSourceResult GetUserPresenceGraph(DataSourceRequest request, List<string> UserStatus, DateTime startTime, DateTime endTime)
+        public DataSourceResult GetUserPresenceGraph(DataSourceRequest request, string UserStatus, DateTime startTime)
         {
            
-               var UsersList = _unitOfWork.SqlQuery<UserPresenceListings>(string.Format("Exec usp_UserPresence_Graph_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}'", startTime, endTime, UserStatus[0])).ToList();
+            var UsersList = _unitOfWork.SqlQuery<UserPresenceGraph>(string.Format("Exec usp_UserPresence_Graph_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}'", startTime,startTime, UserStatus)).ToList();
 
             var final_list = UsersList.AsQueryable();
 
@@ -4125,8 +4113,8 @@ namespace TeleSpecialists.BLL.Service
                             from accepted in context.case_assign_history.Where(x => x.cah_action == "Accepted" && ca.cas_key == x.cah_cas_key).OrderByDescending(x => x.cah_created_date).Take(1).DefaultIfEmpty()
                             from waitingToAccept in context.case_assign_history.Where(x => x.cah_action == "Waiting to Accept" && ca.cas_key == x.cah_cas_key).OrderByDescending(x => x.cah_created_date).Take(1).DefaultIfEmpty()
 
-                            where ca.cas_is_active == true
-
+                            where ca.cas_is_active == true && DbFunctions.TruncateTime(ca.cas_created_date) >= DbFunctions.TruncateTime(model.StartDate) &&
+                                                         DbFunctions.TruncateTime(ca.cas_created_date) <= DbFunctions.TruncateTime(model.EndDate)
                             select (new
                             {
                                 ca,
@@ -4140,19 +4128,21 @@ namespace TeleSpecialists.BLL.Service
                                 callerSource = (ca.cas_caller_source_text == "" ? (caller_source != null ? caller_source.ucd_description : "") : ca.cas_caller_source_text)
                             });
 
+               // var test = cases.ToList();
+
                 #region ----- Filters -----
 
-                if (model.IncludeTime)
-                {
-                    cases = cases.Where(x => x.ca.cas_created_date >= model.StartDate && x.ca.cas_created_date <= model.EndDate);
-                }
-                else
-                {
-                    cases = cases.Where(x => DbFunctions.TruncateTime(x.ca.cas_created_date) >= DbFunctions.TruncateTime(model.StartDate) &&
-                                             DbFunctions.TruncateTime(x.ca.cas_created_date) <= DbFunctions.TruncateTime(model.EndDate));
-                }
+                //if (model.IncludeTime)
+                //{
+                //    cases = cases.Where(x => x.ca.cas_created_date >= model.StartDate && x.ca.cas_created_date <= model.EndDate);
+                //}
+                //else
+                //{
+                //    cases = cases.Where(x => DbFunctions.TruncateTime(x.ca.cas_created_date) >= DbFunctions.TruncateTime(model.StartDate) &&
+                //                             DbFunctions.TruncateTime(x.ca.cas_created_date) <= DbFunctions.TruncateTime(model.EndDate));
+                //}
 
-
+                //var test = cases.ToList();
 
                 if (model.WorkFlowType != null)
                     cases = cases.Where(m => model.WorkFlowType.Contains((m.ca.cas_patient_type.HasValue ? m.ca.cas_patient_type.Value : -1)) && m.ca.cas_ctp_key == (int)CaseType.StrokeAlert);
@@ -4239,7 +4229,7 @@ namespace TeleSpecialists.BLL.Service
 
                 query = query.OrderBy(m => m.handle_time);
 
-                var test = query.ToList();
+                var queryList = query.ToList();
 
                 List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
                 string guids = "";
@@ -4250,7 +4240,7 @@ namespace TeleSpecialists.BLL.Service
                         QualityMetricsReportCls cls = new QualityMetricsReportCls();
                         List<double> _meanlist = new List<double>();
                         List<double> _medianlist = new List<double>();
-                        List<string> handletime = test.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
+                        List<string> handletime = queryList.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
                         int count = 0;
                         if (handletime.Count > 0)
                         {
@@ -4291,7 +4281,7 @@ namespace TeleSpecialists.BLL.Service
                         cls.hospitals = count;
                         cls._meantime = _meantime;
                         cls._mediantime = _mediantime;
-                        cls.Navigator = test.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.navigator).ToList().FirstOrDefault();
+                        cls.Navigator = queryList.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.navigator).ToList().FirstOrDefault();
                         cls.NavigatorID = model.Physicians[i];
                         if (model.Facilities != null)
                         {
@@ -4330,7 +4320,6 @@ namespace TeleSpecialists.BLL.Service
                 context.Configuration.LazyLoadingEnabled = false;
 
                 var cases = from ca in context.cases
-
 
                             where ca.cas_is_active == true
 
