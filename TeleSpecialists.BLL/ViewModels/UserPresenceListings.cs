@@ -10,6 +10,7 @@ namespace TeleSpecialists.BLL.ViewModels
     {
         public string Id { get; set; }
         public string CreatedDate { get; set; }
+        public string date { get; set; }
         public string Physician { get; set; }
         public int Available { get; set; }
         public string AvailableS { get; set; }
@@ -24,4 +25,13 @@ namespace TeleSpecialists.BLL.ViewModels
         public int Break { get; set; }
         public string BreakS { get; set; }
     }
+    public class UserPresenceGraph {
+        public string Id { get; set; }
+        public string CreatedDate { get; set; }
+        //public string date { get; set; }
+        public string Physician { get; set; }
+        public string StatusName { get; set; }
+        public int diff { get; set; }
+    }
+
 }
