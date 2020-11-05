@@ -141,7 +141,7 @@ namespace TeleSpecialists.Controllers
                         //DateTime dddd = startDate.AddDays(endDate.Day);
                         //DateTime middleDate = startDate.AddDays((endDate.Day) / 2);
                         //int month = (startDate.Month + endDate.Month) / 2;
-                        int month = startDate.AddDays(20).Month;
+                        int month = startDate.AddDays(10).Month;
                         var MonthList = _res.Where(u => u.ScheduleDate.Month == month).ToList();
                         if (MonthList.Count > 0)
                         {
@@ -1042,8 +1042,8 @@ namespace TeleSpecialists.Controllers
                     uss_shift_key = model.ShiftId,
 
                    uss_date_num = Convert.ToInt64(model.Start.Date.Year.ToString() + model.Start.Date.DayOfYear.ToString("000")),
-                uss_time_from_calc_num = Convert.ToInt64(model.Start.Year.ToString() + model.Start.DayOfYear.ToString("000") + model.Start.TimeOfDay.ToString().Replace(":", "").Substring(0, 4).Trim()),
-                uss_time_to_calc_num = Convert.ToInt64(model.End.Year.ToString() + model.End.DayOfYear.ToString("000") + model.End.TimeOfDay.ToString().Replace(":", "").Substring(0, 4).Trim()),
+                   uss_time_from_calc_num = Convert.ToInt64(model.Start.Year.ToString() + model.Start.DayOfYear.ToString("000") + model.Start.TimeOfDay.ToString().Replace(":", "").Substring(0, 4).Trim()),
+                   uss_time_to_calc_num = Convert.ToInt64(model.End.Year.ToString() + model.End.DayOfYear.ToString("000") + model.End.TimeOfDay.ToString().Replace(":", "").Substring(0, 4).Trim()),
 
 
             };

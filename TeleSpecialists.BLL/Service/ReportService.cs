@@ -1825,6 +1825,17 @@ namespace TeleSpecialists.BLL.Service
 
             return Final_list.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
+
+        public DataSourceResult GetUserPresenceGraph(DataSourceRequest request, List<string> UserStatus, DateTime startTime, DateTime endTime)
+        {
+           
+               var UsersList = _unitOfWork.SqlQuery<UserPresenceListings>(string.Format("Exec usp_UserPresence_Graph_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}'", startTime, endTime, UserStatus[0])).ToList();
+
+            var final_list = UsersList.AsQueryable();
+
+            return final_list.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+        }
+
         #endregion
 
         #region Quality Report by Ahmad junaid
@@ -4025,7 +4036,7 @@ namespace TeleSpecialists.BLL.Service
                 #endregion
 
                 query = query.OrderBy(m => m.on_screen_time);
-
+                List<QualityMetricsReportCls> final = new List<QualityMetricsReportCls>();
                 List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
                 string guids = "";
 
@@ -4122,6 +4133,7 @@ namespace TeleSpecialists.BLL.Service
                             {
                                 ca,
                                 navigator = ca.cas_created_by_name,
+                                navigatorID = ca.cas_created_by,
                                 waiting_to_accept_date = waitingToAccept.cah_created_date_utc,
                                 acceptedInfo_date = accepted.cah_created_date_utc,
                                 billingCode = billing_code != null ? billing_code.ucd_title : "",
@@ -4220,7 +4232,7 @@ namespace TeleSpecialists.BLL.Service
                     gender = x.ca.cas_metric_patient_gender != null && x.ca.cas_metric_patient_gender != "" ? x.ca.cas_metric_patient_gender == "F" ? "Female" : "Male" : "",
                     facility = (x.ca.facility != null && !String.IsNullOrEmpty(x.ca.facility.fac_name)) ? x.ca.facility.fac_name : "",
                     x.navigator,
-
+                    x.navigatorID,
                     handle_time = DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_stamp_time),
                     handle_time_cmp = DBHelper.DiffSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_stamp_time),
                 });
@@ -4229,73 +4241,83 @@ namespace TeleSpecialists.BLL.Service
 
                 query = query.OrderBy(m => m.handle_time);
 
+                var test = query.ToList();
+
                 List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
                 string guids = "";
-
-                QualityMetricsReportCls cls = new QualityMetricsReportCls();
-                List<double> _meanlist = new List<double>();
-                List<double> _medianlist = new List<double>();
-                List<string> handletime = query.Select(x => x.handle_time).ToList();
-                int count = 0;
-                if (handletime.Count > 0)
+                if (model.Physicians != null)
                 {
-                    foreach (var item in handletime)
+                    for (int i = 0; i < model.Physicians.Count; i++)
                     {
-                        if (item != "")
+                        QualityMetricsReportCls cls = new QualityMetricsReportCls();
+                        List<double> _meanlist = new List<double>();
+                        List<double> _medianlist = new List<double>();
+                        List<string> handletime = test.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
+                        int count = 0;
+                        if (handletime.Count > 0)
                         {
-                            var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
-                            _meanlist.Add(time);
-                            _medianlist.Add(time);
-                            count++;
+                            foreach (var item in handletime)
+                            {
+                                if (item != "")
+                                {
+                                    var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
+                                    _meanlist.Add(time);
+                                    _medianlist.Add(time);
+                                    count++;
+                                }
+                            }
                         }
-                    }
-                }
-                TimeSpan _meantime = new TimeSpan();
-                TimeSpan _mediantime = new TimeSpan();
-                if (_meanlist.Count > 0)
-                {
-                    double mean = _meanlist.Average();
-                    _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
-                }
-                if (_medianlist.Count > 0)
-                {
-                    int numbercount = _medianlist.Count();
-                    int halfindex = _medianlist.Count() / 2;
-                    var sortednumbers = _medianlist.OrderBy(x => x);
-                    double median;
-                    if ((numbercount % 2) == 0)
-                    {
-                        median = ((sortednumbers.ElementAt(halfindex) + sortednumbers.ElementAt(halfindex - 1))) / 2;
-                    }
-                    else
-                    {
-                        median = sortednumbers.ElementAt(halfindex);
-                    }
-                    _mediantime = TimeSpan.FromSeconds(Convert.ToDouble(median));
-                }
-                cls.hospitals = count;
-                cls._meantime = _meantime;
-                cls._mediantime = _mediantime;
-                result.Add(cls);
-                if (model.Facilities != null)
-                {
-                    foreach (var guid in model.Facilities)
-                    {
-                        guids += guid + ",";
-                    }
-                }
+                        TimeSpan _meantime = new TimeSpan();
+                        TimeSpan _mediantime = new TimeSpan();
+                        if (_meanlist.Count > 0)
+                        {
+                            double mean = _meanlist.Average();
+                            _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
+                        }
+                        if (_medianlist.Count > 0)
+                        {
+                            int numbercount = _medianlist.Count();
+                            int halfindex = _medianlist.Count() / 2;
+                            var sortednumbers = _medianlist.OrderBy(x => x);
+                            double median;
+                            if ((numbercount % 2) == 0)
+                            {
+                                median = ((sortednumbers.ElementAt(halfindex) + sortednumbers.ElementAt(halfindex - 1))) / 2;
+                            }
+                            else
+                            {
+                                median = sortednumbers.ElementAt(halfindex);
+                            }
+                            _mediantime = TimeSpan.FromSeconds(Convert.ToDouble(median));
+                        }
+                        cls.hospitals = count;
+                        cls._meantime = _meantime;
+                        cls._mediantime = _mediantime;
+                        cls.Navigator = test.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.navigator).ToList().FirstOrDefault();
+                        cls.NavigatorID = model.Physicians[i];
+                        if (model.Facilities != null)
+                        {
+                            foreach (var guid in model.Facilities)
+                            {
+                                guids += guid + ",";
+                            }
+                        }
 
-                guids = guids.TrimEnd(',');
-
-                string timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
+                        guids = guids.TrimEnd(',');
+                        cls.timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
+                        result.Add(cls);
+                    }
+                }
                 var finalresult = result.Select(x => new
                 {
                     id = guids,
+                    Navigator = x.Navigator,
+                    NavigatorID = x.NavigatorID,
                     hospitalname = x.hospitals,
                     mean = (string.Format("{0:00}:{1:00}:{2:00}", (x._meantime.Hours + x._meantime.Days * 24), x._meantime.Minutes, x._meantime.Seconds)),
                     median = (string.Format("{0:00}:{1:00}:{2:00}", (x._mediantime.Hours + x._mediantime.Days * 24), x._mediantime.Minutes, x._mediantime.Seconds)),
-                    timecycle = timeframe
-                }).AsQueryable();
+                    timecycle = x.timeframe
+                }).Where(x => x.hospitalname != 0).OrderBy(x => x.Navigator).AsQueryable();
 
                 return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
             }
@@ -7097,6 +7119,11 @@ namespace TeleSpecialists.BLL.Service
                 List<string> meanlist = new List<string>();
                 List<string> medianlist = new List<string>();
                 int count = 0;
+                if (model.Physicians != null && model.Physicians.Count > 0)
+                {
+                    if (model.Physicians[0] != string.Empty)
+                        cases = cases.Where(m => model.Physicians.Contains(m.ca.cas_created_by));
+                }
                 if (model.Facilities != null && model.Facilities.Count > 0)
                 {
                     if (model.Facilities[0] != Guid.Empty)
@@ -7152,7 +7179,7 @@ namespace TeleSpecialists.BLL.Service
                     if (model.BillingCode != null)
                         cases1 = cases1.Where(m => m.ca.cas_billing_bic_key.HasValue && model.BillingCode.Contains(m.ca.cas_billing_bic_key.Value));
                     if (model.Physicians != null)
-                        cases1 = cases1.Where(m => model.Physicians.Contains(m.ca.cas_phy_key));
+                        cases1 = cases1.Where(m => model.Physicians.Contains(m.ca.cas_created_by));
 
                     if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
                     {

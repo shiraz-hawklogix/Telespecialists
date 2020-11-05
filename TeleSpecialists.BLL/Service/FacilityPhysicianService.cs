@@ -7,6 +7,8 @@ using System.Data.Entity;
 using TeleSpecialists.BLL.Helpers;
 using System.Collections.Generic;
 using TeleSpecialists.BLL.ViewModels;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace TeleSpecialists.BLL.Service
 {
@@ -157,7 +159,9 @@ namespace TeleSpecialists.BLL.Service
                                   && (applyScheduleFilter == false || schedule.Contains(m.fap_user_key))
                                   select m;
 
-            var busyPhysicianIds = getBusyPhysicians(physiciansQuery.Select(m => m.AspNetUser.Id).ToList());
+            var busyPhysicianIds = getBusyPhysicians(fac_key.ToString(), currentDate);
+
+            //var busyPhysicianIds = getBusyPhysicians(physiciansQuery.Select(m => m.AspNetUser.Id).ToList());
 
             var physicians = physiciansQuery.Select(m => new
             {
@@ -389,15 +393,20 @@ namespace TeleSpecialists.BLL.Service
             _unitOfWork.Save();
             _unitOfWork.Commit();
         }
+
         public void Edit(facility_physician entity, bool commitChange = true)
         {
 
             var facilityPhsycian = _unitOfWork.FacilityPhysicianRepository.Query().Where(x => x.fap_key == entity.fap_key).FirstOrDefault();
-            if(facilityPhsycian != null)
+            if (facilityPhsycian != null)
             {
                 facilityPhsycian.fap_UserName = entity.fap_UserName;
                 facilityPhsycian.fap_is_on_boarded = entity.fap_is_on_boarded;
                 facilityPhsycian.fap_hide = entity.fap_hide;
+                facilityPhsycian.fap_onboarded_by = entity.fap_onboarded_by;
+                facilityPhsycian.fap_onboarded_date = DateTime.Now.ToEST();
+                facilityPhsycian.fap_onboarded_by_name = entity.fap_onboarded_by_name;
+                facilityPhsycian.fap_onboarded_date = DateTime.Now;
                 _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
                 if (commitChange)
                 {
@@ -406,6 +415,7 @@ namespace TeleSpecialists.BLL.Service
                 }
             }
         }
+     
         public void EditForMultiple(IEnumerable<facility_physician> entity)
         {
             _unitOfWork.FacilityPhysicianRepository.UpdateRange(entity);
@@ -493,6 +503,17 @@ namespace TeleSpecialists.BLL.Service
                                       select fac;
 
             return availableFacilities;
+        }
+
+        private List<string> getBusyPhysicians(string fac_key, DateTime CurrentDate)
+        {
+            List<string> result = new List<string>();
+
+            var sp_fac_key = new SqlParameter("fac_key", SqlDbType.VarChar) { Value = fac_key };
+            var sp_current_date = new SqlParameter("CurrentDate", SqlDbType.DateTime) { Value = CurrentDate };
+            result = _unitOfWork.ExecuteStoreProcedure<string>("sp_get_busy_physicians_ids @fac_key, @CurrentDate", sp_fac_key, sp_current_date).ToList();
+
+            return result;
         }
 
         private List<string> getBusyPhysicians(List<string> physiciansIds)
@@ -592,6 +613,21 @@ namespace TeleSpecialists.BLL.Service
             }).OrderBy(x => x.username).AsQueryable();
 
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+        }
+        public void updatePhysicianPassword(PhysicianViewModel model, bool commitChange = true)
+        {
+            var facilityPhsycian = _unitOfWork.FacilityPhysicianRepository.Query().Where(x => x.fap_key == model.id).FirstOrDefault();
+            if (facilityPhsycian != null)
+            {
+                facilityPhsycian.fap_UserName = model.userpassword;
+                _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
+            }
+            if (commitChange)
+            {
+                _unitOfWork.Save();
+                _unitOfWork.Commit();
+            }
+
         }
     }
 }

@@ -1282,7 +1282,7 @@ new SelectListItem {Text = "20", Value = "20"},
                 }
             }
         });
-        debugger
+
         var arrayofrca = [];
         if (@isarival== true) {
             $('.gotVal_rad').prop('checked', true);
@@ -1456,6 +1456,7 @@ new SelectListItem {Text = "20", Value = "20"},
                     $.each(data, function (key, value) {
                         ArrFinal.push({ Id: value.rca_rootcause_id, RootCause: value.rca_root_cause, ProposedCountermeasure: value.rca_proposed_countermeasure, ResponsibleParty: value.rca_responsible_party, ProposedDueDate: value.rca_proposed_due_date, CompletedDate: value.rca_completed_date, RootId: value.rca_Id })
                     });
+                    debugger;
                     DisplayTable(ArrFinal);
                     DisableCounterForPhyAndPatner();
                 },
