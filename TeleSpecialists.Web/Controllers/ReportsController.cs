@@ -2778,19 +2778,19 @@ namespace TeleSpecialists.Controllers
             }
         }
 
-        public ActionResult PhysicianColors(int cas_key,string physician)
-        {
-            try
-            {
-                var result = _reportService.PhysicianColors(cas_key, physician);
-                return JsonMax(result, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
-            }
-        }
+        //public ActionResult PhysicianColors(int cas_key,string physician)
+        //{
+        //    try
+        //    {
+        //        var result = _reportService.PhysicianColors(cas_key, physician);
+        //        return JsonMax(result, JsonRequestBehavior.AllowGet);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+        //        return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+        //    }
+        //}
 
         #endregion
 

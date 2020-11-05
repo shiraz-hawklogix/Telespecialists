@@ -45,5 +45,16 @@ namespace TeleSpecialists.BLL.ViewModels
         public string CallBack_Response_Time { get; set; }
         public DateTime Created_Date { get; set; }
     }
-    
+
+
+    public class UserColorOutliers
+    {
+        public int psl_cas_key { get; set; }
+        public string UserInitial { get; set; }
+
+        public string psl_status_color { get; set; }
+
+        public string psl_status_name { get; set; }
+
+    }
 }

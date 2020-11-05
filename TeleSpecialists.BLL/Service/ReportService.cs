@@ -6022,36 +6022,47 @@ namespace TeleSpecialists.BLL.Service
 
                 List<OperationsOutliers> _list = new List<OperationsOutliers>();
                 OperationsOutliers obj;
-                foreach (var item in cases)
+                var result = cases.Where(x => (x.ResponseTime > 10 && x.casetypeid == 9) || (x.CallBackResponseTime > 15 && x.casetypeid == 10)).ToList();
+                string casekey = string.Join(",", result.Select(x => x.cas_key).ToList());
+
+                List<UserColorOutliers> ColorList = _unitOfWork.SqlQuery<UserColorOutliers>(string.Format("Exec sp_get_case_color_outliers @casekey = '{0}'", casekey)).ToList();
+                foreach (var item in result)
                 {
-                    if (item.ResponseTime > 10 && item.casetypeid == 9)
+
+                    obj = new OperationsOutliers();
+                    obj.CaseKey = item.cas_key;
+                    obj.CaseNumber = item.case_number;
+                    obj.CaseType = (item.casetypeid == 9) ? "Stroke Alert" : "STAT Consult";
+                    obj.StartTime = item.start_time;
+                    obj.FacilityName = item.fac_name;
+                    obj.Physician_Initials = item.physician;
+                    obj.Physician_Status = PhysicianColors(item.cas_key, item.physician, ColorList);
+                    if (item.casetypeid == 9)
                     {
-                        obj = new OperationsOutliers();
-                        obj.CaseKey = item.cas_key;
-                        obj.CaseNumber = item.case_number;
-                        obj.CaseType = "Stroke Alert";
-                        obj.StartTime = item.start_time;
-                        obj.FacilityName = item.fac_name;
-                        obj.Physician_Initials = item.physician;
-                        obj.Physician_Status = PhysicianColors(item.cas_key, item.physician);
                         obj.TS_Response_Time = item.TS_ResponseTime;
-                        obj.Created_Date = item.cas_created_date;
-                        _list.Add(obj);
                     }
-                    else if (item.CallBackResponseTime > 15 && item.casetypeid == 10)
+                    else
                     {
-                        obj = new OperationsOutliers();
-                        obj.CaseKey = item.cas_key;
-                        obj.CaseNumber = item.case_number;
-                        obj.CaseType = "STAT Consult";
-                        obj.StartTime = item.start_time;
-                        obj.FacilityName = item.fac_name;
-                        obj.Physician_Initials = item.physician;
-                        obj.Physician_Status = PhysicianColors(item.cas_key, item.physician);
                         obj.CallBack_Response_Time = item.CallBack_Response;
-                        obj.Created_Date = item.cas_created_date;
-                        _list.Add(obj);
                     }
+                    //obj.TS_Response_Time = (item.casetypeid == 9) ? item.TS_ResponseTime : item.CallBack_Response;
+                    obj.Created_Date = item.cas_created_date;
+                    _list.Add(obj);
+
+                    //else if (item.CallBackResponseTime > 15 && item.casetypeid == 10)
+                    //{
+                    //    obj = new OperationsOutliers();
+                    //    obj.CaseKey = item.cas_key;
+                    //    obj.CaseNumber = item.case_number;
+                    //    obj.CaseType = "STAT Consult";
+                    //    obj.StartTime = item.start_time;
+                    //    obj.FacilityName = item.fac_name;
+                    //    obj.Physician_Initials = item.physician;
+                    //    obj.Physician_Status = PhysicianColors(item.cas_key, item.physician, ColorList);
+                    //    obj.CallBack_Response_Time = item.CallBack_Response;
+                    //    obj.Created_Date = item.cas_created_date;
+                    //    _list.Add(obj);
+                    //}
                 }
 
                 var finalresult = _list.OrderByDescending(x => x.Created_Date).AsQueryable();
@@ -6059,47 +6070,57 @@ namespace TeleSpecialists.BLL.Service
             }
         }
 
-        public string PhysicianColors(int cas_key, string physician)
+        public string PhysicianColors(int cas_key, string physician, List<UserColorOutliers> ColorList)
         {
-            using (var context = new Model.TeleSpecialistsContext())
+            //using (var context = new Model.TeleSpecialistsContext())
+            //{
+
+            //context.Configuration.AutoDetectChangesEnabled = false;
+            //context.Configuration.ProxyCreationEnabled = false;
+            //context.Configuration.LazyLoadingEnabled = false;
+            //var phy_initials = physician.Split('/').ToList();
+            //var cases = from userlog in _unitOfWork.PhysicianStatusLogRepository.Query()
+            //            where userlog.psl_cas_key == cas_key
+            //            join phy_status in _unitOfWork.PhysicianStatusRepository.Query() on userlog.psl_phs_key equals phy_status.phs_key into status
+            //            from phy_status in status.DefaultIfEmpty()
+            //                //join user in _unitOfWork.UserRepository.Query() on userlog.psl_user_key equals user.Id into users
+            //                //from user in users.DefaultIfEmpty()
+            //                //where user.IsActive == true && user.IsDeleted == false && user.IsDisable == false
+            //            select (new
+            //            {
+            //                userinitial = userlog.AspNetUser.UserInitial,
+            //                usercolor = userlog.psl_phs_key == phy_status.phs_key ? phy_status.phs_color_code : "",
+            //                userstatus = userlog.psl_status_name,
+            //            });
+
+            //List<string> checklist = new List<string>();
+            //var detail = cases.ToList();
+
+            var detail = ColorList.Where(x => x.psl_cas_key == cas_key).FirstOrDefault();
+            string html = "<div class='physicianstatusdiv'>";
+            if (detail != null)
             {
+                string[] status = detail.psl_status_name.Split('/');
+                string[] color = detail.psl_status_color.Split('/');
+                string[] userIntitial = detail.UserInitial.Split('/');
 
-                context.Configuration.AutoDetectChangesEnabled = false;
-                context.Configuration.ProxyCreationEnabled = false;
-                context.Configuration.LazyLoadingEnabled = false;
-                var phy_initials = physician.Split('/').ToList();
-                var cases = from user in context.AspNetUsers
-                            join userlog in context.physician_status_log on user.Id equals userlog.psl_user_key into userstatus
-                            from userlog in userstatus.DefaultIfEmpty()
-                            join phy_status in context.physician_status on userlog.psl_status_name equals phy_status.phs_name into status
-                            from phy_status in status.DefaultIfEmpty()
-                            where user.IsActive == true && user.IsDeleted == false && user.IsDisable == false && userlog.psl_cas_key == cas_key
-                            select (new
-                            {
-                                userkey = user.Id,
-                                userinitial = user.UserInitial,
-                                usercolor = userlog.psl_status_name == phy_status.phs_name ? phy_status.phs_color_code : "",
-                                userstatus = userlog.psl_status_name,
-                                //caskey = userlog.psl_cas_key
-                            });
-
-                //if (phy_initials.Count > 0 && phy_initials != null)
-                //{
-                //    cases = cases.Where(x => phy_initials.Contains(x.userinitial));
-                //}
-                //if(cas_key != 0)
-                //{
-                //    cases = cases.Where(x => x.caskey == cas_key);
-                //}
-                var detail = cases.ToList();
-                string html = "";
-                foreach(var item in detail)
+                for (var i = 0; i < userIntitial.Length; i++)
                 {
-                    html += "<span title='" + item.userstatus + "' style='color: " + item.usercolor + ";font-weight:bold;'>" + item.userinitial + "</span>/";
+                    if (color[i] == "")
+                    {
+                        color[i] = "Black";
+                    }
+                    if (status[i] == "")
+                    {
+                        status[i] = "Waiting to Accept";
+                    }
+                    html += "<span title='" + status[i] + "' style='color: " + color[i] + ";font-weight:bold;'>" + userIntitial[i] + "</span>/";
                 }
-                string result = html.TrimEnd('/');
-                return result;
             }
+            string result = html.TrimEnd('/');
+            result += "</div>";
+            return result;
+            //}
         }
 
         #endregion
