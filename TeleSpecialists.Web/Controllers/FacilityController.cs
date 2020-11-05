@@ -170,7 +170,9 @@ namespace TeleSpecialists.Controllers
             roles.Add(QPSId);
             roles.Add(QualityDirectorId);
             roles.Add(VPQualityId);
-            ViewBag.Facilities = _lookUpService.GetAllFacility(null).Select(m => new { Value = m.fac_key, Text = m.fac_name }).ToList().Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text }).Where(x => x.Value != id.ToString());
+
+            var facilities = _lookUpService.GetAllFacility(null).Select(m => new { Value = m.fac_key, Text = m.fac_name }).ToList().Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+            ViewBag.Facilities = facilities.Where(x => x.Value != id.ToString()).ToList();
             ViewBag.QPS_Numbers_List = _facilityService.GetUserByRole(roles, selected);
 
             facility.facility_contract = GetFacilityContract(facility.fac_key.ToString());
@@ -587,7 +589,7 @@ namespace TeleSpecialists.Controllers
             ViewBag.fnames = fname;
             ViewBag.user_ids = user_id;
             IEnumerable<Onboarded> model = lsit;
-            if (fap_key == null)
+            if (!string.IsNullOrWhiteSpace(fap_key))
             {
                 var ss = dbModel.fap_fac_key.ToString();
                 ViewBag.fap_keys = ss;
