@@ -453,10 +453,16 @@ namespace TeleSpecialists.Controllers
         }
 
 
-        public ActionResult Update(PhysicianViewModel model, string SchType)
+        //public ActionResult Update(PhysicianViewModel model, string SchType)
+        //{
+        //    _facilityPhysicianService.updatePhysicianPassword(model, true);
+        //    return View();
+        //}
+        [HttpPost]
+        public JsonResult SaveMultiplePasswords(List<PhysicianViewModel> model)
         {
-            _facilityPhysicianService.updatePhysicianPassword(model, true);
-            return View();
+           _facilityPhysicianService.updatePhysicianPassword(model, true);
+            return Json("", JsonRequestBehavior.AllowGet);
         }
         public ActionResult SetPhyPendingOnboardindFacDate()
         {

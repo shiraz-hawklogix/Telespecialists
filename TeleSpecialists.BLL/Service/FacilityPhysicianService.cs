@@ -615,19 +615,34 @@ namespace TeleSpecialists.BLL.Service
 
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
-        public void updatePhysicianPassword(PhysicianViewModel model, bool commitChange = true)
+        public void updatePhysicianPassword(List<PhysicianViewModel> model, bool commitChange = true)
         {
-            var facilityPhsycian = _unitOfWork.FacilityPhysicianRepository.Query().Where(x => x.fap_key == model.id).FirstOrDefault();
-            if (facilityPhsycian != null)
+            foreach (var item in model)
             {
-                facilityPhsycian.fap_UserName = model.userpassword;
-                _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
+               
+               var facilityPhsycian = _unitOfWork.FacilityPhysicianRepository.Query().Where(x => x.fap_key == item.rowid).FirstOrDefault();
+               if (facilityPhsycian != null)
+               {
+                   facilityPhsycian.fap_UserName = item.Password;
+                   _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
+               }
             }
             if (commitChange)
             {
                 _unitOfWork.Save();
                 _unitOfWork.Commit();
             }
+            //var facilityPhsycian = _unitOfWork.FacilityPhysicianRepository.Query().Where(x => x.fap_key == model.id).FirstOrDefault();
+            //if (facilityPhsycian != null)
+            //{
+            //    facilityPhsycian.fap_UserName = model.userpassword;
+            //    _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
+            //}
+            //if (commitChange)
+            //{
+            //    _unitOfWork.Save();
+            //    _unitOfWork.Commit();
+            //}
 
         }
     }
