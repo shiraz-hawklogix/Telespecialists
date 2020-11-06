@@ -19,6 +19,7 @@ namespace TeleSpecialists.BLL.ViewModels.Dispatch
         public long? cas_case_number { get; set; }
         public string cas_response_ts_notification { get; set; }
         public string cas_metric_stamp_time_est { get; set; }
+        public string FacilityTimeZone { get; set; }
         public string date_of_consult { get; set; }
         
         public string ctp_name { get; set; }
@@ -40,6 +41,15 @@ namespace TeleSpecialists.BLL.ViewModels.Dispatch
 
         public Guid physician_key { get; set; }
         public string physician_fullname { get; set; }
+
+        public string CombinedMessage { get; set; }
+
+        public string cas_notes { get; set; }
+        public string cas_triage_notes { get; set; }
+        public string cas_callback_extension { get; set; }
+        public string cas_eta { get; set; }
+        
+
 
         public List<SelectListItem> PhysicianDD { get; set; }
         public List<SelectListItem> CaseStatusDD { get; set; }

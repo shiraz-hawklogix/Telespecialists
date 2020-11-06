@@ -274,6 +274,7 @@
                             PhysicianDD: { editable: false, nullable: true },
                             physician_key: { editable: false, nullable: false },
                             physician_fullname: { editable: false, nullable: false },
+                            CombinedMessage: { editable: false, nullable: true },
                         }
                     },
                     data: "Data",
@@ -345,7 +346,8 @@
                     template: "<button class='btn btn-dark btn-sm py-1 loadLinkAsync' onclick='copyDispatchCase(#=cas_key#)'>Copy</button>"
                 },
                 { hidden: true, field: "physician_key" },
-                { hidden: true, field: "phy_name" }
+                { hidden: true, field: "phy_name" },
+                { hidden: true, field: "CombinedMessage" }
             ],
             editable: true
                 });
