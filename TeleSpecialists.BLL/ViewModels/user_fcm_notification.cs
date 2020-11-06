@@ -99,18 +99,10 @@ namespace TeleSpecialists.BLL.ViewModels
                 #endregion
 
                 #region Code for telecare  db
-                ////serverKey - Key from Firebase cloud messaging server  
-                //tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA1rwwbPI:APA91bGBQvXGabgDWOHGz8OEu9-yA7w3QhuXQoeAu9TEPGaEemYdoRXp_PRx1IkhYbGqwvb_xSf3LFk_ZErTSZd7HlehYUXeXxnROuL3Y22fspbWUWUwdVRrNtJHZ_dPL1ykSTLnTskS"));
-                ////Sender Id - From firebase project setting  
-                //tRequest.Headers.Add(string.Format("Sender: id={0}", "BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o"));
-                #endregion
-
-                #region for telecare production
-
                 //serverKey - Key from Firebase cloud messaging server  
-                tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA3Bm3IdE:APA91bEXYQXLck9ZHvar0W7_KnCLUrgn8oJoFs2A5pt4rHaOq3cN6RruzyOrNqPxHgH5DKQfnhwNLocPJJS5AmiUjvC4q0Hv2aHKqlzGkprQyg0ozaGCUgMHWpPi_F0ywywku3W3SfMw"));
+                tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA1rwwbPI:APA91bGBQvXGabgDWOHGz8OEu9-yA7w3QhuXQoeAu9TEPGaEemYdoRXp_PRx1IkhYbGqwvb_xSf3LFk_ZErTSZd7HlehYUXeXxnROuL3Y22fspbWUWUwdVRrNtJHZ_dPL1ykSTLnTskS"));
                 //Sender Id - From firebase project setting  
-                tRequest.Headers.Add(string.Format("Sender: id={0}", "BCt_gF974whazZ4CfseUT5psM9SlWrO2uR12PtqEYOBzRWrnOzU00nNNVb9RA0hDFh7NDvA89vGqxeM4GVOHf-w"));
+                tRequest.Headers.Add(string.Format("Sender: id={0}", "BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o"));
                 #endregion
 
                 tRequest.ContentType = "application/json";

@@ -151,21 +151,42 @@ function rejectCaseWithNoQueue(hasExpired) {
         return;
 
     document.getElementById('new_case_notification').pause();
-
+    //let reason = 'Physician is busy right now!';
+    //SetRejectionWithReason(cas_key, reason);
+    // commented to check dispatch code
     $.get('/Case/RejectCaseWithNoQueue', { id: cas_key, hasExpired: hasExpired }, function (response) {
         $("#newcasePopupAlert").find("#cas_key").val("");
         $("#divCaseAssignPopup").modal("hide");
+        let reason = 'Physician is busy right now!';
+        SetRejectionWithReason(cas_key, reason);
     });
 }
+// added by husnain
+
+function SetRejectionWithReason(cas_key, reason) {
+    $.ajax({
+        type: 'POST',
+        url: '/dispatch/RejectCase',
+        data: { casKey: cas_key, caseRejectionType: reason },
+        success: function (e) { },
+        Error: function (e) { }
+    });
+}
+
 
 function closeNavigatorCasePopupWithNoQueue_def() {
 
     window.clearTimeout(newCasePopuptimeoutId); // clearing the timeout so the reject is not called.    
-   
-    document.getElementById('new_case_notification').pause();
+    try {
+        document.getElementById('new_case_notification').pause();
+    }
+    catch(err){ }
     $("#newcasePopupAlert").find("#cas_key").val("");
     $("#divCaseAssignPopup").modal("hide");
 }
+
+
+
 
 showNavigatorRejectCasePopupWithNoQueue_def = function (id, action) {    
     var url = "/Case/_CasePopupAlertNavigatorForManualAssign";
@@ -194,15 +215,31 @@ showNavigatorRejectCasePopupWithNoQueue_def = function (id, action) {
 
 
 function bindEventsForshowPhysicianNewCasePopup_def() {
+    $('#btnAcceptNewCasePopup').prop('disabled', false);
     // Event Registration for Popup
     $("#newcasePopupAlert").find("#btnRejectNewCasePopup,#btnClose").off("click").click(function () {
+        let phy_name = $("#cas_phy_name").val();
+        let cas_number = $("#cas_number").val();
+        let msg = 'Dr ' + phy_name + ' has Rejected the Case # ' + cas_number;
+        let physician = $("#cas_phy").val();
+        AcceptCase(msg, physician);
         rejectCaseWithNoQueue(false);
     });
 
     $("#btnAcceptNewCasePopup").off("click").click(function () {
+        $("#hdnDisableLoader").val('0');
+        $('#btnAcceptNewCasePopup').prop('disabled', true);
+        $("#divCaseAssignPopup").modal("hide");
+        let phy_name = $("#cas_phy_name").val();
+        let cas_number = $("#cas_number").val();
+        let facility_name = $('#cas_fac_name').val();
+        let msg = 'Stroke Alert from ' + facility_name + ' has been Accepted by ' + phy_name;
+        let physician = $("#cas_phy").val();
+        AcceptCase(msg, physician);
+
         var cas_key = $("#newcasePopupAlert").find("#cas_key").val();
         document.getElementById('new_case_notification').pause();
-        $("#newcasePopupAlert").find("#cas_key").val("")
+        $("#newcasePopupAlert").find("#cas_key").val("");
         window.clearTimeout(timeoutId); // clearing the timeout so the reject is not called.
         $.post('/Case/AcceptCaseWithNoQueue', { id: cas_key }, function (response) {
             $("#divCaseAssignPopup").modal("hide");
@@ -253,8 +290,96 @@ function showKendoPopup() {
 }
 
 function playNewCaseNotification() {
-    document.getElementById('new_case_notification').muted = false;
-    document.getElementById('new_case_notification').volume = 1;
-    document.getElementById('new_case_notification').play();
+    try {
+        document.getElementById('new_case_notification').muted = false;
+        document.getElementById('new_case_notification').volume = 1;
+        document.getElementById('new_case_notification').play();
+    }
+    catch (err) { console.log(err); }
 }
 
+
+function bindEventsForshowPhysicianNewCasePopup_def_InternalBlast() {
+    // Event Registration for Popup
+    $('#btnAcceptNewCasePopup').prop('disabled', false);
+    $("#btnAcceptBlast").off("click").click(function () {
+        $("#hdnDisableLoader").val('0');
+        $('#btnAcceptNewCasePopup').prop('disabled', true);
+        //$("#divCaseAssignPopup").modal("hide");
+        let phy_name = $("#cas_phy_name").val();
+        let cas_number = $("#cas_number").val();
+        let facility_name = $('#cas_fac_name').val();
+        let msg = 'Stroke Alert from ' + facility_name + ' has been Accepted by ' + phy_name;
+        let physician = $("#cas_phy").val();
+        var cas_key = $("#newcasePopupAlert").find("#cas_key").val();
+        let autoBlastStamp = $('#blastStamp').html();
+        let grpName = phy_name + ' ' + 'SA';
+       
+        stopBlastInterval(cas_key);
+       // alert(cas_key);
+        $.ajax({
+            type: 'POST',
+            url: '/case/IsCaseRead',
+            data: { id: cas_key },
+            success: function (e) {
+                if (e) {
+                    console.log('read status is : ' + e);
+                    $("#divCaseAssignPopup").modal("hide");
+                    $("#validationSummary").empty().showBSInfoAlert("", "Case has been already assigned to another physician");
+                }
+                else {
+                    // latest code for create auto stamp for blast
+                    //var navigatorsArr = []; // load navigators in this array
+                    //$.ajax({
+                    //    type: 'POST',
+                    //    url: '/firebaseChat/GetUser',
+                    //    data: { id: physician },
+                    //    success: function (e) {
+                    //        console.log('auto msg is : ' + autoBlastStamp);
+                    //        navigatorsArr.push({ user_id: e.fre_userId, email: e.fre_email, name: e.fre_firstname, firbaseuid: e.fre_firebase_uid, ImgPath: e.fre_profileimg });
+                    //        _CreateGroupNewHub(grpName, 'Private', autoBlastStamp, physician, navigatorsArr);
+                    //        //AcceptCase(msg, physician);
+                    //    },
+                    //    Error: function (e) {
+                    //    }
+                    //});
+                    // code end
+                    AcceptCase(msg, physician); //  old code to create response stamp
+                    try {
+                        document.getElementById('new_case_notification').pause();
+                    }
+                    catch (err) { console.log(err); }
+                    $("#newcasePopupAlert").find("#cas_key").val("");
+                    window.clearTimeout(timeoutId); // clearing the timeout so the reject is not called.
+                    $.post('/Case/AcceptCaseWithNoQueueInternalBlast', { id: cas_key }, function (response) {
+                        $("#divCaseAssignPopup").modal("hide");
+                        if (response.success) {
+                            $("#validationSummary").empty().showBSSuccessAlert("Success: ", response.message);
+                            //$("#drp_physican_status").val(response.phs_key);
+                            refreshCurrentPhyStatus();
+                            //changeStatus();
+                            // loadPageAsync('/Case/Index');
+                        }
+                        else {
+                            if (response.showInfoPopup)
+                                $("#validationSummary").empty().showBSInfoAlert("", response.message);
+                            else
+                                $("#validationSummary").empty().showBSDangerAlert("", response.message);
+                        }
+                    });
+                }
+            },
+            Error: function (e) {
+            }
+        });
+       
+    });
+}
+function _CreateGroupNewHub(name, grptype, msg, physician, navArr) {
+    if (physician) {
+        GrpCreate(name, grptype, msg, physician, navArr);
+    }
+    else {
+        CreatNewGrp(name, grptype, msg, physician, navArr);
+    }
+}

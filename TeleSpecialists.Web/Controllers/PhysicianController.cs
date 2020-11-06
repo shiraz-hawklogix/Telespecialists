@@ -322,7 +322,34 @@ namespace TeleSpecialists.Controllers
 
             return Json(new { success = false, message = "Case Not Found" }, JsonRequestBehavior.AllowGet);
         }
+        #region Stroke for internal blast
+        public ActionResult ShowNewCasePopupInternalBlast(int id)
+        {
+            var caseDetail = _caseService.GetDetailsWithoutTimeConversion(id);
+            if (caseDetail != null)
+            {
+                ViewBag.CaseType = _uclService.GetDetails(caseDetail.cas_ctp_key)?.ucd_title;
+                return GetViewResult("_NewCasePopupPhysicianBlast", caseDetail);
+                //var physicianList = new List<PhysicianStatusViewModel>();
+                //if(Session["InternalBlast"] != null)
+                //{
+                //    physicianList = (List<PhysicianStatusViewModel>)Session["InternalBlast"];
+                //    var userid = User.Identity.GetUserId();
+                //    var status = physicianList.Where(x => x.AspNetUser_Id.ToString() == userid).FirstOrDefault();
+                //    if (status != null)
+                //    {
+                //        ViewBag.CaseType = _uclService.GetDetails(caseDetail.cas_ctp_key)?.ucd_title;
+                //        return GetViewResult("_NewCasePopupPhysicianBlast", caseDetail);
+                //    }
+                //}
+                //else
+                //{
 
+                //}   
+            }
+            return Json(new { success = false, message = "Case Not Found" }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
 
         public void LogStatusChange(int psl_phs_key, string phy_key)
         {
