@@ -631,6 +631,20 @@
           <Property Name="cgt_modified_by_name" Type="varchar" MaxLength="300" />
           <Property Name="cgt_ent_key" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="case_rejection_reason">
+          <Key>
+            <PropertyRef Name="crr_key" />
+          </Key>
+          <Property Name="crr_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="crr_reason" Type="nvarchar" MaxLength="128" />
+          <Property Name="crr_troubleshoot" Type="bit" Nullable="false" />
+          <Property Name="crr_parent_key" Type="int" />
+          <Property Name="crr_users" Type="nvarchar(max)" />
+          <Property Name="crr_created_on" Type="datetime" />
+          <Property Name="crr_created_by" Type="nvarchar" MaxLength="128" />
+          <Property Name="crr_modified_on" Type="datetime" />
+          <Property Name="crr_modified_by" Type="nvarchar" MaxLength="128" />
+        </EntityType>
         <EntityType Name="case_review_template">
           <Key>
             <PropertyRef Name="crt_key" />
@@ -1267,6 +1281,15 @@
           <Property Name="fct_modified_by" Type="nvarchar" MaxLength="128" />
           <Property Name="fct_modified_date" Type="datetime" />
           <Property Name="fct_modified_by_name" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="firebase_users">
+          <Key>
+            <PropertyRef Name="frb_key" />
+          </Key>
+          <Property Name="frb_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="frb_userId" Type="nvarchar" MaxLength="128" />
+          <Property Name="frb_user_firebaseId" Type="nvarchar" MaxLength="128" />
+          <Property Name="frb_deviceTokenId" Type="nvarchar" MaxLength="250" />
         </EntityType>
         <EntityType Name="firebase_usersemail">
           <Key>
@@ -2733,6 +2756,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="case_cancelled_type" EntityType="Self.case_cancelled_type" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_copy_log" EntityType="Self.case_copy_log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_generated_template" EntityType="Self.case_generated_template" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="case_rejection_reason" EntityType="Self.case_rejection_reason" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_review_template" EntityType="Self.case_review_template" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_template_statconsult" EntityType="Self.case_template_statconsult" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_template_stroke_neuro_tpa" EntityType="Self.case_template_stroke_neuro_tpa" Schema="dbo" store:Type="Tables" />
@@ -2760,6 +2784,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="facility_questionnaire_contact_designation" EntityType="Self.facility_questionnaire_contact_designation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="facility_questionnaire_pre_live" EntityType="Self.facility_questionnaire_pre_live" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="facility_rate" EntityType="Self.facility_rate" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="firebase_users" EntityType="Self.firebase_users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="firebase_usersemail" EntityType="Self.firebase_usersemail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="goals_data" EntityType="Self.goals_data" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Hospital_Protocols" EntityType="Self.Hospital_Protocols" Schema="dbo" store:Type="Tables" />
@@ -3400,12 +3425,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="Hospital_Protocols" EntityType="DataModel.Hospital_Protocols" />
           <EntitySet Name="Onboardeds" EntityType="DataModel.Onboarded" />
           <EntitySet Name="web2campaign_log" EntityType="DataModel.web2campaign_log" />
-          <EntitySet Name="component_access" EntityType="DataModel.component_access" />
-          <EntitySet Name="components" EntityType="DataModel.component" />
-          <AssociationSet Name="FK_ComponentAccess_Component_Id" Association="DataModel.FK_ComponentAccess_Component_Id">
-            <End Role="component" EntitySet="components" />
-            <End Role="component_access" EntitySet="component_access" />
-          </AssociationSet>
           <FunctionImport Name="sp_getMenuAccess" ReturnType="Collection(DataModel.sp_getMenuAccess_Result)">
           <Parameter Name="Id" Mode="In" Type="String" />
           </FunctionImport>
@@ -3413,6 +3432,17 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <AssociationSet Name="FK_token_AspNetUsers" Association="DataModel.FK_token_AspNetUsers">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="token" EntitySet="tokens" />
+          </AssociationSet>
+          <EntitySet Name="case_rejection_reason" EntityType="DataModel.case_rejection_reason" />
+          <EntitySet Name="firebase_users" EntityType="DataModel.firebase_users" />
+          <FunctionImport Name="sp_getMenuAccess1" ReturnType="Collection(DataModel.sp_getMenuAccess1_Result)">
+          <Parameter Name="Id" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="component_access" EntityType="DataModel.component_access" />
+          <EntitySet Name="components" EntityType="DataModel.component" />
+          <AssociationSet Name="FK_ComponentAccess_Component_Id" Association="DataModel.FK_ComponentAccess_Component_Id">
+            <End Role="component" EntitySet="components" />
+            <End Role="component_access" EntitySet="component_access" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="alarm_setting">
@@ -6160,6 +6190,70 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="wcl_re_processed_date" Type="DateTime" Precision="3" />
           <Property Name="wcl_request_retry_count" Type="Int32" />
         </EntityType>
+        <ComplexType Name="sp_getMenuAccess_Result">
+          <Property Type="String" Name="com_page_title" Nullable="true" MaxLength="200" />
+          <Property Type="Int32" Name="com_key" Nullable="false" />
+          <Property Type="Int32" Name="cac_key" Nullable="true" />
+          <Property Type="String" Name="com_page_name" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="com_module_name" Nullable="true" MaxLength="200" />
+          <Property Type="Int32" Name="com_parentcomponentid" Nullable="true" />
+          <Property Type="Boolean" Name="cac_isAllowed" Nullable="false" />
+          <Property Type="String" Name="cac_roleid" Nullable="true" MaxLength="128" />
+        </ComplexType>
+        <EntityType Name="token">
+          <Key>
+            <PropertyRef Name="tok_key" />
+          </Key>
+          <Property Name="tok_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tok_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="tok_phy_token" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_token_AspNetUsers" FromRole="token" ToRole="AspNetUser" />
+        </EntityType>
+        <Association Name="FK_token_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="DataModel.token" Role="token" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="token">
+              <PropertyRef Name="tok_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="case_rejection_reason">
+          <Key>
+            <PropertyRef Name="crr_key" />
+          </Key>
+          <Property Name="crr_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="crr_reason" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="crr_troubleshoot" Type="Boolean" Nullable="false" />
+          <Property Name="crr_parent_key" Type="Int32" />
+          <Property Name="crr_users" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="crr_created_on" Type="DateTime" Precision="3" />
+          <Property Name="crr_created_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="crr_modified_on" Type="DateTime" Precision="3" />
+          <Property Name="crr_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="firebase_users">
+          <Key>
+            <PropertyRef Name="frb_key" />
+          </Key>
+          <Property Name="frb_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="frb_userId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="frb_user_firebaseId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="frb_deviceTokenId" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <ComplexType Name="sp_getMenuAccess1_Result">
+          <Property Type="String" Name="com_page_title" Nullable="true" MaxLength="200" />
+          <Property Type="Int32" Name="com_key" Nullable="false" />
+          <Property Type="Int32" Name="cac_key" Nullable="true" />
+          <Property Type="String" Name="com_page_name" Nullable="true" MaxLength="200" />
+          <Property Type="String" Name="com_module_name" Nullable="true" MaxLength="200" />
+          <Property Type="Int32" Name="com_parentcomponentid" Nullable="true" />
+          <Property Type="Boolean" Name="cac_isAllowed" Nullable="false" />
+          <Property Type="String" Name="cac_roleid" Nullable="true" MaxLength="128" />
+        </ComplexType>
         <EntityType Name="component_access">
           <Key>
             <PropertyRef Name="cac_key" />
@@ -6204,37 +6298,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Principal>
             <Dependent Role="component_access">
               <PropertyRef Name="cac_com_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <ComplexType Name="sp_getMenuAccess_Result">
-          <Property Type="String" Name="com_page_title" Nullable="true" MaxLength="200" />
-          <Property Type="Int32" Name="com_key" Nullable="false" />
-          <Property Type="Int32" Name="cac_key" Nullable="true" />
-          <Property Type="String" Name="com_page_name" Nullable="true" MaxLength="200" />
-          <Property Type="String" Name="com_module_name" Nullable="true" MaxLength="200" />
-          <Property Type="Int32" Name="com_parentcomponentid" Nullable="true" />
-          <Property Type="Boolean" Name="cac_isAllowed" Nullable="false" />
-          <Property Type="String" Name="cac_roleid" Nullable="true" MaxLength="128" />
-        </ComplexType>
-        <EntityType Name="token">
-          <Key>
-            <PropertyRef Name="tok_key" />
-          </Key>
-          <Property Name="tok_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="tok_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="tok_phy_token" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_token_AspNetUsers" FromRole="token" ToRole="AspNetUser" />
-        </EntityType>
-        <Association Name="FK_token_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
-          <End Type="DataModel.token" Role="token" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="token">
-              <PropertyRef Name="tok_phy_key" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -8231,6 +8294,54 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="tokens">
+            <EntityTypeMapping TypeName="DataModel.token">
+              <MappingFragment StoreEntitySet="token">
+                <ScalarProperty Name="tok_phy_token" ColumnName="tok_phy_token" />
+                <ScalarProperty Name="tok_phy_key" ColumnName="tok_phy_key" />
+                <ScalarProperty Name="tok_key" ColumnName="tok_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="case_rejection_reason">
+            <EntityTypeMapping TypeName="DataModel.case_rejection_reason">
+              <MappingFragment StoreEntitySet="case_rejection_reason">
+                <ScalarProperty Name="crr_modified_by" ColumnName="crr_modified_by" />
+                <ScalarProperty Name="crr_modified_on" ColumnName="crr_modified_on" />
+                <ScalarProperty Name="crr_created_by" ColumnName="crr_created_by" />
+                <ScalarProperty Name="crr_created_on" ColumnName="crr_created_on" />
+                <ScalarProperty Name="crr_users" ColumnName="crr_users" />
+                <ScalarProperty Name="crr_parent_key" ColumnName="crr_parent_key" />
+                <ScalarProperty Name="crr_troubleshoot" ColumnName="crr_troubleshoot" />
+                <ScalarProperty Name="crr_reason" ColumnName="crr_reason" />
+                <ScalarProperty Name="crr_key" ColumnName="crr_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="firebase_users">
+            <EntityTypeMapping TypeName="DataModel.firebase_users">
+              <MappingFragment StoreEntitySet="firebase_users">
+                <ScalarProperty Name="frb_deviceTokenId" ColumnName="frb_deviceTokenId" />
+                <ScalarProperty Name="frb_user_firebaseId" ColumnName="frb_user_firebaseId" />
+                <ScalarProperty Name="frb_userId" ColumnName="frb_userId" />
+                <ScalarProperty Name="frb_key" ColumnName="frb_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_getMenuAccess1" FunctionName="DataModel.Store.sp_getMenuAccess">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.sp_getMenuAccess1_Result">
+                <ScalarProperty Name="com_page_title" ColumnName="com_page_title" />
+                <ScalarProperty Name="com_key" ColumnName="com_key" />
+                <ScalarProperty Name="cac_key" ColumnName="cac_key" />
+                <ScalarProperty Name="com_page_name" ColumnName="com_page_name" />
+                <ScalarProperty Name="com_module_name" ColumnName="com_module_name" />
+                <ScalarProperty Name="com_parentcomponentid" ColumnName="com_parentcomponentid" />
+                <ScalarProperty Name="cac_isAllowed" ColumnName="cac_isAllowed" />
+                <ScalarProperty Name="cac_roleid" ColumnName="cac_roleid" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           <EntitySetMapping Name="component_access">
             <EntityTypeMapping TypeName="DataModel.component_access">
               <MappingFragment StoreEntitySet="component_access">
@@ -8263,29 +8374,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
                 <ScalarProperty Name="com_module_name" ColumnName="com_module_name" />
                 <ScalarProperty Name="com_parentcomponentid" ColumnName="com_parentcomponentid" />
                 <ScalarProperty Name="com_key" ColumnName="com_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="sp_getMenuAccess" FunctionName="DataModel.Store.sp_getMenuAccess">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DataModel.sp_getMenuAccess_Result">
-                <ScalarProperty Name="com_page_title" ColumnName="com_page_title" />
-                <ScalarProperty Name="com_key" ColumnName="com_key" />
-                <ScalarProperty Name="cac_key" ColumnName="cac_key" />
-                <ScalarProperty Name="com_page_name" ColumnName="com_page_name" />
-                <ScalarProperty Name="com_module_name" ColumnName="com_module_name" />
-                <ScalarProperty Name="com_parentcomponentid" ColumnName="com_parentcomponentid" />
-                <ScalarProperty Name="cac_isAllowed" ColumnName="cac_isAllowed" />
-                <ScalarProperty Name="cac_roleid" ColumnName="cac_roleid" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <EntitySetMapping Name="tokens">
-            <EntityTypeMapping TypeName="DataModel.token">
-              <MappingFragment StoreEntitySet="token">
-                <ScalarProperty Name="tok_phy_token" ColumnName="tok_phy_token" />
-                <ScalarProperty Name="tok_phy_key" ColumnName="tok_phy_key" />
-                <ScalarProperty Name="tok_key" ColumnName="tok_key" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

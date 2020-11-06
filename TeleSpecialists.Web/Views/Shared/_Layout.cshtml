@@ -510,164 +510,162 @@
             </div>
         </div>
     </nav>
-    <div class="col-sm-12 col-md-12 col-lg-12">
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-12">
-                <div class="navbar navbar-expand-sm header_bottom">
-                    <div class="col-lg-5 col-md-5">
-                        <div class="nav-item" id="divInternalExternal">
-                            <!-- breadcrumb here-->
-                            @*<a href="javascript:void(0);" id="btnBlast"> <span class="ml6 font_12px"><span class="text-wrapper"> <span class="letters" id="lblBlast"></span></span> </span> </a>*@
-                            @*<a href="#" id="hideExpDiv"> <img src='~/Content/images/exp_icon.jpg' style="height:17px;width:17px;"  /></a>*@
+    <div class="navbar navbar-expand-sm header_bottom">
+        <div class="col-lg-5 col-md-5">
+            <div class="nav-item" id="divInternalExternal">
+                <!-- breadcrumb here-->
+                @*<a href="javascript:void(0);" id="btnBlast"> <span class="ml6 font_12px"><span class="text-wrapper"> <span class="letters" id="lblBlast"></span></span> </span> </a>*@
+                @*<a href="#" id="hideExpDiv"> <img src='~/Content/images/exp_icon.jpg' style="height:17px;width:17px;"  /></a>*@
+            </div>
+
+        </div>
+        <div class="col-md-7 col-lg-7 text-right">
+            <div class="nav-item nav-item-login">
+                @if ((User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())))
+                {
+                    <img src='~/Content/images/five-dollar.png' id="uploadImg" />
+                    <a href="@Url.Action("PhysicianBillingAmountDetail", "reports")" class="btn-sm font_11px loadLinkAsync lblamaount"></a>
+                    if (checktune)
+                    {
+                        <a href="@Url.Action("alarmsetting", "alarm")" class="btn-sm font_11px loadLinkAsync clearLS"><span class="alarm_setting"></span>Alarm Setting</a>
+                    }
+                }
+
+                @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription()))
+                {
+
+                    <img src="~/Content/images/firebase1.png" style="height:18px;width:16px" />
+                    <span id="lblFirebase" style="color:white"></span>
+                    <a href="@Url.Action("chat", "firebasechat")" class="btn-sm font_12px" target="_blank" id="firebaseLink"><span class="fa fa-envelope-o rapids-inbox"></span>chat</a>
+                    @*<a href="@Url.Action("hawklogixchat", "firebasechat")" class="btn-sm font_12px" target="_blank"><span class="fa fa-envelope-o rapids-inbox"></span>chat</a>*@
+                    <a href="@Url.Action("Index", "Home")" class="btn-sm font_12px loadLinkAsync"><span class="fa fa-envelope-o rapids-inbox"></span>Inbox</a>
+                }
+                <a href="@Url.Action("ChangePassword", "Manage")" class="btn-sm font_11px loadLinkAsync"><span class="change_pp"></span>Change Password</a>
+
+                <a href="@Url.Action("Signout", "Account")" class="btn-sm font_11px" id="signout"><span class="signout"></span>Sign Out</a>
+            </div>
+        </div>
+    </div>
+    <div id="divModelPopUp" class="modal" data-backdrop="static" data-keyboard="false" style="z-index:100000000000000000"></div>
+    <div id="divModelLessPopup" data-reload="1" data-backdrop="false"></div>
+    <div id="divCaseAssignPopup" class="modal" data-backdrop="static" data-keyboard="false" style="z-index:100000000000000000000000000"></div>
+    <div class="container-fluid h-100" id="mainContentArea">
+        @*mb-3*@
+        <div class="row mr-0" style="width:100%;margin:auto">
+            @{
+                var colWidthClass = "col-sm-12";
+                var style = "";
+                if (loggedInUser != null)
+                {
+                    if (loggedInUser.EnableFive9)
+                    {
+                        <div id="five-9-nav-container">
+                            @{Html.RenderAction("_index", "Phonebar"); }
                         </div>
-
-                    </div>
-                    <div class="col-md-7 col-lg-7 text-right">
-                        <div class="nav-item nav-item-login">
-                            @if ((User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())))
-                            {
-                                <img src='~/Content/images/five-dollar.png' id="uploadImg" />
-                                <a href="@Url.Action("PhysicianBillingAmountDetail", "reports")" class="btn-sm font_11px loadLinkAsync lblamaount"></a>
-                                if (checktune)
-                                {
-                                    <a href="@Url.Action("alarmsetting", "alarm")" class="btn-sm font_11px loadLinkAsync clearLS"><span class="alarm_setting"></span>Alarm Setting</a>
-                                }
-                            }
-
-                            @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription()))
-                            {
-
-                                <img src="~/Content/images/firebase1.png" style="height:18px;width:16px" />
-                                <span id="lblFirebase" style="color:white"></span>
-                                <a href="@Url.Action("chat", "firebasechat")" class="btn-sm font_12px" target="_blank" id="firebaseLink"><span class="fa fa-envelope-o rapids-inbox"></span>chat</a>
-                                @*<a href="@Url.Action("hawklogixchat", "firebasechat")" class="btn-sm font_12px" target="_blank"><span class="fa fa-envelope-o rapids-inbox"></span>chat</a>*@
-                                <a href="@Url.Action("Index", "Home")" class="btn-sm font_12px loadLinkAsync"><span class="fa fa-envelope-o rapids-inbox"></span>Inbox</a>
-                            }
-                            <a href="@Url.Action("ChangePassword", "Manage")" class="btn-sm font_11px loadLinkAsync"><span class="change_pp"></span>Change Password</a>
-
-                            <a href="@Url.Action("Signout", "Account")" class="btn-sm font_11px" id="signout"><span class="signout"></span>Sign Out</a>
+                    }
+                    if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+                    {
+                        colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+                        <div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3" id="phycisian-listing-container">
                         </div>
-                    </div>
-                </div>
-                <div id="divModelPopUp" class="modal" data-backdrop="static" data-keyboard="false" style="z-index:100000000000000000"></div>
-                <div id="divModelLessPopup" data-reload="1" data-backdrop="false"></div>
-                <div id="divCaseAssignPopup" class="modal" data-backdrop="static" data-keyboard="false" style="z-index:100000000000000000000000000"></div>
-                <div class="container-fluid h-100" id="mainContentArea">
-                    @*mb-3*@
-                    <div class="row mr-0" style="width:100%;margin:auto">
-                        @{
-                            var colWidthClass = "col-sm-12";
-                            var style = "";
-                            if (loggedInUser != null)
-                            {
-                                if (loggedInUser.EnableFive9)
-                                {
-                                    <div id="five-9-nav-container">
-                                        @{Html.RenderAction("_index", "Phonebar"); }
-                                    </div>
-                                }
-                                if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+                    }
+                    @*<div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3">
+                            @{
+                                if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
                                 {
                                     colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
-                                    <div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3" id="phycisian-listing-container">
+                                    <div id="Credentials-Expiring-container">
                                     </div>
                                 }
-                                @*<div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3">
-                                        @{
-                                            if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
-                                            {
-                                                colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
-                                                <div id="Credentials-Expiring-container">
-                                                </div>
-                                            }
-                                            if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()))
-                                            {
-                                                colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
-                                                 <div id="cases-pending-review-container">
-                                                 </div>
-                                                }
-                                            }
+                                if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()))
+                                {
+                                    colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+                                     <div id="cases-pending-review-container">
+                                     </div>
+                                    }
+                                }
 
-                                    </div>*@
-                            }
-                            <div class="@colWidthClass" style="@style" id="async-content-container">
-                                <br />  @*class="d-none d-xl-block d-lg-block"*@
-                                <div id="validationSummary">
-                                </div>
-                                <input type="hidden" value="@Request.RawUrl" id="hdnCurrentUrl" />
-                                <input type="hidden" value="0" id="hdnDisableLoader" />
-                                <div id="divContentArea">
-                                    @RenderBody()
-                                </div>
-                            </div>
-                        }
+                        </div>*@
+                }
+                <div class="@colWidthClass" style="@style" id="async-content-container">
+                    <br />  @*class="d-none d-xl-block d-lg-block"*@
+                    <div id="validationSummary">
+                    </div>
+                    <input type="hidden" value="@Request.RawUrl" id="hdnCurrentUrl" />
+                    <input type="hidden" value="0" id="hdnDisableLoader" />
+                    <div id="divContentArea">
+                        @RenderBody()
                     </div>
                 </div>
+            }
+        </div>
+    </div>
 
-                <div id="divfirebase" style="display:none"></div>
-                <footer class="footer" id="AddNewClass">
-                    <span class="text-muted">Copyright @DateTime.Now.Year TeleSpecialists, LLC. All rights reserved.</span>
-                </footer>
-                @*@{
-                        var s = "../Content/UserProfileImg/" + loggedInUser.User_Image;
-                        <img src="@s" style="height: 100px;width:80px;border: 5px solid #555;" />
+    <div id="divfirebase" style="display:none"></div>
+    <footer class="footer" id="AddNewClass">
+        <span class="text-muted">Copyright @DateTime.Now.Year TeleSpecialists, LLC. All rights reserved.</span>
+    </footer>
+    @*@{
+            var s = "../Content/UserProfileImg/" + loggedInUser.User_Image;
+            <img src="@s" style="height: 100px;width:80px;border: 5px solid #555;" />
 
-                    }*@
+        }*@
 
-                <div id="AllowToNavigateId" class="modal fade" tabindex="-1" role="dialog" style="height:500px;">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="card-header pl-3 font-weight-bold" style="background-color:black;color:white;">
-                                <h5><span style="color:white" class="font-weight-bold" id=""></span>Unpublished Schedule</h5>
-                                <span data-dismiss="modal" class="fa fa-close" style="float: right;margin-top: -23px;color: white;cursor: pointer;">
-                                    <span></span>
-                                </span>
-                            </div>
-                            <div class="modal-body" style="max-height:350px;overflow-y:auto">
-                                <div class="form-group row">
-                                    <div class="col-md-12" id="">
-                                        Stroke physician schedule of this month is not published. Do you want to leave the page?
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" style="color:white;background-color:black" id="NavigateYes">Yes</button>
-                                <button type="button" class="btn btn-default" style="color:white;background-color:black" data-dismiss="modal">No</button>
-                            </div>
+
+    <div id="AllowToNavigateId" class="modal fade" tabindex="-1" role="dialog" style="height:500px;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="card-header pl-3 font-weight-bold" style="background-color:black;color:white;">
+                    <h5><span style="color:white" class="font-weight-bold" id=""></span>Unpublished Schedule</h5>
+                    <span data-dismiss="modal" class="fa fa-close" style="float: right;margin-top: -23px;color: white;cursor: pointer;">
+                        <span></span>
+                    </span>
+                </div>
+                <div class="modal-body" style="max-height:350px;overflow-y:auto">
+                    <div class="form-group row">
+                        <div class="col-md-12" id="">
+                            Stroke physician schedule of this month is not published. Do you want to leave the page?
                         </div>
                     </div>
                 </div>
-                <div id="physicianpasswordcheck" class="modal fade" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-sm">
-                        <div class="modal-content">
-                            <div class="card-header pl-3 font-weight-bold" style="background-color:black;color:white;">
-                                <h5><span style="color:white" class="font-weight-bold" id=""></span>User Confirmation</h5>
-                                @*<span data-dismiss="modal" class="fa fa-close" style="float: right;margin-top: -23px;color: white;cursor: pointer;">
-                                        <span></span>
-                                    </span>*@
-                            </div>
-                            <div class="modal-body" style="overflow-y:auto">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" style="color:white;background-color:black" id="NavigateYes">Yes</button>
+                    <button type="button" class="btn btn-default" style="color:white;background-color:black" data-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="physicianpasswordcheck" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="card-header pl-3 font-weight-bold" style="background-color:black;color:white;">
+                    <h5><span style="color:white" class="font-weight-bold" id=""></span>User Confirmation</h5>
+                    @*<span data-dismiss="modal" class="fa fa-close" style="float: right;margin-top: -23px;color: white;cursor: pointer;">
+                            <span></span>
+                        </span>*@
+                </div>
+                <div class="modal-body" style="overflow-y:auto">
 
-                                <div class="col-md-12">
-                                    <div class="form-group row">
-                                        <input class="form-control" id="checkUsername" placeholder="Username" type="text" value="@loggedInUser.Email" disabled>
-                                    </div>
-                                    <div class="form-group row">
-                                        <input class="form-control" id="checkPassword" placeholder="Password" type="text" value="" autocomplete="off">
-                                        <span id="errormessage" class="text-danger" style="display:none;">Password is not Correct</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" style="color:white;background-color:black" id="confirmedpassword">Ok</button>
-                                <button type="button" class="btn btn-default" style="color:white;background-color:black" id="hideconfirmedpassword" data-dismiss="modal">Cancel</button>
-                            </div>
+                    <div class="col-md-12">
+                        <div class="form-group row">
+                            <input class="form-control" id="checkUsername" placeholder="Username" type="text" value="@loggedInUser.Email" disabled>
+                        </div>
+                        <div class="form-group row">
+                            <input class="form-control" id="checkPassword" placeholder="Password" type="text" value="" autocomplete="off">
+                            <span id="errormessage" class="text-danger" style="display:none;">Password is not Correct</span>
                         </div>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" style="color:white;background-color:black" id="confirmedpassword">Ok</button>
+                    <button type="button" class="btn btn-default" style="color:white;background-color:black" id="hideconfirmedpassword" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                @RenderSection("scripts", required: false)
-                <script type="text/javascript">
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript">
 
            var timeoutInMiliseconds;
         var timeoutId;
@@ -1099,31 +1097,32 @@ $(document).ready(function () {
                         $("#onboardingmodal").modal('hide');
                     })
 
-                </script>
+    </script>
 
-                @if (Settings.RPCMode != RPCMode.Disabled)
-                {
-                    @Scripts.Render("~/bundles/hubs")
-                }
-                <div id="processing" class="loading" style="display:none"></div>
+    @if (Settings.RPCMode != RPCMode.Disabled)
+    {
+        @Scripts.Render("~/bundles/hubs")
+    }
+    <div id="processing" class="loading" style="display:none"></div>
 
-                <script src="https://rawgit.com/nwcell/ics.js/master/ics.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
-                @*<script src="https://www.gstatic.com/firebasejs/3.6.9/firebase.js"></script>*@
-                @* below line are commented to check downloaded files*@
-                @*<script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-app.js"></script>
-                    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-auth.js"></script>
-                    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-database.js"></script>
-                    <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-messaging.js"></script>*@
+    <script src="https://rawgit.com/nwcell/ics.js/master/ics.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
+    @*<script src="https://www.gstatic.com/firebasejs/3.6.9/firebase.js"></script>*@
+    @* below line are commented to check downloaded files*@
+    @*<script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-messaging.js"></script>*@
 
-                <script src="~/Scripts/firebase/firebasejs/firebase-app.js"></script>
-                <script src="~/Scripts/firebase/firebasejs/firebase-auth.js"></script>
-                <script src="~/Scripts/firebase/firebasejs/firebase-database.js"></script>
-                <script src="~/Scripts/firebase/firebasejs/firebase-messaging.js"></script>
-                <script src="~/Scripts/firebase/js/firebaseConfig.js"></script>
-                <script src="~/Scripts/firebase/js/custome.js"></script>
-                @Scripts.Render("~/bundles/firebase")
-                <script src="~/Content/Animation/js/anime.min.js"></script>
+    <script src="~/Scripts/firebase/firebasejs/firebase-app.js"></script>
+    <script src="~/Scripts/firebase/firebasejs/firebase-auth.js"></script>
+    <script src="~/Scripts/firebase/firebasejs/firebase-database.js"></script>
+    <script src="~/Scripts/firebase/firebasejs/firebase-messaging.js"></script>
+    <script src="~/Scripts/firebase/js/firebaseConfig.js"></script>
+    <script src="~/Scripts/firebase/js/custome.js"></script>
+    @Scripts.Render("~/bundles/firebase")
+    <script src="~/Content/Animation/js/anime.min.js"></script>
+
 
 </body>
 </html>
@@ -1132,6 +1131,7 @@ $(document).ready(function () {
     .Un-publish-sch {
         color: red !important;
     }
+
     #checkPassword {
         -webkit-text-security: disc;
     }

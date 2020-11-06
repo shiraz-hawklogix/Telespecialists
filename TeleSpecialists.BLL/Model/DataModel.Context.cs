@@ -101,9 +101,11 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<Hospital_Protocols> Hospital_Protocols { get; set; }
         public virtual DbSet<Onboarded> Onboardeds { get; set; }
         public virtual DbSet<web2campaign_log> web2campaign_log { get; set; }
+        public virtual DbSet<token> tokens { get; set; }
+        public virtual DbSet<case_rejection_reason> case_rejection_reason { get; set; }
+        public virtual DbSet<firebase_users> firebase_users { get; set; }
         public virtual DbSet<component_access> component_access { get; set; }
         public virtual DbSet<component> components { get; set; }
-        public virtual DbSet<token> tokens { get; set; }
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {
@@ -198,6 +200,15 @@ namespace TeleSpecialists.BLL.Model
                 new ObjectParameter("Id", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_getMenuAccess_Result>("sp_getMenuAccess", idParameter);
+        }
+    
+        public virtual ObjectResult<sp_getMenuAccess1_Result> sp_getMenuAccess1(string id)
+        {
+            var idParameter = id != null ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_getMenuAccess1_Result>("sp_getMenuAccess1", idParameter);
         }
     }
 }
