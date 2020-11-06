@@ -487,488 +487,108 @@
             </div>
         </div>
     </nav>
-    <div class="col-sm-12 col-md-12 col-lg-12">
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-12">
-                <div class="navbar navbar-expand-sm header_bottom">
-                    <div class="col-lg-2 col-md-2">
-                        <ul class="nav navbar-nav">
-                            <li class="dropdown">
-                                <a href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">
-                                    <span class="nav-label">
-                                        @*<img style="height:30px;" src="~/Content/images/cbimage.jpg" />*@
-                                        <img style="height:30px;" src="data:image/gif;base64,R0lGODlhZABkAIABAIeHh////yH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4zLWMwMTEgNjYuMTQ1NjYxLCAyMDEyLzAyLzA2LTE0OjU2OjI3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjIxRTgzNTA3NzBFMzExRTM5MTJGREEwRkJDOTMyN0M3IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjIxRTgzNTA4NzBFMzExRTM5MTJGREEwRkJDOTMyN0M3Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MjFFODM1MDU3MEUzMTFFMzkxMkZEQTBGQkM5MzI3QzciIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MjFFODM1MDY3MEUzMTFFMzkxMkZEQTBGQkM5MzI3QzciLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4B//79/Pv6+fj39vX08/Lx8O/u7ezr6uno5+bl5OPi4eDf3t3c29rZ2NfW1dTT0tHQz87NzMvKycjHxsXEw8LBwL++vby7urm4t7a1tLOysbCvrq2sq6qpqKempaSjoqGgn56dnJuamZiXlpWUk5KRkI+OjYyLiomIh4aFhIOCgYB/fn18e3p5eHd2dXRzcnFwb25tbGtqaWhnZmVkY2JhYF9eXVxbWllYV1ZVVFNSUVBPTk1MS0pJSEdGRURDQkFAPz49PDs6OTg3NjU0MzIxMC8uLSwrKikoJyYlJCMiISAfHh0cGxoZGBcWFRQTEhEQDw4NDAsKCQgHBgUEAwIBAAAh+QQBAAABACwAAAAAZABkAAACtIyPqcvtD6OctNqLs968+w+G4kiW5omm6sq27gvH8kzX9o3n+s73/g8MCofEovGITCqXzKbzCY1eANSq9YrNardZGvcLDmO94rJ5PDurz+S1+9t+y9Gyuf0qzev3/L7/DxgoOFh3ZxhnKIeY6LbIqOb4aBYpKUZZCUaoucnZ6fkJGio6eoDZmGYKiZo6ucpq6fqaGSvLdVlrRaq7y9vr+wscLDxMXGx8jJysvMzc7PwMHU1aAAA7" />
-                                    </span>
-                                </a>
-                                @if (Session["RoleAccess"] != null)
-                                {
-                                    <ul class="dropdown-menu">
-                                        @{ var result = (List<TeleSpecialists.BLL.Model.sp_getMenuAccess_Result>)Session["RoleAccess"]; }
-                                        @if (result.Where(x => x.com_page_title == "Physician Dashboard").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("Dashboard", "Physician")">Home <span class="sr-only">(current)</span></a>
-                                            </li>
-                                        }
-                                        @if (result.Where(x => x.com_page_title == "Home").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("Index", "Home")">Home <span class="sr-only">(current)</span></a>
-                                            </li>
-                                        }
+    <div class="navbar navbar-expand-sm header_bottom">
+        <div class="col-lg-7 col-md-4">
+            <div class="nav-item">
+                <!-- breadcrumb here-->
+            </div>
+        </div>
+        <div class="col-md-8 col-lg-5 text-right">
+            <div class="nav-item nav-item-login">
+                @if ((User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())))
+                {
+                    <img src='~/Content/images/five-dollar.png' id="uploadImg" />
+                    <a href="@Url.Action("PhysicianBillingAmountDetail", "reports")" class="btn-sm font_11px loadLinkAsync lblamaount"></a>
+                    if (checktune)
+                    {
+                        <a href="@Url.Action("alarmsetting", "alarm")" class="btn-sm font_11px loadLinkAsync clearLS"><span class="alarm_setting"></span>Alarm Setting</a>
+                    }
+                }
 
+                @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription()))
+                {
+                    <a href="@Url.Action("Index", "Home")" class="btn-sm font_12px loadLinkAsync"><span class="fa fa-envelope-o rapids-inbox"></span>Inbox</a>
+                }
+                <a href="@Url.Action("ChangePassword", "Manage")" class="btn-sm font_11px loadLinkAsync"><span class="change_pp"></span>Change Password</a>
 
-                                        @if (result.Where(x => x.com_page_title == "Case").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("Index", "Case")">Cases</a>
-
-                                            </li>
-                                        }
-
-                                        @if (result.Where(x => x.com_page_title == "Dispatch").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("Index", "Case")">Dispatch</a>
-                                            </li>
-                                        }
-
-                                        @if (result.Where(x => x.com_page_title == "Menu Access").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("Index", "MenuAccess")">Menu Access</a>
-                                            </li>
-                                        }
-
-                                        @if (result.Where(x => x.com_page_title == "Menu").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("Index", "Menu")">Menu</a>
-                                            </li>}
-
-                                        @if (result.Where(x => x.com_page_title == "CaseDashboard").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("Dashboard", "Case")">Dashboard</a>
-                                            </li>
-                                        }
-
-                                        @if (result.Where(x => x.com_page_title == "Facility-PI").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("FacilityPI", "FacilityPI")">Facility-PI</a>
-                                            </li>
-                                        }
-
-                                        @if (result.Where(x => x.com_page_title == "Sign-Out").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("SignOutListing", "Case")">Sign-Out</a>
-                                            </li>
-                                        }
-
-                                        @if (result.Where(x => x.com_page_title == "Status").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("Status", "Physician")">Status</a>
-                                            </li>
-                                        }
-
-                                        @if (result.Where(x => x.com_page_title == "Report").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a class="dropdown-item" href="@Url.Action("Index", "Reports")">Reports</a>
-                                            </li>
-                                        }
-
-
-
-                                        @if (result.Where(x => x.com_page_title == "Schedule").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li>
-                                                <a id="ScheduleMId" class="dropdown-item" href="@Url.Action("main", "Schedule")">Schedule</a>
-                                            </li>
-                                        }
-
-
-                                        @if (result.Where(x => x.com_page_title == "Administration").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                        {
-                                            <li class="dropdown-submenu">
-                                                <a href="#" class="dropdown-toggle dropdown-item" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                    <span class="nav-label">Administration</span><span class="caret"></span>
-                                                </a>
-                                                <ul class="dropdown-menu">
-                                                    @if (result.Where(x => x.com_page_title == "ERROR Console").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                    {
-                                                        <li>
-                                                            <a class="dropdown-item" href="@Url.Action("ErrorConsole", "Admin")">Error Console</a>
-                                                        </li>
-                                                    }
-                                                    @if (result.Where(x => x.com_page_title == "Facility Management").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                    {
-                                                        <li class="dropdown-submenu">
-                                                            <a href="#" class="dropdown-toggle dropdown-item" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                <span class="nav-label">Facility Management</span><span class="caret"></span>
-                                                            </a>
-                                                            <ul class="dropdown-menu">
-                                                                @if (result.Where(x => x.com_page_title == "Contact Roles").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.ContactRole.ToInt() })">@UclTypes.ContactRole.ToDescription()</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "Coverage Type").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.CoverageType.ToInt() })">Coverage Type</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "EMR Type").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.EMR.ToInt() })">EMR Type</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "Facilities").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "Facility")">Facilities</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "Facility Type").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.FacilityType.ToInt() })">Facility Type</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "Note Type").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.NoteType.ToInt() })">Note Type</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "Service Type").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.ServiceType.ToInt() })">Service Type</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "Stroke Designation").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.StrokeDesignation.ToInt() })">Stroke Designation</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "System").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.System.ToInt() })">System</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "Regional").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.Regional.ToInt() })">Regional</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "Facility AI").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.FacilityAI.ToInt() })">Facility AI</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "Physician Passwords").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" id="confirmationofid" href="javascript:; ">Physician Passwords</a>
-                                                                    </li>
-                                                                }
-                                                            </ul>
-                                                        </li>
-                                                    }
-                                                    @if (result.Where(x => x.com_page_title == "Import Schedule").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                    {
-                                                        <li class="dropdown-submenu">
-                                                            <a href="#" class="dropdown-toggle dropdown-item" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                <span class="nav-label">Import Schedule</span><span class="caret"></span>
-                                                            </a>
-                                                            <ul class="dropdown-menu">
-                                                                @if (result.Where(x => x.com_page_title == "Stroke Physician Schedule").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Import", "Schedule")">Stroke Physician Schedule</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "PAOC Schedule").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Imp", "Schedule")">PAOC Schedule</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "Sleep Schedule").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("Slp", "Schedule")">Sleep Schedule</a>
-                                                                    </li>
-                                                                }
-                                                                @if (result.Where(x => x.com_page_title == "NH Schedule").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li>
-                                                                        <a class="dropdown-item" href="@Url.Action("NH", "Schedule")">NH Schedule</a>
-                                                                    </li>
-                                                                }
-                                                            </ul>
-                                                        </li>
-                                                    }
-                                                    @if (result.Where(x => x.com_page_title == "List Management").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                    {
-                                                        <li class="dropdown-submenu">
-                                                            <a href="#" class="dropdown-toggle dropdown-item" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                <span class="nav-label">List Management</span><span class="caret"></span>
-                                                            </a>
-                                                            <ul class="dropdown-menu">
-                                                                <li class="dropdown-submenu">
-                                                                    <a href="#" class="dropdown-toggle dropdown-item" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                        <span class="nav-label">Case Management</span><span class="caret"></span>
-                                                                    </a>
-                                                                    <ul class="dropdown-menu">
-                                                                        @if (result.Where(x => x.com_page_title == "Billing Codes").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.BillingCode.ToInt() })">Billing Codes</a>
-                                                                            </li>
-                                                                        }
-                                                                        @if (result.Where(x => x.com_page_title == "Cart Location").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.CartLocation.ToInt() })">@UclTypes.CartLocation.ToDescription()</a>
-                                                                            </li>
-                                                                        }
-                                                                        @if (result.Where(x => x.com_page_title == "Caller Source").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.CallerSource.ToInt() })">Caller Source</a>
-                                                                            </li>
-                                                                        }
-                                                                        @if (result.Where(x => x.com_page_title == "Identification Type").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.IdentificationType.ToInt() })">@UclTypes.IdentificationType.ToDescription()</a>
-                                                                            </li>
-                                                                        }
-                                                                        @if (result.Where(x => x.com_page_title == "Login Delays").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.LoginDelay.ToInt() })">Login Delays</a>
-                                                                            </li>
-                                                                        }
-                                                                        @if (result.Where(x => x.com_page_title == "tPA Candidate Types").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.NonTPACandidate.ToInt() })">@UclTypes.NonTPACandidate.ToDescription()</a>
-                                                                            </li>
-                                                                        }
-                                                                        @if (result.Where(x => x.com_page_title == "tPA Delay").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.TpaDelay.ToInt() })">@UclTypes.TpaDelay.ToDescription()</a>
-                                                                            </li>
-                                                                        }
-                                                                    </ul>
-                                                                </li>
-                                                                <li class="dropdown-submenu">
-                                                                    <a href="#" class="dropdown-toggle dropdown-item" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                        <span class="nav-label">General</span><span class="caret"></span>
-                                                                    </a>
-                                                                    <ul class="dropdown-menu">
-                                                                        @if (result.Where(x => x.com_page_title == "Case Statuses").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.CaseStatus.ToInt() })">Case Statuses</a>
-                                                                            </li>
-                                                                        }
-                                                                        @if (result.Where(x => x.com_page_title == "Case Types").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.CaseType.ToInt() })"> Case Types</a>
-                                                                            </li>
-                                                                        }
-
-                                                                        @if (result.Where(x => x.com_page_title == "License Type").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.LicenseType.ToInt() })">License Type</a>
-                                                                            </li>
-                                                                        }
-                                                                        @if (result.Where(x => x.com_page_title == "States").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.State.ToInt() })">States</a>
-                                                                            </li>
-                                                                        }
-                                                                        @if (result.Where(x => x.com_page_title == "User Presence").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Index", "UserPresence")">User Presence</a>
-                                                                            </li>
-                                                                        }
-                                                                        @if (result.Where(x => x.com_page_title == "Case Cancelled Type").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                        {
-                                                                            <li>
-                                                                                <a class="dropdown-item" href="@Url.Action("Cancelled", "casetype")">Case Cancelled Type</a>
-                                                                            </li>
-                                                                        }
-                                                                    </ul>
-                                                                </li>
-                                                                @if (result.Where(x => x.com_page_title == "Sleep").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                {
-                                                                    <li class="dropdown-submenu">
-                                                                        <a href="#" class="dropdown-toggle dropdown-item" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                            <span class="nav-label">Sleep</span><span class="caret"></span>
-                                                                        </a>
-                                                                        <ul class="dropdown-menu">
-                                                                            @if (result.Where(x => x.com_page_title == "Sleep Codes").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                            {
-                                                                                <li>
-                                                                                    <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.SleepCodes.ToInt() })"> Sleep Codes </a>
-                                                                                </li>
-                                                                            }
-                                                                            @if (result.Where(x => x.com_page_title == "Case Statuses").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                            {
-                                                                                <li>
-                                                                                    <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.PacStatus.ToInt() })">Case Statuses</a>
-                                                                                </li>
-                                                                            }
-                                                                            @if (result.Where(x => x.com_page_title == "Case Types").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                                            {
-                                                                                <li>
-                                                                                    <a class="dropdown-item" href="@Url.Action("Index", "UCL", new { @id = UclTypes.PacCaseType.ToInt() })"> Case Types</a>
-                                                                                </li>
-                                                                            }
-                                                                        </ul>
-                                                                    </li>
-                                                                }
-                                                            </ul>
-                                                        </li>
-                                                    }
-                                                    @if (result.Where(x => x.com_page_title == "Physicians Rates").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                    {
-                                                        <li>
-                                                            <a class="dropdown-item" href="@Url.Action("users", "Rate")">Physicians Rates</a>
-                                                        </li>
-                                                    }
-                                                    @if (result.Where(x => x.com_page_title == "Facility Rates").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                    {
-                                                        <li>
-                                                            <a class="dropdown-item" href="@Url.Action("Index", "FacilityRate")">Facility Rates</a>
-                                                        </li>
-                                                    }
-                                                    @if (result.Where(x => x.com_page_title == "Roles").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                    {
-                                                        <li>
-                                                            <a class="dropdown-item" href="@Url.Action("Roles", "Admin")">Roles</a>
-                                                        </li>
-                                                    }
-                                                    @if (result.Where(x => x.com_page_title == "Settings").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                    {
-                                                        <li>
-                                                            <a class="dropdown-item" href="@Url.Action("Settings", "Admin")">Settings</a>
-                                                        </li>
-                                                    }
-                                                    @if (result.Where(x => x.com_page_title == "Users").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                    {
-                                                        <li>
-                                                            <a class="dropdown-item" href="@Url.Action("Users", "Admin")">Users</a>
-                                                        </li>
-                                                    }
-                                                    @if (result.Where(x => x.com_page_title == "Users").Select(x => x.cac_isAllowed).FirstOrDefault())
-                                                    {
-                                                        <li>
-                                                            <a class="dropdown-item" href="@Url.Action("Users", "Admin")">Users</a>
-                                                        </li>
-                                                    }
-                                                </ul>
-                                            </li>
-                                        }
-
-                                    </ul>}
-                            </li>
-                        </ul>
-
-                    </div>
-                    <div class="col-lg-5 col-md-2"></div>
-                    <div class="col-md-8 col-lg-5 text-right">
-                        <div class="nav-item nav-item-login">
-                            @if ((User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())))
-                            {
-                                <img src='~/Content/images/five-dollar.png' id="uploadImg" />
-                                <a href="@Url.Action("PhysicianBillingAmountDetail", "reports")" class="btn-sm font_11px loadLinkAsync lblamaount"></a> if (checktune)
-                                {
-                                    <a href="@Url.Action("alarmsetting", "alarm")" class="btn-sm font_11px loadLinkAsync clearLS"><span class="alarm_setting"></span>Alarm Setting</a>}
-                            }
-
-                            @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription()))
-                            {
-                                <a href="@Url.Action("Index", "Home")" class="btn-sm font_12px loadLinkAsync"><span class="fa fa-envelope-o rapids-inbox"></span>Inbox</a>}
-                            <a href="@Url.Action("ChangePassword", "Manage")" class="btn-sm font_11px loadLinkAsync"><span class="change_pp"></span>Change Password</a>
-
-                            <a href="@Url.Action("Signout", "Account")" class="btn-sm font_11px" id="signout"><span class="signout"></span>Sign Out</a>
-                        </div>
-                    </div>
-                </div>
-                <div id="divModelPopUp" class="modal" data-backdrop="static" data-keyboard="false" style="z-index:100000000000000000"></div>
-                <div id="divModelLessPopup" data-reload="1" data-backdrop="false"></div>
-                <div id="divCaseAssignPopup" class="modal" data-backdrop="static" data-keyboard="false" style="z-index:100000000000000000000000000"></div>
-                <div class="container-fluid h-100" id="mainContentArea">
-                    @*mb-3*@
-                    <div class="row mr-0" style="width:100%;margin:auto">
-                        @{ var colWidthClass = "col-sm-12";
-                            var style = "";
-                            if (loggedInUser != null)
-                            {
-                                if (loggedInUser.EnableFive9)
-                                {
-                                    <div id="five-9-nav-container">
-                                        @{Html.RenderAction("_index", "Phonebar"); }
-                                    </div> }
-                                if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
-                                {
-                                    colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
-                                    <div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3" id="phycisian-listing-container">
-                                    </div> } @*<div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3">
-                                        @{
-                                            if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
-                                            {
-                                                colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
-                                                <div id="Credentials-Expiring-container">
-                                                </div>
-                                            }
-                                            if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()))
-                                            {
-                                                colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
-                                                 <div id="cases-pending-review-container">
-                                                 </div>
-                                                }
-                                            }
-
-                                    </div>*@ }
-                                <div class="@colWidthClass" style="@style" id="async-content-container">
-                                    <br />  @*class="d-none d-xl-block d-lg-block"*@
-                                    <div id="validationSummary">
-                                    </div>
-                                    <input type="hidden" value="@Request.RawUrl" id="hdnCurrentUrl" />
-                                    <input type="hidden" value="0" id="hdnDisableLoader" />
-                                    <div id="divContentArea">
-                                        @RenderBody()
-                                    </div>
-                                </div> }
-                    </div>
-                </div>
+                <a href="@Url.Action("Signout", "Account")" class="btn-sm font_11px" id="signout"><span class="signout"></span>Sign Out</a>
             </div>
         </div>
     </div>
+    <div id="divModelPopUp" class="modal" data-backdrop="static" data-keyboard="false" style="z-index:100000000000000000"></div>
+    <div id="divModelLessPopup" data-reload="1" data-backdrop="false"></div>
+    <div id="divCaseAssignPopup" class="modal" data-backdrop="static" data-keyboard="false" style="z-index:100000000000000000000000000"></div>
+    <div class="container-fluid h-100" id="mainContentArea">
+        @*mb-3*@
+        <div class="row mr-0" style="width:100%;margin:auto">
+            @{
+                var colWidthClass = "col-sm-12";
+                var style = "";
+                if (loggedInUser != null)
+                {
+                    if (loggedInUser.EnableFive9)
+                    {
+                        <div id="five-9-nav-container">
+                            @{Html.RenderAction("_index", "Phonebar"); }
+                        </div>
+                    }
+                    if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+                    {
+                        colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+                        <div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3" id="phycisian-listing-container">
+                        </div>
+                        <div class="modal onboardingmodal d-none" id="onboardingmodal">
+                            <div class="modal-dialog modal-lg" style=" max-width:1532px; ">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4><b>Onboarding</b></h4>
+                                        <button type="button" id="btnclosemodal" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div id="showonboardingdata">
 
-    <div class="" style="height:50px;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a class="btn btn-sm btn-dark text-white closeboardingmodal" data-dismiss="modal">Close</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @*<div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3">
+                            @{
+                                if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
+                                {
+                                    colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+                                    <div id="Credentials-Expiring-container">
+                                    </div>
+                                }
+                                if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()))
+                                {
+                                    colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
+                                     <div id="cases-pending-review-container">
+                                     </div>
+                                    }
+                                }
+
+                        </div>*@
+                }
+                <div class="@colWidthClass" style="@style" id="async-content-container">
+                    <br />  @*class="d-none d-xl-block d-lg-block"*@
+                    <div id="validationSummary">
+                    </div>
+                    <input type="hidden" value="@Request.RawUrl" id="hdnCurrentUrl" />
+                    <input type="hidden" value="0" id="hdnDisableLoader" />
+                    <div id="divContentArea">
+                        @RenderBody()
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
     <footer class="footer" id="AddNewClass">
         <span class="text-muted">Copyright @DateTime.Now.Year TeleSpecialists, LLC. All rights reserved.</span>
     </footer>
@@ -1460,7 +1080,7 @@
         @Scripts.Render("~/bundles/hubs")
     }
     <div id="processing" class="loading" style="display:none"></div>
-
+   
     <script src="https://rawgit.com/nwcell/ics.js/master/ics.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
     @*<script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-app.js"></script>
@@ -1500,7 +1120,7 @@
     </script>
 
     @*<script src="~/Scripts/firebase/js/custome.js"></script>
-        @Scripts.Render("~/bundles/firebase")*@
+    @Scripts.Render("~/bundles/firebase")*@
 
 </body>
 </html>
