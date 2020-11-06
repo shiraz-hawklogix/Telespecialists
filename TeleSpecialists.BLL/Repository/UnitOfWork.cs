@@ -140,7 +140,7 @@ namespace TeleSpecialists.BLL.Repository
         private IFacilityAvailabilityRateRepository _facilityAvailabilityRateRepository;
         private IMenuData _menuRepository;
         private IMenuAccessData _menuAccessRepository;
-
+        
         public IQueryable<AspNetUser> ApplicationUsers
         {
             get
@@ -923,6 +923,18 @@ namespace TeleSpecialists.BLL.Repository
                     this._postAcuteCareRepository = new PostAcuteCareRepository(context);
                 }
                 return _postAcuteCareRepository;
+            }
+        }
+        private IPremorbidCorrespondnceRepository _premorbidRepository;
+        public IPremorbidCorrespondnceRepository premorbidRepository
+        {
+            get
+            {
+                if (this._premorbidRepository == null)
+                {
+                    this._premorbidRepository = new PremorbidCorrespondnceRepository(context);
+                }
+                return _premorbidRepository;
             }
         }
 
