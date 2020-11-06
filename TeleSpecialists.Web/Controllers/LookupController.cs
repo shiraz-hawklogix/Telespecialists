@@ -167,6 +167,31 @@ namespace TeleSpecialists.Controllers
                 return Json(new { success = false, data = "", error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+        [HttpGet]
+        public JsonResult GetAllMockFacilities()
+        {
+            var phyFacList = _physicianService.GetAllFacilities().Where(f => f.fac_is_active && f.fac_go_live == false)
+                                 .Select(m =>
+                                                     new
+                                                     {
+                                                         fac_key = m.fac_key,
+                                                         fac_name = m.fac_name
+                                                     }).ToList();
+            return Json(phyFacList, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetAllMockPhyscians()
+        {
+            var phyList = _physicianService.GetAllPhysicians().Where(x=>x.Id == "46cb0702-4fd9-433b-bdb3-1729047a41c5")
+                                 .Select(m =>
+                                                     new
+                                                     {
+                                                         phy_key = m.Id,
+                                                         phy_name = m.FirstName + " " + m.LastName
+                                                     }).ToList();
+            return Json(phyList, JsonRequestBehavior.AllowGet);
+        }
 
         public JsonResult GetStrokeFacilities(string phoneNumber)
         {

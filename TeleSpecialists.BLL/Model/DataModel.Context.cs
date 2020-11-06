@@ -102,6 +102,7 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<Hospital_Protocols> Hospital_Protocols { get; set; }
         public virtual DbSet<Onboarded> Onboardeds { get; set; }
         public virtual DbSet<web2campaign_log> web2campaign_log { get; set; }
+        public virtual DbSet<mock_case> mock_case { get; set; }
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {
