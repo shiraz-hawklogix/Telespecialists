@@ -33,7 +33,7 @@
 
     bool isReadOnlyCase = ViewBag.IsReadOnlyCase;
     TeleSpecialists.Models.ApplicationUser loggedInUser = ViewBag.loggedInUser;
-
+    ViewBag.LoggedInName = loggedInUser.FullName;
     ViewBag.Title = "Edit Case";
     ViewBag.CurrentView = "Edit";
     var caseModel = (@case)ViewBag.CaseModel;
@@ -162,7 +162,6 @@
     {
         textfreeExam = "true";
     }
-
 }
 @Html.Partial("_facilityInfoPopover", caseModel)
 <div class="col-md-12">
@@ -412,13 +411,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             <li class="nav-item"><a id="templatesTabLink" data-toggle="tab" class="nav-link" href="#templates" onclick="showHideTabElements('#templates');">Templates</a></li>
         }
     }
-    @if ((User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription())))
-    {
-        if (Model.cas_ctp_key == CaseType.StrokeAlert.ToInt() || Model.cas_ctp_key == CaseType.StatConsult.ToInt())
-        {
-            <li class="nav-item"><a id="premorbidTabLink" data-toggle="tab" class="nav-link" href="#premorbid" onclick="showHideTabElements('#premorbid');">Hospital F/UP</a></li>
-        }
-    }
     @if (!(User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) || User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription())))
     {
         <li class="nav-item"><a id="billingTabLink" data-toggle="tab" class="nav-link @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ||  User.IsInRole(UserRoles.FacilityPhysician.ToDescription())) && !isMetricsVisible? "active" : "")" href="#billing" onclick="showHideTabElements('#billing');">Billing</a></li>
@@ -427,7 +419,13 @@ EntityTypes.StateAlertTemplate.ToInt()
     {
         <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#metricResponse" onclick="showHideTabElements('metricResponse');">Case Review</a></li>
     }
-
+    @if ((User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription())))
+    {
+        if (Model.cas_ctp_key == CaseType.StrokeAlert.ToInt() || Model.cas_ctp_key == CaseType.StatConsult.ToInt())
+        {
+            <li class="nav-item"><a id="premorbidTabLink" data-toggle="tab" class="nav-link" href="#premorbid" onclick="showHideTabElements('#premorbid');">Follow Up</a></li>
+        }
+    }
 </ul>
 @{
     var editUrl = Url.Action("Edit");
@@ -912,10 +910,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 $("#cas_review_qps_reviewed_completed").removeAttr('readonly');
             }
         } else if (tab == '#premorbid' || tab == 'premorbid') {
-            if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' == 'True') {
-                $('.premorbid :radio:not(:checked)').attr('disabled', true);
-                $('#cas_premorbid_symptoms_text').attr('readonly', true);
-            }
+            GetPreMorbidData();
         }
 
         //Disable and Enable buttons
@@ -1196,7 +1191,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             $("#general_cas_patient_name").val($(this).val());
         });
         //Added By Axim 29-10-2020
-        $(".morbidSymptoms").on('change', function () {
+        @*$(".morbidSymptoms").on('change', function () {
             var currentVal = $('input:radio[name=cas_metric_has_morbid_symptoms]:checked').val();
             $('.premorbid :radio:not(:checked)').attr('disabled', false);
             if (currentVal == "0") {
@@ -1239,7 +1234,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             } if (currentVal == "7") {
                 $("#cas_metric_has_morbid_symptoms_7").prop('checked', true);
             }
-        });
+        });*@
         //Ended By Axim 29-10-2020
 
         $("#cas_billing_visit_type").on('change', function () {
@@ -1763,7 +1758,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             var metricTab = true;
             var templateTab = true;
             var billingTab = true;
-            var premorbidTab = true;
+            //var premorbidTab = true;
             var tabToShow = "";
 
 
@@ -1791,10 +1786,10 @@ EntityTypes.StateAlertTemplate.ToInt()
                tabToShow = "#generalTABLink";
                generalTab = false;
             }
-            if (!validatepremorbidFields(true)) {
-                tabToShow = "#premorbidTabLink";
-                premorbidTab = false;
-            }
+            //if (!validatepremorbidFields(true)) {
+            //    tabToShow = "#premorbidTabLink";
+            //    premorbidTab = false;
+            //}
 
 
             if (tabToShow !== null && tabToShow !== "") {
@@ -3970,6 +3965,8 @@ EntityTypes.StateAlertTemplate.ToInt()
         });
 
     }
+    
+    
 </script>
 
 @if (ShowPopup)

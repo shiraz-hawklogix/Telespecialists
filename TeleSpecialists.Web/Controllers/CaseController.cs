@@ -875,7 +875,11 @@ namespace TeleSpecialists.Controllers
                 throw ex;
             }
         }
-
+        public ActionResult GetPreMorbidData(int cas_key)
+        {
+            var PremorbidData = _caseService.GetPremorbidCorrespondnces(cas_key);
+            return Json(PremorbidData, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult Edit(int id, bool isReadOnly = false)
         {
             isCalculateBill = false;
@@ -910,6 +914,8 @@ namespace TeleSpecialists.Controllers
             try
             {
                 model = _caseService.GetDetails(id);
+                
+
                 if (model.facility != null)
                 {
                     if (!string.IsNullOrWhiteSpace(model.facility.qps_number))
@@ -1395,7 +1401,7 @@ namespace TeleSpecialists.Controllers
                             showPhyOfflinePopup = IsUserOnline(model.cas_phy_key) ? "0" : "1";
                             if (showPhyOfflinePopup == "0")
                             {
-                                 SendCaseToPhysician(model);
+                                SendCaseToPhysician(model);
                             }
                         }
 
@@ -1444,16 +1450,11 @@ namespace TeleSpecialists.Controllers
             public int? rca_rootcause_id { get; set; }
             public string rca_completed_date { get; set; }
         }
-        
+
 
         public JsonResult GetRootRecord(int id)
         {
             var GetRecord = _rootCauseService.GetDetail(id);
-            foreach(var item in GetRecord)
-            {
-                item.rca_proposed_due_date = item.rca_proposed_due_date.Value.ToEST();
-                item.rca_completed_date = item.rca_completed_date.Value.ToEST();
-            }
 
             List<rca_counter_measure_model> _list = new List<rca_counter_measure_model>();
             rca_counter_measure_model obj;
@@ -1504,7 +1505,7 @@ namespace TeleSpecialists.Controllers
                 {
                     Text = "Not Available",
                     Value = "notavailable"
-                }).ToList();                
+                }).ToList();
                 return Json(Physicians, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -1519,7 +1520,7 @@ namespace TeleSpecialists.Controllers
         [ValidateAntiForgeryToken]
         [AccessRoles(NotInRoles = "Facility Admin")]
         [ValidateInput(false)]
-        public ActionResult Edit(@case model, string[] rootcausevalue, string[] propcountermsureval, string[] responsibleprtyval, string[] propduedateval, String[] copddateval, string[] idsrootvalue, string[] cas_datetime_of_contact, string[] cas_contact_comments)
+        public ActionResult Edit(@case model, string[] rootcausevalue, string[] propcountermsureval, string[] responsibleprtyval, string[] propduedateval, String[] copddateval, string[] idsrootvalue, string[] cas_datetime_of_contact, string[] cas_contact_comments, PremorbidCorrespondnce premorbid)
         {
             try
             {
@@ -1528,6 +1529,8 @@ namespace TeleSpecialists.Controllers
                 {
                     redirectToEdit = Request.Params["isReadOnly"] == "true" ? true : false;
                 }
+                
+                _caseService.EditMorbid(premorbid,model.cas_key);
                 var GetRecord = _rootCauseService.GetDetail(model.cas_key);
                 var count = GetRecord.Count();
                 if (GetRecord.Count() != 0)
@@ -2197,11 +2200,11 @@ namespace TeleSpecialists.Controllers
                 {
                     facilities = _lookUpService.GetAllActnNonActFacility("")
                                              .Select(x => x.fac_key).ToList();
-                //}
-                //else if ()
-                //{
-                //    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
-                //    .Select(x => x.Facility).ToList();
+                    //}
+                    //else if ()
+                    //{
+                    //    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
+                    //    .Select(x => x.Facility).ToList();
                 }
                 var res = _caseGridService.GetCaseLisingPageData(request, userId, facilities); //Getting cases for listing
                 var jsonResult = Json(res, JsonRequestBehavior.AllowGet);
@@ -2421,17 +2424,17 @@ namespace TeleSpecialists.Controllers
                     var caseExportData = list.Select(m =>
                                            new
                                            {
-                                           // General Tab
-                                           Case_Number = m.cas_case_number,
+                                               // General Tab
+                                               Case_Number = m.cas_case_number,
                                                Timestamp = m.cas_created_date.ToString("MM/dd/yyyy HH:mm:ss"), //Functions.ConvertToFacilityTimeZone(m.cas_created_date, m.fac_timezone),
-                                           Case_Date = m.cas_created_date.ToString("M/d/yyyy"),
+                                               Case_Date = m.cas_created_date.ToString("M/d/yyyy"),
                                                Case_Time = m.cas_created_date.ToString("HH:mm"),
                                                Case_Type = m.CaseType,
                                                Facility = m.FacityName,
                                                Assigned_Physician = m.AssignedPhysician,
                                                Arrival_Time = Functions.ConvertToFacilityTimeZone(m.cas_metric_door_time, m.fac_timezone),
-                                           // Metric Tab
-                                           Last_Known_Well = Functions.ConvertToFacilityTimeZone(m.cas_metric_lastwell_date, m.fac_timezone),
+                                               // Metric Tab
+                                               Last_Known_Well = Functions.ConvertToFacilityTimeZone(m.cas_metric_lastwell_date, m.fac_timezone),
                                                Is_Last_Known_Well_Unknow = m.cas_metric_is_lastwell_unknown.ToYesNo(),
                                                Stamp_Time = Functions.ConvertToFacilityTimeZone(m.cas_metric_stamp_time, m.fac_timezone),
                                                Workflow_Type = m.cas_patient_type.ToInt() == 0 ? "" : ((PatientType)m.cas_patient_type).ToDescription(),
@@ -2439,8 +2442,8 @@ namespace TeleSpecialists.Controllers
                                                Video_Start_Time = Functions.ConvertToFacilityTimeZone(m.cas_metric_video_start_time, m.fac_timezone),
                                                Symptoms = m.cas_metric_symptoms,
                                                NIHSS_Start_Assessment_Time = Functions.ConvertToFacilityTimeZone(m.cas_metric_assesment_time, m.fac_timezone),
-                                           // Col - 2
-                                           Last_Seen_Normal_outside_of_4_dot_5_hours = m.cas_metric_last_seen_normal == 0 ? "" : ((LB2S2CriteriaOptions)m.cas_metric_last_seen_normal).ToDescription(),
+                                               // Col - 2
+                                               Last_Seen_Normal_outside_of_4_dot_5_hours = m.cas_metric_last_seen_normal == 0 ? "" : ((LB2S2CriteriaOptions)m.cas_metric_last_seen_normal).ToDescription(),
                                                History_of_hemorrhagic_complications_or_intracranial_hemorrhage = ((LB2S2CriteriaOptions)m.cas_metric_has_hemorrhgic_history).ToDescription(),
                                                Recent_Anticoagulants = ((LB2S2CriteriaOptions)m.cas_metric_has_recent_anticoagulants).ToDescription(),
                                                History_of_recent_major_surgery = ((LB2S2CriteriaOptions)m.cas_metric_has_major_surgery_history).ToDescription(),
@@ -2448,7 +2451,7 @@ namespace TeleSpecialists.Controllers
                                                tPA_Verbal_Order_Time = Functions.ConvertToFacilityTimeZone(m.cas_metric_tpa_verbal_order_time, m.fac_timezone),
                                                tPA_Candidate = m.cas_metric_tpa_consult.ToYesNo(),
                                                tPA_CPOE_Order_Time = Functions.ConvertToFacilityTimeZone(m.cas_metric_pa_ordertime, m.fac_timezone),//m.cas_metric_pa_ordertime_est
-                                           Needle_Time = m.cas_metric_needle_time,
+                                               Needle_Time = m.cas_metric_needle_time,
                                                Weight_Noted_By_Staff = m.cas_metric_weight,
                                                Weight_Unit = m.cas_metric_weight_unit,
                                                Total_Dose = m.cas_metric_total_dose,
@@ -2459,8 +2462,8 @@ namespace TeleSpecialists.Controllers
                                                Reason_for_tpa_Login_Delay = m.Reason_for_tpa_Login_Delay,
                                                Patient_is_not_Candidate_for_tPA_Administration_because = m.non_tpa_reason,
                                                tPA_Delay_Notes = m.cas_billing_tpa_delay_notes,
-                                           // Col - 3
-                                           CT_Head_Showed_no_acute_hemorrhage_or_acute_core_infarct = m.cas_metric_ct_head_has_no_acture_hemorrhage.ToYesNo(),
+                                               // Col - 3
+                                               CT_Head_Showed_no_acute_hemorrhage_or_acute_core_infarct = m.cas_metric_ct_head_has_no_acture_hemorrhage.ToYesNo(),
                                                CT_Head_Reviewed = m.cas_metric_ct_head_is_reviewed.ToYesNo(),
                                                CT_Not_Reviewed = m.cas_metric_ct_head_is_not_reviewed.ToYesNo(),
 
@@ -2470,8 +2473,8 @@ namespace TeleSpecialists.Controllers
                                                ER_physician_notified_of_the_decision_on_thrombolytics_management = m.cas_metric_physician_notified_of_thrombolytics.HasValue ? m.cas_metric_physician_notified_of_thrombolytics.Value.ToYesNo() : "",
                                                ER_physician_recommended_to_consult_neurointerventionalist_physician_if_the_advanced_imaging_suggestive_of_Large_Vessel_Occlusive_Thrombotic_Disease = m.cas_metric_physician_recommented_consult_neurointerventionalist?.ToYesNo(),
 
-                                           // Billing Tab
-                                           Billing_Code = m.Billing_Code,
+                                               // Billing Tab
+                                               Billing_Code = m.Billing_Code,
                                                Date_Of_Consult = m.cas_billing_date_of_consult?.FormatDate(),
                                                Sign_Off_or_Follow_Up = m.cas_billing_visit_type,
                                                Follow_Up_Date = m.cas_follow_up_date?.FormatDate(),
@@ -2484,10 +2487,10 @@ namespace TeleSpecialists.Controllers
                     var caseExportData = list.Select(m =>
                                              new
                                              {
-                                             // General Tab
-                                             Case_Number = m.cas_case_number,
+                                                 // General Tab
+                                                 Case_Number = m.cas_case_number,
                                                  Timestamp = m.cas_created_date.ToString("MM/dd/yyyy HH:mm:ss"),//Functions.ConvertToFacilityTimeZone(m.cas_created_date, m.fac_timezone),//m.cas_created_date.FormatDateTime(),
-                                             Case_Date = m.cas_created_date.ToString("M/d/yyyy"),
+                                                 Case_Date = m.cas_created_date.ToString("M/d/yyyy"),
                                                  Case_Time = m.cas_created_date.ToString("HH:mm"),
                                                  Case_Type = m.CaseType,
                                                  Facility = m.FacityName,
@@ -2508,8 +2511,8 @@ namespace TeleSpecialists.Controllers
                                                  ETA = m.cas_eta,
                                                  Pulled_From_Rounding = m.cas_pulled_from_rounding.ToYesNo(),
                                                  Navigator_Blast = m.cas_is_nav_blast.ToYesNo(),
-                                             // Metric Tab
-                                             Last_Known_Well = Functions.ConvertToFacilityTimeZone(m.cas_metric_lastwell_date, m.fac_timezone),
+                                                 // Metric Tab
+                                                 Last_Known_Well = Functions.ConvertToFacilityTimeZone(m.cas_metric_lastwell_date, m.fac_timezone),
                                                  Is_Last_Known_Well_Unknow = m.cas_metric_is_lastwell_unknown.ToYesNo(),
                                                  Stamp_Time = Functions.ConvertToFacilityTimeZone(m.cas_metric_stamp_time, m.fac_timezone),
                                                  Workflow_Type = m.cas_patient_type.ToInt() == 0 ? "" : ((PatientType)m.cas_patient_type).ToDescription(),
@@ -2517,8 +2520,8 @@ namespace TeleSpecialists.Controllers
                                                  Video_Start_Time = Functions.ConvertToFacilityTimeZone(m.cas_metric_video_start_time, m.fac_timezone),
                                                  Symptoms = m.cas_metric_symptoms,
                                                  NIHSS_Start_Assessment_Time = Functions.ConvertToFacilityTimeZone(m.cas_metric_assesment_time, m.fac_timezone),
-                                             // Col - 2
-                                             Last_Seen_Normal_outside_of_4_dot_5_hours = m.cas_metric_last_seen_normal == 0 ? "" : ((LB2S2CriteriaOptions)m.cas_metric_last_seen_normal).ToDescription(),
+                                                 // Col - 2
+                                                 Last_Seen_Normal_outside_of_4_dot_5_hours = m.cas_metric_last_seen_normal == 0 ? "" : ((LB2S2CriteriaOptions)m.cas_metric_last_seen_normal).ToDescription(),
                                                  History_of_hemorrhagic_complications_or_intracranial_hemorrhage = ((LB2S2CriteriaOptions)m.cas_metric_has_hemorrhgic_history).ToDescription(),
                                                  Recent_Anticoagulants = ((LB2S2CriteriaOptions)m.cas_metric_has_recent_anticoagulants).ToDescription(),
                                                  History_of_recent_major_surgery = ((LB2S2CriteriaOptions)m.cas_metric_has_major_surgery_history).ToDescription(),
@@ -2528,7 +2531,7 @@ namespace TeleSpecialists.Controllers
                                                  Reason_for_Login_Delay = m.Reason_for_Login_Delay,
                                                  Login_Delay_Notes = m.cas_metric_notes,
                                                  tPA_CPOE_Order_Time = Functions.ConvertToFacilityTimeZone(m.cas_metric_pa_ordertime, m.fac_timezone),//m.cas_metric_pa_ordertime_est
-                                             Needle_Time = m.cas_metric_needle_time,
+                                                 Needle_Time = m.cas_metric_needle_time,
                                                  Weight_Noted_By_Staff = m.cas_metric_weight,
                                                  Weight_Unit = m.cas_metric_weight_unit,
                                                  Total_Dose = m.cas_metric_total_dose,
@@ -2539,8 +2542,8 @@ namespace TeleSpecialists.Controllers
                                                  Reason_for_tpa_Login_Delay = m.Reason_for_tpa_Login_Delay,
                                                  Patient_is_not_Candidate_for_tPA_Administration_because = m.non_tpa_reason,
                                                  tPA_Delay_Notes = m.cas_billing_tpa_delay_notes,
-                                             // Col - 3
-                                             CT_Head_Showed_no_acute_hemorrhage_or_acute_core_infarct = m.cas_metric_ct_head_has_no_acture_hemorrhage.ToYesNo(),
+                                                 // Col - 3
+                                                 CT_Head_Showed_no_acute_hemorrhage_or_acute_core_infarct = m.cas_metric_ct_head_has_no_acture_hemorrhage.ToYesNo(),
                                                  CT_Head_Reviewed = m.cas_metric_ct_head_is_reviewed.ToYesNo(),
                                                  CT_Not_Reviewed = m.cas_metric_ct_head_is_not_reviewed.ToYesNo(),
 
@@ -2550,19 +2553,19 @@ namespace TeleSpecialists.Controllers
                                                  ER_physician_notified_of_the_decision_on_thrombolytics_management = m.cas_metric_physician_notified_of_thrombolytics.HasValue ? m.cas_metric_physician_notified_of_thrombolytics.Value.ToYesNo() : "",
                                                  ER_physician_recommended_to_consult_neurointerventionalist_physician_if_the_advanced_imaging_suggestive_of_Large_Vessel_Occlusive_Thrombotic_Disease = m.cas_metric_physician_recommented_consult_neurointerventionalist?.ToYesNo(),
 
-                                             // Billing Tab
-                                             Billing_Code = m.Billing_Code,
+                                                 // Billing Tab
+                                                 Billing_Code = m.Billing_Code,
                                                  Date_Of_Consult = m.cas_billing_date_of_consult?.FormatDate(),
                                                  Diagnosis = m.cas_billing_diagnosis,
-                                             //MRN_FIN = m.cas_billing_mrn_fin,
-                                             Billing_Notes = m.cas_billing_notes,
+                                                 //MRN_FIN = m.cas_billing_mrn_fin,
+                                                 Billing_Notes = m.cas_billing_notes,
                                                  Sign_Off_or_Follow_Up = m.cas_billing_visit_type,
                                                  Follow_Up_Date = m.cas_follow_up_date?.FormatDate(),
                                                  Physician_Blast = m.cas_billing_physician_blast.ToYesNo(),
-                                             // Case Review Tab
-                                             Date_of_Consult = m.cas_response_date_consult?.FormatDate(),
+                                                 // Case Review Tab
+                                                 Date_of_Consult = m.cas_response_date_consult?.FormatDate(),
                                                  Start_Time = Functions.ConvertToFacilityTimeZone(m.cas_response_ts_notification, m.fac_timezone), //   start time                                     
-                                             Final_Physician_Acceptance_Time = Functions.ConvertToFacilityTimeZone(m.cas_response_time_physician, m.fac_timezone),
+                                                 Final_Physician_Acceptance_Time = Functions.ConvertToFacilityTimeZone(m.cas_response_time_physician, m.fac_timezone),
                                                  SA_to_TS_MD = m.cas_response_sa_ts_md > 0 ? ((MetricResponseStatus)m.cas_response_sa_ts_md).ToDescription() : "",
                                                  Navigator_Concurrent_Alerts = m.cas_navigator_concurrent_alerts > 0 ? ((MetricResponseStatus)m.cas_navigator_concurrent_alerts).ToDescription() : "",
                                                  Physician_Concurrent_Alerts = m.cas_physician_concurrent_alerts > 0 ? ((MetricResponseStatus)m.cas_physician_concurrent_alerts).ToDescription() : "",
@@ -2571,11 +2574,11 @@ namespace TeleSpecialists.Controllers
                                                  tpa_60_minutes = m.cas_response_tpa_to_minute > 0 ? ((MetricResponseStatus)m.cas_response_tpa_to_minute).ToDescription() : "",
                                                  door_Time_to_Needle_Time_60_Minutes = m.cas_response_door_to_needle > 0 ? ((MetricResponseStatus)m.cas_response_door_to_needle).ToDescription() : "",
                                                  Start_Time_to_Needle_Time = Functions.GetSubtractedDateFormated(m.cas_metric_stamp_time_est, m.cas_metric_needle_time_est), // calculated field
-                                             Time_First_Login_Attempt_to_Needle_Time = Functions.GetSubtractedDateFormated(m.cas_response_first_atempt, m.cas_metric_needle_time_est), // calculated field
-                                             tPA_to_Needle_Time = Functions.GetSubtractedDateFormated(m.cas_metric_pa_ordertime_est, m.cas_metric_needle_time_est), // calculated field
-                                                                                                                                                                    // Col - 2
-                                             Response_Time = Functions.GetSubtractedDateFormated(m.cas_metric_stamp_time_est, m.cas_response_first_atempt), // calculated field                          
-                                             Reviewer = m.cas_response_reviewer != "" ? GetReviewerNames(m.cas_response_reviewer) : "",
+                                                 Time_First_Login_Attempt_to_Needle_Time = Functions.GetSubtractedDateFormated(m.cas_response_first_atempt, m.cas_metric_needle_time_est), // calculated field
+                                                 tPA_to_Needle_Time = Functions.GetSubtractedDateFormated(m.cas_metric_pa_ordertime_est, m.cas_metric_needle_time_est), // calculated field
+                                                                                                                                                                        // Col - 2
+                                                 Response_Time = Functions.GetSubtractedDateFormated(m.cas_metric_stamp_time_est, m.cas_response_first_atempt), // calculated field                          
+                                                 Reviewer = m.cas_response_reviewer != "" ? GetReviewerNames(m.cas_response_reviewer) : "",
                                                  Case_Research = m.cas_response_case_research,
                                                  Physician_to_TS_Accept_3 = m.cas_response_nav_to_ts > 0 ? ((MetricResponseStatus)m.cas_response_nav_to_ts).ToDescription() : "",
                                                  Pulled_from_Rounding = m.cas_response_pulled_rounding > 0 ? ((MetricResponseStatus)m.cas_response_pulled_rounding).ToDescription() : "",
@@ -5770,7 +5773,7 @@ namespace TeleSpecialists.Controllers
                     }
                 }
 
-                return existingNotes;  
+                return existingNotes;
             }
             catch (Exception ex)
             {

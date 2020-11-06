@@ -1282,27 +1282,44 @@ new SelectListItem {Text = "20", Value = "20"},
                 }
             }
         });
-
+        
+        var valuebefore = $("#work-flow-ids").val();
         var arrayofrca = [];
+        if (valuebefore != "") {
+            arrayofrca = valuebefore.split(',');
+        }
+        
         if (@isarival== true) {
             $('.gotVal_rad').prop('checked', true);
-            arrayofrca.push($('.gotVal_rad').val());
+            var value = $('.gotVal_rad').val();
+            if ($.inArray(value, arrayofrca) == -1) {
+                arrayofrca.push(value);
+            }
             $('.childarivaldelay').show(200);
             $('.hideShowUl').show(200);
         }
         if (@isnihss== true) {
             $('.timeFirst').prop('checked', true);
-            arrayofrca.push($('.timeFirst').val());
+            var value = $('.timeFirst').val();
+            if ($.inArray(value, arrayofrca) == -1) {
+                arrayofrca.push(value);
+            }
             $('.childtimefirst').show(200);
         }
         if (@isvideostart== true) {
             $('.videostart').prop('checked', true);
-            arrayofrca.push($('.videostart').val());
+            var value = $('.videostart').val();
+            if ($.inArray(value, arrayofrca) == -1) {
+                arrayofrca.push(value);
+            }
             $('.childVideoStrt').show(200);
         }
         if (@isneedle== true) {
             $('.needleTime').prop('checked', true);
-            arrayofrca.push($('.needleTime').val());
+            var value = $('.needleTime').val();
+            if ($.inArray(value, arrayofrca) == -1) {
+                arrayofrca.push(value);
+            }
             $('.childarrivalneedle').show(200);
             if ($("#8").is(':checked')) {
                 $('.childmedicaldecisionmaking').show(200);
@@ -1315,7 +1332,7 @@ new SelectListItem {Text = "20", Value = "20"},
                 $('.childrelatedlab').hide(200);
             }
         }
-        $("#work-flow-ids").val(arrayofrca.toString());
+            $("#work-flow-ids").val(arrayofrca.toString());
     });
     $("#operations_review_completed").click(function () {
         if ($(this).is(":checked")) {
@@ -1456,7 +1473,6 @@ new SelectListItem {Text = "20", Value = "20"},
                     $.each(data, function (key, value) {
                         ArrFinal.push({ Id: value.rca_rootcause_id, RootCause: value.rca_root_cause, ProposedCountermeasure: value.rca_proposed_countermeasure, ResponsibleParty: value.rca_responsible_party, ProposedDueDate: value.rca_proposed_due_date, CompletedDate: value.rca_completed_date, RootId: value.rca_Id })
                     });
-                    debugger;
                     DisplayTable(ArrFinal);
                     DisableCounterForPhyAndPatner();
                 },
