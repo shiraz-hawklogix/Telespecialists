@@ -490,8 +490,13 @@
         });
 
     }
-    function GetAutoStamp(caskey,  phy_key, physician) {
-        $.ajax({
+    function GetAutoStamp(caskey, phy_key, physician, automStampMsg) {
+        if (automStampMsg != "" && automStampMsg != undefined) {
+            let textToPreview = automStampMsg.replaceAll("##NewLine##", "<br/>");
+            var automsg = textToPreview; //CreateMsg(dataItem)
+            CallFirebaseMsg(phy_key, physician, automsg);
+        }
+        @*$.ajax({
             url: "@Url.Action("GetCaseCopyData")?case_key=" + caskey,
              type: 'GET',
              success: function (data) {
@@ -505,7 +510,7 @@
             error: function () {
                 console.log("error");
             }
-        });
+        });*@
     }
     function CallFirebaseMsg(phy_key, physician, automsg) {
         console.log('phy-key : ' + phy_key + ' ,  phyname : ' + physician);
@@ -528,6 +533,9 @@
         var STFrow = $(e.currentTarget).closest("tr");
         var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(e.currentTarget).closest("tr"));
         var checkPhyKey = STFrow[0].children[13].innerText;
+        var automStampMsg = dataItem.CombinedMessage;
+        console.log('your auto stamp is: ' + automStampMsg);
+        debugger;
         var phy_key = "";
         if (checkPhyKey == "00000000-0000-0000-0000-000000000000" || checkPhyKey == "") {
             phy_key = dataItem.cas_phy_key; 
@@ -543,7 +551,7 @@
 
 
         if (status == "Waiting to Accept") { // Important Check To Stop Multiple Alert Popups to Physician
-            GetAutoStamp(casKey, phy_key, physician);
+            GetAutoStamp(casKey, phy_key, physician, automStampMsg);
         }
 
         var baseurl = "@Url.Action("Save")";
