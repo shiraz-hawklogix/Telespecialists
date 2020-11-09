@@ -801,8 +801,7 @@ namespace TeleSpecialists.Controllers
 
                         _caseService.UpdateTimeStamps(model.cas_key.ToString());
 
-                        ShowNavigatorAcceptCasePopup(model, physicianReq.cah_created_by, userId);
-
+                        ShowNavigatorAcceptCasePopup(model, physicianReq.cah_created_by, userId, "blast");
 
 
                         return Json(new { success = true, message = "Case #" + model.cas_case_number + " has been assigned to you successfully" });
@@ -5771,46 +5770,57 @@ ViewBag.StatConsultOtherWork = _uclService.GetUclData(UclTypes.OtherWorkUp)
             }
         }
 
-        private void ShowNavigatorAcceptCasePopup(@case model, string popupInitiatedByUserId, string userid)
+        private void ShowNavigatorAcceptCasePopup(@case model, string popupInitiatedByUserId, string userid, string caseType = "default")
         {
             try
             {
-            var facilityTimeZone = Settings.DefaultTimeZone;
-            string cas_response_time_physician = "";
-            if (!string.IsNullOrEmpty(model.facility?.fac_timezone))
-            {
-                facilityTimeZone = model.facility?.fac_timezone;
-            }
-
-            if (model.cas_response_time_physician.HasValue)
-                cas_response_time_physician = model.cas_response_time_physician.Value.ToTimezoneFromUtc(facilityTimeZone).FormatDateTime();
-
-            model.FromWaitingToAcceptToAcceptTime = CalculateWaitingToAcceptTime(model);
-
-            string jsonData = JsonConvert.SerializeObject(new { model.cas_key, model.cas_phy_key, model.cas_cst_key, cas_response_time_physician, model.cas_case_number, model.FromWaitingToAcceptToAcceptTime });
-
-            if (Settings.RPCMode == RPCMode.SignalR)
-            {
-                #region Sending Alert to Physician in case of All Physicians reject the case
-
-                var hubContext = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<PhysicianCasePopupHub>();
-                var navigatorList = PhysicianCasePopupHub.ConnectedUsers.Where(m => m.UserId == popupInitiatedByUserId)
-                                                        .ToList();
-
-                navigatorList.ForEach(navigator =>
+                var facilityTimeZone = Settings.DefaultTimeZone;
+                string cas_response_time_physician = "";
+                if (!string.IsNullOrEmpty(model.facility?.fac_timezone))
                 {
-                    hubContext.Clients.Client(navigator.ConnectionId).showNavigatorAcceptCasePopupWithNoQueue(jsonData);
+                    facilityTimeZone = model.facility?.fac_timezone;
+                }
 
-                });
+                if (model.cas_response_time_physician.HasValue)
+                    cas_response_time_physician = model.cas_response_time_physician.Value.ToTimezoneFromUtc(facilityTimeZone).FormatDateTime();
+
+                model.FromWaitingToAcceptToAcceptTime = CalculateWaitingToAcceptTime(model);
+
+                string jsonData = JsonConvert.SerializeObject(new { model.cas_key, model.cas_phy_key, model.cas_cst_key, cas_response_time_physician, model.cas_case_number, model.FromWaitingToAcceptToAcceptTime });
+
+                if (Settings.RPCMode == RPCMode.SignalR)
+                {
+                    #region Sending Alert to Physician in case of All Physicians reject the case
+
+                    var hubContext = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<PhysicianCasePopupHub>();
+                    var navigatorList = PhysicianCasePopupHub.ConnectedUsers.Where(m => m.UserId == popupInitiatedByUserId)
+                                                            .ToList();
+
+                    navigatorList.ForEach(navigator =>
+                    {
+                        hubContext.Clients.Client(navigator.ConnectionId).showNavigatorAcceptCasePopupWithNoQueue(jsonData);
+
+                    });
 
 
-                #endregion
-            }
-            else if (Settings.RPCMode == RPCMode.WebSocket)
-            {
-               // new WebSocketEventHandler().CallJSMethod(popupInitiatedByUserId, new SocketResponseModel { MethodName = "showNavigatorAcceptCasePopupWithNoQueue_def", Data = new List<object> { jsonData } });
-            }
-            bool status = _user_Fcm_Notification.SendNotification( model.cas_created_by, model.cas_key, jsonData: jsonData, caseType: "Accept");
+                    #endregion
+                }
+                else if (Settings.RPCMode == RPCMode.WebSocket)
+                {
+                    // new WebSocketEventHandler().CallJSMethod(popupInitiatedByUserId, new SocketResponseModel { MethodName = "showNavigatorAcceptCasePopupWithNoQueue_def", Data = new List<object> { jsonData } });
+                }
+                bool status = false;
+                if (caseType == "blast")
+                {
+                    List<string> roleIDs = new List<string>();
+                    roleIDs.Add("0029737b-f013-4e0b-8a31-1b09524194f9");
+                    var res = _adminService.GetAllUsersIds(roleIDs);
+                    var list = _fireBaseUserMailService.GetAllSpecificUser(res);
+                    var phy_ids = list.Select(x => x.user_id).ToList();
+                    status = _user_Fcm_Notification.SendNotification(caseId: model.cas_key, phy_ids: phy_ids, caseType: "acceptBlast");
+                }
+                else
+                    status = _user_Fcm_Notification.SendNotification(model.cas_created_by, model.cas_key, jsonData: jsonData, caseType: "Accept");
             }
             catch (Exception ex)
             {

@@ -1,4 +1,4 @@
-﻿var StatusArray = ['Open', 'snooze', 'Accept', 'Reject', 'closeNavigatorCase', 'refreshPhyStatus', 'syncCaseInfo', 'InternalBlast', 'ExternalBlast'];
+﻿var StatusArray = ['Open', 'snooze', 'Accept', 'Reject', 'closeNavigatorCase', 'refreshPhyStatus', 'syncCaseInfo', 'InternalBlast', 'ExternalBlast', 'acceptBlast'];
 function snoozePoupReloadCode_edit() {
     showPhysicianStatusSnoozePopup_def_edit(3, true);
 }
