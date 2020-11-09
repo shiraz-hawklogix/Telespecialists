@@ -58,7 +58,8 @@
     var facilityDropdown = null;
 
     var uclData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.UclData, Newtonsoft.Json.Formatting.Indented));
-
+    function changefacility() {
+    }
     $(document).ready(function () {
         $(window).on('beforeunload', function () {
             clearSoftSaveCase();

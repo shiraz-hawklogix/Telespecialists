@@ -220,7 +220,7 @@ else if (Model != null)
 
                 }
 
-                <select @caseTypedisabled id="cas_ctp_key" name="cas_ctp_key" class="form-control addValidation @readOnlyClass" data-selectedValue="@(Model != null ? Model.cas_ctp_key : 0)" required></select>
+                <select @caseTypedisabled id="cas_ctp_key" name="cas_ctp_key" class="form-control addValidation @readOnlyClass" data-selectedValue="@(Model != null ? Model.cas_ctp_key : 0)" onchange="changefacility()" required></select>
 
 
                 <div class="error_msg" id="cas_ctp_key_error" style="display:none;">

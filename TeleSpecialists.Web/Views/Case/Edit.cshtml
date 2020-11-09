@@ -1011,6 +1011,49 @@ EntityTypes.StateAlertTemplate.ToInt()
             enableSaveSend();
         }
     }
+    function changefacility() {
+        debugger;
+        var caseType = $("#cas_ctp_key").val();
+        loadFacilityDropdown(caseType);
+    }
+    var facilityDropdown = null;
+    function loadFacilityDropdown(caseType) {
+        debugger
+
+        if (caseType == @CaseType.RoutineConsultNew.ToInt()
+                || caseType == @CaseType.RoutineConsultFollowUp.ToInt()
+                || caseType == @CaseType.StatEEG.ToInt()
+                || caseType == @CaseType.RoutineEEG.ToInt()
+                || caseType == @CaseType.LongTermEEG.ToInt()) {
+            facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetTeleNeuroFacility?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                    onLoadCompleteCode();
+                }
+            });
+        }
+        else if (caseType == @CaseType.StatConsult.ToInt()
+                || caseType == @CaseType.DrtoDr.ToInt()
+                || caseType == @CaseType.NursetoDr.ToInt()
+                || caseType == @CaseType.TestResults.ToInt()
+                || caseType == @CaseType.RadiologyCallback.ToInt()
+                || caseType == @CaseType.TransferAlert.ToInt()) {
+            facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilitiesForOthercasetypes?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                    onLoadCompleteCode();
+                }
+            });
+        }
+        else {
+            facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilities?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                    onLoadCompleteCode();
+                }
+            });
+        }
+    }
 
     $(document).ready(function () {
         var Status = 1;
@@ -1060,8 +1103,10 @@ EntityTypes.StateAlertTemplate.ToInt()
         }
         // mask phone number field
         maskPhoneNumber();
+        var caseType = '@Model.cas_ctp_key';
+        loadFacilityDropdown(caseType);
         // case general info
-        var facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilities?phoneNumber=", "fac_name", "fac_key", "-- Select --",function () {
+        @*var facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilities?phoneNumber=", "fac_name", "fac_key", "-- Select --",function () {
             if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
 
                 onLoadCompleteCode();
