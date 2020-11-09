@@ -216,7 +216,7 @@
                     </div>
                     <div class="form-row float-right col-lg-12">
                         <div class="form-group filter-button-group float-right col-lg-12">
-                            <input class="btn btn-dark margin-b-5  float-right" type="button" id="pacbtnSearch" value="Search" />                           
+                            <input class="btn btn-dark margin-b-5  float-right" type="button" id="pacbtnSearch" value="Search" />
                         </div>
                     </div>
                 </form>
@@ -281,7 +281,7 @@
                     </div>
                     <div class="form-row float-right col-lg-12">
                         <div class="form-group filter-button-group float-right col-lg-12">
-                            <input class="btn btn-dark margin-b-5  float-right" type="button" id="mCasebtnSearch" value="Search" />                          
+                            <input class="btn btn-dark margin-b-5  float-right" type="button" id="mCasebtnSearch" value="Search" />
                         </div>
                     </div>
                 </form>
@@ -291,9 +291,9 @@
     </div>
 
     <ul class="nav nav-tabs" id="caseListTabs" role="tablist">
-        @{ string cls = ""; string _cls = "";string clss = "";}
+        @{ string cls = ""; string _cls = ""; string clss = "";}
         @{
-            _cls = "show active";           
+            _cls = "show active";
             isPacPhysician = true;
         }
         <li class="nav-item ">
@@ -305,46 +305,47 @@
         <li class="nav-item">
             <a class="nav-link bold font-md" onclick="onTabClicked('eegsTab'), showthisTab()" id="eegsTabLink" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="eegsTab" aria-selected="false">EEGs</a>
         </li>
-        <li class="nav-item">            
+        <li class="nav-item">
         </li>
         <li class="nav-item">
             <a class="nav-link bold font-md" onclick="hideOtherTabs('mockcasetab')" id="mockCaseTabLink" data-toggle="tab" href="#mockcaseTab" role="tab" aria-controls="mockCaseTab" aria-selected="false">Mock Case</a>
         </li>
-        
+
 
         @if (isSleepAllow || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription())@*|| User.IsInRole(UserRoles.FacilityAdmin.ToDescription())*@ /**/
-                                                                                                                                                                                                                                                                        /**/
-                                                                                                                                                                                                                                                                        /**/
-                                                                                                                                                                                                                                                                        /**/
-                                                                                                                                                                                                                                                                        || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription())
-                                                                             || User.IsInRole(UserRoles.AOC.ToDescription())
-                                                                              || User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
-                                                                               || User.IsInRole(UserRoles.Finance.ToDescription())
-                                                                                || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
-                                                                                 || User.IsInRole(UserRoles.QPS.ToDescription())
-                                                                                  || User.IsInRole(UserRoles.QualityDirector.ToDescription())
-                                                                                   || User.IsInRole(UserRoles.VPQuality.ToDescription())
-                                                                                || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())
-                                                                                || User.IsInRole(UserRoles.RRCDirector.ToDescription())
-                                                                                || User.IsInRole(UserRoles.RRCManager.ToDescription()))
+                                                                                                                                                                                                                                                                                        /**/
+                                                                                                                                                                                                                                                                                        /**/
+                                                                                                                                                                                                                                                                                        /**/
+                                                                                                                                                                                                                                                                                        /**/
+                                                                                                                                                                                                                                                                                        || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription())
+                                                                                             || User.IsInRole(UserRoles.AOC.ToDescription())
+                                                                                              || User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
+                                                                                               || User.IsInRole(UserRoles.Finance.ToDescription())
+                                                                                                || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
+                                                                                                 || User.IsInRole(UserRoles.QPS.ToDescription())
+                                                                                                  || User.IsInRole(UserRoles.QualityDirector.ToDescription())
+                                                                                                   || User.IsInRole(UserRoles.VPQuality.ToDescription())
+                                                                                                || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())
+                                                                                                || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+                                                                                                || User.IsInRole(UserRoles.RRCManager.ToDescription()))
                         {
                             <li class="nav-item">
                                 <a class="nav-link bold font-md" onclick="hideOtherTabs('homehealthtab')" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Sleep</span></a>
                             </li>
                         }
                         @*@if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
-                            </li>
-                        }*@
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
+                                </li>
+                            }*@
                         @*@if (User.IsInRole(UserRoles.PACPhysician.ToDescription()))
-                        {
-                            cls = "show active";
-                            <li class="nav-item">
-                                <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
-                            </li>
-                        }*@
+                            {
+                                cls = "show active";
+                                <li class="nav-item">
+                                    <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
+                                </li>
+                            }*@
 
     </ul>
     <div class="tab-content" id="caseListTabsContent">
@@ -366,18 +367,18 @@
         <div class="tab-pane fade" id="routineTab" role="tabpanel" aria-labelledby="profile-tab"></div>
         <div class="tab-pane fade" id="eegsTab" role="tabpanel" aria-labelledby="contact-tab"></div>
         @*<div class="tab-pane fade" id="mockcaseTab" role="tabpanel" aria-labelledby="mock-tab">
-            <div class="row">
-                <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 text-center m-2">
-                    <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create","MockCase")">Mock Case</a>
+                <div class="row">
+                    <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 text-center m-2">
+                        <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create","MockCase")">Mock Case</a>
+                    </div>
                 </div>
-            </div>
-        </div>*@
+            </div>*@
         <div class="tab-pane fade @(clss)" id="mockcaseTab" role="tabpanel" aria-labelledby="contact-tab">
             <div class="row">
                 <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 text-center m-2">
 
                     <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create","MockCase")">Mock Case</a>
- 
+
                 </div>
             </div>
             <div id="divmockCases">
@@ -407,7 +408,6 @@
         </div>
     </div>
     <script type="text/javascript">
-        debugger;
         function hideOtherTabs(value) {
             localStorage.clickfromcase = value;
             $("#kendoDataGrid").hide();
@@ -417,10 +417,12 @@
                 $('#mdivSearch').addClass("d-none");
                 $('#PACdivSearch').removeClass("d-none");
             } else {
+                debugger;
                 $('#PACdivSearch').addClass("d-none");
                 $('#mdivSearch').removeClass("d-none");
-            }           
-
+                $("#mCasedateFilter").val('Last48Hours');
+                mCaseperformSearchOnCases();
+            }
         }
         function showthisTab() {
             $('#PACdivSearch').addClass("d-none");
@@ -432,14 +434,9 @@
 
 
         function onTabClicked(tab) {
+
             localStorage.setItem('clickfromcase', null);
-            // Change reverted back in Ticket 505
-            //if ($("#caseListActiveTab").val() != tab)
-            //    $("#resetSearch").click(); // resetting case type filter on tab changed
-            // End of Change
-
             $("#caseListActiveTab").val(tab);
-
             var tabLink = tab + "Link";
             $("#" + tabLink).tab("show");
 
@@ -1367,14 +1364,14 @@
                             if (isFlagged == "true") {
                                 $("#flag-" + caseKey + " > img").attr('src', '/Content/images/icons8-empty-flag-48.png');
                                 $("#flag-" + caseKey + " > img").attr('alt', 'No');
-                                $("#flag-" + caseKey + " > img").attr('data-flagged', 'false'); 
+                                $("#flag-" + caseKey + " > img").attr('data-flagged', 'false');
                                 //$("#flag-" + caseKey).html("");
                                // $("#flag-" + caseKey).html('<img width="32" Height="32" src="/Content/images/icons8-empty-flag-48.png" alt="No" data-flagged="false" data-caseKey=' + caseKey + ' onClick="chagnePhysicianFlag(this)" />');
                             }
                             else {
                                 $("#flag-" + caseKey + " > img").attr('src', '/Content/images/red-flag-filled-48.png');
                                 $("#flag-" + caseKey + " > img").attr('alt', 'Yes');
-                                $("#flag-" + caseKey + " > img").attr('data-flagged', 'true'); 
+                                $("#flag-" + caseKey + " > img").attr('data-flagged', 'true');
                                // $("#flag-" + caseKey).html("");
                                // $("#flag-" + caseKey).html('<img width="32" Height="32" src="/Content/images/red-flag-filled-48.png" alt="Yes"  data-flagged="true" data-caseKey=' + caseKey + ' onClick="chagnePhysicianFlag(this)"/>');
                             }

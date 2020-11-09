@@ -101,10 +101,11 @@
                     { hidden: true, field: "mcas_cst_key" },
                     {
                         title: "Actions", width: '80px',
-                        template: "<a class='btn btn-dark btn-sm py-1 loadLinkAsync' title='Edit' onClick='StopmCaseCaseListingTimer()' href='@Url.Action("Edit","MockCase")/\#= mcas_key#'>Edit</a>"
+                        template: "<a class='btn btn-dark btn-sm py-1 loadLinkAsync' title='Edit'  href='@Url.Action("Edit","MockCase")/\#= mcas_key#'>Edit</a>"
                     },
 
                     { field: "mcas_created_date", title: "Start Time", width: '150px' },
+                    { field: "mcas_created_date", title: "Created Time", width: '150px' },
                     { field: "CaseStatus", title: "Status", width: '120px' },              
                     { field: "casetype", title: "Case Type", width: '150px' },
                     { field: "facilityname", title: "Facility", width: '200px' },
@@ -235,7 +236,7 @@
         mCasegenerateStatusFilter();
         $("#mCasedateFilter").val('Last48Hours');
         document.title = $("#title-prefix").val() + '@ViewBag.Title';
-        mCaseperformSearchOnCases();
+        //mCaseperformSearchOnCases();
 
         $("#mCasebtnSearch").off("click").click(function () {
             mCaseperformSearchOnCases();

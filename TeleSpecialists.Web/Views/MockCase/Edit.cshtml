@@ -81,7 +81,7 @@
     {
         disableControlsForPhysician = 1;
     }
-
+    
     var dictCaseTypes = new Dictionary<int, string>();
     if (ViewBag.CaseTypes != null)
     {
@@ -177,18 +177,16 @@
             <div class="col-12 ">
                 <strong>@Model.mcas_patient</strong>
             </div>
-            @*<div class="col-12">
+            <div class="col-12">
                 <strong>
                     @(Model.mcas_billing_dob.HasValue ? DateTime.Now.CalculateAge(caseModel.mcas_billing_dob.Value).ToString() : "")
                 </strong>
-
-
-                <strong>
+                @*<strong>
                     @(Model.mcas_metric_patient_gender?[0].ToString().ToUpper())
-                </strong>
+                </strong>*@
                 <strong>@(Model.mcas_billing_dob?.FormatDate())</strong>
 
-            </div>*@
+            </div>
             <div class="col-12 ">
                 <strong>
                     <span>
@@ -203,12 +201,23 @@
 
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border p-0">
             <div class="col-12">
-                <strong>Facility:</strong> <span>@Model.facility.fac_name</span>@*<span id="popover-container">
-                    <span id="popover" data-toggle="popover" style="cursor:pointer;" title="Facility Info"><span class="facility-tooltip mt-1"></span></span>*@
+                <strong>Facility:</strong> <span>@Model.facility.fac_name</span>
+                @{
+                    var emrLink = "#";
+                    var target = "";
+                    var tooltipTitle = "No EMR link available";
+                    if (!string.IsNullOrEmpty(caseModel.facility.fac_emr))
+                    {
+                        emrLink = caseModel.facility.fac_emr;
 
-
-
-
+                        if (!emrLink.StartsWith("http://") && !emrLink.StartsWith("https://"))
+                        {
+                            emrLink = "http://" + emrLink;
+                        }
+                        target = "_blank";
+                        tooltipTitle = null;
+                    }
+                }
             </div>
             <div class="col-12">
                 <strong>Case Type:</strong> <span>
@@ -220,10 +229,10 @@
                     }
                 </span>
             </div>
-            <div class="col-12">
+            @*<div class="col-12">
                 <strong>Cart:</strong>
                 <span>@caseModel.mcas_cart</span>
-            </div>
+            </div>*@
         </div>
 
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border p-0">
@@ -256,12 +265,10 @@
                 <strong>Navigator: </strong>
                 <span>@Model.mcas_created_by_name </span>
             </div>
-
             <div class="col-sm-12 align-text-bottom">
                 <strong>Case:</strong> <span id="spnCaseNumber"> @caseModel.mcas_case_number </span>
             </div>
         </div>
-
 
         <!-- New Column-->
         <div class="col-xl-2 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border" id="case_edit_header_col5">
@@ -271,16 +278,13 @@
                     <input type="button" value="Facility Info" id="popover" class="btn btn-dark btn-sm" />
 
                 </div>
-                @*<div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 text-xl-right">
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 text-xl-right">
                     <a target="@target" rel="noopener noreferrer" href="@emrLink" class="btn btn-dark btn-sm" data-toggle="tooltip" data-placement="top" title="@tooltipTitle">
                         EMR Link <img alt="EMR Icon" style="width:17px;" src="/Content/images/facility_rem_icon.png" class="facility-emr-link" />
                     </a>
-                </div>*@
-
-
+                </div>
             </div>
-
-            @*<div class="row mt-xl-3">
+            <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
                     <a href="javascript:void(0)" data-type="ED Main" class="@(loggedInUser.EnableFive9 ? "edMainLinkClick" : "") btn btn-dark btn-sm">
                         ED Main &nbsp;
@@ -298,7 +302,7 @@
                 </div>
 
             </div>
-            <div class="row mt-xl-3">
+            <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
                     <a href="javascript:void(0)" data-type="Radiology" class="@(loggedInUser.EnableFive9 ? "edMainLinkClick" : "") btn btn-dark btn-sm">
                         Radiology
@@ -315,44 +319,10 @@
                     </a>
                 </div>
             </div>
-            <div class="row mt-xl-3">
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
-                    <button type="button" onclick="openProtocolpopup()" ; class="btn btn-dark btn-sm" id="protocols">
-                        <span class="fa fa-hospital-o text-white  edMainHeaderLink">
-                        </span>
-                        Protocols
-                    </button>
-                </div>
-
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 text-xl-right">
-                    <button type="button" onclick="openOnboardedpopup()" ; class="btn btn-dark btn-sm" id="onboardeds">
-                        Onboarding
-                    </button>
-                </div>
-            </div>*@
-
         </div>
         <!-- End of New Column -->
     </div>
 </div>
-
-@{
-    var templateTypes = new List<int>()
-{
-EntityTypes.StrokeAlertTemplateTpa.ToInt(),
-EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt(),
-EntityTypes.StrokeAlertTemplateNoTpa.ToInt(),
-EntityTypes.StrokeAlertTemplateNoTpaTeleStroke.ToInt(),
-EntityTypes.StateAlertTemplate.ToInt()
-};
-
-    var hideTemplates = false;
-
-    //if (!Model.TemplateEntityType.HasValue || !templateTypes.Contains(Model.TemplateEntityType.Value))
-    //{
-    //    hideTemplates = true;
-    //}
-}
 <ul class="nav nav-tabs" role="tablist" id="menuTabs">
     @if (!(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())))
     {
@@ -375,7 +345,6 @@ EntityTypes.StateAlertTemplate.ToInt()
 <div class="ajaxForm">
     <form method="post" class="form-horizontal" id="createForm" action="@editUrl">
         <input type="hidden" name="cas_cancelled_type" id="cas_cancelled_type" value="@Model.mcas_cancelled_type" />
-        @*@Html.HiddenFor(x => x.mcas_billing_bic_key_initial, new { @id = "key_revised" })*@
         @Html.Partial("_caseCancellationReason")
         <div class="tab-content" style="margin-top:27px;">
             <div id="basic" role="tabpanel" class="tab-pane fade in active show">
@@ -473,10 +442,10 @@ EntityTypes.StateAlertTemplate.ToInt()
 </div>
 
 <div class="row">
-    <div class="col-2 btn-copy-popup">
+    @*<div class="col-2 btn-copy-popup">
         <input type="button" value="Copy" class="btn btn-dark" id="btnCopy" disabled="disabled" />
-    </div>
-    <div class="col-lg-6 col-md-6 col-sm-8 col-12 btn-save-close-cancel">
+    </div>*@
+    <div class="col-lg-12 col-md-12 col-sm-8 col-12 btn-save-close-cancel">
         @if (!string.IsNullOrEmpty(Request.Params["RedirectUrl"]))
         {
             <a href="@Request.Params["RedirectUrl"]" class="btn btn-link loadLinkAsync-cancel">Cancel</a>
@@ -487,10 +456,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         }
 
         <input type="button" class="btn btn-dark" value="Save" id="btnSave" disabled="disabled" />
-
-        <input type="button" class="btn btn-dark" value="Save & Close" id="btnSaveClose" disabled="disabled" />
-          
-        <input type="button" class="btn btn-dark" value="Complete Case" id="btnCompleteCase" disabled="disabled" style="display:none" />
+        <input type="button" class="btn btn-dark" value="Save & Close" id="btnSaveClose" disabled="disabled" />        
         <input type="button" class="btn btn-danger" value="Cancel Case" id="btnCancelCase" disabled="disabled" style="display:none" />
     </div>
     <div class="col-1"></div>
@@ -784,17 +750,11 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 
     $(document).ready(function () {
-        debugger;
         var Status = 1;
-        //RootCauseTable(Status);
-        //ContactInfoTable(Status);
         $("#mcas_cst_key-list").remove();
         document.title = $("#title-prefix").val() + '@ViewBag.Title';
         $("#review-initiated-wrap .form-check-inline input[type='radio']:checked").click();
         var tab = $("#activetab").val();
-
-        // biiling code text
-        @*//ShowLableForBillingCode//(@Model.mcas_billing_bic_key);*@
 
         var clickfromhome = localStorage.getItem("clickfromhome");
         if (clickfromhome === "casespendingreview") {
@@ -834,7 +794,6 @@ EntityTypes.StateAlertTemplate.ToInt()
         // mask phone number field
         maskPhoneNumber();
         // case general info
-        debugger;
         var facilityDropDown = $("#mcas_fac_key").fillKendoDropDown("/LookUp/GetAllMockFacilities", "fac_name", "fac_key", "-- Select --",function () {
             if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
 
@@ -952,14 +911,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             $("#mgeneral_cas_dob").val($(this).val());
             $("#mmetric_cas_dob").val($(this).val());
         });
-        $("#metric_cas_dob").on('change', function () {
-            $("#mgeneral_cas_dob").val($(this).val());
-            $("#mbilling_cas_dob").val($(this).val());
-        });
         //ticket 557
-
-
-
 
         $("#mgeneral_cas_patient_name").on('change', function () {
             $("#mbilling_cas_patient_name").val($(this).val());
@@ -998,20 +950,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
         });
 
-        if (@Model.mcas_ctp_key == @CaseType.StrokeAlert.ToInt()) {
-            $("#mcas_metric_tpaDelay_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.TpaDelay.ToInt())), "ucd_description", "ucd_key", "-- Select --");
-            var tpadelayreason = $("#cas_metric_tpaDelay_key option:selected").text();
-            $("#showtpadelayreasons").append(tpadelayreason);
-            var nonTPACandidateReasonType = $("#cas_metric_non_tpa_reason_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.NonTPACandidate.ToInt())), "ucd_description", "ucd_key", "-- Select --");
-            nonTPACandidateReasonType.bind("change", function (e) {
-                if ($("#mcas_metric_non_tpa_reason_key option:selected").text() == "Other") {
-                    $("#divNonTPACandidateOther").show();
-                }
-                else {
-                    $("#divNonTPACandidateOther").hide();
-                }
-            });
-        }
 
         // case billing
         $("#mcas_billing_lod_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.LoginDelay.ToInt())), "ucd_title", "ucd_key", "-- Select --");
@@ -1042,7 +980,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
         });
 
-
         $("#mcas_phy_has_technical_issue").off("change").change(function () {
             var tech_issue_date = $("#cas_phy_has_technical_issue").val();
             $("#mcas_response_first_atempt").val(tech_issue_date);
@@ -1057,18 +994,10 @@ EntityTypes.StateAlertTemplate.ToInt()
 
         });
 
-
-        $("#metric_cas_callback_notes").off("change").change(function () {
-            $("#mcas_callback_notes").val($(this).val());
-        });
         $("#mcas_callback_notes").off("change").change(function () {
             $("#mmetric_cas_callback_notes").val($(this).val());
         });
 
-        $("#mmetric_cas_callback_responsetime").off("change").change(function () {
-            $("#mcas_callback_response_time_est").val($(this).val());
-            metricCallBackResponseTime();
-        });
         $("#mcas_callback_response_time_est").off("change").change(function () {
             $("#mmetric_cas_callback_responsetime").val($(this).val());
             CallBackResponseTime();
@@ -1153,30 +1082,13 @@ EntityTypes.StateAlertTemplate.ToInt()
                 }
                 $("#div_cas_phy_technical_issue_date_est").show();
                 $("#mcas_phy_technical_issue_date_est_errormsg").show();
-            }
-            else {
-
-                $("#mcas_metric_notes").removeAttr("data-is-required");
-                $("#mcas_metric_notes_label").removeClass("text-danger");
-
-                $("#mcas_response_first_atempt").removeAttr("readonly");
-                $("#div_cas_phy_technical_issue_date_est").hide();
-                $("#mcas_phy_technical_issue_date_est_errormsg").hide();
-
-                $("#mcas_phy_technical_issue_date_est").val("");
-                $("#mcas_response_first_atempt").val("");
-
-                if ($('#mcas_response_first_atempt').data('kendoTimePicker') != undefined && !isAdmin)
-                    $('#mcas_response_first_atempt').data('kendoTimePicker').readonly(false);
-            }
+            }           
         });
 
         $("#mcas_phy_technical_issue_date_est").change(function () {
             $("#mcas_response_first_atempt").val($(this).val());
             firstLoginTimeCallBack();
         });
-
-
 
         function firstLoginTimeCallBack() {
             var value = $.trim($("#mcas_response_first_atempt").val());
@@ -1206,7 +1118,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
         }
 
-
         // counter up timer -- kendoTimePicker
         $(".timepicker").kendoTimePicker({
             open: function (e) {
@@ -1215,28 +1126,6 @@ EntityTypes.StateAlertTemplate.ToInt()
                 if ('@(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))' != 'True' || '@(User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))' != 'True'  && @((!isReadOnlyCase).ToString().ToLower())) {
                     this.element.first().val(currentDateTime);
                     // handling arrival time in metric and general tab
-
-
-                    if (this.element.first().attr("id") == "mcas_response_first_atempt") {
-                        $("#mcas_metric_video_start_time_est").val(currentDateTime);
-                        firstLoginTimeCallBack();
-                    }
-
-                    if (this.element.first().attr("id") == "mcas_metric_needle_time_est") {
-
-                        ValidateTPANotesandReason($('#mcas_metric_needle_time_est').val(), $("#mcas_metric_door_time_est").val());
-                    }
-                    if (this.element.first().attr("id") == "mcas_metric_door_time_est") {
-                        ValidateTPANotesandReason($('#mcas_metric_needle_time_est').val(), $("#mcas_metric_door_time_est").val());
-                    }
-                     if (this.element.first().attr("id") == "cas_callback_response_time_est") {
-                         $("#mmetric_cas_callback_responsetime").val(this.element.first().val());
-                         CallBackResponseTime();
-                    }
-                    if (this.element.first().attr("id") == "metric_cas_callback_responsetime") {
-                        $("#cas_callback_response_time_est").val(this.element.first().val());
-                        metricCallBackResponseTime();
-                    }
 
                     if (this.element.first().attr("id") == "mcas_phy_technical_issue_date_est") {
                         $("#mcas_response_first_atempt").val(currentDateTime);
@@ -1255,10 +1144,6 @@ EntityTypes.StateAlertTemplate.ToInt()
                 var timePicker = this.element.first();
                 ShowHideTimeZone(timePicker);
 
-                if (this.element.first().attr("id") == "mcas_response_first_atempt") {
-                    ShowHideTimeZone($("#mcas_metric_video_start_time_est"));
-                }
-
             },
             close: function (e) {
                 e.preventDefault(); //prevent popup closing
@@ -1275,31 +1160,6 @@ EntityTypes.StateAlertTemplate.ToInt()
         $(".timepicker").kendoMaskedTextBox({
             mask:  "00/00/0000 00:00:00"
         });
-
-
-        $("#mcas_metric_door_time_est").off("change").change(function () {
-            ShowHideTimeZone($(this));
-              ValidateTPANotesandReason($('#mcas_metric_needle_time_est').val(), $("#mcas_metric_door_time_est").val());
-        });
-        $('#mcas_metric_needle_time_est').off("change").change(function () {
-                 ValidateTPANotesandReason($('#mcas_metric_needle_time_est').val(), $("#mcas_metric_door_time_est").val());
-        });
-
-        function ValidateTPANotesandReason(datetime1, datetime2) {
-
-            if ($('input:radio[name=mcas_metric_tpa_consult]:checked').val() == "true") {
-
-                if (getDifferenceInMinutes($('#cas_metric_needle_time_est').val(), $("#mcas_metric_door_time_est").val()) > 45) {
-                    $('#mcas_metric_tpaDelay_key_label').addClass('text-danger')
-                    $('#mcas_metric_tpaDelayNotes_key_label').addClass('text-danger')
-                }
-                else {
-                    $('#mcas_metric_tpaDelay_key_label').removeClass('text-danger')
-                    $('#mcas_metric_tpaDelayNotes_key_label').removeClass('text-danger')
-                }
-            }
-        }
-
 
         $(".datepicker").kendoDatePicker({
             open: function (e) {
@@ -1319,15 +1179,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             if ($("#show-red").val() == "1" && @Model.mcas_cst_key != @CaseStatus.Accepted.ToInt())
                 $("#custom").addClass("elapsed-time");
         }
-        else {
-
-            var door_time = $.trim($("#mcas_metric_stamp_time_utc").val());
-            if (door_time != "") {
-                upTime(door_time, $("#elapsedTimeArrival"));
-            }
-        }
-
-
+       
         $("#lnkCaseClose").off("click").click(function (e) {
             e.preventDefault();
             clearAutoSaveInterval();
@@ -1345,10 +1197,10 @@ EntityTypes.StateAlertTemplate.ToInt()
             //savetypeofcorrespondense();
             $(".error_msg").hide();
             if ($(this).attr("id") === "btnSaveSend") {
-                $("#hdnSaveAndSend").val("1");
+                $("#mhdnSaveAndSend").val("1");
             }
             else {
-                $("#hdnSaveAndSend").val("0");
+                $("#mhdnSaveAndSend").val("0");
             }
 
             var caseId = $("#createForm").find("#mcas_key").val();
@@ -1366,10 +1218,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             if (!validateGeneralTabForm(false, false, false)) {
                 return false;
             }
-            // check tpa fields in physician metrics tab, and reset hidden field values.
-            //resetTpaCandidatehiddenFields();
-            //GetCaseReviewers();
-            $("#RedirectPage").val("0");
+            $("#mRedirectPage").val("0");
             var currentTab = $("#menuTabs .active ").attr("href");
             $("#activetab").val(currentTab);
             //clearAutoSaveInterval();
@@ -1377,14 +1226,10 @@ EntityTypes.StateAlertTemplate.ToInt()
              if (@isReadOnlyCase.ToString().ToLower()) {
                  readOnlyAllFields();
             }
-
-            // temporary disabling it, to exclude it from production deployment
             submitCaseChanges(); // temporary direct call
-
         });
 
         $("#btnSaveClose").off("click").click(function () {
-           // savetypeofcorrespondense();
             $(".error_msg").hide();
             var isCompleted = $("#mcas_cst_key").val();
             if (isCompleted == @CaseStatus.Complete.ToInt()) {
@@ -1403,11 +1248,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 caseTemplateBeforeSubmit();
             }
             if (validateGeneralTabForm(true, false, false)) {
-                // check tpa fields in physician metrics tab, and reset hidden field values.
-                //resetTpaCandidatehiddenFields();
-                //GetCaseReviewers();
-                $("#RedirectPage").val("1");
-               // clearAutoSaveInterval();
+                $("#mRedirectPage").val("1");              
                 submitCaseChanges();
             }
             else {
@@ -1430,27 +1271,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             var templateTab = true;
             var billingTab = true;
             var tabToShow = "";
-
-
-         if (!validateBillingRequiredFields(true)) {
-
-             tabToShow = "#billingTabLink";
-                billingTab = false;
-            }
-
-            if (!validateTemplateTabRequiredFields($("#TemplateEntityType").val() @*@Model.TemplateEntityType.ToInt()*@, true)) {
-
-               tabToShow =  "#templatesTabLink";
-                templateTab= false;
-            }
-
-           if (!validateMetricsRequiredFields(true)) {
-
-               tabToShow = "#metricTabLink";
-
-               metricTab = false;
-           }
-
            if (!validateGeneralTabForm(true, true, false)) {
 
                tabToShow = "#generalTABLink";
@@ -1459,7 +1279,6 @@ EntityTypes.StateAlertTemplate.ToInt()
 
 
             if (tabToShow !== null && tabToShow !== "") {
-
                 $(tabToShow).tab("show");
             }
 
@@ -1478,25 +1297,6 @@ EntityTypes.StateAlertTemplate.ToInt()
            return  (generalTab && metricTab && templateTab && billingTab)
         }
 
-        $("#btnCompleteCase").off("click").click(function () {
-           // savetypeofcorrespondense();
-
-            window.showErrorsOnTabClick = true;
-
-            if (!ValidateAllTabs()) {
-                var cas_type = $('#mcas_ctp_key').val();
-                if (cas_type == @CaseType.StatConsult.ToInt() || cas_type == @CaseType.TransferAlert.ToInt() || cas_type == @CaseType.StrokeAlert.ToInt()) {
-                    var currentTab = $("#menuTabs .active ").attr("href");
-                    if (currentTab == "#templates") {
-                        $("#btnDownloadTemplate").show();
-                    }
-                }
-                return;
-            }
-            performCaseCompletion("1");
-
-            window.showErrorsOnTabClick = false;
-        });
         $("#btnCancelCase").off("click").click(function () {
             $('#lblPhyCancel').val('found');
             var cas_id = "@Model.mcas_ctp_key";
@@ -1521,69 +1321,19 @@ EntityTypes.StateAlertTemplate.ToInt()
                 }
             );
         }
+
         $("#review-initiated-wrap .form-check-inline input[type='radio']").off("click").click(function () {
             if ($(this).val() == 1) {
                 $("#mcas_response_case_number").prop('readonly', false);
             }
         });
-        //$("#btnCopy").off("click").click(copyCase);
-        document.getElementById('btnCopy').addEventListener('click', function () {
-            copyCase();
-        });
-        document.getElementById('btnCopyOK').addEventListener('click', function () {
-            var textis = $('#txtAreaCopy').val();
-            console.log('value is : ' + $('#txtAreaCopy').val());
-            var createdId = "txtAreaJS";
-            var textarea = document.createElement("textarea");
-            textarea.id = createdId;
-            // Place in top-left corner of screen regardless of scroll position.
-            textarea.style.position = 'fixed';
-            textarea.style.top = 0;
-            textarea.style.left = 0;
-
-            // Ensure it has a small width and height. Setting to 1px / 1em
-            // doesn't work as this gives a negative w/h on some browsers.
-            textarea.style.width = '1px';
-            textarea.style.height = '1px';
-
-            // We don't need padding, reducing the size if it does flash render.
-            textarea.style.padding = 0;
-
-            // Clean up any borders.
-            textarea.style.border = 'none';
-            textarea.style.outline = 'none';
-            textarea.style.boxShadow = 'none';
-
-            // Avoid flash of white box if rendered for any reason.
-            textarea.style.background = 'transparent';
-            document.querySelector("body").appendChild(textarea);
-            var _createdId = document.getElementById(createdId);
-            _createdId.value = textis;
-            _createdId.select();
-            //$('#txtAreaCopy').select();
-            try {
-                var status = document.execCommand('copy');
-                if (!status) {
-                    logToConsole("Cannot copy text");
-                } else {
-                    logToConsole("The text is now on the clipboard");
-                    document.body.removeChild(_createdId);
-                }
-            } catch (err) {
-                logToConsole('Unable to copy.');
-            }
-        });
-
+      
         if ($("#hdn-cas-eta").val() != null && $("#hdn-cas-eta").val() != "") {
             $("#mcase-eta").prop("checked", true);
             $("#mcas_eta").show();
         }
 
         generateStatusFilter()
-        //$('#popover').showPopover('#divContentArea'); // #popover-container
-        //Remove popup functionality and currently showing popup modal in case when we click on H icone.
-        //$('#popover-facility').showPopover('#divContentArea'); // #popover-container-facility'
-
 
         $('#popover, #popover-facility').click(function () {
             $('#tooltip').show();
@@ -1593,8 +1343,6 @@ EntityTypes.StateAlertTemplate.ToInt()
                 keyboard: false
                 });
         });
-
-
 
         // code to prevent form submit on enter
         $("input[type=text]").keyup(function (event) {
@@ -1623,24 +1371,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 $("#early-tpa-order-indicator").addClass("d-none");
             }
         });
-        // Metric tab - Neuro Interventional controls
-        $("#mcas_metric_is_lastwell_unknown").on("click", function () {
-            if (this.checked == true) {
-                $("#mcas_metric_lastwell_date_est").val("");
-                $('#mcas_metric_lastwell_date_est').data('kendoTimePicker').enable(false);
-            }
-            else {
-                $("#mcas_metric_lastwell_date_est").val("");
-                $('#mcas_metric_lastwell_date_est').data('kendoTimePicker').enable(true);
-            }
-        });
-        if ($("#hdn-cas-is-lastwellknown").val().toLowerCase() == "true") {
-            $("#mcas_metric_lastwell_date_est").val("");
-            $('#mcas_metric_lastwell_date_est').data('kendoTimePicker').enable(false);
-        }
-        $("input[name='mcas_metric_is_neuro_interventional']").on("change", function () {
-            toggleNeurointerventionControl($(this).val());
-        });
+
         if (showFacilityTime.To != undefined)
             window.clearTimeout(showFacilityTime.To);
 
@@ -1652,14 +1383,9 @@ EntityTypes.StateAlertTemplate.ToInt()
                 disableAllControls();
             }, 400);
 
-        }
-        else {
-            //if (enableAutoSave.ToString().ToLower()) {
-            if (AutoSaveBool) {
-                autoSaveCase();
-            }
-        }
+        }       
     });
+
     $("input[name='mcas_billing_physician_blast']").on("change", function (e) {
         if ($(this).val() == "true") {
             var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm:ss");
@@ -1693,20 +1419,6 @@ EntityTypes.StateAlertTemplate.ToInt()
 
     var responsestringGenerateTemplate = '';
     var showeditorresponseGenerateTemplate = false;
-
-    $(document).ready(function () {
-         var url = "@Url.Action("GenerateCaseTemplate", "Case")"; //"Url.Action("GenerateCaseReviewTemplate", "Case")";
-         var data = $("#createForm").serialize();
-
-         $.post(url, data, function (response) {
-                if (response.success) {
-                    responsestringGenerateTemplate = response.data;
-                    showeditorresponseGenerateTemplate = response.showEditor;
-                }
-            });
-    })
-
-
 
    $("#btnDownloadTemplate").off("click").click(function () {
         ////added by ahmad 08-09-2020
@@ -1894,10 +1606,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         //    caseTemplateBeforeSubmit();
         //}
         if (validateGeneralTabForm(true, true, false)) {
-            // check tpa fields in physician metrics tab, and reset hidden field values.
-            //resetTpaCandidatehiddenFields();
-            //GetCaseReviewers();
-            $("#RedirectPage").val(redirectedPage);
+            $("#mRedirectPage").val(redirectedPage);
             if ('@(User.IsInRole(UserRoles.Administrator.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()))' == 'True') {
                 var completed = @CaseStatus.Complete.ToInt()
                 $('#mcas_cst_key').data('kendoDropDownList').value(completed);
@@ -1928,47 +1637,12 @@ EntityTypes.StateAlertTemplate.ToInt()
         });
         return deffer.promise();
     }
-    function setQuestionResponse() {
-        var result = [];
-        $(".nihss select").each(function () {
-            var selectedVal = $.trim($(this).find("option:selected").val());
-            if (selectedVal != "") {
-                result.push(selectedVal);
-            }
-        });
-        $("#SelectedNIHSQuestionResponse").val(result.join(","));
-    }
-    function setTemplateFieldData(containerClass, controlId) {
-        var list = [];
-        $(containerClass + " input:checked").each(function () {
-            list.push($(this).val())
-        })
-        $(controlId).val(list.join(","));
-    }
-    function calculateScore(scoreContainer) {
-        var totalScore = 0;
-        var index = 0;
-        $(".nihss select").each(function () {
-            var selectedText = $(this).find("option:selected").text();
-            index = selectedText.indexOf("+");
-            if (index > -1) {
-                totalScore += $.trim(selectedText.substring(index).replace("+", "")).toInt();
-            }
-        });
 
-        $("#divTotalScore").html((totalScore > 0 ? totalScore.toString() : "0"));
-        $(scoreContainer).val(totalScore);
-        $("#nihssScoreSpan").val(totalScore);
-        setQuestionResponse();
-        return totalScore;
-    }
 
     function submitCaseChanges() {
-        debugger;
         var previousStatus = @Model.mcas_cst_key;
         var currentStatus = $.trim($("#mcas_cst_key").val()).toInt();
         if (currentStatus == caseStatusEnum.Cancelled) {
-            //previousStatus != currentStatus &&
            $('#toolTipCancel').show();
             $('#popupModelCaseCancel').modal({
                 'show': true,
@@ -1983,57 +1657,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             $("#createForm").submit();
         }
     }
-       $('#SaveCaseCancel').click(function () {
-        var checkPhy = $('#lblPhyCancel').val();
-        var cancelType = $('#cas_cancelled_type').val();
-           var cancelText = $('#cas_cancelled_text').val();
-           var caseKey = $.trim($("#createForm").find("#cas_key").val()).toInt();
-        if (checkPhy === 'found') {
-            $.ajax({
-                type: 'post',
-                url: '/Case/CancelCase?casKey=' + caseKey @*@Model.cas_key*@+ '&caseType=' + cancelType + '&caseText=' + cancelText,
-                success: function (data) {
-                    if (data.success) {
-                        $('#popupModelCaseCancel').modal("hide");
-                        loadPageAsync('@Url.Action("index", "case")')
-                    }
-                }
-            });
-        }
-        else {
-            $('#lblPhyCancel').val('');
-            $('#popupModelCaseCancel').modal("hide");
-            $("#createForm").submit();
-        }
 
-        });
-
-
-        $('.cas_cancelled_list').change(function () {
-            var valueText = $("#cas_cancelled_list :selected").text();
-            $('#cas_cancelled_type').val(valueText);
-        });
-
-
-    function nihssScoreValidatoin(scoreContainer) {
-        var result = true;
-        if ($(scoreContainer).is(":checked") == false) {
-            $(".nihss select").each(function (item) {
-                var selectedtext = $(this).find("option:selected").text();
-                var itemid = $(this)[0].id;
-                if (selectedtext == "--Select--") {
-                    var idd = "#" + itemid + "-error";
-                    $(idd).show();
-                    result = false;
-                }
-                else {
-                    var idd = "#" + itemid + "-error";
-                    $(idd).hide();
-                }
-            });
-        }
-        return result;
-    }
     function removeAllDropdownError(scoreContainer) {
         var result = true;
         $(".nihss select").each(function (item) {
@@ -2661,50 +2285,16 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
         });
     }
-    function CheckPhysicianRule() {
-        if ($("#cas_ctp_key").val() == @CaseType.StrokeAlert.ToInt()) {
-            var selectedPhysician = $("#cas_phy_key").val();
-            var hdn = $("#SelectedVal").val();
-            var cas_key = $.trim($("#createForm").find("#cas_key").val()) == "" ? "0" : $("#createForm").find("#cas_key").val();
-            if (selectedPhysician != hdn) {
-                $("#SelectedVal").val(selectedPhysician);
-                var params = {
-                    physicianKey: $("#cas_phy_key").val(),
-                    cas_key: cas_key
-                };
-                $.ajax({
-                    type: 'get',
-                    url: '/Case/Check15MinuteRule',
-                    data: params,
-                    success: function (data) {
-                        if (data.success) {
-                            $("#divModelPopUp").empty().showConfirmPopUp("Confirm", "<span>This Physician has already been assigned a Stroke Alert within the last 15 minutes. Do you still want to assign this case to the physician?</span>", function () {
-                                $("#divModelPopUp").modal("hide");
-                            }, "Yes", function () {
-                                $("#divModelPopUp").modal("hide");
-                                $('#cas_phy_key').data('kendoDropDownList').value("");
-                                $("#SelectedVal").val("");
-                            });
-                        }
-                        else {
-                            $("#divModelPopUp").empty();
-                            $("#divModelPopUp").modal("hide");
-                        }
-                    }
-                });
-            }
-        }
-    }
-    function LoadNotes(key)
-    {
-        var url = "/Case/DisplayNotes?id=" + key;
-        $.get(url, function (response) {
-            if (response) {
-                $("#divModelPopUp").empty().html(response);
-                $("#divModelPopUp").modal("show");
-            }
-        });
-    }
+    //function LoadNotes(key)
+    //{
+    //    var url = "/Case/DisplayNotes?id=" + key;
+    //    $.get(url, function (response) {
+    //        if (response) {
+    //            $("#divModelPopUp").empty().html(response);
+    //            $("#divModelPopUp").modal("show");
+    //        }
+    //    });
+    //}
 
     function toggleNeurointerventionControl(isYes) {
         // Show container
@@ -3097,81 +2687,7 @@ EntityTypes.StateAlertTemplate.ToInt()
     ///changes for tele
     var responsestring = '';
     var showeditorresponse = false;
-
-            $(document).ready(function () {
-                var caseKey = $.trim($("#createForm").find("#cas_key").val()).toInt();
-         var url = "@Url.Action("GenerateCaseReviewTemplate", "Case")";
-            //var data = $("#createForm").serialize();
-         var id = caseKey @*@Model.cas_key.ToString();*@
-
-            $.post(url, { id: id }, function (response) {
-                if (response.success) {
-                    responsestring = response.data;
-                    showeditorresponse = response.showEditor;
-                }
-            });
-    })
-
-    @*function generateimage() {
-        window.scrollTo(0, 0);
-        html2canvas(document.getElementById('timelinecapture')).then(function (canvas) {
-            var link = document.createElement("canvas");
-            var isTpa = '@Model.mcas_metric_tpa_consult';
-            if (isTpa == 'True') {
-                link.width = link.width * 2.20;
-                link.height = link.height * 1.60;
-            } else {
-                link.width = link.width * 0.01;
-                link.height = link.height * 0.01;
-            }
-            var ctx = link.getContext('2d');
-            //ctx.drawImage(canvas, 0, 0, link.width, link.height); default
-            var dataURL;
-            try {
-                ctx.drawImage(canvas, 0, 0, link.width, link.height); // modified
-                dataURL = link.toDataURL('image/png');
-            }
-            catch{ }
-
-            if (responsestring != "") {
-                if (dataURL) {
-                    responsestring = responsestring.replace(/PASTEIMAGEPATHHERE/, dataURL);
-                }
-                else {
-                    responsestring = responsestring.replace(/PASTEIMAGEPATHHERE/, '');
-                    responsestring = responsestring.replace(/alt='Timeline'/, 'alt="Timeline" style="display:none"');
-                }
-                if (showeditorresponse) {
-                    $("#cas_review_template_html").val('<div>' + responsestring + '</div>');
-                    showCKEditor("cas_review_template_html");
-                    $("#casereviewtemplatemodal").modal("show");
-                }
-                else {
-                    console.log(responsestring)
-                    $("#btnCancelReviewTemplatePreview").show();
-                    $("#btnOKReviewTemplatePreview").val("Copy");
-                    $("#caseReviewTemplateReviewData").html(responsestring);
-                    $("#casereviewremplatepreviewmodal").modal("show");
-                }
-            }
-            return link;
-        })
-    }*@
-    function generatePDF() {
-        var element = CKEDITOR.instances["cas_review_template_html"].getData()
-        console.log(element);
-        var single = "'";
-        var stringelement = element.replace(/"/g, single);
-        var stringelement = element.replace(/<h3>/g, "<br/><br/><h3>");
-        html2pdf(stringelement, {
-            margin: 0.25,
-            filename: 'CaseReviewTemplate.pdf',
-            image: { type: 'jpeg', quality: 1 },
-            enableLinks: true,
-            html2canvas: { scale: 6, dpi: 96, letterRendering: true },
-            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-        });
-    }
+   
 
      // Generate Microsoft Word Document
 
@@ -3452,8 +2968,8 @@ EntityTypes.StateAlertTemplate.ToInt()
 @if (ShowPopup)
 {
     <script>
-            var caseKey = $.trim($("#createForm").find("#cas_key").val()).toInt();
-            LoadNotes(caseKey); @*(@Model.cas_key);*@
+            var caseKey = $.trim($("#createForm").find("#mcas_key").val()).toInt();
+           //LoadNotes(caseKey); 
     </script>
 }
 
