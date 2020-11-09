@@ -911,6 +911,8 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
         } else if (tab == '#premorbid' || tab == 'premorbid') {
             GetPreMorbidData();
+            $("#premorbidfilds :input").prop("disabled", false);
+            $('#premorbidfilds .k-i-clock').parent().removeAttr("style", "background-color:#e9ecef; pointer-events:none;");
         }
 
         //Disable and Enable buttons
@@ -3533,7 +3535,7 @@ EntityTypes.StateAlertTemplate.ToInt()
     });
 
     // Moving metric tab functionality here . Because some components such as datetime pickter did not render at _caseMetricForm.
-    
+
     function SymptomsOnSet(show) {
         if (show) {
             $("input[name=cas_patient_type][value='4']").attr('checked', 'checked');
@@ -3543,7 +3545,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         //    $("#symptoms_onset_during_ed_stay").hide();
         //}
     }
-    
+
     @*$("#cas_metric_symptom_onset_during_ed_stay").off('change').change(function () {
 
         var show = $(this).prop("checked");
@@ -4024,8 +4026,8 @@ EntityTypes.StateAlertTemplate.ToInt()
         });
 
     }
-    
-    
+
+
 </script>
 
 @if (ShowPopup)

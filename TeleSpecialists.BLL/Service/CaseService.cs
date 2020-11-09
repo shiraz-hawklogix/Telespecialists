@@ -1150,7 +1150,7 @@ namespace TeleSpecialists.BLL.Service
                         var checkdate = premorbid.pmc_cas_premorbid_datetime_of_contact[i];
                         if(checkdate != "")
                         {
-                            isExist[i].pmc_cas_premorbid_datetime_of_contact = Convert.ToDateTime(premorbid.pmc_cas_premorbid_datetime_of_contact[i]);
+                            isExist[i].pmc_cas_premorbid_datetime_of_contact = Convert.ToDateTime(checkdate);
                         }
                         else
                         {
@@ -1195,7 +1195,16 @@ namespace TeleSpecialists.BLL.Service
                         obj = new premorbid_correspondnce();
                         obj.pmc_cas_key = cas_key;
                         obj.pmc_cas_premorbid_patient_phone = premorbid.pmc_cas_premorbid_patient_phone;
-                        obj.pmc_cas_premorbid_datetime_of_contact = Convert.ToDateTime(premorbid.pmc_cas_premorbid_datetime_of_contact[i]);
+                        //obj.pmc_cas_premorbid_datetime_of_contact = Convert.ToDateTime(premorbid.pmc_cas_premorbid_datetime_of_contact[i]);
+                        var checkdate = premorbid.pmc_cas_premorbid_datetime_of_contact[i];
+                        if (checkdate != "")
+                        {
+                            obj.pmc_cas_premorbid_datetime_of_contact = Convert.ToDateTime(checkdate);
+                        }
+                        else
+                        {
+                            obj.pmc_cas_premorbid_datetime_of_contact = null;
+                        }
                         obj.pmc_cas_premorbid_spokewith = premorbid.pmc_cas_premorbid_spokewith[i];
                         obj.pmc_cas_premorbid_comments = premorbid.pmc_cas_premorbid_comments[i];
                         if (i == 0)
