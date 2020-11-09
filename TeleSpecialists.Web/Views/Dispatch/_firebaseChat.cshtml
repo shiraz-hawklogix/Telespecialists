@@ -423,21 +423,30 @@
         });
     }
     function GetAllGroups() {
-        var ref = firebase.database().ref("Groups");
-        ref.on('child_added', function (data) {
-            const checkGrpExist = _allGroup.some(x => x.grpid == data.key);
-            if (!checkGrpExist)
-                _allGroup.push({ grpid: data.key, grpname: data.val().groupName, img: data.val().image, admin: data.val().id, searchgrpname: data.val().groupName.toLowerCase() });
-        });
-        GetPublicGroups();
+        try {
+            var ref = firebase.database().ref("Groups");
+            ref.on('child_added', function (data) {
+                const checkGrpExist = _allGroup.some(x => x.grpid == data.key);
+                if (!checkGrpExist)
+                    _allGroup.push({ grpid: data.key, grpname: data.val().groupName, img: data.val().image, admin: data.val().id, searchgrpname: data.val().groupName.toLowerCase() });
+            });
+            GetPublicGroups();
+        } catch (err) {
+            console.error(err);
+        }
     }
     function GetPublicGroups() {
-        let ref = firebase.database().ref("Groups");
-        ref.orderByChild("grpType").equalTo('Public').on("child_added", function (data) {
-            const checkGrpExist = publicGrpArr.some(x => x.grpid == data.key);
-            if (!checkGrpExist)
-                publicGrpArr.push({ grpid: data.key, grpname: data.val().groupName, img: data.val().image, admin: data.val().id, searchgrpname: data.val().groupName.toLowerCase() });
-        });
+        try {
+            let ref = firebase.database().ref("Groups");
+            ref.orderByChild("grpType").equalTo('Public').on("child_added", function (data) {
+                const checkGrpExist = publicGrpArr.some(x => x.grpid == data.key);
+                if (!checkGrpExist)
+                    publicGrpArr.push({ grpid: data.key, grpname: data.val().groupName, img: data.val().image, admin: data.val().id, searchgrpname: data.val().groupName.toLowerCase() });
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
     $(document).on('click', ".btnRequest", function () {
         var _senderid = $(this).attr("data-senderid");

@@ -138,6 +138,30 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
             _type = 'Public';
         else
             _type = 'Private';
+        if (getkey)
+            groupID = getkey;
+        console.log('yup , ' + groupID);
+        firebase.database().ref('Groups').child(getkey).set({
+            groupName: name,
+            createdBy: autoSenderId,
+            id: autoSenderId,
+            teleid: 1,
+            type: 'Admin',
+            grpFor: physician,
+            userName: autoSenderName,
+            image: '/Content/images/group.png',//_senderPhoto,
+            dateTime: firebase.database.ServerValue.TIMESTAMP,
+            grpType: grptype
+        });
+        firebase.database().ref('Groups/' + getkey + '/users/').child(autoSenderId).set({
+            id: autoSenderId,
+            groupName: name,
+            teleid: 1,
+            type: 'Admin',
+            userName: autoSenderName,
+            image: autoSenderImage,
+            dateTime: firebase.database.ServerValue.TIMESTAMP
+        });
         /// add users in firebase grp
         for (var i = 0; i < navArr.length; i++) {
             let _userid = navArr[i].firbaseuid;
@@ -171,30 +195,6 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
             });
         }
         // user added end code
-        if (getkey)
-            groupID = getkey;
-        console.log('yup , ' + groupID);
-        firebase.database().ref('Groups').child(getkey).set({
-            groupName: name,
-            createdBy: autoSenderId,
-            id: autoSenderId,
-            teleid: 1,
-            type: 'Admin',
-            grpFor: physician,
-            userName: autoSenderName,
-            image: '/Content/images/group.png',//_senderPhoto,
-            dateTime: firebase.database.ServerValue.TIMESTAMP,
-            grpType: grptype
-        });
-        firebase.database().ref('Groups/' + getkey + '/users/').child(autoSenderId).set({
-            id: autoSenderId,
-            groupName: name,
-            teleid: 1,
-            type: 'Admin',
-            userName: autoSenderName,
-            image: autoSenderImage,
-            dateTime: firebase.database.ServerValue.TIMESTAMP
-        });
 
         //GetGroupByKey(getkey);
        
