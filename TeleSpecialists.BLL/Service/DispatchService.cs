@@ -567,6 +567,13 @@ namespace TeleSpecialists.BLL.Service
             
             return latestCase.FirstOrDefault().ToInt();
         }
+
+        public int GetSaveButtonStatus()
+        {
+            var _getBit = _unitOfWork.SqlQuery<int>("exec sp_dispatch_trigger");
+            return _getBit.First();
+        }
+
         public int RefreshCase()
         {
             var _refreshBit  = _unitOfWork.SqlQuery<int>("exec sp_case_trigger");

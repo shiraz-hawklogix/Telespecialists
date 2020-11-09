@@ -533,6 +533,17 @@
     function submitThisForm(e) {
         RefreshMode = true;
         var STFrow = $(e.currentTarget).closest("tr");
+
+        // Set Save Button Green & Disabled on Click 
+        debugger
+        var savecolumn = STFrow[0].children[10];
+        var btn = $(savecolumn).children().eq(0);
+        $(btn).removeClass("btn-dark");
+        $(btn).addClass("btn-success");
+
+        $(btn).removeAttr("disabled");
+        $(btn).attr("disabled", "disabled");
+        //
         var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(e.currentTarget).closest("tr"));
         var checkPhyKey = STFrow[0].children[13].innerText;
         var automStampMsg = dataItem.CombinedMessage;
@@ -588,13 +599,13 @@
         var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(e.currentTarget).closest("tr"));
         var casKey = dataItem.cas_key;
        // sentCases.push(casKey);
-        SetColor();
 
         var url = "@Url.Action("DisableButton")";
         $.ajax({
             url: url + "?cas_key=" + casKey,
             type: 'POST',
             success: function (resp) {
+                SetColor();
                 
                 //if (resp) { 
                 //    console.log("success"); 
@@ -644,7 +655,7 @@
         if (SetColor.To != undefined)
             window.clearTimeout(SetColor.To);
 
-        SetColor.To = window.setTimeout(SetColor, 500);
+        SetColor.To = window.setTimeout(SetColor, 3000);
     }
 
     //function SetDisabled() {
@@ -989,13 +1000,14 @@
          });
     }
 
-    function CheckSaveButtonStatus() {
+    function CheckSaveButtonStatus() { 
+        debugger
         $("#hdnDisableLoader").val("1");
         $.ajax({
             type: 'GET',
             url: '/Dispatch/GetBtnStatusList',
             success: function (e) {
-                if (e) {
+                if (e) { 
                     sentCases = [];
                     sentCases = e;
                 }
@@ -1057,6 +1069,7 @@
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     var GlobalRefreshTrigger = 0;
+    var GlobalGetSaveButtonListTrigger = 0;
     var RefreshMode = true;
     function CheckRefreshCase() {
         $("#hdnDisableLoader").val("1");
@@ -1083,6 +1096,31 @@
         });
     }
 
+    function CheckRefreshSaveStatusList() {
+        $("#hdnDisableLoader").val("1");
+        $.ajax({
+            type: 'POST',
+            url: '/Dispatch/GetSaveStatusBit',
+            success: function (e) {
+                console.log('Save Button List : ' + e);
+                if (e) { 
+                    if (GlobalGetSaveButtonListTrigger != e)
+                    { 
+                        CheckSaveButtonStatus();
+                        GlobalGetSaveButtonListTrigger = e;
+                    }
+                     
+                }
+            },
+            Error: function (e) {
+                console.error(e);
+            },
+            complete: function (e) {
+            }
+        });
+    }
+
+
 
     function ContinuePausedRefresh() {
         if (RefreshMode == false)
@@ -1097,10 +1135,13 @@
         var refreshDispatch =  setInterval(function () { CheckRefreshCase(); }, 3000); 
         Continued = setInterval(function () { ContinuePausedRefresh(); }, 60000);
 
-        //CheckSaveButtonStatus();
-        var statuslist = setInterval(function () { CheckSaveButtonStatus(); }, 1000);
-        sentCases = [];
-        sentCases = statuslist;
+        CheckSaveButtonStatus();
+        //var statuslist = setInterval(function () { CheckSaveButtonStatus(); }, 1000);
+        //sentCases = [];
+        //sentCases = statuslist;
+
+          var responseint = setInterval(function () { CheckRefreshSaveStatusList(); }, 3000);
+
         
     });
 

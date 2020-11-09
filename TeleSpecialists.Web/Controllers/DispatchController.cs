@@ -81,7 +81,13 @@ namespace TeleSpecialists.Web.Controllers
             Session["LastCaseID"] = _dispatchService.GetLatestCase();
             return Json("Success", JsonRequestBehavior.AllowGet);
         }
-
+        
+        [HttpPost]
+        public JsonResult GetSaveStatusBit()
+        {
+            var getBit = _dispatchService.GetSaveButtonStatus();
+            return Json(getBit, JsonRequestBehavior.AllowGet);
+        }
         [HttpPost]
         public JsonResult GetRefreshCase()
         {
