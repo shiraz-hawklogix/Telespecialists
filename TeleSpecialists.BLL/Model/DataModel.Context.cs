@@ -101,12 +101,12 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<Hospital_Protocols> Hospital_Protocols { get; set; }
         public virtual DbSet<Onboarded> Onboardeds { get; set; }
         public virtual DbSet<web2campaign_log> web2campaign_log { get; set; }
-
         public virtual DbSet<component_access> component_access { get; set; }
         public virtual DbSet<component> components { get; set; }
         public virtual DbSet<token> tokens { get; set; }
         public virtual DbSet<mock_case> mock_case { get; set; }
         public virtual DbSet<premorbid_correspondnce> premorbid_correspondnce { get; set; }
+        public virtual DbSet<Forcast_Data> Forcast_Data { get; set; }
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {
@@ -201,6 +201,50 @@ namespace TeleSpecialists.BLL.Model
                 new ObjectParameter("Id", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_getMenuAccess_Result>("sp_getMenuAccess", idParameter);
+        }
+    
+        public virtual ObjectResult<UspGetAllPhysicion_Result> UspGetAllPhysicion()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<UspGetAllPhysicion_Result>("UspGetAllPhysicion");
+        }
+    
+        public virtual ObjectResult<UspGetCaseDataForBCI_Result> UspGetCaseDataForBCI(Nullable<System.DateTime> startDate, Nullable<System.DateTime> edate)
+        {
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("StartDate", startDate) :
+                new ObjectParameter("StartDate", typeof(System.DateTime));
+    
+            var edateParameter = edate.HasValue ?
+                new ObjectParameter("edate", edate) :
+                new ObjectParameter("edate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<UspGetCaseDataForBCI_Result>("UspGetCaseDataForBCI", startDateParameter, edateParameter);
+        }
+    
+        public virtual ObjectResult<UspGetDailyVolimetircdata_Result> UspGetDailyVolimetircdata(Nullable<System.DateTime> startDate, Nullable<System.DateTime> edate)
+        {
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("StartDate", startDate) :
+                new ObjectParameter("StartDate", typeof(System.DateTime));
+    
+            var edateParameter = edate.HasValue ?
+                new ObjectParameter("edate", edate) :
+                new ObjectParameter("edate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<UspGetDailyVolimetircdata_Result>("UspGetDailyVolimetircdata", startDateParameter, edateParameter);
+        }
+    
+        public virtual ObjectResult<UspGetForecastData_Result> UspGetForecastData(Nullable<System.DateTime> startDate, Nullable<System.DateTime> edate)
+        {
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("StartDate", startDate) :
+                new ObjectParameter("StartDate", typeof(System.DateTime));
+    
+            var edateParameter = edate.HasValue ?
+                new ObjectParameter("edate", edate) :
+                new ObjectParameter("edate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<UspGetForecastData_Result>("UspGetForecastData", startDateParameter, edateParameter);
         }
     }
 }

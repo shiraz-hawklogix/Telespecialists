@@ -152,6 +152,7 @@
 
         <EntityTypeShape EntityType="DataModel.premorbid_correspondnce" Width="1.5" PointX="8.75" PointY="104" />
         <AssociationConnector Association="DataModel.FK_premorbid_correspondnce_case" />
+        <EntityTypeShape EntityType="DataModel.Forcast_Data" Width="1.5" PointX="5.375" PointY="8.75" />
 
         </Diagram>
     </edmx:Diagrams>

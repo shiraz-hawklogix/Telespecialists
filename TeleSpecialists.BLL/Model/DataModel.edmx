@@ -1282,6 +1282,17 @@
           <Property Name="fre_firebase_uid" Type="nvarchar" MaxLength="200" />
           <Property Name="fre_profileimg" Type="nvarchar(max)" />
         </EntityType>
+        <EntityType Name="Forcast_Data">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Fac_Id" Type="nvarchar" MaxLength="100" />
+          <Property Name="Fac_Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="Month_Name" Type="datetime" />
+          <Property Name="Month_Prediction" Type="nvarchar" MaxLength="100" />
+          <Property Name="Created_Date" Type="datetime" />
+        </EntityType>
         <EntityType Name="goals_data">
           <Key>
             <PropertyRef Name="gd_key" />
@@ -2891,6 +2902,11 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Parameter Name="isTimeBetween7and12" Type="int" Mode="In" />
           <Parameter Name="SoftSaveGuid" Type="uniqueidentifier" Mode="In" />
         </Function>
+        <Function Name="UspGetAllPhysicion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UspGetCaseDataForBCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StartDate" Type="datetime" Mode="In" />
+          <Parameter Name="edate" Type="datetime" Mode="In" />
+        </Function>
         <Function Name="UspGetCWHData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
@@ -2900,6 +2916,14 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Parameter Name="edate" Type="datetime" Mode="In" />
         </Function>
         <Function Name="UspGetCWHData3" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StartDate" Type="datetime" Mode="In" />
+          <Parameter Name="edate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="UspGetDailyVolimetircdata" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StartDate" Type="datetime" Mode="In" />
+          <Parameter Name="edate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="UspGetForecastData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
         </Function>
@@ -2954,6 +2978,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="facility_questionnaire_pre_live" EntityType="Self.facility_questionnaire_pre_live" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="facility_rate" EntityType="Self.facility_rate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="firebase_usersemail" EntityType="Self.firebase_usersemail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Forcast_Data" EntityType="Self.Forcast_Data" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="goals_data" EntityType="Self.goals_data" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Hospital_Protocols" EntityType="Self.Hospital_Protocols" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="mock_case" EntityType="Self.mock_case" Schema="dbo" store:Type="Tables" />
@@ -3654,6 +3679,20 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <End Role="case" EntitySet="cases" />
             <End Role="premorbid_correspondnce" EntitySet="premorbid_correspondnce" />
           </AssociationSet>
+          <EntitySet Name="Forcast_Data" EntityType="DataModel.Forcast_Data" />
+          <FunctionImport Name="UspGetAllPhysicion" ReturnType="Collection(DataModel.UspGetAllPhysicion_Result)" />
+          <FunctionImport Name="UspGetCaseDataForBCI" ReturnType="Collection(DataModel.UspGetCaseDataForBCI_Result)">
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="edate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="UspGetDailyVolimetircdata" ReturnType="Collection(DataModel.UspGetDailyVolimetircdata_Result)">
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="edate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="UspGetForecastData" ReturnType="Collection(DataModel.UspGetForecastData_Result)">
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="edate" Mode="In" Type="DateTime" />
+          </FunctionImport>
 
           </EntityContainer>
         <EntityType Name="alarm_setting">
@@ -6687,6 +6726,41 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Forcast_Data">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Fac_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Fac_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Month_Name" Type="DateTime" Precision="3" />
+          <Property Name="Month_Prediction" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Created_Date" Type="DateTime" Precision="3" />
+        </EntityType>
+        <ComplexType Name="UspGetAllPhysicion_Result">
+          <Property Type="Int32" Name="fap_key" Nullable="false" />
+          <Property Type="Guid" Name="fap_fac_key" Nullable="false" />
+          <Property Type="String" Name="fap_user_key" Nullable="false" MaxLength="128" />
+          <Property Type="Boolean" Name="fap_is_on_boarded" Nullable="false" />
+          <Property Type="String" Name="Physician_Name" Nullable="false" MaxLength="513" />
+        </ComplexType>
+        <ComplexType Name="UspGetCaseDataForBCI_Result">
+          <Property Type="Guid" Name="cas_fac_key" Nullable="false" />
+          <Property Type="DateTime" Name="cas_metric_video_start_time" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="cas_metric_video_end_time" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="UspGetDailyVolimetircdata_Result">
+          <Property Type="Guid" Name="cas_fac_key" Nullable="false" />
+          <Property Type="DateTime" Name="cas_response_ts_notification" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="UspGetForecastData_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="Fac_Id" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="Fac_Name" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Month_Name" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Month_Prediction" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Created_Date" Nullable="true" Precision="23" />
+        </ComplexType>
 
         </Schema>
     </edmx:ConceptualModels>
@@ -8873,6 +8947,58 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Forcast_Data">
+            <EntityTypeMapping TypeName="DataModel.Forcast_Data">
+              <MappingFragment StoreEntitySet="Forcast_Data">
+                <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
+                <ScalarProperty Name="Month_Prediction" ColumnName="Month_Prediction" />
+                <ScalarProperty Name="Month_Name" ColumnName="Month_Name" />
+                <ScalarProperty Name="Fac_Name" ColumnName="Fac_Name" />
+                <ScalarProperty Name="Fac_Id" ColumnName="Fac_Id" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllPhysicion" FunctionName="DataModel.Store.UspGetAllPhysicion">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllPhysicion_Result">
+                <ScalarProperty Name="fap_key" ColumnName="fap_key" />
+                <ScalarProperty Name="fap_fac_key" ColumnName="fap_fac_key" />
+                <ScalarProperty Name="fap_user_key" ColumnName="fap_user_key" />
+                <ScalarProperty Name="fap_is_on_boarded" ColumnName="fap_is_on_boarded" />
+                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetCaseDataForBCI" FunctionName="DataModel.Store.UspGetCaseDataForBCI">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetCaseDataForBCI_Result">
+                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
+                <ScalarProperty Name="cas_metric_video_start_time" ColumnName="cas_metric_video_start_time" />
+                <ScalarProperty Name="cas_metric_video_end_time" ColumnName="cas_metric_video_end_time" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetDailyVolimetircdata" FunctionName="DataModel.Store.UspGetDailyVolimetircdata">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetDailyVolimetircdata_Result">
+                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
+                <ScalarProperty Name="cas_response_ts_notification" ColumnName="cas_response_ts_notification" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetForecastData" FunctionName="DataModel.Store.UspGetForecastData">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetForecastData_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Fac_Id" ColumnName="Fac_Id" />
+                <ScalarProperty Name="Fac_Name" ColumnName="Fac_Name" />
+                <ScalarProperty Name="Month_Name" ColumnName="Month_Name" />
+                <ScalarProperty Name="Month_Prediction" ColumnName="Month_Prediction" />
+                <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
 
           </EntityContainerMapping>
       </Mapping>

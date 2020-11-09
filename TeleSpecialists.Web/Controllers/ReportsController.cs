@@ -9,6 +9,9 @@ using TeleSpecialists.BLL.Helpers;
 using TeleSpecialists.BLL.Service;
 using TeleSpecialists.BLL.ViewModels.Reports;
 using TeleSpecialists.BLL.ViewModels;
+using TeleSpecialists.Web.Models;
+using System.Diagnostics;
+using System.IO;
 
 namespace TeleSpecialists.Controllers
 {
@@ -3473,6 +3476,218 @@ namespace TeleSpecialists.Controllers
             return Json(_result, JsonRequestBehavior.AllowGet);
         }
 
+
+        public ActionResult BCIReport()
+        {
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
+                        .Select(m => new { Value = m.fac_key, Text = m.fac_name })
+                        .ToList()
+                        .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+
+            ViewBag.Physicians = _lookUpService.GetPhysicians().Where(m => m.IsActive == true && m.IsStrokeAlert == true)
+                                  .OrderBy(m => m.LastName)
+                                  .Select(m => new { Value = m.Id, Text = m.LastName + " " + m.FirstName })
+                                  .ToList()
+                                  .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+            return GetViewResult();
+        }
+        public JsonResult GetBCI(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        {
+            try
+            {
+                var result = _reportService.GetBCIData(request, facilities, Physicians);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public JsonResult GetFacilityVolumetricReport(DataSourceRequest request, List<Guid> facilities, DateTime FromMonth, DateTime ToMonth)
+        {
+            try
+            {
+                var result = _reportService.GetFacilityVolumetricReports(request, facilities, FromMonth, ToMonth);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public ActionResult DailyFacilityVolumetricReport()
+        {
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
+                                 .Select(m => new { Value = m.fac_key, Text = m.fac_name })
+                                 .ToList()
+                                 .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+            return GetViewResult();
+        }
+
+        public ActionResult GetDailyFacilityVolumetricReport(string cas_fac_key_arrays, DateTime FromMonth, DateTime ToMonth, string cas_fac_Name_array)
+        {
+            try
+            {
+                var result = _reportService.GetDailyFacilityVolumetricReports(cas_fac_key_arrays, FromMonth, ToMonth.AddDays(1), cas_fac_Name_array);
+                var conrt_list = result.Select(x => x.fac_name).FirstOrDefault();
+                List<string> namesrf = conrt_list.Split('*').ToList();
+                TempData["h1"] = namesrf.ToList();
+                TempData["b1"] = result.ToList();
+                string filePath = Server.MapPath("~/R-Scripting/ForecastingExport");
+                ViewBag.TempFilePath = filePath + ".csv";
+                _reportService.PrepareCastingExport(filePath, result);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(false, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public ActionResult R_daily_Forecast()
+        {
+            try
+            {
+                var rpath = Server.MapPath("~/RapidsAttachments/R Client/R_SERVER/bin/Rscript.exe");
+                var scriptpath = Server.MapPath("~/R-Scripting/forecast_testF.R");
+                Process p = new Process();
+                ProcessStartInfo info = new ProcessStartInfo
+                {
+                    FileName = rpath,
+                    WorkingDirectory = Path.GetDirectoryName(scriptpath),
+                    Arguments = scriptpath,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardError = true
+                };
+                p.StartInfo = info;
+                p.Start();
+
+
+                var results = p.StandardOutput.ReadToEnd();
+                var data = results.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                List<HeaderListDetail> bodylist = new List<HeaderListDetail>();
+                HeaderListDetail obj;
+                header _objheader;
+                string[] arrHeader = data[0].Split(',');
+                List<header> _objheaderslist = new List<header>();
+                HeaderListDetail _objheaderdetaillist = new HeaderListDetail();
+                foreach (var item in arrHeader)
+                {
+                    _objheader = new header();
+                    _objheader.HeaderName = item.Replace('\"', ' ');
+                    _objheaderslist.Add(_objheader);
+                }
+                ViewBag._objheader = _objheaderslist;
+                for (int i = 1; i < data.Length; i++)
+                {
+                    obj = new HeaderListDetail();
+                    var record = data[i];
+                    string[] arr = record.Split(',');
+                    header _header;
+                    List<header> child = new List<header>();
+                    foreach (var item in arr)
+                    {
+                        _header = new header();
+                        _header.headerBody = item.Replace('\"', ' ');
+                        child.Add(_header);
+                    }
+                    obj.Records = child;
+                    bodylist.Add(obj);
+                }
+
+                string errors = p.StandardError.ReadToEnd();
+                Console.WriteLine("Warning/Errors");
+                Console.WriteLine(errors);
+                Console.WriteLine();
+                Console.WriteLine("Results");
+                Console.WriteLine(results);
+                return GetViewResult(bodylist);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return GetViewResult();
+        }
+        public ActionResult R_Index()
+        {
+            try
+            {
+                var scriptpath = Server.MapPath("~/R-Scripting/forecast_testF.R");
+                var rpath = @"C:\Program Files\R\R-4.0.2\bin\Rscript.exe";
+                Process p = new Process();
+                ProcessStartInfo info = new ProcessStartInfo
+                {
+                    FileName = rpath,
+                    WorkingDirectory = Path.GetDirectoryName(scriptpath),
+                    Arguments = scriptpath,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardError = true
+                };
+                p.StartInfo = info;
+                p.Start();
+                var results = p.StandardOutput.ReadToEnd();
+                string error = p.StandardError.ReadToEnd();
+                var data = results.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                List<HeaderListDetail> bodylist = new List<HeaderListDetail>();
+                HeaderListDetail obj;
+                header _objheader;
+                string[] arrHeader = data[0].Split(',');
+                List<header> _objheaderslist = new List<header>();
+                HeaderListDetail _objheaderdetaillist = new HeaderListDetail();
+                foreach (var item in arrHeader)
+                {
+                    _objheader = new header();
+                    _objheader.HeaderName = item.Replace('\"', ' ');
+                    _objheaderslist.Add(_objheader);
+                }
+                ViewBag._objheader = _objheaderslist;
+                for (int i = 1; i < data.Length; i++)
+                {
+                    obj = new HeaderListDetail();
+                    var record = data[i];
+                    string[] arr = record.Split(',');
+                    header _header;
+                    List<header> child = new List<header>();
+                    foreach (var item in arr)
+                    {
+                        _header = new header();
+                        _header.headerBody = item.Replace('\"', ' ');
+                        child.Add(_header);
+                    }
+                    obj.Records = child;
+                    bodylist.Add(obj);
+                }
+
+                string errors = p.StandardError.ReadToEnd();
+                Console.WriteLine("Warning/Errors");
+                Console.WriteLine(errors);
+                Console.WriteLine();
+                Console.WriteLine("Results");
+                Console.WriteLine(results);
+                return GetViewResult(bodylist);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            return GetViewResult();
+        }
+        public PartialViewResult AddPhysician()
+        {
+            ViewBag.Header = TempData["h1"];
+            ViewBag.body = TempData["b1"];
+            return PartialView("_AddPhysician");
+        }
         #region ----- Disposable -----
         private bool disposed = false; // to detect redundant calls
         protected override void Dispose(bool disposing)
