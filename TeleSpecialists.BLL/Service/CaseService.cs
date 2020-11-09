@@ -1139,12 +1139,12 @@ namespace TeleSpecialists.BLL.Service
         }
         public void EditMorbid(PremorbidCorrespondnce premorbid, int cas_key, bool commit = true)
         {
-            if (premorbid.pmc_cas_premorbid_completedby.Count > 0 && premorbid.pmc_cas_premorbid_completedby[0] != "")
-            {
+            //if (premorbid.pmc_cas_premorbid_completedby.Count > 0 && premorbid.pmc_cas_premorbid_completedby[0] != "")
+            //{
                 var isExist = _unitOfWork.premorbidRepository.Query().Where(x => x.pmc_cas_key == cas_key).ToList();
                 if (isExist.Count > 0)
                 {
-                    for (var i = 0; i < premorbid.pmc_cas_premorbid_completedby.Count; i++)
+                    for (var i = 0; i < 3; i++)
                     {
                         isExist[i].pmc_cas_premorbid_patient_phone = premorbid.pmc_cas_premorbid_patient_phone;
                         var checkdate = premorbid.pmc_cas_premorbid_datetime_of_contact[i];
@@ -1190,7 +1190,7 @@ namespace TeleSpecialists.BLL.Service
 
                     List<premorbid_correspondnce> entity = new List<premorbid_correspondnce>();
                     premorbid_correspondnce obj;
-                    for (var i = 0; i < premorbid.pmc_cas_premorbid_completedby.Count; i++)
+                    for (var i = 0; i < 3; i++)
                     {
                         obj = new premorbid_correspondnce();
                         obj.pmc_cas_key = cas_key;
@@ -1239,7 +1239,7 @@ namespace TeleSpecialists.BLL.Service
                     _unitOfWork.Save();
                     _unitOfWork.Commit();
                 }
-            }
+            //}
 
         }
         public PremorbidCorrespondnce GetPremorbidCorrespondnces(int cas_key)
