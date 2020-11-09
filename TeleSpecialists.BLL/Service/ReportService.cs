@@ -1573,6 +1573,7 @@ namespace TeleSpecialists.BLL.Service
                     NIHSS_cannot_patient_status = x.ca.cas_nihss_cannot_completed,
                     Physician_Blast = x.ca.cas_billing_physician_blast ? "Yes" : "No",
                     x.reasonFortPADelay,
+                    ts_account_id = x.ca.facility.fac_ts_account_ID,
                 });
 
                 #endregion
