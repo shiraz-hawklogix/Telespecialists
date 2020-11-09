@@ -531,6 +531,17 @@
     function submitThisForm(e) {
         RefreshMode = true;
         var STFrow = $(e.currentTarget).closest("tr");
+
+        // Set Save Button Green & Disabled on Click 
+        debugger
+        var savecolumn = STFrow[0].children[10];
+        var btn = $(savecolumn).children().eq(0);
+        $(btn).removeClass("btn-dark");
+        $(btn).addClass("btn-success");
+
+        $(btn).removeAttr("disabled");
+        $(btn).attr("disabled", "disabled");
+        //
         var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(e.currentTarget).closest("tr"));
         var checkPhyKey = STFrow[0].children[13].innerText;
         var automStampMsg = dataItem.CombinedMessage;
