@@ -162,39 +162,27 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
             image: autoSenderImage,
             dateTime: firebase.database.ServerValue.TIMESTAMP
         });
-        /// add users in firebase grp
-        for (var i = 0; i < navArr.length; i++) {
-            let _userid = navArr[i].firbaseuid;
-            let _name = navArr[i].name;
-            let _image = navArr[i].ImgPath;
-            let grpId = getkey;
-            let nodeid = _userid + '-' + grpId;
-            let grpname = name;
-            //userid, name, image, grpid, nodeid, grpname
-            console.log('inisede navArr loop array : ' + shortmsg);
-            firebase.database().ref('Groups/' + grpId + '/users').child(_userid).set({
-                id: _userid,
-                teleid: 1,
-                groupId: grpId,
-                groupName: grpname,
-                type: 'user',
-                userName: _name,
-                image: _image,
-                dateTime: firebase.database.ServerValue.TIMESTAMP
-            });
-            firebase.database().ref("TeleUsers/" + _userid + "/Connections").child(grpId).set({
-                lastOnline: firebase.database.ServerValue.TIMESTAMP,
-                name: grpname,
-                image: _receiverPhoto,
-                lastMessage: shortmsg,
-                type: 'Public'
-            });
-
-            firebase.database().ref("TeleUsers/" + _userid + "/ConnectionRules").child(grpId).set({
-                msgNode: grpId
-            });
-        }
-        // user added end code
+        // add sender in grp
+        firebase.database().ref('Groups/' + getkey + '/users/').child(SenderId).set({
+            id: SenderId,
+            groupName: name,
+            teleid: 1,
+            type: 'Admin',
+            userName: _senderName,
+            image: _senderPhoto,
+            dateTime: firebase.database.ServerValue.TIMESTAMP
+        });
+        firebase.database().ref("TeleUsers/" + SenderId + "/Connections").child(groupID).set({
+            lastOnline: firebase.database.ServerValue.TIMESTAMP,
+            name: name,
+            image: _receiverPhoto,
+            lastMessage: shortmsg,
+            type: 'Public'
+        });
+        firebase.database().ref("TeleUsers/" + SenderId + "/ConnectionRules").child(groupID).set({
+            msgNode: groupID
+        });
+       
 
         //GetGroupByKey(getkey);
        
@@ -232,7 +220,7 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
                 msgNode: _receiverId
             });
         }
-
+        
         var encryptMsg = CryptoJS.AES.encrypt(msg, '123');
         // send auto generated msg to group
         let grpid = getkey;
@@ -250,11 +238,11 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
             msgType: 'text'
         });
 
-        
+        addNavigators(name, grptype, msg, physician, navArr, getkey, shortmsg);
 
     }
     catch (error) {
-        console.error(error);
+        console.error('found error in create grp: ',error);
     }
     
     // users add code end
@@ -282,6 +270,44 @@ function ExistingGroup(name, grptype, msg, physician, navArr, _autosenderid, _au
         var shortmsg = msg.substring(0, 10) + '...';
         UserConnectionFB(grpid, shortmsg);
     });
+}
+
+function addNavigators(name, grptype, msg, physician, navArr, getkey, shortmsg) {
+    /// add users in firebase grp
+    console.log('inisede navArr loop array : ' , navArr);
+    for (var i = 0; i < navArr.length; i++) {
+        let _userid = navArr[i].firbaseuid;
+        let _name = navArr[i].name;
+        let _image = navArr[i].ImgPath;
+        let grpId = getkey;
+        let nodeid = _userid + '-' + grpId;
+        let grpname = name;
+        //userid, name, image, grpid, nodeid, grpname
+        console.log('user in array:' + _userid);
+        if (_userid) {
+            firebase.database().ref('Groups/' + grpId + '/users').child(_userid).set({
+                id: _userid,
+                teleid: 1,
+                groupId: grpId,
+                groupName: grpname,
+                type: 'user',
+                userName: _name,
+                image: _image,
+                dateTime: firebase.database.ServerValue.TIMESTAMP
+            });
+            firebase.database().ref("TeleUsers/" + _userid + "/Connections").child(grpId).set({
+                lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                name: grpname,
+                image: _receiverPhoto,
+                lastMessage: shortmsg,
+                type: 'Public'
+            });
+            firebase.database().ref("TeleUsers/" + _userid + "/ConnectionRules").child(grpId).set({
+                msgNode: grpId
+            });
+        }
+    }
+        // user added end code
 }
 
 
