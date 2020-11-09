@@ -745,42 +745,45 @@
     }
     function checkAllgrpUserReadMsg(grpid) {
         //******************* Method One **********************************//
+        try {
+            var _grpArr = [];
+            var groupUser = firebase.database().ref("Groups/" + grpid + "/users");
+            groupUser.on('child_added', function (grpUser) {
+                _grpArr.push({ id: grpUser.key });
+            });
 
-        var _grpArr = [];
-        var groupUser = firebase.database().ref("Groups/" + grpid + "/users");
-        groupUser.on('child_added', function (grpUser) {
-            _grpArr.push({ id: grpUser.key });
-        });
-
-        var ref = firebase.database().ref("userMessages/" + grpid);
-        ref.on("child_added", function (snapshot) {
-            //console.log(' id is undefiend _grpArr is : ' , _grpArr);
-            var msgArr = [];
-            for (var i = 0; i < _grpArr.length; i++) {
-                var Alluser = 'notFound';
-                ref.child(snapshot.key + '/read').child(_grpArr[i].id).once('child_added', function (userData) {
-                    Alluser = 'userFound';
-                    msgArr.push({ id: _grpArr[i].id });
-                });
-                if (Alluser !== 'userFound') {
-                    Alluser = 'notFound';
+            var ref = firebase.database().ref("userMessages/" + grpid);
+            ref.on("child_added", function (snapshot) {
+                //console.log(' id is undefiend _grpArr is : ' , _grpArr);
+                var msgArr = [];
+                for (var i = 0; i < _grpArr.length; i++) {
+                    var Alluser = 'notFound';
+                    ref.child(snapshot.key + '/read').child(_grpArr[i].id).once('child_added', function (userData) {
+                        Alluser = 'userFound';
+                        msgArr.push({ id: _grpArr[i].id });
+                    });
+                    if (Alluser !== 'userFound') {
+                        Alluser = 'notFound';
+                    }
+                    // console.log('user is : ' + _grpArr[i].id + ' , find user is : ' + Alluser);
                 }
-                // console.log('user is : ' + _grpArr[i].id + ' , find user is : ' + Alluser);
-            }
-            if (_grpArr.length === msgArr.length) {
-                // console.log('husnain All Members have read this msg.');
-                var _ref = firebase.database().ref("userMessages/" + grpid + '/' + snapshot.key);
-                _ref.update({
-                    isRead: true
-                });
-            }
+                if (_grpArr.length === msgArr.length) {
+                    // console.log('husnain All Members have read this msg.');
+                    var _ref = firebase.database().ref("userMessages/" + grpid + '/' + snapshot.key);
+                    _ref.update({
+                        isRead: true
+                    });
+                }
 
-            else {
-                // console.log('husnain arrays not equal in length');
-            }
+                else {
+                    // console.log('husnain arrays not equal in length');
+                }
 
-        });
-
+            });
+        }
+        catch (err) {
+            console.log('')
+        }
 
         /////////////////////////////////////////////////////////////////////////////////
 
