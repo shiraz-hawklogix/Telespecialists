@@ -47,6 +47,7 @@
 
 
     function onmCaseGridFilter(tab, filters) {
+        debugger;
             if (filters == undefined || filters == null)
                 filters = [];
         if ($("#mockCasesGrid").data("kendoGrid") == undefined || $("#mockCasesGrid").data("kendoGrid") == null) {
@@ -60,7 +61,7 @@
                             type: "POST"
                         },
                         parameterMap: function (options) {
-                            options = KendoKeepState("Case", options, true);
+                            options = KendoKeepState("Mock_Case", options, true);
                             return kendo.stringify(options);
                         }
                     },
@@ -68,8 +69,8 @@
                         data: "Data",
                         total: "Total",
                     },
-                    pageSize: GetKendoPageSize("Case", "RecPerPage", true),
-                    page: KendoGet("Case", "page"),
+                    pageSize: GetKendoPageSize("Mock_Case", "RecPerPage", true),
+                    page: KendoGet("Mock_Case", "page"),
                     serverPaging: true,
                     serverFiltering: true,
                     serverSorting: true
@@ -87,7 +88,7 @@
                     mCaseapplyColors();
                     _refreshData();
                     //get All records
-                    SetKendoTotalCount("Case", $('#mockCasesGrid').data("kendoGrid").dataSource.total());
+                    SetKendoTotalCount("Mock_Case", $('#mockCasesGrid').data("kendoGrid").dataSource.total());
                     $('[data-role="dropdownlist"]').each(function () {
                         var kendoDropDown = $(this).data("kendoDropDownList");
                         if (kendoDropDown)
@@ -101,10 +102,11 @@
                     { hidden: true, field: "mcas_cst_key" },
                     {
                         title: "Actions", width: '80px',
-                        template: "<a class='btn btn-dark btn-sm py-1 loadLinkAsync' title='Edit' onClick='StopmCaseCaseListingTimer()' href='@Url.Action("Edit","MockCase")/\#= mcas_key#'>Edit</a>"
+                        template: "<a class='btn btn-dark btn-sm py-1 loadLinkAsync' title='Edit' href='@Url.Action("Edit","MockCase")/\#= mcas_key#'>Edit</a>"
                     },
 
-                    { field: "mcas_created_date", title: "Start Time", width: '150px' },
+                    //{ field: "mcas_created_date", title: "Start Time", width: '150px' },
+                    { field: "mcas_created_date", title: "Created Time", width: '150px' },
                     { field: "CaseStatus", title: "Status", width: '120px' },              
                     { field: "casetype", title: "Case Type", width: '150px' },
                     { field: "facilityname", title: "Facility", width: '200px' },
@@ -129,7 +131,6 @@
     }
 
     function mCaseperformSearchOnCases() {
-        debugger;
         if (!validateForm())
             return;
 
@@ -235,6 +236,7 @@
     }
 
     $(document).ready(function () {
+        debugger;
         mCasegenerateStatusFilter();
         $("#mCasedateFilter").val('Last48Hours');
         document.title = $("#title-prefix").val() + '@ViewBag.Title';

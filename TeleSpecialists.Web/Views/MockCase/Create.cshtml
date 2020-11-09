@@ -126,7 +126,6 @@
 
 
          $("#btnSave, #btnSaveClose,#btnSaveSend").off("click").click(function () {
-        debugger;
         $(".error_msg").hide();
         $("#mhdnSaveAndSend").val("0");
         $("#mRedirectPage").val("0");
@@ -163,7 +162,9 @@
                 }, "Yes", function () {
                 $("#divModelPopUp").modal("hide");
             });
-        });
+         });
+
+        maskPhoneNumber();
 
     });
 </script>

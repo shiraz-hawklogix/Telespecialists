@@ -148,8 +148,8 @@ namespace TeleSpecialists.Web.Controllers
         {
             try
             {
-                var isRedirect = Request.Params["RedirectPage"] == "0" ? false : true;
-                var isSaveAndSend = Request.Params["hdnSaveAndSend"] == "1" ? true : false;
+                var isRedirect = Request.Params["mRedirectPage"] == "0" ? false : true;
+                var isSaveAndSend = Request.Params["mhdnSaveAndSend"] == "1" ? true : false;
                 var showPhyOfflinePopup = "0";
     
                 if (ModelState.IsValid)
@@ -193,18 +193,8 @@ namespace TeleSpecialists.Web.Controllers
                     }
                     else
                     {
-                        if (isSaveAndSend)
-                        {
-
-                            //showPhyOfflinePopup = IsUserOnline(model.cas_phy_key) ? "0" : "1";
-                            //if (showPhyOfflinePopup == "0")
-                            //{
-                            //    SendCaseToPhysician(model);
-                            //}
-                        }
-
                         if (isRedirect)
-                            return GetSuccessResult("case", "Mock case has been added.");
+                            return GetSuccessResult("/case/Index", "Mock case has been added.");
                         else
                         {
                             return GetSuccessResult(Url.Action("Edit", new { Id = model.mcas_key, showPopupOnLoad = (User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? false : true), showPhyOfflinePopup = showPhyOfflinePopup, isInitialSave = true })); /* commented due to #411 - settings.aps_cas_facility_popup_on_load */
@@ -464,27 +454,31 @@ namespace TeleSpecialists.Web.Controllers
             try
             {
                 model = _mockCaseService.GetDetails(id);
-                if (model.facility != null)
-                {
-                    if (!string.IsNullOrWhiteSpace(model.facility.qps_number))
-                    {
-                        var GetQPSName = _adminService.GetAspNetUsers().Where(m => m.Id == model.facility.qps_number).Select(x => new { x.FirstName, x.LastName }).FirstOrDefault();
-                        if (GetQPSName != null)
-                        {
-                            ViewBag.QPSName = GetQPSName.FirstName + " " + GetQPSName.LastName;
-                        }
-                        else
-                        {
-                            ViewBag.QPSName = "";
-                        }
 
-                    }
+                #region  [QPS NAME]
+                //if (model.facility != null)
+                //{
+                //    if (!string.IsNullOrWhiteSpace(model.facility.qps_number))
+                //    {
+                //        var GetQPSName = _adminService.GetAspNetUsers().Where(m => m.Id == model.facility.qps_number).Select(x => new { x.FirstName, x.LastName }).FirstOrDefault();
+                //        if (GetQPSName != null)
+                //        {
+                //            ViewBag.QPSName = GetQPSName.FirstName + " " + GetQPSName.LastName;
+                //        }
+                //        else
+                //        {
+                //            ViewBag.QPSName = "";
+                //        }
 
-                }
-                else
-                {
-                    ViewBag.QPSName = "";
-                }
+                //    }
+
+                //}
+                //else
+                //{
+                //    ViewBag.QPSName = "";
+                //}
+                #endregion
+
                 if (User.IsInRole(UserRoles.Physician.ToDescription()))
                 {
                     // Check case is assigned to user or not.
@@ -557,7 +551,7 @@ namespace TeleSpecialists.Web.Controllers
                     // Sorting according to the ticket no. 439. 
                     // if there isnt a sort order set then it should go in alpha order yes but why would we give users the option to set a sort order if we are setting in alpha order? that doesnt make much sense ' From Darcy
 
-                    ViewBag.CaseTypes = uclDataList.Where(m => m.ucd_ucl_key == UclTypes.CaseType.ToInt())
+                    ViewBag.CaseTypes = uclDataList.Where(m => m.ucd_ucl_key == UclTypes.MockCaseType.ToInt())
                                                  .Select(m => new { m.ucd_key, m.ucd_title })
                                                  .ToDictionary(m => m.ucd_key, m => m.ucd_title);
 
@@ -600,12 +594,12 @@ namespace TeleSpecialists.Web.Controllers
                     redirectToEdit = Request.Params["isReadOnly"] == "true" ? true : false;
                     //@case followUpCase = null;
                     bool isFollowUpCase = false;
-                    var isSaveAndSend = Request.Params["hdnSaveAndSend"] == "1" ? true : false;
+                    var isSaveAndSend = Request.Params["mhdnSaveAndSend"] == "1" ? true : false;
                     var showPhyOfflinePopup = "0";
 
                     ViewBag.EnableAutoSave = ApplicationSetting.aps_enable_case_auto_save;
                     var showSuccessMessageOnly = Request.Params["ShowSuccessOnly"] == "1";
-                    var isRedirect = Request.Params["RedirectPage"] == "0" ? false : true;
+                    var isRedirect = Request.Params["mRedirectPage"] == "0" ? false : true;
 
                     var dbModel = _mockCaseService.GetDetails(model.mcas_key);
 
@@ -688,7 +682,6 @@ namespace TeleSpecialists.Web.Controllers
                         }
                         #endregion
 
-
                         model.mcas_is_partial_update = false;
 
                         if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
@@ -705,7 +698,7 @@ namespace TeleSpecialists.Web.Controllers
 
                         if (showSuccessMessageOnly)
                         {
-                            return ShowSuccessMessageOnly("Case has been updated successfully", null);
+                            return ShowSuccessMessageOnly("Mock case has been updated successfully", null);
                         }
                         else
                         {
@@ -721,31 +714,22 @@ namespace TeleSpecialists.Web.Controllers
                                 }
                             }
                             if (isRedirect)
-                                  return GetSuccessResult("case", "Mock case has been updated.");
+                                  return GetSuccessResult("/case/Index", "Mock case has been updated.");
                             else if (redirectToEdit)
                             {
-                                return GetSuccessResult(Url.Action("Edit", new { id = model.mcas_key, isReadOnly = true }), "Case has been updated successfully");
+                                return GetSuccessResult(Url.Action("Edit", new { id = model.mcas_key, isReadOnly = true }), "Mock case has been updated successfully.");
                             }
                             else
                             {
-                                if (isSaveAndSend)
-                                {
-
-                                }
-
                                 return GetSuccessResult(
                                     Url.Action(
                                       "Edit",
                                        new
                                        {
                                            id = model.mcas_key,
-                                           //TCARE-482
-                                           //showPopupOnLoad = User.IsInRole(UserRoles.FacilityAdmin.ToDescription())
-                                           //                    ? false
-                                           //                    : settings.aps_cas_facility_popup_on_load,
                                            showPhyOfflinePopup = showPhyOfflinePopup
                                        }
-                                    ), "Case successfully updated"
+                                    ), "Mock case successfully updated"
                                 );
                             }
                         }
