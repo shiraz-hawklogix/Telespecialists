@@ -4100,10 +4100,12 @@ function onLoadCompleteCode()
                         for (var i = 0; i < dataArrray.length; i++) {
                             grpForRejectCase.push({ user_id: dataArrray[i].user_id, email: dataArrray[i].email, name: dataArrray[i].name, firbaseuid: dataArrray[i].UserName, ImgPath: dataArrray[i].ImgPath });
                         }
-                        console.log('chat going to be initait : ' , grpForRejectCase);
-                        let grpName = 'Technical Discussion Case# ' + e.caseNumber;
-                        let automsg = 'Lets start Discussion on technical issues of Case# ' + e.caseNumber;
-                        _CreateGroupNew(grpName, 'Private', automsg, e.caseNumber, grpForRejectCase);
+
+                        console.log('chat going to be initait : ', grpForRejectCase);
+                        let grpName = 'Technical Discussion ' + e.initials;//'Technical Discussion Case# ' + e.caseNumber;
+                        let automsg = 'Lets start Discussion on technical issues with reason ' + reasonText + ' of Case# ' + e.caseNumber + ' with ' + e.physicianName;
+                        let grpfor = 'TD_' + e.phy_key + '_' + e.initials;
+                        _CreateGroupNew(grpName, 'Private', automsg, grpfor, grpForRejectCase);
                     }
 
 
