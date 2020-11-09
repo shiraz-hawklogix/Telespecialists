@@ -331,7 +331,7 @@ function bindEventsForshowPhysicianNewCasePopup_def_InternalBlast() {
                 }
                 else {
                     // latest code for create auto stamp for blast
-                    var navigatorsArr = []; // load navigators in this array
+                    var _navigatorsArr = []; // load navigators in this array
                     $.ajax({
                         type: 'POST',
                         url: '/firebaseChat/GetUser',
@@ -339,8 +339,8 @@ function bindEventsForshowPhysicianNewCasePopup_def_InternalBlast() {
                         success: function (e) {
                             autoBlastStamp = autoBlastStamp.replaceAll("##NewLine##", "<br/>");
                             console.log('auto msg is : ' + autoBlastStamp);
-                            navigatorsArr.push({ user_id: e.fre_userId, email: e.fre_email, name: e.fre_firstname, firbaseuid: e.fre_firebase_uid, ImgPath: e.fre_profileimg });
-                            _CreateGroupNewHub(grpName, 'Private', autoBlastStamp, physician, navigatorsArr);
+                            _navigatorsArr.push({ user_id: e.fre_userId, email: e.fre_email, name: e.fre_firstname, firbaseuid: e.fre_firebase_uid, ImgPath: e.fre_profileimg });
+                            _CreateGroupNewHub(grpName, 'Private', autoBlastStamp, physician, _navigatorsArr);
                             setTimeout(function () { AcceptCase(accptedMsg, physician); }, 3000);
                         },
                         Error: function (e) {
