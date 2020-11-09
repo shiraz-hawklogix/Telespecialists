@@ -535,7 +535,6 @@
         var STFrow = $(e.currentTarget).closest("tr");
 
         // Set Save Button Green & Disabled on Click 
-        debugger
         var savecolumn = STFrow[0].children[10];
         var btn = $(savecolumn).children().eq(0);
         $(btn).removeClass("btn-dark");
@@ -574,6 +573,7 @@
                 if (resp == "Updated") {
                     //window.location.href = '../Dispatch/Index';
                     console.log("success");
+                    markAsSent(casKey);
                     refreshWaitingToAcceptedGrid();
                     refreshAcceptedGrid();
                 }
@@ -585,7 +585,7 @@
                 console.log("error");
             }
         });
-        markAsSent(e);
+        
       //  markAsDisabled(e);
 
 
@@ -594,10 +594,9 @@
     var disabledSaveButtons = [];
     var rows = [];
 
-    function markAsSent(e) {
-        
-        var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(e.currentTarget).closest("tr"));
-        var casKey = dataItem.cas_key;
+    function markAsSent(casKey) {
+        //var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(e.currentTarget).closest("tr"));
+        //var casKey = dataItem.cas_key;
        // sentCases.push(casKey);
 
         var url = "@Url.Action("DisableButton")";
@@ -1001,7 +1000,6 @@
     }
 
     function CheckSaveButtonStatus() { 
-        debugger
         $("#hdnDisableLoader").val("1");
         $.ajax({
             type: 'GET',
