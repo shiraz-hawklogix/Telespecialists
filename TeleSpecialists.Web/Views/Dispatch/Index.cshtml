@@ -655,7 +655,7 @@
         if (SetColor.To != undefined)
             window.clearTimeout(SetColor.To);
 
-        SetColor.To = window.setTimeout(SetColor, 3000);
+        SetColor.To = window.setTimeout(SetColor, 1000);
     }
 
     //function SetDisabled() {
@@ -808,7 +808,7 @@
 
         RefreshMode = false;
         clearInterval(Continued);
-        Continued = setInterval(function () { ContinuePausedRefresh(); }, 60000);
+        Continued = setInterval(function () { ContinuePausedRefresh(); }, 30000);
     }
     
 
@@ -823,6 +823,9 @@
                     dataSource: options.model.CaseStatusDD,
                      value: "Text",
                      change: function (e) {
+                         if (SetColor.To != undefined) {
+                             window.clearTimeout(SetColor.To);
+                         }
                          //var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(container).closest("tr"));
                          //var casKey = dataItem.cas_key;
                          //const index = disabledSaveButtons.indexOf(casKey);
@@ -838,7 +841,7 @@
 
             RefreshMode = false;
             clearInterval(Continued);
-            Continued = setInterval(function () { ContinuePausedRefresh(); }, 60000);
+            Continued = setInterval(function () { ContinuePausedRefresh(); }, 30000);
     }
 
     function CallAutoStamp() {
@@ -1139,7 +1142,7 @@
         //sentCases = [];
         //sentCases = statuslist;
 
-          var responseint = setInterval(function () { CheckRefreshSaveStatusList(); }, 3000);
+          var responseint = setInterval(function () { CheckRefreshSaveStatusList(); }, 2000);
 
         
     });

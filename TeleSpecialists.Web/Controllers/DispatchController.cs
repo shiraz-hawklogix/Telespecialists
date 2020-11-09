@@ -1952,5 +1952,40 @@ namespace TeleSpecialists.Web.Controllers
             }
             return PartialView(_fireBaseData);
         }
+
+
+
+
+
+
+        #region ----- Disposable -----
+        private bool disposed = false; // to detect redundant calls
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    // dispose-only, i.e. non-finalizable logic
+                    _dispatchService?.Dispose();
+                    _uclService?.Dispose();
+                    _ealertFacilitiesService?.Dispose();
+                    _physician.Dispose();
+                    _caseService?.Dispose();
+                    _facilityPhysicianService?.Dispose();
+                    _caseAssignHistoryService?.Dispose();
+                    _caseRejectService?.Dispose();
+                    _adminService?.Dispose();
+                    _fireBaseUserMailService?.Dispose();
+                    _physicianStatusService?.Dispose();
+                    _physicianStatusLogService?.Dispose();
+                    _casRejectService?.Dispose();
+                }
+                disposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+        #endregion
     }
 }
