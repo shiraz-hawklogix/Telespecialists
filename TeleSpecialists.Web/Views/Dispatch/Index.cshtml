@@ -574,6 +574,7 @@
                     //window.location.href = '../Dispatch/Index';
                     console.log("success");
                     markAsSent(casKey);
+                    CheckSaveButtonStatus();
                     refreshWaitingToAcceptedGrid();
                     refreshAcceptedGrid();
                 }
@@ -1131,7 +1132,7 @@
 
     $(document).ready(function () {
         var refreshDispatch =  setInterval(function () { CheckRefreshCase(); }, 3000); 
-        Continued = setInterval(function () { ContinuePausedRefresh(); }, 60000);
+        Continued = setInterval(function () { ContinuePausedRefresh(); }, 30000);
 
         CheckSaveButtonStatus();
         //var statuslist = setInterval(function () { CheckSaveButtonStatus(); }, 1000);
