@@ -35,11 +35,10 @@ namespace TeleSpecialists.BLL.Service
         }
 
 		public IQueryable<facility> GetAllActnNonActFacility(string phoneNumber)
-        public IQueryable<facility> GetAll(string phoneNumber)
-
         {
             return GetFacilities(phoneNumber);
         }
+     
         public IQueryable<facility> GetAllLiveFacility(string phoneNumber)
         {
             return GetFacilities(phoneNumber).Where(f => f.fac_go_live);
