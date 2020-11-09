@@ -491,11 +491,11 @@ namespace TeleSpecialists.Controllers
         }
         public ActionResult PhysicianPassword()
         {
-            ViewBag.Facilities = _LookupService.GetAllFacility(null)
+            ViewBag.Facilities = _LookupService.GetAll(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();
-            ViewBag.Physicians = _LookupService.GetPhysicians().Where(m => m.IsActive == true)
+            ViewBag.Physicians = _LookupService.GetPhysicians()
                                           .OrderBy(m => m.LastName)
                                           .Select(m => new { Value = m.Id, Text = m.LastName + " " + m.FirstName })
                                           .ToList()
