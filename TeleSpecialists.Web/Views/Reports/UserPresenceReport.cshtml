@@ -328,6 +328,7 @@
                         {
                             finalData.push({ value: data.Data[i].diff, valueColor: "#3f5f29"/*, valueName:"Available"*/ });
                             CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Available", data.Data[i].diff, "#3f5f29"]);
+
                         }
                         if (data.Data[i].StatusName == 'TPA')
                         {
@@ -342,7 +343,8 @@
                         if (data.Data[i].StatusName == 'Rounding')
                         {
                             finalData.push({ value: data.Data[i].diff, valueColor: "#ffc105"/*, valueName: "Rounding"*/});
-                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime,SecondstoTimestamp(data.Data[i].diff), "Rounding", data.Data[i].diff, "#ffc105"]);
+
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Rounding", data.Data[i].diff, "#ffc105"]);
                         }
                         if (data.Data[i].StatusName == 'STAT Consult')
                         {
@@ -357,6 +359,7 @@
                     }
                     debugger
                     CsvFormat.splice(0,0,["Shift Date","Start Time", "Duration", "Status", "Total Seconds","Color"]);
+
                     var CsvString = "";
                     CsvFormat.forEach(function (RowItem, RowIndex) {
                         RowItem.forEach(function (ColItem, ColIndex) {
@@ -364,6 +367,7 @@
                         });
                         CsvString += "\r\n";
                     });
+
                     CsvString = "data:application/csv," + encodeURIComponent(CsvString);
                     var link = document.createElement("a");
                     link.setAttribute("href", CsvString);
