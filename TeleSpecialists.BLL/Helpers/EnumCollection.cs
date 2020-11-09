@@ -137,8 +137,8 @@ namespace TeleSpecialists.BLL.Helpers
         [Description("Past Medical History ")]
         PMH = 44,
         SleepCodes = 45,
-        FacilityAI = 46
-
+        FacilityAI = 46,
+            MockCaseType = 47
 
     }
 

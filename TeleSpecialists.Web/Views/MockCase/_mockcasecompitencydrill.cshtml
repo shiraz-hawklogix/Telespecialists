@@ -1,0 +1,172 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.Models;
+@model TeleSpecialists.BLL.Model.mock_case
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_nurse_identify_members_in_room", new { @class = "Form-control" })
+            <label class="form-check-label">Nurse at facility identifies self, patient and family members in room </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_nursing_verbalize_pre_CT_process", new { @class = "Form-control" })
+            <label class="form-check-label">Nursing can verbalize process steps-Pre-CT </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_nursing_verbalize_post_CT_process", new { @class = "Form-control" })
+            <label class="form-check-label">Nursing can verbalize process steps-Post-CT </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_nursing_demonstrate_positioninig_cart", new { @class = "Form-control" })
+            <label class="form-check-label">Nursing demonstrates appropriate positioning of cart </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_NIHSS_assessment_booklet_at_bedside", new { @class = "Form-control" })
+            <label class="form-check-label">NIHSS Stroke Assessment Booklet is at bedside </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_nurse_assisst_completion_NIHSS_exam", new { @class = "Form-control" })
+            <label class="form-check-label">Nurse can assist as requested with completion of NIHSS exam </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_LOC_following_commands", new { @class = "Form-control" })
+            <label class="form-check-label">LOC-to include following commands </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_visual_field_patient_looking_examiner_periphery", new { @class = "Form-control" })
+            <label class="form-check-label">Visual Field-include patient looking at examiner/1 or 2 fingers periphery </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_EOM_slow_motion", new { @class = "Form-control" })
+            <label class="form-check-label">EOM-slow motion, not too close</label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_facial_symmetry", new { @class = "Form-control" })
+            <label class="form-check-label">Facial Symmetry-show teeth </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_motor_drift_extensor_drift", new { @class = "Form-control" })
+            <label class="form-check-label">Motor-drift to include extensor drift  </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_coordination_stretch_finger", new { @class = "Form-control" })
+            <label class="form-check-label">Coordination-stretch finger  </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_sensory_broken_Q_tip", new { @class = "Form-control" })
+            <label class="form-check-label">Sensory-use sharp/broken Q tip-not key,pen etc </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_sensory_taps_bare_skin", new { @class = "Form-control" })
+            <label class="form-check-label">Sensory - TAPS on the bare skin </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_neglect_unilaterly_then_bilaterally", new { @class = "Form-control" })
+            <label class="form-check-label">Neglect-to be checked with soft touch-unilaterally then bilaterally </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_neglect_primary_sensation_visual_neglect", new { @class = "Form-control" })
+            <label class="form-check-label">Neglect-avoid sensory neglect if primary sensation is absent, and jump tovisual neglect </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_neglect_visual_neglect_exam", new { @class = "Form-control" })
+            <label class="form-check-label">Neglect-Visual Neglect exam </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_speech_exam_stroke_assessment_booklet", new { @class = "Form-control" })
+            <label class="form-check-label">Language/speech exam-Read sentences, and naming from Stroke Assessment booklet</label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_language_exam_repetition_words", new { @class = "Form-control" })
+            <label class="form-check-label">Language exam-Repetition-Words </label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_nursing_verbalize_transfer_patient", new { @class = "Form-control" })
+            <label class="form-check-label">Nursing can verbalize process for transfer/disposition of patient if applicable</label>
+        </div>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-10 col-offset-2 ">
+        <div class="form-check mb-1">
+            @Html.CheckBox("mcas_connectivity_issue", new { @class = "Form-control" })
+            <label class="form-check-label">Please note any connectivity issues</label>
+        </div>
+    </div>
+</div>

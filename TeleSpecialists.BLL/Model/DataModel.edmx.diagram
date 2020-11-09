@@ -142,6 +142,13 @@
         <AssociationConnector Association="DataModel.FK_ComponentAccess_Component_Id" />
         <EntityTypeShape EntityType="DataModel.token" Width="1.5" PointX="3" PointY="110.875" />
         <AssociationConnector Association="DataModel.FK_token_AspNetUsers" />
+        <EntityTypeShape EntityType="DataModel.mock_case" Width="1.5" PointX="20.125" PointY="87.375" />
+        <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers_Navigator" />
+        <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers1" />
+        <AssociationConnector Association="DataModel.FK_mock_case_facility" />
+        <EntityTypeShape EntityType="DataModel.premorbid_correspondnce" Width="1.5" PointX="8.75" PointY="104" />
+        <AssociationConnector Association="DataModel.FK_premorbid_correspondnce_case" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

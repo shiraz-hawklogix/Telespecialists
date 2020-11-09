@@ -104,6 +104,8 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<component_access> component_access { get; set; }
         public virtual DbSet<component> components { get; set; }
         public virtual DbSet<token> tokens { get; set; }
+        public virtual DbSet<mock_case> mock_case { get; set; }
+        public virtual DbSet<premorbid_correspondnce> premorbid_correspondnce { get; set; }
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {

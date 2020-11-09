@@ -327,36 +327,36 @@
                         if (data.Data[i].StatusName == 'Available')
                         {
                             finalData.push({ value: data.Data[i].diff, valueColor: "#3f5f29"/*, valueName:"Available"*/ });
-                            CsvFormat.push([data.Data[i].CreatedDate, SecondstoTimestamp(data.Data[i].diff), "Available", data.Data[i].diff, "#3f5f29"]);
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Available", data.Data[i].diff, "#3f5f29"]);
                         }
                         if (data.Data[i].StatusName == 'TPA')
                         {
                             finalData.push({ value: data.Data[i].diff, valueColor: "#ff0505"/*, valueName: "TPA"*/ });
-                            CsvFormat.push([data.Data[i].CreatedDate, SecondstoTimestamp(data.Data[i].diff), "TPA", data.Data[i].diff, "#ff0505"]);
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "TPA", data.Data[i].diff, "#ff0505"]);
                         }
                         if (data.Data[i].StatusName == 'Stroke Alert')
                         {
                             finalData.push({ value: data.Data[i].diff, valueColor: "#d26317"/*, valueName: "Stroke Alert"*/});
-                            CsvFormat.push([data.Data[i].CreatedDate, SecondstoTimestamp(data.Data[i].diff), "Stroke Alert", data.Data[i].diff, "#d26317"]);
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Stroke Alert", data.Data[i].diff, "#d26317"]);
                         }
                         if (data.Data[i].StatusName == 'Rounding')
                         {
                             finalData.push({ value: data.Data[i].diff, valueColor: "#ffc105"/*, valueName: "Rounding"*/});
-                            CsvFormat.push([data.Data[i].CreatedDate, SecondstoTimestamp(data.Data[i].diff), "Rounding", data.Data[i].diff, "#ffc105"]);
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime,SecondstoTimestamp(data.Data[i].diff), "Rounding", data.Data[i].diff, "#ffc105"]);
                         }
                         if (data.Data[i].StatusName == 'STAT Consult')
                         {
                             finalData.push({ value: data.Data[i].diff, valueColor: "#8e4311"/*, valueName: "STAT Consult"*/ });
-                            CsvFormat.push([data.Data[i].CreatedDate, SecondstoTimestamp(data.Data[i].diff), "STAT Consult", data.Data[i].diff, "#8e4311"]);
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "STAT Consult", data.Data[i].diff, "#8e4311"]);
                         }
                         if (data.Data[i].StatusName == 'Break')
                         {
                             finalData.push({ value: data.Data[i].diff, valueColor: "#88d5e1"/*, valueName: "Break"*/ });
-                            CsvFormat.push([data.Data[i].CreatedDate, SecondstoTimestamp(data.Data[i].diff), "Break", data.Data[i].diff, "#88d5e1"]);
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Break", data.Data[i].diff, "#88d5e1"]);
                         }
                     }
                     debugger
-                    CsvFormat.splice(0,0,["Shift Date", "TimeStamp", "Status", "Total Seconds","Color"]);
+                    CsvFormat.splice(0,0,["Shift Date","Start Time", "Duration", "Status", "Total Seconds","Color"]);
                     var CsvString = "";
                     CsvFormat.forEach(function (RowItem, RowIndex) {
                         RowItem.forEach(function (ColItem, ColIndex) {

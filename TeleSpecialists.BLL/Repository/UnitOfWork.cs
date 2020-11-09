@@ -140,7 +140,7 @@ namespace TeleSpecialists.BLL.Repository
         private IFacilityAvailabilityRateRepository _facilityAvailabilityRateRepository;
         private IMenuData _menuRepository;
         private IMenuAccessData _menuAccessRepository;
-        
+        private IMockCaseRepository _mockCaseRepository;
         public IQueryable<AspNetUser> ApplicationUsers
         {
             get
@@ -783,6 +783,18 @@ namespace TeleSpecialists.BLL.Repository
                     this._facilityQuestionnaireContactDesignationRepository = new FacilityQuestionnaireContactDesignationRepository(context);
                 }
                 return _facilityQuestionnaireContactDesignationRepository;
+            }
+        }
+
+        public IMockCaseRepository MockCaseRepository
+        {
+            get
+            {
+                if (this._mockCaseRepository == null)
+                {
+                    this._mockCaseRepository = new MockCaseRepository(context);
+                }
+                return _mockCaseRepository;
             }
         }
 

@@ -22,6 +22,7 @@ namespace TeleSpecialists.BLL.Model
             this.case_review_template = new HashSet<case_review_template>();
             this.nih_stroke_scale_answer = new HashSet<nih_stroke_scale_answer>();
             this.rca_counter_measure = new HashSet<rca_counter_measure>();
+            this.premorbid_correspondnce = new HashSet<premorbid_correspondnce>();
         }
     
         public int cas_key { get; set; }
@@ -313,5 +314,7 @@ namespace TeleSpecialists.BLL.Model
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual AspNetUser AspNetUser1 { get; set; }
         public virtual AspNetUser AspNetUser2 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<premorbid_correspondnce> premorbid_correspondnce { get; set; }
     }
 }
