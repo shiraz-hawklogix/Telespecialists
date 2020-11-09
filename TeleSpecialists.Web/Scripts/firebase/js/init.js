@@ -55,6 +55,8 @@ listener.onmessage = function (e) {
         ShowBlastStrokeAlert(caseId, true, objectData, 'INTERNAL BLAST', strokeStamp);
     else if (caseType === StatusArray[8])
         ShowBlastStrokeAlert(caseId, true, objectData, 'EXTERNAL BLAST', strokeStamp);
+    else if (caseType === StatusArray[9])
+        stopBlastInterval(caseId);
 };
 
 var isCaseFound = $('#lblCaseId').val();
@@ -104,6 +106,8 @@ firebase.messaging().onMessage(function (payload) {
         ShowBlastStrokeAlert(caseId, true, objectData, 'INTERNAL BLAST', strokeStamp);
     else if (caseType === StatusArray[8])
         ShowBlastStrokeAlert(caseId, true, objectData, 'EXTERNAL BLAST', strokeStamp);
+    else if (caseType === StatusArray[9])
+        stopBlastInterval(caseId);
     
 });
 

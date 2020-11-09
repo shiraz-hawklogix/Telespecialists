@@ -523,8 +523,10 @@
             url: '/firebaseChat/GetUser',
             data: { id: phy_key },
             success: function (e) {
-                navigatorsArr.push({ user_id: e.fre_userId, email: e.fre_email, name: e.fre_firstname, firbaseuid: e.fre_firebase_uid, ImgPath: e.fre_profileimg });
-                _CreateGroupNew(grpName, 'Private', automsg, phy_key, navigatorsArr);
+                var combinedArray = [];
+                combinedArray = navigatorsArr;
+                combinedArray.push({ user_id: e.fre_userId, email: e.fre_email, name: e.fre_firstname, firbaseuid: e.fre_firebase_uid, ImgPath: e.fre_profileimg });
+                _CreateGroupNew(grpName, 'Private', automsg, phy_key, combinedArray);
             },
             Error: function (e) {
             }
