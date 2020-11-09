@@ -812,20 +812,6 @@ namespace TeleSpecialists.BLL.Repository
             }
         }
 
-        public IMockCaseRepository MockCaseRepository
-        {
-            get
-            {
-                if (this._mockCaseRepository == null)
-                {
-                    this._mockCaseRepository = new MockCaseRepository(context);
-                }
-                return _mockCaseRepository;
-            }
-        }
-
-
-
         //_physician_Case_TempRepository
 
         #region Husnain Code Block
