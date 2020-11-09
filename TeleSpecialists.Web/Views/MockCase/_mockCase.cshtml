@@ -103,40 +103,42 @@
         <div class="form-group row">
             <label class="control-label col-md-4 col-xl-4 col-lg-12 col-sm-4 col-xs-6 text-danger">
                 Facility:  @*@if (isEdit)
-                {
-                    <span id="popover-container-facility" class="pull-right">
-                        <span id="popover-facility" style="cursor:pointer;" data-toggle="popover" title="Facility Info">
-                            <span class="facility-tooltip text-body mt-1"></span>
-                        </span>
+
+                    {
+                        <span id="popover-container-facility" class="pull-right">
+                            <span id="popover-facility" style="cursor:pointer;" data-toggle="popover" title="Facility Info">
+                                <span class="facility-tooltip text-body mt-1"></span>
+                            </span>
 
 
-                        @{
-                            var emrLink = "#";
-                            var target = "";
-                            var tooltipTitle = "No EMR link available";
-                            if (Model.facility != null)
-                            {
-                                if (!string.IsNullOrEmpty(Model.facility.fac_emr))
+                            @{
+                                var emrLink = "#";
+                                var target = "";
+                                var tooltipTitle = "No EMR link available";
+                                if (Model.facility != null)
                                 {
-                                    emrLink = Model.facility.fac_emr;
-
-                                    if (!emrLink.StartsWith("http://") && !emrLink.StartsWith("https://"))
+                                    if (!string.IsNullOrEmpty(Model.facility.fac_emr))
                                     {
-                                        emrLink = "http://" + emrLink;
-                                    }
+                                        emrLink = Model.facility.fac_emr;
 
-                                    target = "_blank";
-                                    tooltipTitle = null;
+                                        if (!emrLink.StartsWith("http://") && !emrLink.StartsWith("https://"))
+                                        {
+                                            emrLink = "http://" + emrLink;
+                                        }
+
+                                        target = "_blank";
+                                        tooltipTitle = null;
+                                    }
                                 }
                             }
-                        }
-                        <a target="@target" href="@emrLink" data-toggle="tooltip" data-placement="top" title="@tooltipTitle">
-                            <img alt="EMR Icon" src="/Content/images/facility_rem_icon.png" class="facility-emr-link" />
-                        </a>
-                        <a class="fa fa-phone text-body ml-1 mr-1 mt-1 edMainLink @(loggedInUser.EnableFive9 ? "edMainLinkClick" : "")" href="javascript:void(0)" data-type="ED Main">
-                        </a>
-                    </span>
-                }*@
+                            <a target="@target" href="@emrLink" data-toggle="tooltip" data-placement="top" title="@tooltipTitle">
+                                <img alt="EMR Icon" src="/Content/images/facility_rem_icon.png" class="facility-emr-link" />
+                            </a>
+                            <a class="fa fa-phone text-body ml-1 mr-1 mt-1 edMainLink @(loggedInUser.EnableFive9 ? "edMainLinkClick" : "")" href="javascript:void(0)" data-type="ED Main">
+                            </a>
+                        </span>
+                    }*@
+
             </label>
             <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
                 <select id="mcas_fac_key" name="mcas_fac_key" class="form-control addValidation" data-searchFilter="true" data-selectedValue="@(Model != null ? Model.mcas_fac_key : Guid.Empty)" required></select>
@@ -150,7 +152,9 @@
         <div class="form-group row hidewitheegs ">
             <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4 requiredWithCaseType">Cart: </label>
             <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+
                 <select id="mcasecart" name="mcasecart" class="form-control addValidation">
+
                     <option value="">-- Select --</option>
                     <option value="other">Other</option>
                 </select>
@@ -242,6 +246,7 @@
                 }
 
                 @*@if (showPhyOfflinePopup)
+
                 {
                     <div class="error_msg text-right" id="cas_phy_key_offline_error">
                         <label>
@@ -251,10 +256,12 @@
                 }*@
 
 
+
             </div>
         </div>
 
         @*<div class="form-group row">
+
             <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">Performance: </label>
             <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
                 @if (!string.IsNullOrEmpty(startToStampTimeVal) && isEdit)
@@ -313,6 +320,64 @@
         </div>*@
 
         <div class="form-group row mcas_callback_container hideWithRoutineConsult ">
+                <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">Performance: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                    @if (!string.IsNullOrEmpty(startToStampTimeVal) && isEdit)
+                    {
+                        <div class="row general-performance-container">
+                            <div class="col-12 forth-col">
+                                <div class=" col-12 row">
+                                    <span id="startToTimer">
+                                        <strong>Start to Stamp Time: </strong>
+                                        <span id="custom">@startToStampTimeVal</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.cas_time_stamp.HasValue)
+                    {
+                        <div class="row  d-none performance-container">
+                            <div class="col-12 forth-col">
+                                <div class=" col-12 row">
+                                    <span id="startTimer" class=" text-danger" style="display:none">
+                                        <strong>Start Time: </strong>
+                                        <span id="custom">
+                                            <span id="hours"></span>:<span id="minutes"></span>:<span id="seconds"></span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row  performance-container">
+                        <div class="col-12 forth-col">
+                            <div class=" col-12 row">
+                                <span id="assignmentTime">
+                                    <strong>Waiting to Accept to Accepted:</strong>
+                                    @if (Model.cas_cst_key == CaseStatus.WaitingToAccept.ToInt())
+                                    {
+                                        <span id="custom">
+                                            <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+                                        </span>
+                                    }
+                                    else if (!string.IsNullOrEmpty(Model.FromWaitingToAcceptToAcceptTime))
+                                    {
+                                        <span>@Model.FromWaitingToAcceptToAcceptTime</span>
+                                    }
+                                    else
+                                    {
+                                        <span>00:00:00</span>
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+        <div class="form-group row cas_callback_container hideWithRoutineConsult ">
             <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4 text-danger">Callback Phone: </label>
             <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
                 @Html.TextBoxFor(m => m.mcas_callback, new { @class = "form-control phone_number", @id = "mcas_callback" })
@@ -352,6 +417,7 @@
                 }
             </div>
         </div>*@
+
 
         <div class="form-group row">
             <div class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">

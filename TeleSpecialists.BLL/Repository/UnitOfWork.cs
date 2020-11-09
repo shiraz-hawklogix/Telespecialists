@@ -138,9 +138,11 @@ namespace TeleSpecialists.BLL.Repository
         private IFacilityQuestionnaireContactRespository _facilityQuestionnaireContactRespository;
         private IFacilityRateRepository _facilityRateRepository;
         private IFacilityAvailabilityRateRepository _facilityAvailabilityRateRepository;
+
         private IMenuData _menuRepository;
         private IMenuAccessData _menuAccessRepository;
         private IMockCaseRepository _mockCaseRepository;
+
         public IQueryable<AspNetUser> ApplicationUsers
         {
             get
@@ -809,6 +811,19 @@ namespace TeleSpecialists.BLL.Repository
                 return _facilityQuestionnaireContactRespository;
             }
         }
+
+        public IMockCaseRepository MockCaseRepository
+        {
+            get
+            {
+                if (this._mockCaseRepository == null)
+                {
+                    this._mockCaseRepository = new MockCaseRepository(context);
+                }
+                return _mockCaseRepository;
+            }
+        }
+
 
 
         //_physician_Case_TempRepository

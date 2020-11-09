@@ -95,6 +95,7 @@
           <Property Name="aps_session_timeout_in_minutes" Type="bigint" />
           <Property Name="aps_two_factor_code_expiry_timeout_in_minutes" Type="bigint" />
           <Property Name="aps_enable_logout_from_other_devices" Type="bit" Nullable="false" />
+          <Property Name="aps_enable_pending_cases_notifications" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
@@ -3614,6 +3615,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="Hospital_Protocols" EntityType="DataModel.Hospital_Protocols" />
           <EntitySet Name="Onboardeds" EntityType="DataModel.Onboarded" />
           <EntitySet Name="web2campaign_log" EntityType="DataModel.web2campaign_log" />
+
           <EntitySet Name="component_access" EntityType="DataModel.component_access" />
           <EntitySet Name="components" EntityType="DataModel.component" />
           <AssociationSet Name="FK_ComponentAccess_Component_Id" Association="DataModel.FK_ComponentAccess_Component_Id">
@@ -3628,6 +3630,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="token" EntitySet="tokens" />
           </AssociationSet>
+
           <EntitySet Name="mock_case" EntityType="DataModel.mock_case" />
           <AssociationSet Name="FK_mock_case_AspNetUsers" Association="DataModel.FK_mock_case_AspNetUsers">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
@@ -3645,11 +3648,13 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <End Role="facility" EntitySet="facilities" />
             <End Role="mock_case" EntitySet="mock_case" />
           </AssociationSet>
+
           <EntitySet Name="premorbid_correspondnce" EntityType="DataModel.premorbid_correspondnce" />
           <AssociationSet Name="FK_premorbid_correspondnce_case" Association="DataModel.FK_premorbid_correspondnce_case">
             <End Role="case" EntitySet="cases" />
             <End Role="premorbid_correspondnce" EntitySet="premorbid_correspondnce" />
           </AssociationSet>
+
           </EntityContainer>
         <EntityType Name="alarm_setting">
           <Key>
@@ -5946,6 +5951,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="aps_session_timeout_in_minutes" Type="Int64" />
           <Property Name="aps_two_factor_code_expiry_timeout_in_minutes" Type="Int64" />
           <Property Name="aps_enable_logout_from_other_devices" Type="Boolean" Nullable="false" />
+          <Property Name="aps_enable_pending_cases_notifications" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="user_login_verify">
           <Key>
@@ -6054,11 +6060,13 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <NavigationProperty Name="user_login_verify" Relationship="DataModel.FK_user_login_verify_User_Id" FromRole="AspNetUser" ToRole="user_login_verify" />
           <NavigationProperty Name="user_schedule_nhalert" Relationship="DataModel.FK_user_schedule_nhalert_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_nhalert" />
           <NavigationProperty Name="user_schedule_sleep" Relationship="DataModel.FK_user_schedule_sleep_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_sleep" />
+
           <NavigationProperty Name="tokens" Relationship="DataModel.FK_token_AspNetUsers" FromRole="AspNetUser" ToRole="token" />
           <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="AspNetUser" ToRole="mock_case" />
           <NavigationProperty Name="mock_case1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="AspNetUser" ToRole="mock_case" />
           <NavigationProperty Name="mock_case2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="AspNetUser" ToRole="mock_case" />
         </EntityType>
+
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -6401,6 +6409,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="wcl_re_processed_date" Type="DateTime" Precision="3" />
           <Property Name="wcl_request_retry_count" Type="Int32" />
         </EntityType>
+
         <EntityType Name="component_access">
           <Key>
             <PropertyRef Name="cac_key" />
@@ -6479,6 +6488,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
+
         <EntityType Name="mock_case">
           <Key>
             <PropertyRef Name="mcas_key" />
@@ -6645,6 +6655,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
+
         <EntityType Name="premorbid_correspondnce">
           <Key>
             <PropertyRef Name="Id" />
@@ -6676,6 +6687,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
+
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -8460,6 +8472,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="application_setting">
             <EntityTypeMapping TypeName="DataModel.application_setting">
               <MappingFragment StoreEntitySet="application_setting">
+                <ScalarProperty Name="aps_enable_pending_cases_notifications" ColumnName="aps_enable_pending_cases_notifications" />
                 <ScalarProperty Name="aps_enable_logout_from_other_devices" ColumnName="aps_enable_logout_from_other_devices" />
                 <ScalarProperty Name="aps_two_factor_code_expiry_timeout_in_minutes" ColumnName="aps_two_factor_code_expiry_timeout_in_minutes" />
                 <ScalarProperty Name="aps_session_timeout_in_minutes" ColumnName="aps_session_timeout_in_minutes" />
@@ -8669,6 +8682,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           <EntitySetMapping Name="component_access">
             <EntityTypeMapping TypeName="DataModel.component_access">
               <MappingFragment StoreEntitySet="component_access">
@@ -8727,6 +8741,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           <EntitySetMapping Name="mock_case">
             <EntityTypeMapping TypeName="DataModel.mock_case">
               <MappingFragment StoreEntitySet="mock_case">
@@ -8838,6 +8853,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           <EntitySetMapping Name="premorbid_correspondnce">
             <EntityTypeMapping TypeName="DataModel.premorbid_correspondnce">
               <MappingFragment StoreEntitySet="premorbid_correspondnce">
@@ -8857,6 +8873,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

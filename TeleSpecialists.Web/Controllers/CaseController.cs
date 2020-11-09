@@ -4749,6 +4749,46 @@ namespace TeleSpecialists.Controllers
             }
         }
 
+
+        public ActionResult _mockcases()
+        {
+            return PartialView();
+        }
+
+        [HttpPost]
+        public ActionResult GetAllMockCases(Kendo.DynamicLinq.DataSourceRequest request)
+        {
+            try
+            {
+                string userId = "";
+
+                List<Guid> facilities = null;
+                if (User.IsInRole(UserRoles.Physician.ToDescription()))
+                {
+                    userId = User.Identity.GetUserId();
+                }
+                else if (User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))
+                {
+                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
+                                             .Select(x => x.Facility).ToList();
+                }
+                else if (User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))
+                {
+                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
+                                             .Select(x => x.Facility).ToList();
+                }
+                var res = _mockCaseService.GetAll(request, userId, facilities);
+                return Json(res, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { success = false, message = "An error has been occurred while processing your request, please try later." });
+            }
+        }
+
+
         private int SaveNumber(@case model)
         {
             var contact = new contact();
