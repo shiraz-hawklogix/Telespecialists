@@ -84,18 +84,16 @@
 
         function CreateWithPassword(id, name, email, password, teleid) {
             auth.createUserWithEmailAndPassword(email, password)
-                //.then(function (user) {
+                .then(function (user) {
                 //user = auth.currentUser;
                 //user.updateProfile({
                 //    uid: user.uid,
                 //    name: name,
                 //    displayName: name
                 //});
-                //})
+                })
                 .catch(function (error) {
-            //    if (email == "aaaaaaaaaa@gmail.com") {
-            //    alert(email);
-            //}
+            
             });
         }
 

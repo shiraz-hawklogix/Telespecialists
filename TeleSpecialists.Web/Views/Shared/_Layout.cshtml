@@ -18,6 +18,7 @@
     }
     var loggedinuserName = loggedInUser.FirstName + " " + loggedInUser.LastName;
     var loggedinuserEmail = loggedInUser.Email;
+    var showStrokeAlert = "false";
 }
 
 <!DOCTYPE html>
@@ -74,6 +75,7 @@
     <input type="hidden" id="TwoFactorAuthUser" value="" />
     <input type="hidden" id="lblforfirebase" />
     <input type="hidden" id="cas_key_blast" />
+    <input type="hidden" id="lbl_show_strokeAlert" value="@showStrokeAlert"/>
     @*<input type="hidden" id="IsCredentialingTeamorSuperAdmin" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()) ? 1 : 0)" />
         <input type="hidden" id="IsQPSQualityDirectororVPQuality" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) ? 1 : 0)" />*@
     <audio id="new_msg_notification">
@@ -1179,7 +1181,7 @@ $(document).ready(function () {
     }
 }
 <script>
-
+   
 </script>
 
 

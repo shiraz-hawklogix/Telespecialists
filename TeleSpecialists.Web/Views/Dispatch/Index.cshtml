@@ -442,11 +442,13 @@
         var facKey = dataItem.cas_fac_key;
          var case_type = dataItem.cas_ctp_key;
          var cas_key = dataItem.cas_key;
-         var automsg = CreateMsg(dataItem);
+         var automsg = dataItem.CombinedMessage;
+         console.log('automsg: ' + automsg);
+         //CreateMsg(dataItem);
 
         var baseurl = "@Url.Action("GetPhysiciansForInternalBlast")";
         $.ajax({
-            url: baseurl + "?fac_key=" + facKey + "&cas_ctp_key=" + case_type + "&softSaveGuid=" + "" + "&cas_key=" + cas_key,
+            url: baseurl + "?fac_key=" + facKey + "&cas_ctp_key=" + case_type + "&softSaveGuid=" + "" + "&cas_key=" + cas_key + "&strokeStamp=" + automsg,
             type: 'POST',
             success: function (e) {
                 // All Scheduled Physicians List > [ responseObjectInternal ]
@@ -535,7 +537,6 @@
         var checkPhyKey = STFrow[0].children[13].innerText;
         var automStampMsg = dataItem.CombinedMessage;
         console.log('your auto stamp is: ' + automStampMsg);
-        debugger;
         var phy_key = "";
         if (checkPhyKey == "00000000-0000-0000-0000-000000000000" || checkPhyKey == "") {
             phy_key = dataItem.cas_phy_key; 

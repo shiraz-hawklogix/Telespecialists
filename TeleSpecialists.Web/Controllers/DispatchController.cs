@@ -1196,7 +1196,7 @@ namespace TeleSpecialists.Web.Controllers
             return caseStatuslist;
         }
         [HttpPost]
-        public JsonResult GetPhysiciansForInternalBlast(Guid fac_key, int? cas_ctp_key, Guid? softSaveGuid,  int cas_key)
+        public JsonResult GetPhysiciansForInternalBlast(Guid fac_key, int? cas_ctp_key, Guid? softSaveGuid,  int cas_key, string strokeStamp)
         {
             if (cas_ctp_key == null)
                 cas_ctp_key = CaseType.StrokeAlert.ToInt();
@@ -1219,7 +1219,7 @@ namespace TeleSpecialists.Web.Controllers
             #region Husnain code for firebase
             var paramData = new List<object>();
             paramData.Add(JsonConvert.SerializeObject(phy_ids));
-            bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: cas_key, phy_ids: phy_ids , caseType: "InternalBlast",  Data:paramData);
+            bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: cas_key, phy_ids: phy_ids , caseType: "InternalBlast",  Data:paramData, strokeStamp: strokeStamp);
             #endregion
 
             //Session["InternalBlast"] = scheduleUser;

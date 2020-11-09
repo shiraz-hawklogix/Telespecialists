@@ -13,7 +13,7 @@
         <input type="hidden" name="cas_key" id="cas_number" value="@Model.cas_case_number" />
         <input type="hidden" id="cas_phy" value="@loggedInUser.Id" />
         <input type="hidden" id="cas_fac_name" value="@Model.facility.fac_name" />
-        <span id="blastStamp" style="display:none">@Model.facility.fac_name, NC Cart: @Model.cas_cart, Phone: @Model.cas_callback,  Patient Name: @Model.cas_patient</span>
+        <span id="blastStamp" style="display:none">@ViewBag.strokeStamp</span>
         @{
             string name = loggedInUser.FirstName + " " + loggedInUser.LastName; //Model.AspNetUser2.FirstName + " " + Model.AspNetUser2.LastName;
         }

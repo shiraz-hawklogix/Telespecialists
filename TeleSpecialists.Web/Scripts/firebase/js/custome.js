@@ -47,6 +47,7 @@ showPhysicianStatusSnoozePopup_def_edit = function (id, setCookie) {
     });
 }
 function SendStrokeToPhysician(id, setCookie) {
+    StartReadStrokeStatus();
     var url = "/Physician/ShowNewCasePopup?rnd=" + Math.floor(Math.random() * 10000) + 1;
     $.get(url, { id: id }, function (response) {
         $("#divCaseAssignPopup").empty().html(response);
@@ -96,6 +97,31 @@ function SendStrokeToPhysician(id, setCookie) {
         }
     });
 }
+// stroke read status
+var readInterval;
+function StartReadStrokeStatus() {
+    readInterval =  setInterval(function () {
+        let strokeAlertStatus = localStorage.getItem("strokePopStatus");//$('#lbl_show_strokeAlert').val();
+        console.log('status:' + strokeAlertStatus);
+        if (strokeAlertStatus === 'true')
+            hideStrokeAlertPopUp();
+    }, 800);
+}
+function hideStrokeAlertPopUp() {
+    try {
+        setTimeout(function () {
+            localStorage.setItem("strokePopStatus", "false");
+            clearInterval(readInterval);
+        }, 1500);
+        console.log('divCaseAssignPopup going to be hide');
+        $("#divCaseAssignPopup").modal("hide");
+        document.getElementById('new_case_notification').pause();
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+// read status end
 function hidePopAcceptReject(id) {
     try {
         document.getElementById('new_case_notification').pause();
@@ -156,7 +182,7 @@ function SendStrokeInternalBlast(id, setCookie) {
     });
 }
 //98811
-function ShowBlastStrokeAlert(id, setCookie, caseObjStr, blastType) {
+function ShowBlastStrokeAlert(id, setCookie, caseObjStr, blastType, strokeStamp) {
     var loggedUserid = $('#hdnUser').val().toString(); //'95f11773-4161-4fa6-8e6d-9c381101c2d9'; //
     console.log('logged in user id is : ' + loggedUserid);
 
@@ -175,7 +201,7 @@ function ShowBlastStrokeAlert(id, setCookie, caseObjStr, blastType) {
     }
     else {
         $('#cas_key_blast').val(id);
-        startBlastInterval(id,blastType);
+        startBlastInterval(id, blastType, strokeStamp);
     }
         
 }

@@ -5990,8 +5990,26 @@ ViewBag.StatConsultOtherWork = _uclService.GetUclData(UclTypes.OtherWorkUp)
                 model.tok_phy_token = phy_token_key;
                 _tokenservice.Create(model);
             }
-            var detail = _fireBaseUserMailService.GetDetails(phy_key);
-            return Json(detail, JsonRequestBehavior.AllowGet);
+            #region Check user if not exist
+            var getuser = _adminService.GetUser(phy_key);
+            if(getuser != null)
+            {
+                var detail = _fireBaseUserMailService.GetDetails(phy_key);
+                if(detail == null)
+                {
+                    firebase_usersemail _firebase_Usersemail = new firebase_usersemail();
+                    _firebase_Usersemail.fre_userId = getuser.Id;
+                    _firebase_Usersemail.fre_firstname = getuser.FirstName + " " + getuser.LastName;
+                    _firebase_Usersemail.fre_email = getuser.UserName;
+                    _firebase_Usersemail.fre_firebase_email = getuser.Email;
+                    _firebase_Usersemail.fre_profileimg = "/Content/images/M.png";//getuser.ImgPath;
+                    detail = _fireBaseUserMailService.CreateAndReturn(_firebase_Usersemail);
+
+                }
+                return Json(detail, JsonRequestBehavior.AllowGet);
+            }
+            #endregion
+            return Json(false, JsonRequestBehavior.AllowGet);
         }
         public JsonResult DeleteToken(string phy_token_key)
         {

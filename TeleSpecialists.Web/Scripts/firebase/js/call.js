@@ -24,6 +24,11 @@ var totalNotifications = 0;
 var _msgType;
 var publicGrpArr = [];
 var groupID;
+//use for auto stamps of sending msgs
+var autoSenderId;
+var autoSenderName;
+var autoSenderImage;
+/////////////////////////////////
 
 
 //var messaging;
@@ -97,16 +102,15 @@ function GrpCreate(name, grptype, msg, physician, navArr) {
         if (!firebase.apps.length) {
             firebase.initializeApp(config);
         }
-        
         console.log('nva arr is  : ', navArr);
-        SenderId = 'lvB46mLF5qbQuIIAm5eqHxDdMBv1';//'0Ph7pKpC80hb15mgLFM5X4xXvzI2';//physician;//'thusmIlApVOyx9M8zrGe9CgsKTC3';//'lvB46mLF5qbQuIIAm5eqHxDdMBv1';
-        _senderName = name;//'Muhammad Masud';
-         _senderPhoto = '/Content/images/M.png';
+        autoSenderId = 'lvB46mLF5qbQuIIAm5eqHxDdMBv1';
+        autoSenderName = 'Muhammad Masud';
+        autoSenderImage = '/Content/images/M.png';
         var refGrp = firebase.database().ref("Groups");
         refGrp.orderByChild("grpFor").equalTo(physician).once("value", snapshot => {
             console.log(snapshot);
             if (snapshot.exists()) {
-                ExistingGroup(name, grptype, msg, physician, navArr, SenderId, _senderName, _senderPhoto);
+                ExistingGroup(name, grptype, msg, physician, navArr, autoSenderId, autoSenderName, autoSenderImage);
             }
             else {
                 CreatNewGrp(name, grptype, msg, physician, navArr);
@@ -119,35 +123,8 @@ function GrpCreate(name, grptype, msg, physician, navArr) {
 
 function CreatNewGrp(name, grptype, msg, physician, navArr) {
     try {
-        
         var getkey = firebase.database().ref().child("Groups").push().key;
         console.log('id is :   ' + getkey);
-        if (getkey)
-            groupID = getkey;
-        console.log('yup , ' + groupID);
-        firebase.database().ref('Groups').child(getkey).set({
-            groupName: name,
-            createdBy: SenderId,
-            id: SenderId,
-            teleid: 1,
-            type: 'Admin',
-            grpFor: physician,
-            userName: _senderName,
-            image: '/Content/images/group.png',//_senderPhoto,
-            dateTime: firebase.database.ServerValue.TIMESTAMP,
-            grpType: grptype
-        });
-        firebase.database().ref('Groups/' + getkey + '/users/').child(SenderId).set({
-            id: SenderId,
-            groupName: name,
-            teleid: 1,
-            type: 'Admin',
-            userName: _senderName,
-            image: _senderPhoto,
-            dateTime: firebase.database.ServerValue.TIMESTAMP
-        });
-
-        //GetGroupByKey(getkey);
         isGroup = true;
         _receiverId = getkey;
         _receiverName = name;
@@ -161,61 +138,8 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
             _type = 'Public';
         else
             _type = 'Private';
-
-        var ref = firebase.database().ref("TeleUsers/" + SenderId + '/Connections');
-        //child(_receiverId).set(
-        ref.child(_receiverId).update({
-            lastOnline: firebase.database.ServerValue.TIMESTAMP,
-            name: _receiverName,
-            image: _receiverPhoto,
-            lastMessage: shortmsg,
-            type: _type,
-            msgNode: SenderId + '-' + _receiverId
-        }).then(function () {
-            if (_type === 'Private')
-                return ref.child(SenderId).once("value");
-            else
-                return ref.child(_receiverId).once("value");
-        }).then(function (snapshot) {
-            //debugger;
-            var data = snapshot.val();
-            var time = snapshot.val().lastOnline;
-            //console.log('my local time is : ' + time);
-            var reff = firebase.database().ref("TeleUsers/" + SenderId + '/Connections');
-            reff.child(_receiverId).update({
-                lastOnline: time * -1
-            });
-
-            // AfterModify();
-        });
-        if (isGroup) {
-            //LoadGrpUsers(shortmsg);
-            var refConn = firebase.database().ref("TeleUsers/" + SenderId + '/ConnectionRules');
-            refConn.child(_receiverId).update({
-                msgNode: _receiverId
-            });
-        }
-
-        var encryptMsg = CryptoJS.AES.encrypt(msg, '123');
-        // send auto generated msg to group
-        let grpid = getkey;
-        firebase.database().ref('userMessages/' + grpid).push({
-            isRead: false,
-            grpId: grpid,
-            senderId: SenderId,
-            read: false,
-            senderName: _senderName,
-            senderPhoto: _senderPhoto,
-            dateTime: firebase.database.ServerValue.TIMESTAMP,
-            teleid: 1,
-            message: encryptMsg.toString(), //msg,
-            type: 'Public',
-            msgType: 'text'
-        });
-
         /// add users in firebase grp
         for (var i = 0; i < navArr.length; i++) {
-
             let _userid = navArr[i].firbaseuid;
             let _name = navArr[i].name;
             let _image = navArr[i].ImgPath;
@@ -246,6 +170,87 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
                 msgNode: grpId
             });
         }
+        // user added end code
+        if (getkey)
+            groupID = getkey;
+        console.log('yup , ' + groupID);
+        firebase.database().ref('Groups').child(getkey).set({
+            groupName: name,
+            createdBy: autoSenderId,
+            id: autoSenderId,
+            teleid: 1,
+            type: 'Admin',
+            grpFor: physician,
+            userName: autoSenderName,
+            image: '/Content/images/group.png',//_senderPhoto,
+            dateTime: firebase.database.ServerValue.TIMESTAMP,
+            grpType: grptype
+        });
+        firebase.database().ref('Groups/' + getkey + '/users/').child(autoSenderId).set({
+            id: autoSenderId,
+            groupName: name,
+            teleid: 1,
+            type: 'Admin',
+            userName: autoSenderName,
+            image: autoSenderImage,
+            dateTime: firebase.database.ServerValue.TIMESTAMP
+        });
+
+        //GetGroupByKey(getkey);
+       
+
+        var ref = firebase.database().ref("TeleUsers/" + autoSenderId + '/Connections');
+        //child(_receiverId).set(
+        ref.child(_receiverId).update({
+            lastOnline: firebase.database.ServerValue.TIMESTAMP,
+            name: _receiverName,
+            image: _receiverPhoto,
+            lastMessage: shortmsg,
+            type: _type,
+            msgNode: autoSenderId + '-' + _receiverId
+        }).then(function () {
+            if (_type === 'Private')
+                return ref.child(autoSenderId).once("value");
+            else
+                return ref.child(_receiverId).once("value");
+        }).then(function (snapshot) {
+            //debugger;
+            var data = snapshot.val();
+            var time = snapshot.val().lastOnline;
+            //console.log('my local time is : ' + time);
+            var reff = firebase.database().ref("TeleUsers/" + autoSenderId + '/Connections');
+            reff.child(_receiverId).update({
+                lastOnline: time * -1
+            });
+
+            // AfterModify();
+        });
+        if (isGroup) {
+            //LoadGrpUsers(shortmsg);
+            var refConn = firebase.database().ref("TeleUsers/" + autoSenderId + '/ConnectionRules');
+            refConn.child(_receiverId).update({
+                msgNode: _receiverId
+            });
+        }
+
+        var encryptMsg = CryptoJS.AES.encrypt(msg, '123');
+        // send auto generated msg to group
+        let grpid = getkey;
+        firebase.database().ref('userMessages/' + grpid).push({
+            isRead: false,
+            grpId: grpid,
+            senderId: autoSenderId,
+            read: false,
+            senderName: autoSenderName,
+            senderPhoto: autoSenderImage,
+            dateTime: firebase.database.ServerValue.TIMESTAMP,
+            teleid: 1,
+            message: encryptMsg.toString(), //msg,
+            type: 'Public',
+            msgType: 'text'
+        });
+
+        
 
     }
     catch (error) {
@@ -254,7 +259,7 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
     
     // users add code end
 }
-function ExistingGroup(name, grptype, msg, physician, navArr, SenderId, _senderName, _senderPhoto) {
+function ExistingGroup(name, grptype, msg, physician, navArr, _autosenderid, _autoname, _autophoto) {
     var encryptMsg = CryptoJS.AES.encrypt(msg, '123');
     var refGrp = firebase.database().ref("Groups");
     refGrp.orderByChild('grpFor').equalTo(physician).once('child_added', function (snapshot) {
@@ -264,10 +269,10 @@ function ExistingGroup(name, grptype, msg, physician, navArr, SenderId, _senderN
         firebase.database().ref('userMessages/' + grpid).push({
             isRead: false,
             grpId: grpid,
-            senderId: SenderId,
+            senderId: _autosenderid,
             read: false,
-            senderName: _senderName,
-            senderPhoto: _senderPhoto,
+            senderName: _autoname,
+            senderPhoto: _autophoto,
             dateTime: firebase.database.ServerValue.TIMESTAMP,
             teleid: 1,
             message: encryptMsg.toString(),//msg,
@@ -570,11 +575,25 @@ function loginUsernameFB(email, password, tele_id, username, img, userSqlid, sav
         });
 
     }).catch(function (error) {
-        toast(error.message, 7000);
+        CreateWithPassword(email, password, tele_id, username, img, userSqlid);
     });
 
 
 }
+// create user if not found
+function CreateWithPassword(email, password, tele_id, username, img, userSqlid) {
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then(function (user) {
+            console.log('new user create in db :', user);
+            console.log('all in one:',email, password, tele_id, username, img, userSqlid);
+            loginUsernameFB(email, password, tele_id, username, img, userSqlid);
+        })
+        .catch(function (error) {
+            console.error('this user still  not added in firebase look into error:', error);
+        });
+}
+// code end
+
 //userSqlid
 function SaveInDB(userid) {
     if (userid) {

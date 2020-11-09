@@ -218,6 +218,7 @@ function bindEventsForshowPhysicianNewCasePopup_def() {
     $('#btnAcceptNewCasePopup').prop('disabled', false);
     // Event Registration for Popup
     $("#newcasePopupAlert").find("#btnRejectNewCasePopup,#btnClose").off("click").click(function () {
+        localStorage.setItem("strokePopStatus", "true");
         let phy_name = $("#cas_phy_name").val();
         let cas_number = $("#cas_number").val();
         let msg = 'Dr ' + phy_name + ' has Rejected the Case # ' + cas_number;
@@ -227,6 +228,7 @@ function bindEventsForshowPhysicianNewCasePopup_def() {
     });
 
     $("#btnAcceptNewCasePopup").off("click").click(function () {
+        localStorage.setItem("strokePopStatus", "true");
         $("#hdnDisableLoader").val('0');
         $('#btnAcceptNewCasePopup').prop('disabled', true);
         $("#divCaseAssignPopup").modal("hide");
@@ -309,7 +311,7 @@ function bindEventsForshowPhysicianNewCasePopup_def_InternalBlast() {
         let phy_name = $("#cas_phy_name").val();
         let cas_number = $("#cas_number").val();
         let facility_name = $('#cas_fac_name').val();
-        let msg = 'Stroke Alert from ' + facility_name + ' has been Accepted by ' + phy_name;
+        let accptedMsg = 'Stroke Alert from ' + facility_name + ' has been Accepted by ' + phy_name + ', Case# ' + cas_number;
         let physician = $("#cas_phy").val();
         var cas_key = $("#newcasePopupAlert").find("#cas_key").val();
         let autoBlastStamp = $('#blastStamp').html();
@@ -329,22 +331,24 @@ function bindEventsForshowPhysicianNewCasePopup_def_InternalBlast() {
                 }
                 else {
                     // latest code for create auto stamp for blast
-                    //var navigatorsArr = []; // load navigators in this array
-                    //$.ajax({
-                    //    type: 'POST',
-                    //    url: '/firebaseChat/GetUser',
-                    //    data: { id: physician },
-                    //    success: function (e) {
-                    //        console.log('auto msg is : ' + autoBlastStamp);
-                    //        navigatorsArr.push({ user_id: e.fre_userId, email: e.fre_email, name: e.fre_firstname, firbaseuid: e.fre_firebase_uid, ImgPath: e.fre_profileimg });
-                    //        _CreateGroupNewHub(grpName, 'Private', autoBlastStamp, physician, navigatorsArr);
-                    //        //AcceptCase(msg, physician);
-                    //    },
-                    //    Error: function (e) {
-                    //    }
-                    //});
+                    var navigatorsArr = []; // load navigators in this array
+                    $.ajax({
+                        type: 'POST',
+                        url: '/firebaseChat/GetUser',
+                        data: { id: physician },
+                        success: function (e) {
+                            autoBlastStamp = autoBlastStamp.replaceAll("##NewLine##", "<br/>");
+                            console.log('auto msg is : ' + autoBlastStamp);
+                            navigatorsArr.push({ user_id: e.fre_userId, email: e.fre_email, name: e.fre_firstname, firbaseuid: e.fre_firebase_uid, ImgPath: e.fre_profileimg });
+                            _CreateGroupNewHub(grpName, 'Private', autoBlastStamp, physician, navigatorsArr);
+                            setTimeout(function () { AcceptCase(accptedMsg, physician); }, 3000);
+                        },
+                        Error: function (e) {
+                        }
+                    });
                     // code end
-                    AcceptCase(msg, physician); //  old code to create response stamp
+                    //AcceptCase(msg, physician); //  old code to create response stamp
+                    
                     try {
                         document.getElementById('new_case_notification').pause();
                     }
@@ -367,6 +371,7 @@ function bindEventsForshowPhysicianNewCasePopup_def_InternalBlast() {
                                 $("#validationSummary").empty().showBSDangerAlert("", response.message);
                         }
                     });
+                    
                 }
             },
             Error: function (e) {

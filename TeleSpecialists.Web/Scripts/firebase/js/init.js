@@ -27,6 +27,7 @@ listener.onmessage = function (e) {
     let jsonData = _payload['jsonData'];
     let action = _payload['action'];
     let objectData = _payload['objectData'];
+    let strokeStamp = _payload['strokeStamp'];
     console.log('case type is : ' + caseType);
     if (caseType === StatusArray[0]) {
         if (loggedUser === physician_key)
@@ -51,9 +52,9 @@ listener.onmessage = function (e) {
     else if (caseType === StatusArray[6])
         syncCaseInfoFromAdmin_def(objectData);
     else if (caseType === StatusArray[7])
-        ShowBlastStrokeAlert(caseId, true, objectData, 'INTERNAL BLAST');
+        ShowBlastStrokeAlert(caseId, true, objectData, 'INTERNAL BLAST', strokeStamp);
     else if (caseType === StatusArray[8])
-        ShowBlastStrokeAlert(caseId, true, objectData, 'EXTERNAL BLAST');
+        ShowBlastStrokeAlert(caseId, true, objectData, 'EXTERNAL BLAST', strokeStamp);
 };
 
 var isCaseFound = $('#lblCaseId').val();
@@ -74,6 +75,8 @@ firebase.messaging().onMessage(function (payload) {
     let jsonData = arr_data['jsonData'];
     let action = arr_data['action'];
     let objectData = arr_data['objectData'];
+    let strokeStamp = arr_data['strokeStamp'];
+
     console.log('case type is : ' + caseType);
     if (caseType === StatusArray[0]) {
         if (loggedUser === physician_key)
@@ -98,9 +101,9 @@ firebase.messaging().onMessage(function (payload) {
     else if (caseType === StatusArray[6])
         syncCaseInfoFromAdmin_def(objectData);
     else if (caseType === StatusArray[7])
-        ShowBlastStrokeAlert(caseId, true, objectData, 'INTERNAL BLAST');
+        ShowBlastStrokeAlert(caseId, true, objectData, 'INTERNAL BLAST', strokeStamp);
     else if (caseType === StatusArray[8])
-        ShowBlastStrokeAlert(caseId, true, objectData, 'EXTERNAL BLAST');
+        ShowBlastStrokeAlert(caseId, true, objectData, 'EXTERNAL BLAST', strokeStamp);
     
 });
 
@@ -149,17 +152,16 @@ $('#imgForBlast').click(function () {
     SendStrokeInternalBlast(id, true);
 });
 
-function startBlastInterval(id, blastType) {
-    //$('#lblBlast').html(blastType);
-    //$('#btnBlast').show();
+function startBlastInterval(id, blastType, strokeStamp) {
     var arraycontainBlast = (checkBlastArr.indexOf(id) > -1);
     console.log('arraycontainBlast result : ' + arraycontainBlast);
     if (!arraycontainBlast) {
         checkBlastArr.push(id);
-        var divBlast = "<a href='javascript:void(0);' id='" + id + "'   onclick='GetBlastDetail(" + id + ");' > <span class='ml6 font_12px'><span class='text-wrapper'> <span class='letters' id='lblBlast" + id + "'>" + blastType + "</span></span> </span> </a>";
+        var divBlast = "<a href='javascript:void(0);' id='" + id + "'   onclick='GetBlastDetail(" + id + ");' data-strokeStamp='" + strokeStamp+"' > <span class='ml6 font_12px'><span class='text-wrapper'> <span class='letters' id='lblBlast" + id + "'>" + blastType + "</span></span> </span> </a>";
         $('#divInternalExternal').append(divBlast);
         if (!animated)
             AnimateJS();
+        playMsgNotification();
     }
 }
 function stopBlastInterval(id) {
@@ -175,7 +177,8 @@ $('.btnBlast').click(function () {
 });
 
 function GetBlastDetail(e) {
-    console.log('open : ', e);
+   // var _strokeStamp = //$(this).attr('data-strokeStamp');
+    console.log('open stamp: ', e);
     //stopBlastInterval(e);
     SendStrokeInternalBlast(e, true);
 }

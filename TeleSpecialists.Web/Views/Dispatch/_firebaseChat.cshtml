@@ -881,7 +881,7 @@
                         myfileTag = "<a href='" + decryptMsg + "' target='_blank'><img src='/content/images/other.png' style='height:100px;width:100px'/> </a>";
 
                     //var liTag = "<li class='odduser " + snapshot.key + "'><div class='chat-image'> <img src='" + snapshot.val().senderPhoto + "'></div><div class='chat-body'><div class='chat-text'><h4>" + snapshot.val().senderName + "</h4>" + myfileTag + " <b>" + serverTime + " </b><span>" + isCheck + "</span></div></div></li >";
-                    var liTag = "<div class='incoming_msg " + snapshot.key + "'><div class='incoming_msg_img'> <img src='" + _receiverPhoto + "'> </div><div class='received_msg'><small>" + _receiverName + "</small><div class='received_withd_msg'>" + myfileTag + "<div class='row col-md-12'><span class='time_date'> " + serverTime + " </span><span class='fa-icon-size'>" + isCheck + "</span></div></div></div></div>"
+                    var liTag = "<div class='incoming_msg " + snapshot.key + "'><div class='incoming_msg_img'> <img src='" + _receiverPhoto + "'> </div><div class='received_msg'><small>" + snapshot.val().senderName + "</small><div class='received_withd_msg'>" + myfileTag + "<div class='row col-md-12'><span class='time_date'> " + serverTime + " </span><span class='fa-icon-size'>" + isCheck + "</span></div></div></div></div>"
 
                     $("." + snapshot.key).remove();
                     $("#msgDetail").append(liTag);

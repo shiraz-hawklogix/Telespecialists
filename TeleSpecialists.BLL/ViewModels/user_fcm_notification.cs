@@ -75,7 +75,7 @@ namespace TeleSpecialists.BLL.ViewModels
 
 
 
-        public bool SendNotification(string phy_key = "", int caseId = 0, string jsonData = "", string caseType = "Open", int action = 1, List<object> Data = null, List<string> phy_ids = null)
+        public bool SendNotification(string phy_key = "", int caseId = 0, string jsonData = "", string caseType = "Open", int action = 1, List<object> Data = null, List<string> phy_ids = null, string strokeStamp="")
         {
             try
             {
@@ -127,7 +127,8 @@ namespace TeleSpecialists.BLL.ViewModels
                         caseType = caseType,
                         jsonData = jsonData,
                         action = action,
-                        objectData = Data
+                        objectData = Data,
+                        strokeStamp = strokeStamp
                     }
 
                 };
