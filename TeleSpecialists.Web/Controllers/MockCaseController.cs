@@ -46,7 +46,7 @@ namespace TeleSpecialists.Web.Controllers
         {
             return View();
         }
-        [AccessRoles(NotInRoles = "Facility Admin,Regional Medical Director")]
+        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director")]
         public ActionResult Create()
         {
             try
@@ -143,7 +143,7 @@ namespace TeleSpecialists.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        [AccessRoles(NotInRoles = "Facility Admin,Regional Medical Director")]
+        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director")]
         public ActionResult Create(mock_case model)
         {
             try
@@ -182,19 +182,19 @@ namespace TeleSpecialists.Web.Controllers
                     //}
                     #endregion
 
-                    TempData["Message"] = "Mock case has been added.";
+                    TempData["Message"] = "Mock drill has been added.";
                     //_MockcaseService.UpdateTimeStamps(model.mcas_key.ToString());
 
                     var isAutoSave = Request.Params["IsAutoSave"] == "0" ? false : true;
                     if (isAutoSave)
                     {
 
-                        return ShowSuccessMessageOnly("Mock case has been added.", model);
+                        return ShowSuccessMessageOnly("Mock drill has been added.", model);
                     }
                     else
                     {
                         if (isRedirect)
-                            return GetSuccessResult("/case/Index", "Mock case has been added.");
+                            return GetSuccessResult("/case/Index", "Mock drill has been added.");
                         else
                         {
                             return GetSuccessResult(Url.Action("Edit", new { Id = model.mcas_key, showPopupOnLoad = (User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? false : true), showPhyOfflinePopup = showPhyOfflinePopup, isInitialSave = true })); /* commented due to #411 - settings.aps_cas_facility_popup_on_load */
@@ -438,6 +438,7 @@ namespace TeleSpecialists.Web.Controllers
         }
 
         [HttpGet]
+        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director")]
         public ActionResult Edit(int id, bool isReadOnly = false)
         {
             isCalculateBill = false;
@@ -584,6 +585,7 @@ namespace TeleSpecialists.Web.Controllers
         }
 
         [HttpPost]
+        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director")]
         public ActionResult Edit(mock_case model)
         {
             try
@@ -698,7 +700,7 @@ namespace TeleSpecialists.Web.Controllers
 
                         if (showSuccessMessageOnly)
                         {
-                            return ShowSuccessMessageOnly("Mock case has been updated successfully", null);
+                            return ShowSuccessMessageOnly("Mock drill has been updated successfully", null);
                         }
                         else
                         {
@@ -714,10 +716,10 @@ namespace TeleSpecialists.Web.Controllers
                                 }
                             }
                             if (isRedirect)
-                                  return GetSuccessResult("/case/Index", "Mock case has been updated.");
+                                  return GetSuccessResult("/case/Index", "Mock drill has been updated.");
                             else if (redirectToEdit)
                             {
-                                return GetSuccessResult(Url.Action("Edit", new { id = model.mcas_key, isReadOnly = true }), "Mock case has been updated successfully.");
+                                return GetSuccessResult(Url.Action("Edit", new { id = model.mcas_key, isReadOnly = true }), "Mock drill has been updated successfully.");
                             }
                             else
                             {
@@ -729,7 +731,7 @@ namespace TeleSpecialists.Web.Controllers
                                            id = model.mcas_key,
                                            showPhyOfflinePopup = showPhyOfflinePopup
                                        }
-                                    ), "Mock case successfully updated"
+                                    ), "Mock drill successfully updated"
                                 );
                             }
                         }

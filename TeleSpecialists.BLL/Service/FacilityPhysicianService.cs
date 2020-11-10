@@ -358,6 +358,15 @@ namespace TeleSpecialists.BLL.Service
                                         .OrderBy(m => m.FirstName);
             return physicians;
         }
+
+        public IQueryable<AspNetUser> GetAllMockPhysicians()
+        {
+            var physicians = GetMockPhysicians()
+                                        .Where(m => m.IsActive)
+                                        .Where(m => m.IsDeleted == false)
+                                        .OrderBy(m => m.FirstName);
+            return physicians;
+        }
         public facility_physician GetDetails(int id)
         {
             var model = _unitOfWork.FacilityPhysicianRepository.Query().AsNoTracking()

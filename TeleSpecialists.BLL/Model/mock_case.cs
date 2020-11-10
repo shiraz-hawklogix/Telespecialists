@@ -119,6 +119,7 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<bool> mcas_language_exam_repetition_words { get; set; }
         public Nullable<bool> mcas_nursing_verbalize_transfer_patient { get; set; }
         public Nullable<bool> mcas_connectivity_issue { get; set; }
+        public Nullable<bool> mcas_is_nav_blast { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual AspNetUser AspNetUser1 { get; set; }

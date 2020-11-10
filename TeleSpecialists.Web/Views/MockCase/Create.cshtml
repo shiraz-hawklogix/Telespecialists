@@ -78,12 +78,49 @@
         }
     }
 
+    function GetFacilityCart(cas_key) {
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/MockCase/GetFacilityCart?key=' + cas_key,
+            success: function (data) {
+                var fac_cart = [];
+                $.each(data, function (key, val) {
+                    if (val) {
+                        fac_cart = val.split('#');
+                    }
+                })
+                var html = "";
+                html += '<option value="">-- Select --</option>';
+                if (fac_cart.length > 0) {
+                    for (var i = 0; i < fac_cart.length; i++) {
+                        var sel = "";
+                        var isExist = '@Model.mcas_cart';
+                        if (isExist) {
+                            if (fac_cart[i] === isExist) {
+                                sel = 'selected';
+                            }
+                        }
+                        html += '<option value="' + fac_cart[i] + '" ' + sel + '>' + fac_cart[i] + '</option>';
+                    }
+                }
+                html += '<option value="other">Other</option>';
+                $("#mcasecart").empty();
+                $("#mcasecart").append(html);
+            },
+            error: function () {
+
+            }
+
+        });
+    }
+
 
     $(document).ready(function () {
-        debugger;
+
         var caseTypeDll = getUclDataByType(uclData, @(UclTypes.MockCaseType.ToInt()));
         var result = null;
-
 
         mockcaseTypeDropDown = $("#mcas_ctp_key").fillStaticKendoDropDown(result == null || result == undefined ?caseTypeDll:result, "ucd_title", "ucd_key", "-- Select --",
                 function () {
@@ -94,7 +131,6 @@
         });
         loadFacilityDropdown();
         loadPhyscicianDropdown();
-
 
         function loadFacilityDropdown() {
                 mockfacilityDropdown = $("#mcas_fac_key").fillKendoDropDown("/LookUp/GetAllMockFacilities", "fac_name", "fac_key", "--Select--",
@@ -124,8 +160,10 @@
 
         $('#mcas_callback_response_time_est').kendoDatePicker();
 
-
-         $("#btnSave, #btnSaveClose,#btnSaveSend").off("click").click(function () {
+        $('#mcas_fac_key').change(function () {
+            GetFacilityCart($('#mcas_fac_key').val());
+        });
+        $("#btnSave, #btnSaveClose,#btnSaveSend").off("click").click(function () {
         $(".error_msg").hide();
         $("#mhdnSaveAndSend").val("0");
         $("#mRedirectPage").val("0");
@@ -165,6 +203,8 @@
          });
 
         maskPhoneNumber();
+
+        $('#mcas_is_nav_blast_false').prop("checked", true);
 
     });
 </script>

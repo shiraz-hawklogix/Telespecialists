@@ -47,7 +47,7 @@ namespace TeleSpecialists.BLL.Service
             int Total = list.FirstOrDefault()?.totalRecords ?? 0;
             if (request.Take == 0)
                 Total = list.Count();
-            var kendoObj = list.ToDataSourceResult(Total, 0, request.Sort, null);
+            var kendoObj = list.OrderByDescending(x => x.mcas_created_date).ToDataSourceResult(Total, 0, request.Sort, null);
             kendoObj.Total = Total;
             return kendoObj;
 

@@ -19,7 +19,7 @@
     {
         isPhysicianOrPatnerPhysician = true;
     }
-    var isSleepAllow = ViewBag.isSleepAllow;
+    var isSleepAllow = ViewBag.isSleepAllow;  
 }
 
 
@@ -296,95 +296,102 @@
             _cls = "show active";
             isPacPhysician = true;
         }
-        <li class="nav-item ">
-            <a class="nav-link bold font-md active" onclick="onTabClicked('emergentTab'), showthisTab()" id="emergentTabLinkt" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="emergentTab" aria-selected="true">Emergent Consults</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link bold font-md" onclick="onTabClicked('routineTab'), showthisTab()" id="routineTabLink" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="routineTab" aria-selected="false">Routine Consults</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link bold font-md" onclick="onTabClicked('eegsTab'), showthisTab()" id="eegsTabLink" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="eegsTab" aria-selected="false">EEGs</a>
-        </li>
-        <li class="nav-item">
-        </li>
-        <li class="nav-item">
-            <a class="nav-link bold font-md" onclick="hideOtherTabs('mockcasetab')" id="mockCaseTabLink" data-toggle="tab" href="#mockcaseTab" role="tab" aria-controls="mockCaseTab" aria-selected="false">Mock Case</a>
-        </li>
 
+        @if (!User.IsInRole(UserRoles.MockPhysician.ToDescription()))
+        {
+            <li class="nav-item ">
+                <a class="nav-link bold font-md active" onclick="onTabClicked('emergentTab'), showthisTab()" id="emergentTabLinkt" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="emergentTab" aria-selected="true">Emergent Consults</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link bold font-md" onclick="onTabClicked('routineTab'), showthisTab()" id="routineTabLink" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="routineTab" aria-selected="false">Routine Consults</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link bold font-md" onclick="onTabClicked('eegsTab'), showthisTab()" id="eegsTabLink" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="eegsTab" aria-selected="false">EEGs</a>
+            </li>
+            <li class="nav-item">
+            </li>
+        }
+        @if (User.IsInRole(UserRoles.MockPhysician.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()))
+        {
+            <li class="nav-item">
+                <a class="nav-link bold font-md" onclick="hideOtherTabs('mockcasetab')" id="mockCaseTabLink" data-toggle="tab" href="#mockcaseTab" role="tab" aria-controls="mockCaseTab" aria-selected="false">Mock Drill</a>
+            </li>
+        }
 
-        @if (isSleepAllow || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription())@*|| User.IsInRole(UserRoles.FacilityAdmin.ToDescription())*@ /**/
-                                                                                                                                                                                                                                                                                        /**/
-                                                                                                                                                                                                                                                                                        /**/
-                                                                                                                                                                                                                                                                                        /**/
-                                                                                                                                                                                                                                                                                        /**/
-                                                                                                                                                                                                                                                                                        || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription())
-                                                                                             || User.IsInRole(UserRoles.AOC.ToDescription())
-                                                                                              || User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
-                                                                                               || User.IsInRole(UserRoles.Finance.ToDescription())
-                                                                                                || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
-                                                                                                 || User.IsInRole(UserRoles.QPS.ToDescription())
-                                                                                                  || User.IsInRole(UserRoles.QualityDirector.ToDescription())
-                                                                                                   || User.IsInRole(UserRoles.VPQuality.ToDescription())
-                                                                                                || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())
-                                                                                                || User.IsInRole(UserRoles.RRCDirector.ToDescription())
-                                                                                                || User.IsInRole(UserRoles.RRCManager.ToDescription()))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link bold font-md" onclick="hideOtherTabs('homehealthtab')" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Sleep</span></a>
-                            </li>
-                        }
-                        @*@if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
-                                </li>
-                            }*@
-                        @*@if (User.IsInRole(UserRoles.PACPhysician.ToDescription()))
-                            {
-                                cls = "show active";
-                                <li class="nav-item">
-                                    <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
-                                </li>
-                            }*@
+        @if (!User.IsInRole(UserRoles.MockPhysician.ToDescription()) && isSleepAllow || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription())@*|| User.IsInRole(UserRoles.FacilityAdmin.ToDescription())*@ /**/
+                                                                                                                                                                                                                                                                                                                                                /**/
+                                                                                                                                                                                                                                                                                                                                                /**/
+                                                                                                                                                                                                                                                                                                                                                /**/
+                                                                                                                                                                                                                                                                                                                                                /**/
+                                                                                                                                                                                                                                                                                                                                                /**/
+                                                                                                                                                                                                                                                                                                                                                /**/
+                                                                                                                                                                                                                                                                                                                                                /**/
+                                                                                                                                                                                                                                                                                                                                                || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription())
+                                                                                                                                                     || User.IsInRole(UserRoles.AOC.ToDescription())
+                                                                                                                                                      || User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
+                                                                                                                                                       || User.IsInRole(UserRoles.Finance.ToDescription())
+                                                                                                                                                        || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
+                                                                                                                                                         || User.IsInRole(UserRoles.QPS.ToDescription())
+                                                                                                                                                          || User.IsInRole(UserRoles.QualityDirector.ToDescription())
+                                                                                                                                                           || User.IsInRole(UserRoles.VPQuality.ToDescription())
+                                                                                                                                                        || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())
+                                                                                                                                                        || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+                                                                                                                                                        || User.IsInRole(UserRoles.RRCManager.ToDescription()))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link bold font-md" onclick="hideOtherTabs('homehealthtab')" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Sleep</span></a>
+                                    </li>
+                                }
+                                @*@if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
+                                    </li>
+                                }*@
+                                @*@if (User.IsInRole(UserRoles.PACPhysician.ToDescription()))
+                                {
+                                    cls = "show active";
+                                    <li class="nav-item">
+                                        <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
+                                    </li>
+                                }*@
 
-    </ul>
+        </ul>
     <div class="tab-content" id="caseListTabsContent">
-        <div class="tab-pane fade  @(_cls)" id="emergentTab" role="tabpanel" aria-labelledby="home-tab">
-            <div class="row">
-                <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 text-center m-2">
 
-                    @if (!User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) && !User.IsInRole(UserRoles.QPS.ToDescription()) && !User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) && !User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) && !User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) && !User.IsInRole(UserRoles.MedicalStaff.ToDescription()) && !User.IsInRole(UserRoles.Finance.ToDescription()) && !User.IsInRole(UserRoles.VPQuality.ToDescription()))
-                    {
-                        if (!User.IsInRole(UserRoles.Physician.ToDescription()))
-                        {
-                            <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create")">Create Case</a>
-                        }
-                        <a class="btn btn-dark loadLinkAsync" href="@Url.Action("CreateMultipleCases")">Create Consults</a>
-                    }
-                </div>
-            </div>
-        </div>
-        <div class="tab-pane fade" id="routineTab" role="tabpanel" aria-labelledby="profile-tab"></div>
-        <div class="tab-pane fade" id="eegsTab" role="tabpanel" aria-labelledby="contact-tab"></div>
-        @*<div class="tab-pane fade" id="mockcaseTab" role="tabpanel" aria-labelledby="mock-tab">
+        @if (!User.IsInRole(UserRoles.MockPhysician.ToDescription()))
+        {
+            <div class="tab-pane fade  @(_cls)" id="emergentTab" role="tabpanel" aria-labelledby="home-tab">
                 <div class="row">
                     <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 text-center m-2">
-                        <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create","MockCase")">Mock Case</a>
+
+                        @if (!User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) && !User.IsInRole(UserRoles.QPS.ToDescription()) && !User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) && !User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) && !User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) && !User.IsInRole(UserRoles.MedicalStaff.ToDescription()) && !User.IsInRole(UserRoles.Finance.ToDescription()) && !User.IsInRole(UserRoles.VPQuality.ToDescription()))
+                        {
+                            if (!User.IsInRole(UserRoles.Physician.ToDescription()))
+                            {
+                                <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create")">Create Case</a>
+                            }
+                            <a class="btn btn-dark loadLinkAsync" href="@Url.Action("CreateMultipleCases")">Create Consults</a>
+                        }
                     </div>
                 </div>
-            </div>*@
+            </div>
+            <div class="tab-pane fade" id="routineTab" role="tabpanel" aria-labelledby="profile-tab"></div>
+            <div class="tab-pane fade" id="eegsTab" role="tabpanel" aria-labelledby="contact-tab"></div>
+        }
+
         <div class="tab-pane fade @(clss)" id="mockcaseTab" role="tabpanel" aria-labelledby="contact-tab">
             <div class="row">
                 <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 text-center m-2">
-
-                    <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create","MockCase")">Mock Case</a>
-
+                    <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create","MockCase")">Mock Drill</a>
                 </div>
             </div>
             <div id="divmockCases">
                 @Html.Partial("_mockcases")
             </div>
         </div>
+
+
 
 
         <div class="tab-pane fade @(cls)" id="homehealthTab" role="tabpanel" aria-labelledby="contact-tab">
@@ -417,7 +424,6 @@
                 $('#mdivSearch').addClass("d-none");
                 $('#PACdivSearch').removeClass("d-none");
             } else {
-                debugger;
                 $('#PACdivSearch').addClass("d-none");
                 $('#mdivSearch').removeClass("d-none");
                 $("#mCasedateFilter").val('Last48Hours');
@@ -742,8 +748,7 @@
 
     clearAutoSaveInterval();
         $(document).ready(function () {
-
-            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
         refillFilters.applyFilters = 1;
         refillFilters.resetSearch = false;
         generateStatusFilter();
@@ -769,14 +774,13 @@
             });
 
             ///Ended by Ahmad 09-09-2020 12:01 PM
-            debugger;
             var tab = $("#caseListActiveTab").val()
             var clickfromcase = localStorage.getItem("clickfromcase");
             if (clickfromcase === "homehealthtab") {
                 localStorage.setItem('clickfromcase', null);
                 tab = "homehealthTab";
                 hideOtherTabs();
-            } else if (clickfromcase === "mockcasetab") {
+            } else if (clickfromcase === "mockcasetab" || $('#isMockPhyscian').val() == "1") {
                 localStorage.setItem('clickfromcase', null);
                 tab = "mockcasetab";
                 hideOtherTabs();

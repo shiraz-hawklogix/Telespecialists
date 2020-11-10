@@ -284,7 +284,9 @@ namespace TeleSpecialists.BLL.Helpers
         QualityDirector,
         
         [Description("Medical Staff")]
-        MedicalStaff
+        MedicalStaff,
+        [Description("Mock Physician")]
+        MockPhysician,
 
     }
 
