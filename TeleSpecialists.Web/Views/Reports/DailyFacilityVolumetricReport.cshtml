@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Daily Facility Prediction Report";
+    ViewBag.Title = "Daily Facility Volumetric Report";
 }
 <style>
 
@@ -15,10 +15,7 @@
     }
 </style>
 <div class="alert alert-success removestyle" role="alert" style="display:none!important">
-<h5><b>Processing...</b></h5>
-    @*<div id="myProgress">
-        <div id="myBar"></div>
-    </div>*@
+    <h5><b>Processing...</b></h5>
 </div>
 @Html.Partial("_ReportLayout")
 <div class="form-row align-items-center" id="divLocalFilters" style="padding-bottom:20px!important">
@@ -29,10 +26,16 @@
     <div class="col-auto">
         <label>Select Date</label>
         <input type="text" id=FromMonth name=FromMonth placeholder="From Date" class="form-control datepicker" />
+        <div id="FromDateerror" class="error_msg" style="display:none;">
+            <label for="FromDate">From Date field is required</label>
+        </div>
     </div>
     <div class="col-auto">
         <label>To Date</label>
         <input type="text" id="ToMonth" name="ToMonth" placeholder="To Date" class="form-control  datepicker" />
+        <div id="ToDateerror" class="error_msg" style="display:none;">
+            <label for="ToDate">To Date field is required</label>
+        </div>
     </div>
 
     <div class="col-auto" style="padding-top:28px!important">
@@ -46,27 +49,29 @@
 </div>
 
 
-@*<script>
-    var i = 0;
-    function move() {
-        if (i == 0) {
-            i = 1;
-            var elem = document.getElementById("myBar");
-            var width = 1;
-            var id = setInterval(frame, 20);
-            function frame() {
-                if (width >= 100) {
-                    clearInterval(id);
-                    i = 0;
-                } else {
-                    width++;
-                    elem.style.width = width + "%";
-                }
-            }
+<script>
+    function validateFormData() {
+        debugger
+        var result = true;
+
+        if ($("#FromMonth").val() == "") {
+            result = false;
+            $("#FromDateerror").show();
+            setTimeout(function () {
+                $('#FromDateerror').fadeOut('fast');
+            }, 2000);
         }
+        if ($("#ToMonth").val() == "") {
+            result = false;
+            $("#ToDateerror").show();
+            setTimeout(function () {
+                $('#ToDateerror').fadeOut('fast');
+            }, 2000);
+        }
+        return result;
     }
 
-</script>*@
+</script>
 <script>
     function showpopup() {
         $(".removestyle").removeAttr("style");
@@ -97,13 +102,21 @@
         }
     });
     function uplaod() {
-        $(".removestyle").removeAttr("style");
-            debugger;
-                var formData = new FormData();
+        if (validateFormData() == true)
+        {
+            ShowLoading();
+            $(".removestyle").removeAttr("style");
+            var formData = new FormData();
             var names = $('#FromMonth').val();
             formData.append("FromMonth", names);
             var names2 = $('#ToMonth').val();
           formData.append("ToMonth", names2);
+
+            var Getphysician = $(".cas_fac_key").val();
+            if (Getphysician == "") {
+                $('.cas_fac_key option').prop('selected', true);
+            }
+
 
                 var cas_fac_key_arrays = [];
                 $.each($(".cas_fac_key option:selected"), function () {
@@ -126,9 +139,8 @@
                         $('.hidebtn').show();
                         $('.hideexcelbtn').show();
                         $(".removestyle").css({ 'display': 'none' });
-                        //window.setInterval(function () {
-                        //    $(".removestyle").css({ 'display': 'none' });
-                        //}, 3000);
+                        $('.cas_fac_key option').prop('selected', false);
+                        HideLoading();
                         var lists = response;
                         $("#partialView").load('@Url.Content("/Reports/AddPhysician")', lists);
                     },
@@ -137,6 +149,8 @@
                     }
 
                 });
+        }
+
         }
 </script>
 

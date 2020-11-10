@@ -33,7 +33,8 @@
 </script>
 <script>
         function loadDate() {
-        showAllColumns();
+            showAllColumns();
+            ShowLoading();
         $("#kendoDataGrid").kendoGrid({
             excel: {
                 allPages: true,
@@ -92,6 +93,7 @@
                         kendoDropDown.bind("open", onDropdDownOpen);
                 });
                 filterColumns();
+                HideLoading();
             },
             columns: [
                 {

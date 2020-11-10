@@ -43,7 +43,6 @@
 <script>
     $(document).ready(function () {
         loadDate();
-        $("#Facilities").prop("disabled", true);
         var listFacilities = [];
         var listPhysicians = [];
         var filters = [];
@@ -93,6 +92,7 @@
     });
 
     function loadDate() {
+        ShowLoading();
         showAllColumns();
         $("#kendoDataGrid").kendoGrid({
             excel: {
@@ -167,6 +167,7 @@
                         kendoDropDown.bind("open", onDropdDownOpen);
                 });
                 filterColumns();
+                HideLoading();
             },
             columns: [
                 {
@@ -178,7 +179,6 @@
             ]
         });
     }
-
 
     function showAllColumns() {
 
