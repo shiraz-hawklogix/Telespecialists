@@ -107,7 +107,6 @@ namespace TeleSpecialists.BLL.Service
                 var inpatientType = PatientType.Inpatient.ToInt();
                 var emspatientType = PatientType.EMS.ToInt();
                 var pvpatientType = PatientType.Triage.ToInt();
-                var EDStay = PatientType.Inpatient.ToInt();
                 var query = cases.Select(x => new
                 {
                     id = x.ca.cas_key,
@@ -116,17 +115,17 @@ namespace TeleSpecialists.BLL.Service
                     case_number = x.ca.cas_case_number,
                     facility = (x.ca.facility != null && !String.IsNullOrEmpty(x.ca.facility.fac_name)) ? x.ca.facility.fac_name : "",
 
-                    arrival_to_start = x.ca.cas_patient_type != inpatientType && x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "",
-                    emspatienttype = x.ca.cas_patient_type == emspatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
-                    pvpatienttype = x.ca.cas_patient_type == pvpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
+                    arrival_to_start = x.ca.cas_patient_type != inpatientType && x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "",
+                    emspatienttype = x.ca.cas_patient_type == emspatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
+                    pvpatienttype = x.ca.cas_patient_type == pvpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
                     //inpatienttype = x.ca.cas_metric_symptom_onset_during_ed_stay == true ? x.ca.cas_patient_type == inpatientType ? x.ca.cas_response_ts_notification < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_symptom_onset_during_ed_stay_time) : "" : "",
-                    start_to_response = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_first_atempt < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_response_first_atempt) : "" : "",
+                    start_to_response = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_first_atempt < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_response_first_atempt) : "" : "",
                     bedside_response_time = x.ca.cas_response_first_atempt < x.ca.cas_metric_stamp_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_stamp_time, x.ca.cas_response_first_atempt),
                     tpatrue = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_tpa_consult : false,
-                    arrival_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "" : "",
+                    arrival_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "" : "",
                     verbal_order_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_needle_time < x.ca.cas_metric_tpa_verbal_order_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_tpa_verbal_order_time) : "",
-                    start_to_needle_time = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_response_ts_notification) : "" : "" : "",
-                    cpoe_order_to_needle = x.ca.cas_metric_tpa_consult == true ? DBHelper.FormatSeconds(x.ca.cas_metric_pa_ordertime, x.ca.cas_metric_needle_time) : "00:00:00",
+                    start_to_needle_time = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_metric_needle_time < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_response_ts_notification) : "" : "" : "",
+                    cpoe_order_to_needle = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_needle_time < x.ca.cas_metric_pa_ordertime ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_pa_ordertime, x.ca.cas_metric_needle_time) : "",
                 });
 
 
@@ -227,6 +226,7 @@ namespace TeleSpecialists.BLL.Service
                         List<double> CPOEtoneedle_meanlist = new List<double>();
                         List<double> CPOEtoneedle_medianlist = new List<double>();
                         int casecount = 0;
+                        int cpoecount = 0;
                         int emscount = 0;
                         int totalemscount = 0;
                         int pvcount = 0;
@@ -351,7 +351,7 @@ namespace TeleSpecialists.BLL.Service
                                     var time = new TimeSpan(int.Parse(item.cpoe_order_to_needle.Split(':')[0]), int.Parse(item.cpoe_order_to_needle.Split(':')[1]), int.Parse(item.cpoe_order_to_needle.Split(':')[2])).TotalSeconds;
                                     CPOEtoneedle_meanlist.Add(time);
                                     CPOEtoneedle_medianlist.Add(time);
-                                    casecount++;
+                                    cpoecount++;
                                 }
                             }
                         }
@@ -940,8 +940,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.JanGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.JanGoals = "";
-                                CPOEtoNeedleTimemed.JanGoals = "";
                             }
 
                         }
@@ -1375,8 +1373,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.FebGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.FebGoals = "";
-                                CPOEtoNeedleTimemed.FebGoals = "";
                             }
 
                         }
@@ -1810,8 +1806,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.MarGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.MarGoals = "";
-                                CPOEtoNeedleTimemed.MarGoals = "";
                             }
 
                         }
@@ -2245,8 +2239,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.AprGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.AprGoals = "";
-                                CPOEtoNeedleTimemed.AprGoals = "";
                             }
 
                         }
@@ -2684,8 +2676,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.MayGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.MayGoals = "";
-                                CPOEtoNeedleTimemed.MayGoals = "";
                             }
 
                         }
@@ -3120,8 +3110,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.JunGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.JunGoals = "";
-                                CPOEtoNeedleTimemed.JunGoals = "";
                             }
 
                         }
@@ -3555,8 +3543,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.JulGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.JulGoals = "";
-                                CPOEtoNeedleTimemed.JulGoals = "";
                             }
 
                         }
@@ -3995,8 +3981,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.AugGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.AugGoals = "";
-                                CPOEtoNeedleTimemed.AugGoals = "";
                             }
 
                         }
@@ -4430,8 +4414,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.SepGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.SepGoals = "";
-                                CPOEtoNeedleTimemed.SepGoals = "";
                             }
 
                         }
@@ -4865,8 +4847,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.OctGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.OctGoals = "";
-                                CPOEtoNeedleTimemed.OctGoals = "";
                             }
 
                         }
@@ -5300,8 +5280,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.NovGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.NovGoals = "";
-                                CPOEtoNeedleTimemed.NovGoals = "";
                             }
 
                         }
@@ -5735,8 +5713,6 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.DecGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.DecGoals = "";
-                                CPOEtoNeedleTimemed.DecGoals = "";
                             }
 
                         }
@@ -6426,7 +6402,6 @@ namespace TeleSpecialists.BLL.Service
                 var inpatientType = PatientType.Inpatient.ToInt();
                 var emspatientType = PatientType.EMS.ToInt();
                 var pvpatientType = PatientType.Triage.ToInt();
-                var EDStay = PatientType.Inpatient.ToInt();
                 var query = cases.Select(x => new
                 {
                     id = x.ca.cas_key,
@@ -6435,17 +6410,17 @@ namespace TeleSpecialists.BLL.Service
                     case_number = x.ca.cas_case_number,
                     facility = (x.ca.facility != null && !String.IsNullOrEmpty(x.ca.facility.fac_name)) ? x.ca.facility.fac_name : "",
 
-                    arrival_to_start = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
-                    emspatienttype = x.ca.cas_patient_type == emspatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
+                    arrival_to_start = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
+                    emspatienttype = x.ca.cas_patient_type == emspatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
                     pvpatienttype = x.ca.cas_patient_type == pvpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
                     //inpatienttype = x.ca.cas_metric_symptom_onset_during_ed_stay == true ? x.ca.cas_patient_type == inpatientType ? x.ca.cas_response_ts_notification < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_symptom_onset_during_ed_stay_time) : "" : "",
-                    start_to_response = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_first_atempt < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_first_atempt, x.ca.cas_response_ts_notification) : "" : "",
+                    start_to_response = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_first_atempt < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_first_atempt, x.ca.cas_response_ts_notification) : "" : "",
                     bedside_response_time = x.ca.cas_response_first_atempt < x.ca.cas_metric_stamp_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_stamp_time, x.ca.cas_response_first_atempt),
                     tpatrue = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_tpa_consult : false,
-                    arrival_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "" : "",
+                    arrival_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "" : "",
                     verbal_order_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_needle_time < x.ca.cas_metric_tpa_verbal_order_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_tpa_verbal_order_time) : "",
-                    start_to_needle_time = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_response_ts_notification) : "" : "" : "",
-                    cpoe_order_to_needle = x.ca.cas_metric_tpa_consult == true ? DBHelper.FormatSeconds(x.ca.cas_metric_pa_ordertime, x.ca.cas_metric_needle_time) : "00:00:00",
+                    start_to_needle_time = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_metric_needle_time < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_response_ts_notification) : "" : "" : "",
+                    cpoe_order_to_needle = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_needle_time < x.ca.cas_metric_pa_ordertime ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_pa_ordertime, x.ca.cas_metric_needle_time) : "",
                 });
 
                 QualityMetricsGraphReport graph = new QualityMetricsGraphReport();
@@ -7136,7 +7111,6 @@ namespace TeleSpecialists.BLL.Service
                 var inpatientType = PatientType.Inpatient.ToInt();
                 var emspatientType = PatientType.EMS.ToInt();
                 var pvpatientType = PatientType.Triage.ToInt();
-                var EDStay = PatientType.Inpatient.ToInt();
                 var query = cases.Select(x => new
                 {
                     id = x.ca.cas_key,
@@ -7145,16 +7119,16 @@ namespace TeleSpecialists.BLL.Service
                     case_number = x.ca.cas_case_number,
                     facility = (x.ca.facility != null && !String.IsNullOrEmpty(x.ca.facility.fac_name)) ? x.ca.facility.fac_name : "",
 
-                    arrival_to_start = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
-                    emspatienttype = x.ca.cas_patient_type == emspatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
+                    arrival_to_start = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
+                    emspatienttype = x.ca.cas_patient_type == emspatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
                     pvpatienttype = x.ca.cas_patient_type == pvpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
                     //inpatienttype = x.ca.cas_metric_symptom_onset_during_ed_stay == true ? x.ca.cas_patient_type == inpatientType ? x.ca.cas_response_ts_notification < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_symptom_onset_during_ed_stay_time) : "" : "",
-                    start_to_response = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_first_atempt < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_first_atempt, x.ca.cas_response_ts_notification) : "" : "",
+                    start_to_response = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_first_atempt < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_first_atempt, x.ca.cas_response_ts_notification) : "" : "",
                     bedside_response_time = x.ca.cas_response_first_atempt < x.ca.cas_metric_stamp_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_stamp_time, x.ca.cas_response_first_atempt),
                     tpatrue = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_tpa_consult : false,
-                    arrival_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "" : "",
+                    arrival_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "" : "",
                     verbal_order_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_needle_time < x.ca.cas_metric_tpa_verbal_order_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_tpa_verbal_order_time) : "",
-                    start_to_needle_time = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_response_ts_notification) : "" : "" : "",
+                    start_to_needle_time = x.ca.cas_patient_type != inpatientType ? x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_metric_needle_time < x.ca.cas_response_ts_notification ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_response_ts_notification) : "" : "" : "",
                     cpoe_order_to_needle = x.ca.cas_metric_tpa_consult == true ? DBHelper.FormatSeconds(x.ca.cas_metric_pa_ordertime, x.ca.cas_metric_needle_time) : "00:00:00",
                 });
                 List<QualityMetricsGraphReport> graphlist = new List<QualityMetricsGraphReport>();
@@ -8519,8 +8493,8 @@ namespace TeleSpecialists.BLL.Service
                     created_date = x.ca.cas_created_date,
                     facility = (x.ca.facility != null && !String.IsNullOrEmpty(x.ca.facility.fac_name)) ? x.ca.facility.fac_name : "",
                     rootcause = x.ca.cas_work_flow_ids
-                }).ToList();
-                var rootcause = query.Where(x => x.rootcause != null).Select(x => new { x.rootcause, x.case_number}).ToList();
+                });
+                var rootcause = query.Where(x => x.rootcause != null).Select(x => new { x.rootcause }).ToList();
                 var PrimaryRootCause = Enum.GetValues(typeof(PrimaryRootCause)).Cast<PrimaryRootCause>()
                           .Select(m => new
                           {
@@ -8552,7 +8526,7 @@ namespace TeleSpecialists.BLL.Service
                         if (item.rootcause != null)
                         {
                             var workflowids = item.rootcause;
-                            var ids = workflowids.Split(',').Distinct().ToList();
+                            var ids = workflowids.Split(',');
                             foreach (var id in ids)
                             {
                                 tPACaseAnalysis tpa = new tPACaseAnalysis();

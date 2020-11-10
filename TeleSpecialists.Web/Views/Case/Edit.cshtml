@@ -1764,12 +1764,13 @@ EntityTypes.StateAlertTemplate.ToInt()
 
         //Added BY Axim 26-10-2020
         function checkBillingRevisedCode() {
+            debugger
             var billingCode = $("#cas_billing_bic_key3").val();
             if (billingCode !== "") {
                 $('#cas_billing_bic_key').val(billingCode);//.change();
-                $('#cas_billing_bic_key').change();
+                //$('#cas_billing_bic_key').change();
                 $('#cas_billing_bic_key_id').val(billingCode);//.change();
-                $('#cas_billing_bic_key_id').change();
+                //$('#cas_billing_bic_key_id').change();
             }
         }
          //Ended BY Axim 26-10-2020
@@ -2541,8 +2542,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             $('#btnExportWord').enable();
          ///TCARE-547
 
-
-
         if (@enableControlsInReadOnly.ToString().ToLower()) {
 
             enableReviewTabElements();
@@ -2616,8 +2615,6 @@ EntityTypes.StateAlertTemplate.ToInt()
 
     $('#metricResponse #contactdatatable .k-i-clock').parent().unbind('keyup keydown keypress', function (evt) { return false; });
         $('#metricResponse #contactdatatable .k-i-clock').parent().removeAttr("style", "background-color:#e9ecef; pointer-events:none;");
-
-
 
             $('#divReviewers input').enable().removeAttr("readonly");;
             //$('#cas_response_date_consult').kendoDatePicker({
@@ -3387,11 +3384,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             });
     }
 
-
-
-
-
-
     $(document).ready(function () {
 
         @*if (@userRegionalMD.ToString().ToLower()) {
@@ -3566,7 +3558,6 @@ EntityTypes.StateAlertTemplate.ToInt()
         var formattedNumber = $.trim($(this).data("formatted-number"));
         var type = $.trim($(this).data("type"));
 
-
         if (number != "" && formattedNumber != "" && type != "") {
             callToNumber(number, formattedNumber,type);
         }
@@ -3594,8 +3585,6 @@ EntityTypes.StateAlertTemplate.ToInt()
                 });
 
                 $("#edMainCallModel").modal("show");
-
-
             }
             else if (contacts.length == 1) {
                 callToNumber(contacts[0].phone_number, contacts[0].phone_number_formatted, type);
@@ -3620,8 +3609,6 @@ EntityTypes.StateAlertTemplate.ToInt()
         $this = $("#createForm");
         var url = $this.attr("action").addParamToUrl("ShowSuccessOnly","1");
         var data = $this.serialize();
-
-
 
         $("#divContentArea").find("input:button, input:submit").disable();
         $.ajax({
@@ -3759,10 +3746,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         const element = CKEDITOR.instances["cas_review_template_html"].getData()
         exportHTML(element);
     });
-
-
             $("#btnExportWord").off("click").click(function () {
-
 
         if (@isReadOnlyCase.ToString().ToLower()) {
             readOnlyAllFields();
@@ -3935,26 +3919,20 @@ EntityTypes.StateAlertTemplate.ToInt()
                 $("#commentContainer").show();
                 hide = false;
             }
-
-
          return hide;
     }
 
     //TCARE 559 Start
     function onCriticalOptionsChanged() {
         $("#divcriticalCare").find("input[type=radio]").off("change").change(function () {
-
-
             var value = $(this).val();
             if (value == "true") {
 
                 $("#criticalcareTimeDiv").show();
                 //$("#criticalcareTimeDiv").find("input").val();
-
             }
             else {
                 $("#criticalcareTimeDiv").hide();
-
             }
         });
     }
@@ -3966,7 +3944,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             $("#divcriticalCare").find("input[type=radio]").first().attr("checked", true);
             $("#criticalcareTimeDiv").show();
             //$("#criticalcareTimeDiv").find("input").val();
-
         }
     }
     $(document).ready(function () {
@@ -3977,17 +3954,23 @@ EntityTypes.StateAlertTemplate.ToInt()
         debugger
         $("#cas_billing_bic_key").removeAttr('disabled');
         var oldBillingkey = $("#cas_billing_bic_key").val();
-        //console.log('biiling key is ' + oldBillingkey);
         $('#key_revised').val(oldBillingkey);
         var billingCode = $(this).val();
         if (billingCode !== "") {
             $('#cas_billing_bic_key').val(billingCode);//.change();
-            $('#cas_billing_bic_key').change();
-            //$('#cas_billing_bic_key_id').val(billingCode);//.change();
-            //$('#cas_billing_bic_key_id').change();
+            //$('#cas_billing_bic_key').change();
         }
             $('#lblRevised').html('Revised Billing Code Will Update the Billing Code!');
-        });
+    });
+    $('#cas_billing_bic_key').change(function () {
+        debugger
+        var billingCode = $(this).val();
+        if (billingCode !== "") {
+            $('#cas_billing_bic_key_id').val(billingCode);//.change();
+            //$('#cas_billing_bic_key_id').change();
+        }
+    });
+
     function openProtocolpopup() {
         ShowLoading();
         var fac_key = '@Model.cas_fac_key';

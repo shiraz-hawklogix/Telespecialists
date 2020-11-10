@@ -4149,16 +4149,16 @@ namespace TeleSpecialists.BLL.Service
 
                 //var test = cases.ToList();
 
-                if (model.WorkFlowType != null)
-                    cases = cases.Where(m => model.WorkFlowType.Contains((m.ca.cas_patient_type.HasValue ? m.ca.cas_patient_type.Value : -1)) && m.ca.cas_ctp_key == (int)CaseType.StrokeAlert);
+                //if (model.WorkFlowType != null)
+                //    cases = cases.Where(m => model.WorkFlowType.Contains((m.ca.cas_patient_type.HasValue ? m.ca.cas_patient_type.Value : -1)) && m.ca.cas_ctp_key == (int)CaseType.StrokeAlert);
 
-                if (model.CallType != null)
-                    cases = cases.Where(m => model.CallType.Contains((m.ca.cas_call_type.HasValue ? m.ca.cas_call_type.Value : -1)) && m.ca.cas_ctp_key == ((int)CaseType.StrokeAlert));
+                //if (model.CallType != null)
+                //    cases = cases.Where(m => model.CallType.Contains((m.ca.cas_call_type.HasValue ? m.ca.cas_call_type.Value : -1)) && m.ca.cas_ctp_key == ((int)CaseType.StrokeAlert));
 
-                if (model.CallerSource != null)
-                {
-                    cases = cases.Where(m => model.CallerSource.Contains((m.ca.cas_caller_source_key.HasValue ? m.ca.cas_caller_source_key.Value : -1)));
-                }
+                //if (model.CallerSource != null)
+                //{
+                //    cases = cases.Where(m => model.CallerSource.Contains((m.ca.cas_caller_source_key.HasValue ? m.ca.cas_caller_source_key.Value : -1)));
+                //}
 
                 if (model.CaseStatus != null)
                     cases = cases.Where(m => model.CaseStatus.Contains(m.ca.cas_cst_key));
@@ -4192,16 +4192,16 @@ namespace TeleSpecialists.BLL.Service
                 }
 
 
-                if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
-                {
-                    cases = cases.Where(c => model.QPSNumbers.Contains(c.ca.facility.qps_number));//cases = cases.Where(c => c.ca.facility.qps_number.HasValue && model.QPSNumbers.Contains(c.ca.facility.qps_number.Value));
-                }
+                //if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
+                //{
+                //    cases = cases.Where(c => model.QPSNumbers.Contains(c.ca.facility.qps_number));//cases = cases.Where(c => c.ca.facility.qps_number.HasValue && model.QPSNumbers.Contains(c.ca.facility.qps_number.Value));
+                //}
 
 
-                if (model.tPA != null && model.tPA.Count > 0)
-                {
-                    cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
-                }
+                //if (model.tPA != null && model.tPA.Count > 0)
+                //{
+                //    cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
+                //}
 
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
@@ -4245,7 +4245,8 @@ namespace TeleSpecialists.BLL.Service
                         QualityMetricsReportCls cls = new QualityMetricsReportCls();
                         List<double> _meanlist = new List<double>();
                         List<double> _medianlist = new List<double>();
-                        List<string> handletime = queryList.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
+                        List<string> handletime = queryList.Where(x => 
+                        x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
                         int count = 0;
                         if (handletime.Count > 0)
                         {
@@ -4299,7 +4300,7 @@ namespace TeleSpecialists.BLL.Service
                         guids = guids.TrimEnd(',');
                         cls.timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
                         result.Add(cls);
-                    }
+                     }
                 }
                 var finalresult = result.Select(x => new
                 {
