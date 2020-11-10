@@ -3544,6 +3544,8 @@
     <Content Include="Views\Reports\BCIReport.cshtml" />
     <Content Include="Views\Reports\R_Index.cshtml" />
     <Content Include="Views\Reports\DailyFacilityVolumetricReport.cshtml" />
+    <Content Include="Views\Reports\Daily_forecast.cshtml" />
+    <Content Include="Views\Reports\MOnth_forecast.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

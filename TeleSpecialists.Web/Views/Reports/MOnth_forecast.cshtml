@@ -1,0 +1,165 @@
+﻿
+@{
+    ViewBag.Title = "Monthly Forecast";
+}
+@{ 
+
+    var currentdate = DateTime.Now.ToString("MMMMMMMMMMMMMMM"); ;
+    var enddate = DateTime.Now.AddMonths(1).ToString("MMMMMMMMMMMMMMM"); ;
+}
+
+<style>
+
+    .fixed_header th, .fixed_header td {
+        padding: 5px;
+    }
+</style>
+
+@Html.Partial("_ReportLayout")
+<div class="row" id="divLocalFilters">
+
+</div>
+<script>
+    $(document).ready(function () {
+        $('#btnExportPdf').hide();
+        $('#divLocalFilters').appendTo('#divFilters');
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        setTimeout(function () {
+            loadDate();
+        }, 1000);
+    });
+</script>
+<script>
+        function loadDate() {
+        showAllColumns();
+        $("#kendoDataGrid").kendoGrid({
+            excel: {
+                allPages: true,
+                filterable: false,
+                fileName: '@ViewBag.Title' + '.xlsx',
+                proxyURL: '@Url.Action("ExportToExcel")',
+            },
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("R_Index")',
+                        contentType: "application/json",
+                        type: "POST",
+                         data: function () {
+                             var filterModel = { facilities: ""};
+                             filterModel.facilities = "abc";
+                            return filterModel;
+                        }
+                    },
+                    parameterMap: function (options) {
+                        options = KendoKeepState("Report", options);
+                        exportPostData = options;
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total",
+                    errors: function (response) {
+                        if (response != null && response.success != undefined && response.success != null && !response.success) {
+                            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Error! Please try again.");
+                            HideLoading();
+                        }
+                    }
+                },
+                serverPaging: true,
+                pageSize: 10,
+                serverFiltering: false,
+                serverSorting: true,
+            },
+            width: '100%',
+            groupable: false,
+            filterable: false,
+            sortable: true,
+            resizable: false,
+            pageable: {
+                refresh: true,
+                pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+            },
+            dataBound: function (e) {
+
+                $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+                filterColumns();
+            },
+            columns: [
+                {
+                    field: "Facility_Name", width:365, title: "Facility Name"
+                },
+                {
+                    field: "One_Month", width: 60, title: "@currentdate"
+                },
+                {
+                    field: "Second_Month", width: 60, title: "@enddate"
+                },
+            ]
+        });
+    }
+
+    function showAllColumns() {
+
+        var grid = $("#kendoDataGrid").data("kendoGrid");
+        if (grid != null && grid != 'undefined') {
+            var cols = grid.columns.length
+            for (var i = 2; i < cols; i++) {
+                grid.showColumn(i)
+            }
+        }
+    }
+    function filterColumns() {
+        var grid = $("#kendoDataGrid").data("kendoGrid");
+        if (grid == null || grid == 'undefined')
+            return;
+        showAllColumns();
+        for (var i = 0; i < grid._data.length; i++) {
+            $.each(grid._data[i], function (key, val) {
+                if (val != null) {
+                    grid.showColumn(key);
+                }
+                else {
+                    grid.hideColumn(key);
+                }
+            })
+        }
+        $(".k-grid-header-wrap > table").css("width", "100%");
+        $(".k-grid-content > table").css("width", "100%");
+
+    }
+</script>
+
+@*<script src="~/Scripts/table2csv.js"></script>
+    <script>
+        $(function () {
+            $(".exportToExcel").click(function (e) {
+                let options = {
+                    "separator": ",",
+                    "newline": "\n",
+                    "quoteFields": true,
+                    "excludeColumns": "",
+                    "excludeRows": "",
+                    "trimContent": true,
+                    "filename": "table.csv",
+                    "appendTo": "#output"
+                }
+                debugger;
+                $('#RLanguagedatatable').table2csv('download', options)
+            });
+
+        });
+
+
+    </script>*@
+
+
+
+
+

@@ -42,6 +42,7 @@
 <script src="~/Scripts/Custom/inputMask.js"></script>
 <script>
     $(document).ready(function () {
+        loadDate();
         $("#Facilities").prop("disabled", true);
         var listFacilities = [];
         var listPhysicians = [];
@@ -88,7 +89,7 @@
                 onDatePickerOpen(e);
             }
         });
-      
+
     });
 
     function loadDate() {
@@ -108,6 +109,7 @@
                         type: "POST",
                         data: function () {
                             var filterModel = { facilities: "", Physicians: "" };
+
                             var Getphysician = $("#Facilities").val();
                             if (Getphysician == "") {
                                 $('#Facilities option:not(:selected)').each(function (key, value) {
@@ -115,20 +117,16 @@
                                 });
                             }
                             filterModel.facilities = Getphysician;
-                            filterModel.Physicians = $("#Physicians").val();
+
+                            var Getphysicians = $("#Physicians").val();
+                            if (Getphysicians == "") {
+                                $('#Physicians option:not(:selected)').each(function (key, value) {
+                                    Getphysicians.push(value.value);
+                                });
+                            }
+                            filterModel.Physicians = Getphysicians;
                             return filterModel;
                         }
-                        //data: function () {       
-                        //    var filterModel = { facilities: "" };
-                        //    var Getphysician = $("#Facilities").val();
-                        //    if (Getphysician == "") {
-                        //        $('#Facilities option:not(:selected)').each(function (key, value) {
-                        //            Getphysician.push(value.value);
-                        //        });
-                        //    }
-                        //    filterModel.facilities = Getphysician
-                        //    return filterModel;
-                        //}
                     },
                     parameterMap: function (options) {
                         options = KendoKeepState("Report", options);

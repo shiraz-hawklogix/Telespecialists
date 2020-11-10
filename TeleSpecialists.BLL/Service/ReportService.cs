@@ -9810,6 +9810,99 @@ namespace TeleSpecialists.BLL.Service
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
+        public DataSourceResult GetDailyForecastBydb(DataSourceRequest request, string facilitiess)
+        {
+            List<Monthly_Forecast> volumelist = new List<Monthly_Forecast>();
+            Monthly_Forecast monthly_Forecast;
+            var db_list = _unitOfWork.SqlQuery<Forcast_Data>(string.Format("Exec UspGetForecastDataFOorMOnthly")).ToList();
+            var _val_fac = db_list.Select(x => x.Fac_Id).ToList();
+            string fac_ids = "";
+            string final_val = "";
+            foreach (var item in db_list)
+            {
+                if (item.Fac_Id != final_val)
+                {
+                    monthly_Forecast = new Monthly_Forecast();
+                    var zx = db_list.Where(x => x.Fac_Id == item.Fac_Id).Select(p => p.Month_Prediction).ToList();
+                    foreach (var fac_value in zx)
+                    {
+                        if (fac_ids == item.Fac_Id)
+                        {
+                            monthly_Forecast.Second_Month = Math.Round(Convert.ToDouble(fac_value), 2).ToString();
+                            volumelist.Add(monthly_Forecast);
+                            fac_ids = "";
+                            final_val = item.Fac_Id;
+                        }
+                        else
+                        {
+                            monthly_Forecast.Facility_Name = item.Fac_Name;
+                            monthly_Forecast.One_Month = Math.Round(Convert.ToDouble(fac_value), 2).ToString();
+                            fac_ids = item.Fac_Id;
+                        }
+                    }
+                }
+
+            }
+            var finalresult = volumelist.Select(x => new
+            {
+                Facility_Name = x.Facility_Name,
+                One_Month = x.One_Month,
+                Second_Month = x.Second_Month
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+        public DataSourceResult GetMontlyForecastBydb(DataSourceRequest request, string facilitiess)
+        {
+
+
+            List<Monthly_Forecast> volumelist = new List<Monthly_Forecast>();
+
+            Monthly_Forecast monthly_Forecast;
+
+
+            var db_list = _unitOfWork.SqlQuery<Forcast_Data>(string.Format("Exec UspGetForecastDataFOorMOnthly")).ToList();
+            var _val_fac = db_list.Select(x => x.Fac_Id).ToList();
+            string fac_ids = "";
+            string final_val = "";
+            foreach (var item in db_list)
+            {
+                if (item.Fac_Id != final_val)
+                {
+                    monthly_Forecast = new Monthly_Forecast();
+                    var zx = db_list.Where(x => x.Fac_Id == item.Fac_Id).Select(p => p.Month_Prediction).ToList();
+                    foreach (var fac_value in zx)
+                    {
+                        if (fac_ids == item.Fac_Id)
+                        {
+                            monthly_Forecast.Second_Month = Math.Round(Convert.ToDouble(fac_value), 2).ToString();
+                            volumelist.Add(monthly_Forecast);
+                            fac_ids = "";
+                            final_val = item.Fac_Id;
+                        }
+                        else
+                        {
+                            monthly_Forecast.Facility_Name = item.Fac_Name;
+                            monthly_Forecast.One_Month = Math.Round(Convert.ToDouble(fac_value), 2).ToString();
+                            fac_ids = item.Fac_Id;
+                        }
+                    }
+                }
+
+            }
+
+            //Convert List To Queryable
+            var finalresult = volumelist.Select(x => new
+            {
+                Facility_Name = x.Facility_Name,
+                One_Month = x.One_Month,
+                Second_Month = x.Second_Month
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
 
 
     }

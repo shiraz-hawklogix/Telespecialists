@@ -37,9 +37,8 @@
 
     <div class="col-auto" style="padding-top:28px!important">
         <button type="button" class="btn btn-dark" id="btnSearch" onclick="uplaod();">Search</button>
-        <a class="btn btn-dark loadLinkAsync hidebtn" onclick="showpopup();" href="@Url.Action("R_Index","Reports")">Show Monthly Forecast</a>
-        <a class="btn btn-dark loadLinkAsync hidebtn" onclick="showpopup();" href="@Url.Action("R_daily_Forecast","Reports")">Show Daily Forecast</a>
-        <a class="btn btn-dark loadLinkAsync hidebtn" onclick="showpopup();" href="@Url.Action("BCIReport","Reports")">Show BCI </a>
+        <a class="btn btn-dark loadLinkAsync hidebtn" onclick="showpopup();" href="@Url.Action("MOnth_forecast","Reports")">Show Monthly Forcasting</a>
+        <a class="btn btn-dark loadLinkAsync hidebtn" onclick="showpopup();" href="@Url.Action("Daily_forecast","Reports")">Show Daily Forcasting</a>
         <button class="exportToExcel btn btn-dark hideexcelbtn">Export Excel</button>
     </div>
     <div id="partialView" style="padding-top: 20px;">
