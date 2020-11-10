@@ -1193,10 +1193,12 @@ EntityTypes.StateAlertTemplate.ToInt()
             $("#general_cas_patient_name").val($(this).val());
         });
         //Added By Axim 29-10-2020
-        @*$(".morbidSymptoms").on('change', function () {
+        $(".morbidSymptoms").on('change', function () {
             var currentVal = $('input:radio[name=cas_metric_has_morbid_symptoms]:checked').val();
-            $('.premorbid :radio:not(:checked)').attr('disabled', false);
-            if (currentVal == "0") {
+            $("#has_morbid_symptoms_premorbid").empty();
+            $("#has_morbid_symptoms_premorbid").append(currentVal);
+            //$('.premorbid :radio:not(:checked)').attr('disabled', false);
+            @*if (currentVal == "0") {
                 $("#cas_metric_has_morbid_symptoms_0_UP").prop('checked', true);
             } if (currentVal == "1") {
                 $("#cas_metric_has_morbid_symptoms_1_UP").prop('checked', true);
@@ -1215,9 +1217,9 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
             if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' != 'True') {
                 $('.premorbid :radio:not(:checked)').attr('disabled', true);
-            }
+            }*@
         });
-        $(".premorbid").on('change', function () {
+        @* $(".premorbid").on('change', function () {
             var currentVal = $('input:radio[name=cas_premorbid_symptoms]:checked').val();
             if (currentVal == "0") {
                 $("#cas_metric_has_morbid_symptoms_0").prop('checked', true);
