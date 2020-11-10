@@ -16,7 +16,8 @@ namespace TeleSpecialists.Controllers
         private readonly PhysicianStatusService _physicianStatusService;
         private readonly UCLService _uCLService;
         private readonly CasCancelledTypeService _casCancelledTypeService;
-       
+        private readonly AdminService _adminService;
+
 
 
         public LookupController()
@@ -26,6 +27,7 @@ namespace TeleSpecialists.Controllers
             _physicianStatusService = new PhysicianStatusService();
             _uCLService = new UCLService();
             _casCancelledTypeService = new CasCancelledTypeService();
+            _adminService = new AdminService();
         }
 
         [OutputCache(Duration = 300, VaryByParam = "type")]
@@ -183,7 +185,7 @@ namespace TeleSpecialists.Controllers
         [HttpGet]
         public JsonResult GetAllMockPhyscians()
         {
-            var phyList = _physicianService.GetAllPhysicians().Where(x=>x.Id == "46cb0702-4fd9-433b-bdb3-1729047a41c5")
+            var phyList = _physicianService.GetAllMockPhysicians()
                                  .Select(m =>
                                                      new
                                                      {

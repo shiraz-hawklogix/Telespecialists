@@ -53,6 +53,7 @@
     <link href="~/Content/ckeditor-custom.css" rel="stylesheet" />
 </head>
 <body class="body_bg">
+    <input type="hidden" id="isMockPhyscian" value="@(User.IsInRole(UserRoles.MockPhysician.ToDescription()) ? 1 : 0)" />
     <input type="hidden" id="is_super_admin" value="@role" />
     <input type="hidden" id="is_five9_enable" value="@(loggedInUser?.EnableFive9.ToString())" />
     <input type="hidden" id="IsOnlyPhysician" value="@(User.IsInRole(UserRoles.Physician.ToDescription()) ? 1 : 0)" />
@@ -137,7 +138,8 @@
                     || User.IsInRole(UserRoles.Finance.ToDescription())
                     || User.IsInRole(UserRoles.AOC.ToDescription())
                     || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
-                    || User.IsInRole(UserRoles.Administrator.ToDescription()))
+                    || User.IsInRole(UserRoles.Administrator.ToDescription())
+                    || User.IsInRole(UserRoles.MockPhysician.ToDescription()))
                 {
                     <li class="nav-item">
                         <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Case" )">Cases</a>
@@ -188,7 +190,9 @@
                     && !User.IsInRole(UserRoles.QPS.ToDescription())
                     && !User.IsInRole(UserRoles.VPQuality.ToDescription())
                     && !User.IsInRole(UserRoles.QualityDirector.ToDescription())
-                    && !User.IsInRole(UserRoles.Finance.ToDescription()))
+                    && !User.IsInRole(UserRoles.Finance.ToDescription())
+                    && !User.IsInRole(UserRoles.MockPhysician.ToDescription())
+                    && !User.IsInRole(UserRoles.MockPhysician.ToDescription()))
                 {
                     <li class="nav-item">
                         <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Status", "Physician")">Status</a>
