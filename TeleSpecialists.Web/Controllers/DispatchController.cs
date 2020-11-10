@@ -136,9 +136,9 @@ namespace TeleSpecialists.Web.Controllers
                     var caseReasonsDropDownItems = GetRejectionReasons();
                     foreach (var cas in dispatchResponse)
                     {
-                        cas.PhysicianDD = GetPhysicians(cas.cas_fac_key, cas.cas_ctp_key);
-                        var settingselected = cas.PhysicianDD.Where(p => p.Value == cas.cas_phy_key).FirstOrDefault();
-                        if (settingselected != null) { settingselected.Selected = true; }
+                        //cas.PhysicianDD = GetPhysicians(cas.cas_fac_key, cas.cas_ctp_key);
+                        //var settingselected = cas.PhysicianDD.Where(p => p.Value == cas.cas_phy_key).FirstOrDefault();
+                        //if (settingselected != null) { settingselected.Selected = true; }
 
                         cas.CaseStatusDD = caseStatusDropDownItems;
 
@@ -171,9 +171,9 @@ namespace TeleSpecialists.Web.Controllers
                     var caseReasonsDropDownItems = GetRejectionReasons();
                     foreach (var cas in dispatchResponse)
                     {
-                        cas.PhysicianDD = GetPhysicians(cas.cas_fac_key, cas.cas_ctp_key);
-                        var settingselected = cas.PhysicianDD.Where(p => p.Value == cas.cas_phy_key).FirstOrDefault();
-                        if (settingselected != null) { settingselected.Selected = true; }
+                        //cas.PhysicianDD = GetPhysicians(cas.cas_fac_key, cas.cas_ctp_key);
+                        //var settingselected = cas.PhysicianDD.Where(p => p.Value == cas.cas_phy_key).FirstOrDefault();
+                        //if (settingselected != null) { settingselected.Selected = true; }
                         cas.CaseStatusDD = caseStatusDropDownItems;
                         cas.ReasonsDD = caseReasonsDropDownItems;
                         cas.crr_reason = "-Select-";
@@ -1252,6 +1252,26 @@ namespace TeleSpecialists.Web.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public JsonResult GetDispatchPhysicians(Guid fac_key, int? cas_ctp_key)
+        {
+            if (cas_ctp_key == null)
+                cas_ctp_key = CaseType.StrokeAlert.ToInt();
+
+            Guid? softSaveGuid = null;
+
+            var result = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, fac_key, softSaveGuid, cas_ctp_key).ToList();
+
+            List<SelectListItem> physiciansList = result.Select(d => new SelectListItem
+            {
+                Text = d.FullName,
+                Value = d.AspNetUser_Id.ToString()
+            }).ToList();
+
+            return Json(physiciansList, JsonRequestBehavior.AllowGet);
+        }
+
         [NonAction]
         public List<SelectListItem> GetPhysicians(Guid fac_key, int? cas_ctp_key)
         {
