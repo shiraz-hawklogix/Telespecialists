@@ -1739,7 +1739,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
 
             checkBillingRevisedCode();
-
             // temporary disabling it, to exclude it from production deployment
             submitCaseChanges(); // temporary direct call
             //if (checkCaseAlreadyUpdated) {
@@ -1780,6 +1779,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             $(".error_msg").hide();
             var isCompleted = $("#cas_cst_key").val();
             if (isCompleted == @CaseStatus.Complete.ToInt()) {
+                checkBillingRevisedCode();
                 performCaseCompletion("1");
                 return;
             }
@@ -1800,6 +1800,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 GetCaseReviewers();
                 $("#RedirectPage").val("1");
                 clearAutoSaveInterval();
+                checkBillingRevisedCode();
                 submitCaseChanges();
             }
             else {
@@ -1891,6 +1892,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 }
                 return;
             }
+            checkBillingRevisedCode();
             performCaseCompletion("1");
 
             window.showErrorsOnTabClick = false;
