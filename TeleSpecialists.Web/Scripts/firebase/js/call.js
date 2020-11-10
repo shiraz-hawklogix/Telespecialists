@@ -241,7 +241,7 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
             msgType: 'text'
         });
         // open it after testing
-        //   addNavigators(name, grptype, msg, physician, navArr, getkey, shortmsg);
+        addNavigators(name, grptype, msg, physician, navArr, getkey, shortmsg);
         UserConnectionFB(groupID, shortmsg, name, _receiverPhoto);
     }
     catch (error) {
