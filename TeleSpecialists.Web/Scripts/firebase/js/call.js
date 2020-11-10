@@ -177,16 +177,22 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
             name: name,
             image: _receiverPhoto,
             lastMessage: shortmsg,
-            type: 'Public'
+            type: 'Public',
+            grpid: groupID
         });
+        //.then(function () {
+        //    return firebase.database().ref("TeleUsers/" + SenderId + "/Connections").child(_receiverId).once("value");
+        //}).then(function (snapshot) {
+        //    var _time = snapshot.val().lastOnline;
+        //    var reffSender = firebase.database().ref("TeleUsers/" + SenderId + '/Connections');
+        //    reffSender.child(_receiverId).update({
+        //        lastOnline: _time * -1
+        //    });
+        //});
         firebase.database().ref("TeleUsers/" + SenderId + "/ConnectionRules").child(groupID).set({
             msgNode: groupID
         });
        
-
-        //GetGroupByKey(getkey);
-       
-
         var ref = firebase.database().ref("TeleUsers/" + autoSenderId + '/Connections');
         //child(_receiverId).set(
         ref.child(_receiverId).update({
@@ -195,24 +201,21 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
             image: _receiverPhoto,
             lastMessage: shortmsg,
             type: _type,
-            msgNode: autoSenderId + '-' + _receiverId
-        }).then(function () {
-            if (_type === 'Private')
-                return ref.child(autoSenderId).once("value");
-            else
-                return ref.child(_receiverId).once("value");
-        }).then(function (snapshot) {
-            //debugger;
-            var data = snapshot.val();
-            var time = snapshot.val().lastOnline;
-            //console.log('my local time is : ' + time);
-            var reff = firebase.database().ref("TeleUsers/" + autoSenderId + '/Connections');
-            reff.child(_receiverId).update({
-                lastOnline: time * -1
-            });
-
-            // AfterModify();
+            msgNode: autoSenderId + '-' + _receiverId,
+            grpid: groupID
         });
+        //.then(function () {
+        //    return ref.child(_receiverId).once("value");
+        //}).then(function (snapshot) {
+        //    var time = snapshot.val().lastOnline;
+        //    //console.log('my local time is : ' + time);
+        //    var reff = firebase.database().ref("TeleUsers/" + autoSenderId + '/Connections');
+        //    reff.child(_receiverId).update({
+        //        lastOnline: time * -1
+        //    });
+
+        //    // AfterModify();
+        //});
         if (isGroup) {
             //LoadGrpUsers(shortmsg);
             var refConn = firebase.database().ref("TeleUsers/" + autoSenderId + '/ConnectionRules');
@@ -237,9 +240,9 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
             type: 'Public',
             msgType: 'text'
         });
-
-        addNavigators(name, grptype, msg, physician, navArr, getkey, shortmsg);
-
+        // open it after testing
+        //   addNavigators(name, grptype, msg, physician, navArr, getkey, shortmsg);
+        UserConnectionFB(groupID, shortmsg, name, _receiverPhoto);
     }
     catch (error) {
         console.error('found error in create grp: ',error);
@@ -268,7 +271,7 @@ function ExistingGroup(name, grptype, msg, physician, navArr, _autosenderid, _au
             msgType: 'text'
         });
         var shortmsg = msg.substring(0, 10) + '...';
-        UserConnectionFB(grpid, shortmsg);
+        UserConnectionFB(grpid, shortmsg, name, _autophoto);
     });
 }
 
@@ -282,9 +285,8 @@ function addNavigators(name, grptype, msg, physician, navArr, getkey, shortmsg) 
         let grpId = getkey;
         let nodeid = _userid + '-' + grpId;
         let grpname = name;
-        //userid, name, image, grpid, nodeid, grpname
-        console.log('user in array:' + _userid);
         if (_userid) {
+            // add users in group
             firebase.database().ref('Groups/' + grpId + '/users').child(_userid).set({
                 id: _userid,
                 teleid: 1,
@@ -295,13 +297,25 @@ function addNavigators(name, grptype, msg, physician, navArr, getkey, shortmsg) 
                 image: _image,
                 dateTime: firebase.database.ServerValue.TIMESTAMP
             });
-            firebase.database().ref("TeleUsers/" + _userid + "/Connections").child(grpId).set({
+            // add group in user connections
+            var ref = firebase.database().ref("TeleUsers/" + _userid + "/Connections");
+            ref.child(grpId).set({
                 lastOnline: firebase.database.ServerValue.TIMESTAMP,
                 name: grpname,
                 image: _receiverPhoto,
                 lastMessage: shortmsg,
-                type: 'Public'
+                type: 'Public',
+                grpid: grpId
+            }).then(function () {
+                return ref.child(grpId).once("value");
+            }).then(function (snapshot) {
+                var time = snapshot.val().lastOnline;
+                var reff = firebase.database().ref("TeleUsers/" + _userid + '/Connections');
+                reff.child(grpId).update({
+                    lastOnline: time * -1
+                });
             });
+            // add group in connection Rules
             firebase.database().ref("TeleUsers/" + _userid + "/ConnectionRules").child(grpId).set({
                 msgNode: grpId
             });
@@ -383,7 +397,7 @@ function callGrp(status) {
     });
 }
 
-function GetGroupByKey(key) {
+function GetGroupByKey_modified(key) {
     var ref = firebase.database().ref("Groups/" + key);
     ref.on('value', function (data) {
         console.log('data val :' ,data.val());
@@ -393,8 +407,9 @@ function GetGroupByKey(key) {
         isGroup = true;
     });
     var txt = '';
-    UserConnectionsForCall(txt);
+    //UserConnectionsForCall(txt);
 }
+// UserConnectionsForCall currently not in use
 function UserConnectionsForCall(shortmsg) {
     var _type = '';
     if (isGroup)
@@ -664,8 +679,9 @@ function SignInStatus(userid) {
 function UserUnreadMsgsChanged() {
     var getConnection = firebase.database().ref("TeleUsers/" + SenderId + "/Connections");
     getConnection.orderByChild('lastOnline').on('child_changed', function (friends) {
+        console.log('UserUnreadMsgsChanged called!');
         var unreadmsg = '';
-        if (friends.val().unread !== 0) {
+        if (friends.val().unread !== 0 && friends.val().unread) {
             unreadmsg = friends.val().unread;
             document.getElementById("firebaseLink").style.color = "#FCFC00";
             playMsgNotification();
@@ -682,8 +698,9 @@ function UserUnreadMsgsChanged() {
 function UserUnreadMsgsModify() {
     var getConnection = firebase.database().ref("TeleUsers/" + SenderId + "/Connections");
     getConnection.orderByChild('lastOnline').on('child_added', function (friends) {
+        console.log('UserUnreadMsgsModify called!');
         var unreadmsg = '';
-        if (friends.val().unread !== 0) {
+        if (friends.val().unread !== 0 && friends.val().unread) {
             unreadmsg = friends.val().unread;
             document.getElementById("firebaseLink").style.color = "#FCFC00";
             playMsgNotification();
@@ -697,29 +714,50 @@ function UserUnreadMsgsModify() {
     });
 
 }
-function UserConnectionFB(grpid, shortmsg) {
+function UserConnectionFB(grpid, shortmsg, grpName, grpimg) {
     var ref = firebase.database().ref("Groups/" + grpid + "/users");
     ref.on('child_added', function (snapshot) {
         var userConn = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
-        userConn.child(grpid).update({
-            lastMessage: shortmsg,
-            lastOnline: firebase.database.ServerValue.TIMESTAMP
-        }).then(function () {
-            return userConn.child(grpid).once("value");
-        }).then(function (childSnapshot) {
-            var unread = childSnapshot.val().unread;
-            var time = childSnapshot.val().lastOnline;
-            if (unread)
-                unread += 1;
-            else
-                unread = 1;
-            userConn.child(grpid).update({
-                unread: unread,
-                lastOnline: time * -1
-            });
-            });
+        userConn.orderByChild('grpid').equalTo(grpid).once('value', function (userExist) {
+            if (userExist.exists()) {
+                console.log('record found in connections');
+                userConn.child(grpid).update({
+                    lastMessage: shortmsg,
+                    lastOnline: firebase.database.ServerValue.TIMESTAMP
+                }).then(function () {
+                    return userConn.child(grpid).once("value");
+                }).then(function (childSnapshot) {
+                    var unread = childSnapshot.val().unread;
+                    var time = childSnapshot.val().lastOnline;
+                    if (unread)
+                        unread += 1;
+                    else
+                        unread = 1;
+                    userConn.child(grpid).update({
+                        unread: unread,
+                        lastOnline: time * -1
+                    });
+                });
+            }
+            else {
+                console.log('record noooot found in connections');
+                AddUserConnections(snapshot.key, grpid, shortmsg, grpName, grpimg);
+            }
+        });
+        
     });
-   
-}
 
+}
+function AddUserConnections(userid, groupID, shortmsg, grpName, grpimg) {
+    let ref = firebase.database().ref("TeleUsers/" + userid + "/Connections");
+    ref.child(groupID).set({
+        lastOnline: firebase.database.ServerValue.TIMESTAMP,
+        name: grpName,
+        image: grpimg,
+        lastMessage: shortmsg,
+        type: 'Public',
+        grpid: groupID,
+        msgNode: userid + '-' + groupID
+    });
+}
 // husnain code end

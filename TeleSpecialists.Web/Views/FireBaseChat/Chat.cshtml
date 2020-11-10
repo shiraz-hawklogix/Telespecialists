@@ -356,7 +356,7 @@
             totalNotifications += friends.val().unread;
             var unreadmsg = '';
             var spanUnread = '';
-            if (friends.val().unread !== 0) {
+            if (friends.val().unread !== 0 && friends.val().unread) {
                 unreadmsg = friends.val().unread;
                 spanUnread = "<span class='dot'><span style='padding:3px'>" + unreadmsg + "<span></span>";
             }
@@ -754,16 +754,19 @@
 
             var ref = firebase.database().ref("userMessages/" + grpid);
             ref.on("child_added", function (snapshot) {
-                //console.log(' id is undefiend _grpArr is : ' , _grpArr);
+                
                 var msgArr = [];
                 for (var i = 0; i < _grpArr.length; i++) {
-                    var Alluser = 'notFound';
-                    ref.child(snapshot.key + '/read').child(_grpArr[i].id).once('child_added', function (userData) {
-                        Alluser = 'userFound';
-                        msgArr.push({ id: _grpArr[i].id });
-                    });
-                    if (Alluser !== 'userFound') {
-                        Alluser = 'notFound';
+                    console.log(' id is undefiend _grpArr is : ', _grpArr[i]);
+                    if (_grpArr[i]) {
+                        var Alluser = 'notFound';
+                        ref.child(snapshot.key + '/read').child(_grpArr[i].id).once('child_added', function (userData) {
+                            Alluser = 'userFound';
+                            msgArr.push({ id: _grpArr[i].id });
+                        });
+                        if (Alluser !== 'userFound') {
+                            Alluser = 'notFound';
+                        }
                     }
                     // console.log('user is : ' + _grpArr[i].id + ' , find user is : ' + Alluser);
                 }

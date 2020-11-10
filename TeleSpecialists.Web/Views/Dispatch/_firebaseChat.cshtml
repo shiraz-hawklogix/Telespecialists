@@ -290,7 +290,7 @@
         getConnection.orderByChild('lastOnline').on('child_changed', function (friends) {
             AfterModify();
             var unreadmsg = '';
-            if (friends.val().unread !== 0) {
+            if (friends.val().unread !== 0 && friends.val().unread) {
                 unreadmsg = friends.val().unread;
                 $('.Stickybadge').html(unreadmsg);
                 $('.Stickybadge').show();
@@ -369,7 +369,7 @@
             totalNotifications += friends.val().unread;
             var unreadmsg = '';
             var spanUnread = '';
-            if (friends.val().unread !== 0) {
+            if (friends.val().unread !== 0 && friends.val().unread) {
                 unreadmsg = friends.val().unread;
                 spanUnread = "<span class='dot'><span style='padding:3px'>" + unreadmsg + "<span></span>";
             }

@@ -1081,7 +1081,7 @@
             type: 'POST',
             url: '/Dispatch/GetRefreshCase',
             success: function (e) {
-                console.log('refresh data : ' + e);
+                //console.log('refresh data : ' + e);
                 if (e) {
                     if (RefreshMode){
                         if (GlobalRefreshTrigger != e) {
@@ -1106,7 +1106,7 @@
             type: 'POST',
             url: '/Dispatch/GetSaveStatusBit',
             success: function (e) {
-                console.log('Save Button List : ' + e);
+                //console.log('Save Button List : ' + e);
                 if (e) { 
                     if (GlobalGetSaveButtonListTrigger != e)
                     { 
