@@ -462,7 +462,8 @@ namespace TeleSpecialists.Controllers
         public JsonResult SaveMultiplePasswords(List<PhysicianViewModel> model)
         {
            _facilityPhysicianService.updatePhysicianPassword(model, true);
-            return Json("", JsonRequestBehavior.AllowGet);
+          
+            return Json("Password has been Updated Successfuly", JsonRequestBehavior.AllowGet);
         }
         public ActionResult SetPhyPendingOnboardindFacDate()
         {
