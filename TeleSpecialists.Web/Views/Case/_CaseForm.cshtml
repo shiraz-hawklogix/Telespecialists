@@ -90,57 +90,57 @@
         }
 
         @*TCARE - 472 *@
-    if (Model.cas_cart_location_key_Title?.Trim().ToLower() == "other")
-    {
-        showOtherCartLocation = true;
+        if (Model.cas_cart_location_key_Title?.Trim().ToLower() == "other")
+        {
+            showOtherCartLocation = true;
+        }
     }
-}
 
-List<string>
-    GetFacilityCart = new List<string>
-        ();
-if (Model.facility != null)
-{
-    if (!string.IsNullOrWhiteSpace(Model.cas_cart))
+    List<string>
+        GetFacilityCart = new List<string>
+            ();
+    if (Model.facility != null)
     {
-        if (!string.IsNullOrWhiteSpace(Model.facility.fac_cart_numbers))
+        if (!string.IsNullOrWhiteSpace(Model.cas_cart))
+        {
+            if (!string.IsNullOrWhiteSpace(Model.facility.fac_cart_numbers))
+            {
+                GetFacilityCart = Model.facility.fac_cart_numbers.Split('#').ToList();
+                GetFacilityCart.Add(Model.cas_cart);
+            }
+            else
+            {
+                GetFacilityCart.Add(Model.cas_cart);
+            }
+
+        }
+        else if (!string.IsNullOrWhiteSpace(Model.facility.fac_cart_numbers))
         {
             GetFacilityCart = Model.facility.fac_cart_numbers.Split('#').ToList();
-            GetFacilityCart.Add(Model.cas_cart);
         }
-        else
+    }
+
+    var callbackdate = "false";
+    var callbackred = "";
+    DateTime callbackcheckdate = Convert.ToDateTime("09/22/2020");
+    DateTime createddate = Convert.ToDateTime("1/1/0001");
+    if (Model != null && Model.cas_key > 0)
+    {
+        if (Model.cas_created_date > callbackcheckdate)
         {
-            GetFacilityCart.Add(Model.cas_cart);
+            callbackdate = "true";
+            callbackred = "text-danger";
+        }
+    }
+    else if (Model != null)
+    {
+        if (Model.cas_created_date == createddate)
+        {
+            callbackdate = "true";
+            callbackred = "text-danger";
         }
 
     }
-    else if (!string.IsNullOrWhiteSpace(Model.facility.fac_cart_numbers))
-    {
-        GetFacilityCart = Model.facility.fac_cart_numbers.Split('#').ToList();
-    }
-}
-
-var callbackdate = "false";
-var callbackred = "";
-DateTime callbackcheckdate = Convert.ToDateTime("09/22/2020");
-DateTime createddate = Convert.ToDateTime("1/1/0001");
-if (Model != null && Model.cas_key > 0)
-{
-    if (Model.cas_created_date > callbackcheckdate)
-    {
-        callbackdate = "true";
-        callbackred = "text-danger";
-    }
-}
-else if (Model != null)
-{
-    if (Model.cas_created_date == createddate)
-    {
-        callbackdate = "true";
-        callbackred = "text-danger";
-    }
-
-}
 
 
 }
@@ -268,12 +268,20 @@ else if (Model != null)
                 }
             </label>
             <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
-                <select id="cas_fac_key" name="cas_fac_key" class="form-control addValidation" data-searchFilter="true" data-selectedValue="@(Model != null ? Model.cas_fac_key : Guid.Empty)" required></select>
-                <div class="error_msg" id="cas_fac_key_error" style="display:none;">
-                    <label>This field is required</label>
-                </div>
-                @Html.ValidationMessageFor(model => model.cas_fac_key, "", new { @class = "text-danger" })
+                @if (Model.cas_cst_key == CaseStatus.Complete.ToInt())
+                {
+                    <select id="cas_fac_key" name="cas_fac_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.cas_fac_key : Guid.Empty)" readonly></select>
+                }
+                else
+                {
+                    <select id="cas_fac_key" name="cas_fac_key" class="form-control addValidation" data-searchFilter="true" data-selectedValue="@(Model != null ? Model.cas_fac_key : Guid.Empty)" required></select>
+                    <div class="error_msg" id="cas_fac_key_error" style="display:none;">
+                        <label>This field is required</label>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.cas_fac_key, "", new { @class = "text-danger" })
+                }
             </div>
+
         </div>
 
         <div class="form-group row hidewitheegs @(isRoutineConsultCase || iscase_EEGs ? "d-none" : "")">
@@ -332,14 +340,14 @@ else if (Model != null)
                 }
                 else
                 {
-                    if (Model.cas_cst_key == 20)
+                    if (Model.cas_cst_key == CaseStatus.Complete.ToInt())
                     {
                         <select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.cas_phy_key : "0")" disabled></select>
                         <input type="hidden" name="cas_phy_key" value="@(Model != null ? Model.cas_phy_key : "0")" />
                     }
                     else
                     {
-                    <select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.cas_phy_key : "0")"></select>
+                        <select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.cas_phy_key : "0")"></select>
                     }
                 }
 
@@ -637,12 +645,12 @@ else if (Model != null)
         </div>
         @* Arrival Time invisible for all case types TCARE-472 *@
         @*<div class="form-group row d-none">
-            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4 text-blue">Arrival Time: </label>
-            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
-                @Html.FormattedDateTextBoxFor(m => m.cas_metric_door_time_est, new { @class = "form-control timepicker", @data_currentVal = (Model.cas_metric_door_time_est.HasValue ? Model.cas_metric_door_time_est.Value.FormatDateTime() : "") })
-                @Html.ValidationMessageFor(model => model.cas_metric_door_time_est, "", new { @class = "text-danger" })
-            </div>
-        </div>*@
+                <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4 text-blue">Arrival Time: </label>
+                <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                    @Html.FormattedDateTextBoxFor(m => m.cas_metric_door_time_est, new { @class = "form-control timepicker", @data_currentVal = (Model.cas_metric_door_time_est.HasValue ? Model.cas_metric_door_time_est.Value.FormatDateTime() : "") })
+                    @Html.ValidationMessageFor(model => model.cas_metric_door_time_est, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
         <div class="form-group row">
             <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4 text-blue">Identification Type: </label>
             <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
@@ -1008,7 +1016,7 @@ else if (Model != null)
                          $("#general_cas_dob-error").show();
                      }
                  }
-                 
+
 
              }
 

@@ -234,10 +234,10 @@ namespace TeleSpecialists.Controllers
             }
         }
         public JsonResult GetStrokeFacilitiesForOthercasetypes(string phoneNumber)
+
         {
             try
             {
-
                 if (User.IsInRole(UserRoles.Physician.ToDescription()))
                 {
                     var phyFacList = _physicianService.GetPhsicianFacilities(loggedInUser.Id, phoneNumber).Where(f => f.fac_go_live)
@@ -252,9 +252,7 @@ namespace TeleSpecialists.Controllers
                 }
                 else
                 {
-
-                    var list = _lookupService.GetStrokeFacilitiesForOthercasetypes(phoneNumber)
-                                             .Select(m =>
+                    var list = _lookupService.GetStrokeFacilitiesForOthercasetypes(phoneNumber).Select(m =>
                                                         new
                                                         {
                                                             fac_key = m.fac_key,

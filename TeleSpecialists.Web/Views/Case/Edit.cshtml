@@ -1107,16 +1107,24 @@ EntityTypes.StateAlertTemplate.ToInt()
         }
         // mask phone number field
         maskPhoneNumber();
-        var caseType = '@Model.cas_ctp_key';
-        loadFacilityDropdown(caseType);
         // case general info
-        @*var facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilities?phoneNumber=", "fac_name", "fac_key", "-- Select --",function () {
-            if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
 
-                onLoadCompleteCode();
-            }
-        });*@
+        if (@Model.cas_cst_key != @CaseStatus.Complete.ToInt()) {
+            var facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilities?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
 
+                    onLoadCompleteCode();
+                }
+            });
+        }
+        else {
+            var facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilitiesAll?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                    onLoadCompleteCode();
+                }
+            });
+        }
         var cas_phy_key_val = '@Model.cas_phy_key';
         var caseStatusDropDown = null;
         if(@Model.cas_cst_key != @CaseStatus.Complete.ToInt() && '@(User.IsInRole(UserRoles.Navigator.ToDescription()))' == 'True') {
@@ -1765,9 +1773,8 @@ EntityTypes.StateAlertTemplate.ToInt()
 
         //Added BY Axim 26-10-2020
         function checkBillingRevisedCode() {
-            debugger
             var billingCode = $("#cas_billing_bic_key3").val();
-            if (billingCode !== "") {
+            if (billingCode /*!== "" || billingCode !== undefined || billingCode !== 'undefined'*/) {
                 $('#cas_billing_bic_key').val(billingCode);//.change();
                 //$('#cas_billing_bic_key').change();
                 $('#cas_billing_bic_key_id').val(billingCode);//.change();
@@ -3955,21 +3962,19 @@ EntityTypes.StateAlertTemplate.ToInt()
     })
         //TCARE 559 End
     $('#cas_billing_bic_key3').change(function () {
-        debugger
         $("#cas_billing_bic_key").removeAttr('disabled');
         var oldBillingkey = $("#cas_billing_bic_key").val();
         $('#key_revised').val(oldBillingkey);
         var billingCode = $(this).val();
-        if (billingCode !== "") {
+        if (billingCode /*!== "" || billingCode !== undefined || billingCode !== 'undefined'*/) {
             $('#cas_billing_bic_key').val(billingCode);//.change();
             //$('#cas_billing_bic_key').change();
         }
             $('#lblRevised').html('Revised Billing Code Will Update the Billing Code!');
     });
     $('#cas_billing_bic_key').change(function () {
-        debugger
         var billingCode = $(this).val();
-        if (billingCode !== "") {
+        if (billingCode /*!== ""*/) {
             $('#cas_billing_bic_key_id').val(billingCode);//.change();
             //$('#cas_billing_bic_key_id').change();
         }

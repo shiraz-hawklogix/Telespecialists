@@ -50,6 +50,9 @@ namespace TeleSpecialists.BLL.Service
         public IQueryable<facility> GetStrokeFacilitiesForOthercasetypes(string phoneNumber)
         {
             return GetFacilities(phoneNumber).Where(f => f.fac_go_live);
+        public IQueryable<facility> GetFacilityAll(string phoneNumber)
+        {
+            return GetFacilities(phoneNumber);
         }
         public IQueryable<facility> GetAllLiveTeleNeuroFacility(string phoneNumber)
         {
