@@ -42,6 +42,10 @@ namespace TeleSpecialists.BLL.Service
         {
             return GetFacilities(phoneNumber).Where(f => f.fac_go_live && f.facility_contract.fct_service_calc.Contains(ContractServiceTypes.TeleStroke.ToString()));
         }
+        public IQueryable<facility> GetFacilityAll(string phoneNumber)
+        {
+            return GetFacilities(phoneNumber);
+        }
         public IQueryable<facility> GetAllLiveTeleNeuroFacility(string phoneNumber)
         {
             return GetFacilities(phoneNumber).Where(f => f.fac_go_live && f.facility_contract.fct_service_calc.Contains(ContractServiceTypes.TeleNeuro.ToString()));
