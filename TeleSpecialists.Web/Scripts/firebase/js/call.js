@@ -33,6 +33,9 @@ var autoSenderImage;
 
 //var messaging;
 $(document).ready(function () {
+    var blastDiv = localStorage.getItem("activeBlasts");
+    if (blastDiv)
+        $('#divInternalExternal').html(blastDiv);
     PrintToken(Get_Token());
 });
 async function Get_Token() {
@@ -679,7 +682,7 @@ function SignInStatus(userid) {
 function UserUnreadMsgsChanged() {
     var getConnection = firebase.database().ref("TeleUsers/" + SenderId + "/Connections");
     getConnection.orderByChild('lastOnline').on('child_changed', function (friends) {
-        console.log('UserUnreadMsgsChanged called!');
+       // console.log('UserUnreadMsgsChanged called!');
         var unreadmsg = '';
         if (friends.val().unread !== 0 && friends.val().unread) {
             unreadmsg = friends.val().unread;
@@ -698,7 +701,7 @@ function UserUnreadMsgsChanged() {
 function UserUnreadMsgsModify() {
     var getConnection = firebase.database().ref("TeleUsers/" + SenderId + "/Connections");
     getConnection.orderByChild('lastOnline').on('child_added', function (friends) {
-        console.log('UserUnreadMsgsModify called!');
+        //console.log('UserUnreadMsgsModify called!');
         var unreadmsg = '';
         if (friends.val().unread !== 0 && friends.val().unread) {
             unreadmsg = friends.val().unread;

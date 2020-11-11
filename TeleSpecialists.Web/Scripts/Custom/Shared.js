@@ -1565,3 +1565,12 @@ function playMsgNotification() {
     }
     catch (err) { console.log(err); }
 }
+
+function playBlastNotification() {
+    try {
+        var x = document.getElementById('new_blast_notification');
+        x.play();
+    }
+    catch (err) { console.log(err); }
+}
+

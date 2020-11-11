@@ -60,10 +60,8 @@ showPhysicianNewCasePopup_def = function (id, setCookie) {
     $.get(url, { id: id }, function (response) {
         $("#divCaseAssignPopup").empty().html(response);
         $("#divCaseAssignPopup").modal("show");
-
-        playNewCaseNotification();
-
         bindEventsForshowPhysicianNewCasePopup_def();
+        playNewCaseNotification();
         //showKendoPopup();
         if (setCookie || setCookie == "true") {
             var dt = new Date();
@@ -313,7 +311,7 @@ function bindEventsForshowPhysicianNewCasePopup_def_InternalBlast() {
         let facility_name = $('#cas_fac_name').val();
         let accptedMsg = 'Stroke Alert from ' + facility_name + ' has been Accepted by ' + phy_name + ', Case# ' + cas_number;
         let physician = $("#cas_phy").val();
-        var cas_key = $("#newcasePopupAlert").find("#cas_key").val();
+        var cas_key = $("#newcasePopupAlertBlast").find("#cas_key").val();
         let autoBlastStamp = $('#blastStamp').html();
         let grpName = phy_name + ' ' + 'SA';
        
@@ -353,7 +351,7 @@ function bindEventsForshowPhysicianNewCasePopup_def_InternalBlast() {
                         document.getElementById('new_case_notification').pause();
                     }
                     catch (err) { console.log(err); }
-                    $("#newcasePopupAlert").find("#cas_key").val("");
+                    $("#newcasePopupAlertBlast").find("#cas_key").val("");
                     window.clearTimeout(timeoutId); // clearing the timeout so the reject is not called.
                     $.post('/Case/AcceptCaseWithNoQueueInternalBlast', { id: cas_key }, function (response) {
                         $("#divCaseAssignPopup").modal("hide");

@@ -75,11 +75,14 @@
     <input type="hidden" id="TwoFactorAuthUser" value="" />
     <input type="hidden" id="lblforfirebase" />
     <input type="hidden" id="cas_key_blast" />
-    <input type="hidden" id="lbl_show_strokeAlert" value="@showStrokeAlert"/>
+    <input type="hidden" id="lbl_show_strokeAlert" value="@showStrokeAlert" />
     @*<input type="hidden" id="IsCredentialingTeamorSuperAdmin" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()) ? 1 : 0)" />
         <input type="hidden" id="IsQPSQualityDirectororVPQuality" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) ? 1 : 0)" />*@
     <audio id="new_msg_notification">
         <source src="~/Content/sounds/msg_notify.mp3" type="audio/mp3">
+    </audio>
+    <audio id="new_blast_notification">
+        <source src="~/Content/sounds/blast.mp3" type="audio/mp3">
     </audio>
     <div class="refreshAlarm">
     </div>

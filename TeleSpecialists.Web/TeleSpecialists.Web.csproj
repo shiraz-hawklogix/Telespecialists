@@ -776,6 +776,8 @@
     <Content Include="Content\simple-line-icons\simple-line-icons.css" />
     <Content Include="Content\simple-line-icons\simple-line-icons.min.css" />
     <Content Include="Content\simple-line-icons\Simple-Line-Icons.svg" />
+    <Content Include="Content\sounds\blast.mp3" />	
+    <Content Include="Content\sounds\blast1.mp3" />
     <Content Include="Content\sounds\msg_notify.mp3" />
     <Content Include="Content\sounds\new_case_notification.mp3" />
     <Content Include="Content\sounds\new_case_notification_2.mp3" />

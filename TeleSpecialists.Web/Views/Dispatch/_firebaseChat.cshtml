@@ -736,8 +736,10 @@
                     try {
                         var Alluser = 'notFound';
                         ref.child(snapshot.key + '/read').child(_grpArr[i].id).once('child_added', function (userData) {
-                            Alluser = 'userFound';
-                            msgArr.push({ id: _grpArr[i].id });
+                            if (_grpArr[i]) {
+                                Alluser = 'userFound';
+                                msgArr.push({ id: _grpArr[i].id });
+                            }
                         });
                         if (Alluser !== 'userFound') {
                             Alluser = 'notFound';
@@ -899,15 +901,20 @@
 
                     $("." + snapshot.key).remove();
                     $("#msgDetail").append(liTag);
-                    var messageBody = document.querySelector('#msgDetail');
-                    messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+                    
                     var users = '';
                     ref.child(snapshot.key).child('read').on('child_added', function (seenUser) {
-                        // console.log('seen Users is : ' + seenUser.val().name);
                         users += seenUser.val().name + ', ';
                     });
-                    var _text = "<li class='centerAlignSeen'><span > Seen By " + users + " </span></li>";
-                    $("#msgDetail").append(_text);
+                    let seenMsg = 'Seen By ' + users;
+                    let _defaultAtamp = 'Seen By ' + _senderName + ', ';
+                    //console.log('default users : ' + _defaultAtamp);
+                    if (seenMsg !== _defaultAtamp) {
+                        var _text = "<li class='centerAlignSeen'><span>" + seenMsg + " </span></li>";
+                        $("#msgDetail").append(_text);
+                    }
+                    var messageBody = document.querySelector('#msgDetail');
+                    messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
                 }
             }
         });

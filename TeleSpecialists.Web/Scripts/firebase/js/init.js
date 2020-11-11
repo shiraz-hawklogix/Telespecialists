@@ -165,13 +165,15 @@ function startBlastInterval(id, blastType, strokeStamp) {
         $('#divInternalExternal').append(divBlast);
         if (!animated)
             AnimateJS();
-        playMsgNotification();
+        playBlastNotification();
+        localStorage.setItem("activeBlasts", $('#divInternalExternal').html());
     }
 }
 function stopBlastInterval(id) {
     console.log('blast going to be hide :', id);
     $('#lblBlast' + id).html('');
-    $('#' + id).hide();
+    $('#' + id).remove();
+    localStorage.setItem("activeBlasts", $('#divInternalExternal').html());
 }
 
 $('.btnBlast').click(function () {
