@@ -182,16 +182,15 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
             lastMessage: shortmsg,
             type: 'Public',
             grpid: groupID
+        }).then(function () {
+            return firebase.database().ref("TeleUsers/" + SenderId + "/Connections").child(_receiverId).once("value");
+        }).then(function (snapshot) {
+            var _time = snapshot.val().lastOnline;
+            var reffSender = firebase.database().ref("TeleUsers/" + SenderId + '/Connections');
+            reffSender.child(_receiverId).update({
+                lastOnline: _time * -1
+            });
         });
-        //.then(function () {
-        //    return firebase.database().ref("TeleUsers/" + SenderId + "/Connections").child(_receiverId).once("value");
-        //}).then(function (snapshot) {
-        //    var _time = snapshot.val().lastOnline;
-        //    var reffSender = firebase.database().ref("TeleUsers/" + SenderId + '/Connections');
-        //    reffSender.child(_receiverId).update({
-        //        lastOnline: _time * -1
-        //    });
-        //});
         firebase.database().ref("TeleUsers/" + SenderId + "/ConnectionRules").child(groupID).set({
             msgNode: groupID
         });
