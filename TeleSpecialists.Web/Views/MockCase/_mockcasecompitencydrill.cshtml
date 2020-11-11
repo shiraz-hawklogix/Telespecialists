@@ -4,242 +4,251 @@
 @model TeleSpecialists.BLL.Model.mock_case
 <div class="form-group row">
     <div class="col-12 row mb-1 ml-1">
-        <div class="col-8 headingMockDill">
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12 headingMockDill">
             <label class="form-check-label">Nurse at facility identifies self, patient and family members in room </label>
         </div>
-        <div class="col-2">
+        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
             @Html.RadioButtonFor(model => model.mcas_nurse_identify_members_in_room, true, new { id = "mcas_nurse_identify_members_in_room_true", @class = "disabled" })
-            @Html.Label("is-nurse_identify_members_in_room-true", "Yes")
+            @Html.Label("mcas_nurse_identify_members_in_room_true", "Yes")
             @Html.RadioButtonFor(model => model.mcas_nurse_identify_members_in_room, false, new { id = "mcas_nurse_identify_members_in_room_false", @class = "disabled ml-3" })
-            @Html.Label("is-nurse_identify_members_in_room-false", "No")
+            @Html.Label("mcas_nurse_identify_members_in_room_false", "No")
         </div>
     </div>
     <div class="col-12 row mb-1 ml-1">
-        <div class="col-8 headingMockDill">
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12 headingMockDill">
             <label class="form-check-label">Nursing can verbalize process steps-Pre-CT </label>
         </div>
-        <div class="col-2">
+        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
             @Html.RadioButtonFor(model => model.mcas_nursing_verbalize_pre_CT_process, true, new { id = "mcas_nursing_verbalize_pre_CT_process_true", @class = "disabled" })
-            @Html.Label("is-nurse_identify_members_in_room-true", "Yes")
+            @Html.Label("mcas_nursing_verbalize_pre_CT_process_true", "Yes")
             @Html.RadioButtonFor(model => model.mcas_nursing_verbalize_pre_CT_process, false, new { id = "mcas_nursing_verbalize_pre_CT_process_false", @class = "disabled ml-3" })
-            @Html.Label("is-nurse_identify_members_in_room-false", "No")
+            @Html.Label("mcas_nursing_verbalize_pre_CT_process_false", "No")
         </div>
     </div>
     <div class="col-12 row mb-1 ml-1">
-        <div class="col-8 headingMockDill">
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12 headingMockDill">
             <label class="form-check-label">Nursing can verbalize process steps-Post-CT </label>
         </div>
-        <div class="col-2">
+        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
             @Html.RadioButtonFor(model => model.mcas_nursing_verbalize_post_CT_process, true, new { id = "mcas_nursing_verbalize_post_CT_process_true", @class = "disabled" })
-            @Html.Label("is-mcas-nursing-verbalize-post-CT-process-true", "Yes")
+            @Html.Label("mcas_nursing_verbalize_post_CT_process_true", "Yes")
             @Html.RadioButtonFor(model => model.mcas_nursing_verbalize_post_CT_process, false, new { id = "mcas_nursing_verbalize_post_CT_process_false", @class = "disabled ml-3" })
-            @Html.Label("is-mcas-nursing-verbalize-post-CT-process-false", "No")
+            @Html.Label("mcas_nursing_verbalize_post_CT_process_false", "No")
         </div>
     </div>
     <div class="col-12 row mb-1 ml-1">
-        <div class="col-8 headingMockDill">
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12 headingMockDill">
             <label class="form-check-label">Nursing demonstrates appropriate positioning of cart </label>
         </div>
-        <div class="col-2">
-            @Html.RadioButtonFor(model => model.mcas_nursing_demonstrate_positioninig_cart, true, new { id = "mcas_nursing_verbalize_post_CT_process_true", @class = "disabled" })
-            @Html.Label("is-mcas-nursing-demonstrate-positioninig-cart-true", "Yes")
-            @Html.RadioButtonFor(model => model.mcas_nursing_demonstrate_positioninig_cart, false, new { id = "mcas_nursing_verbalize_post_CT_process_false", @class = "disabled ml-3" })
-            @Html.Label("is-mcas-nursing-demonstrate-positioninig-cart-false", "No")
+        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
+            @Html.RadioButtonFor(model => model.mcas_nursing_demonstrate_positioninig_cart, true, new { id = "mcas_nursing_demonstrate_positioninig_cart_true", @class = "disabled" })
+            @Html.Label("mcas_nursing_demonstrate_positioninig_cart_true", "Yes")
+            @Html.RadioButtonFor(model => model.mcas_nursing_demonstrate_positioninig_cart, false, new { id = "mcas_nursing_demonstrate_positioninig_cart_false", @class = "disabled ml-3" })
+            @Html.Label("mcas_nursing_demonstrate_positioninig_cart_false", "No")
         </div>
     </div>
     <div class="col-12 row mb-1 ml-1">
-        <div class="col-8 headingMockDill">
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12 headingMockDill">
             <label class="form-check-label">NHISS Stroke Assessment Booklet is at bedside </label>
         </div>
-        <div class="col-2">
+        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
             @Html.RadioButtonFor(model => model.mcas_NIHSS_assessment_booklet_at_bedside, true, new { id = "mcas_NIHSS_assessment_booklet_at_bedside_true", @class = "disabled" })
-            @Html.Label("is-mcas_NIHSS_assessment_booklet_at_bedside-true", "Yes")
+            @Html.Label("mcas_NIHSS_assessment_booklet_at_bedside_true", "Yes")
             @Html.RadioButtonFor(model => model.mcas_NIHSS_assessment_booklet_at_bedside, false, new { id = "mcas_NIHSS_assessment_booklet_at_bedside_false", @class = "disabled ml-3" })
-            @Html.Label("is-mcas_NIHSS_assessment_booklet_at_bedside-false", "No")
+            @Html.Label("mcas_NIHSS_assessment_booklet_at_bedside_false", "No")
         </div>
     </div>
     <div class="col-12 row mb-1 ml-1">
-        <div class="col-8 headingMockDill">
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12 headingMockDill">
             <label class="form-check-label">Nurse can assist as requested with completion of NIHSS exam </label>
         </div>
-        <div class="col-2">
+        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
             @Html.RadioButtonFor(model => model.mcas_nurse_assisst_completion_NIHSS_exam, true, new { id = "mcas_nurse_assisst_completion_NIHSS_exam_true", @class = "disabled" })
-            @Html.Label("is-mcas_nurse_assisst_completion_NIHSS_exam-true", "Yes")
+            @Html.Label("mcas_nurse_assisst_completion_NIHSS_exam_true", "Yes")
             @Html.RadioButtonFor(model => model.mcas_nurse_assisst_completion_NIHSS_exam, false, new { id = "mcas_nurse_assisst_completion_NIHSS_exam_false", @class = "disabled ml-3" })
-            @Html.Label("is-mcas_nurse_assisst_completion_NIHSS_exam-false", "No")
+            @Html.Label("mcas_nurse_assisst_completion_NIHSS_exam_false", "No")
         </div>
     </div>
     <div class="col-12 ml-1">
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">LOC-to include following commands </label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_LOC_following_commands, true, new { id = "mcas_LOC_following_commands_true", @class = "disabled" })
-                @Html.Label("is-mcas_LOC_following_commands-true", "Yes")
+                @Html.Label("mcas_LOC_following_commands_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_LOC_following_commands, false, new { id = "mcas_LOC_following_commands_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_LOC_following_commands-false", "No")
+                @Html.Label("mcas_LOC_following_commands_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">Visual Field-include patient looking at examiner/1 or 2 fingers periphery </label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_visual_field_patient_looking_examiner_periphery, true, new { id = "mcas_visual_field_patient_looking_examiner_periphery_true", @class = "disabled" })
-                @Html.Label("is-mcas_visual_field_patient_looking_examiner_periphery-true", "Yes")
+                @Html.Label("mcas_visual_field_patient_looking_examiner_periphery_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_visual_field_patient_looking_examiner_periphery, false, new { id = "mcas_visual_field_patient_looking_examiner_periphery_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_visual_field_patient_looking_examiner_periphery-false", "No")
+                @Html.Label("mcas_visual_field_patient_looking_examiner_periphery_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">EOM-slow motion, not too close </label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_EOM_slow_motion, true, new { id = "mcas_EOM_slow_motion_true", @class = "disabled" })
-                @Html.Label("is-mcas_EOM_slow_motion-true", "Yes")
+                @Html.Label("mcas_EOM_slow_motion_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_EOM_slow_motion, false, new { id = "mcas_EOM_slow_motion_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_EOM_slow_motion-false", "No")
+                @Html.Label("mcas_EOM_slow_motion_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">Facial Symmetry-show teeth </label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_facial_symmetry, true, new { id = "mcas_facial_symmetry_true", @class = "disabled" })
-                @Html.Label("is-mcas_facial_symmetry-true", "Yes")
+                @Html.Label("mcas_facial_symmetry_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_facial_symmetry, false, new { id = "mcas_facial_symmetry_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_facial_symmetry-false", "No")
+                @Html.Label("mcas_facial_symmetry_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">Motor-drift to include extensor drift </label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_motor_drift_extensor_drift, true, new { id = "mcas_motor_drift_extensor_drift_true", @class = "disabled" })
-                @Html.Label("is-mcas_motor_drift_extensor_drift-true", "Yes")
+                @Html.Label("mcas_motor_drift_extensor_drift_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_motor_drift_extensor_drift, false, new { id = "mcas_motor_drift_extensor_drift_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_motor_drift_extensor_drift-false", "No")
+                @Html.Label("mcas_motor_drift_extensor_drift_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">Motor-drift to include extensor drift </label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_coordination_stretch_finger, true, new { id = "mcas_coordination_stretch_finger_true", @class = "disabled" })
-                @Html.Label("is-mcas_coordination_stretch_finger-true", "Yes")
+                @Html.Label("mcas_coordination_stretch_finger_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_coordination_stretch_finger, false, new { id = "mcas_coordination_stretch_finger_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_coordination_stretch_finger-false", "No")
+                @Html.Label("mcas_coordination_stretch_finger_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
-                <label class="form-check-label">Sensory-use sharp/broken Q tip-not key,pen etc </label>
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
+                <label class="form-check-label">Sensory-use sharp/broken Q tip-not key, pen etc </label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_sensory_broken_Q_tip, true, new { id = "mcas_sensory_broken_Q_tip_true", @class = "disabled" })
-                @Html.Label("is-mcas_sensory_broken_Q_tip-true", "Yes")
+                @Html.Label("mcas_sensory_broken_Q_tip_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_sensory_broken_Q_tip, false, new { id = "mcas_sensory_broken_Q_tip_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_sensory_broken_Q_tip-false", "No")
+                @Html.Label("mcas_sensory_broken_Q_tip_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">Sensory - TAPS on the bare skin </label>
             </div>
-            <div class="col-2">
-                @Html.RadioButtonFor(model => model.mcas_sensory_taps_bare_skin, true, new { id = "mcas_sensory_taps_bare_skin", @class = "disabled" })
-                @Html.Label("is-mcas_sensory_taps_bare_skin-true", "Yes")
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
+                @Html.RadioButtonFor(model => model.mcas_sensory_taps_bare_skin, true, new { id = "mcas_sensory_taps_bare_skin_true", @class = "disabled" })
+                @Html.Label("mcas_sensory_taps_bare_skin_", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_sensory_taps_bare_skin, false, new { id = "mcas_sensory_taps_bare_skin_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_sensory_taps_bare_skin-false", "No")
+                @Html.Label("mcas_sensory_taps_bare_skin_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">Neglect-to be checked with soft touch-unilaterally then bilaterally </label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_neglect_unilaterly_then_bilaterally, true, new { id = "mcas_neglect_unilaterly_then_bilaterally_true", @class = "disabled" })
-                @Html.Label("is-mcas_neglect_unilaterly_then_bilaterally-true", "Yes")
+                @Html.Label("mcas_neglect_unilaterly_then_bilaterally_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_neglect_unilaterly_then_bilaterally, false, new { id = "mcas_neglect_unilaterly_then_bilaterally_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_neglect_unilaterly_then_bilaterally-false", "No")
+                @Html.Label("mcas_neglect_unilaterly_then_bilaterally_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">Neglect-avoid sensory neglect if primary sensation is absent, and jump to visual neglect </label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_neglect_primary_sensation_visual_neglect, true, new { id = "mcas_neglect_primary_sensation_visual_neglect_true", @class = "disabled" })
-                @Html.Label("is-mcas_neglect_primary_sensation_visual_neglect-true", "Yes")
+                @Html.Label("mcas_neglect_primary_sensation_visual_neglect_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_neglect_primary_sensation_visual_neglect, false, new { id = "mcas_neglect_primary_sensation_visual_neglect_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_neglect_primary_sensation_visual_neglect-false", "No")
+                @Html.Label("mcas_neglect_primary_sensation_visual_neglect_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">Neglect-Visual Neglect exam </label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_neglect_visual_neglect_exam, true, new { id = "mcas_neglect_visual_neglect_exam_true", @class = "disabled" })
-                @Html.Label("is-mcas_neglect_visual_neglect_exam-true", "Yes")
+                @Html.Label("mcas_neglect_visual_neglect_exam_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_neglect_visual_neglect_exam, false, new { id = "mcas_neglect_visual_neglect_exam_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_neglect_visual_neglect_exam-false", "No")
+                @Html.Label("mcas_neglect_visual_neglect_exam_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">Language/speech exam-Read sentences, and naming from Stroke Assessment booklet</label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_speech_exam_stroke_assessment_booklet, true, new { id = "mcas_speech_exam_stroke_assessment_booklet_true", @class = "disabled" })
-                @Html.Label("is-mcas_speech_exam_stroke_assessment_booklet-true", "Yes")
+                @Html.Label("mcas_speech_exam_stroke_assessment_booklet_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_speech_exam_stroke_assessment_booklet, false, new { id = "mcas_speech_exam_stroke_assessment_booklet_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_speech_exam_stroke_assessment_booklet-false", "No")
+                @Html.Label("mcas_speech_exam_stroke_assessment_booklet_false", "No")
             </div>
         </div>
         <div class="col-12 row mb-1 ml-1">
-            <div class="col-8">
+            <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
                 <label class="form-check-label">Language exam-Repetition-Words</label>
             </div>
-            <div class="col-2">
+            <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
                 @Html.RadioButtonFor(model => model.mcas_language_exam_repetition_words, true, new { id = "mcas_language_exam_repetition_words_true", @class = "disabled" })
-                @Html.Label("is-mcas_language_exam_repetition_words-true", "Yes")
+                @Html.Label("mcas_language_exam_repetition_words_true", "Yes")
                 @Html.RadioButtonFor(model => model.mcas_language_exam_repetition_words, false, new { id = "mcas_language_exam_repetition_words_false", @class = "disabled ml-3" })
-                @Html.Label("is-mcas_language_exam_repetition_words-false", "No")
+                @Html.Label("mcas_language_exam_repetition_words_false", "No")
             </div>
         </div>
     </div>
     <div class="col-12 row mb-1 ml-1">
-        <div class="col-8 headingMockDill">
-            <label class="form-check-label">Nursing can verbalize process for transfer/disposition of patient if applicables</label>
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12 headingMockDill">
+            <label class="form-check-label">Nursing can verbalize process for transfer/disposition of patient if applicable</label>
         </div>
-        <div class="col-2">
+        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
             @Html.RadioButtonFor(model => model.mcas_nursing_verbalize_transfer_patient, true, new { id = "mcas_nursing_verbalize_transfer_patient_true", @class = "disabled" })
-            @Html.Label("is-mcas_nursing_verbalize_transfer_patient-true", "Yes")
+            @Html.Label("mcas_nursing_verbalize_transfer_patient_true", "Yes")
             @Html.RadioButtonFor(model => model.mcas_nursing_verbalize_transfer_patient, false, new { id = "mcas_nursing_verbalize_transfer_patient_false", @class = "disabled ml-3" })
-            @Html.Label("is-mcas_nursing_verbalize_transfer_patient-false", "No")
+            @Html.Label("mcas_nursing_verbalize_transfer_patient_false", "No")
         </div>
     </div>
     <div class="col-12 row mb-1 ml-1">
-        <div class="col-8 headingMockDill">
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12 headingMockDill">
             <label class="form-check-label">Please note any connectivity issues</label>
         </div>
-        <div class="col-2">
+        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-12 col-12">
             @Html.RadioButtonFor(model => model.mcas_connectivity_issue, true, new { id = "mcas_connectivity_issue_true", @class = "disabled" })
-            @Html.Label("is-mcas_connectivity_issue-true", "Yes")
+            @Html.Label("mcas_connectivity_issue_true", "Yes")
             @Html.RadioButtonFor(model => model.mcas_connectivity_issue, false, new { id = "mcas_connectivity_issue_false", @class = "disabled ml-3" })
-            @Html.Label("is-mcas_connectivity_issue-false", "No")
+            @Html.Label("mcas_connectivity_issue_false", "No")
+        </div>
+    </div>
+
+    <div class="col-12 row mb-1 ml-1">
+        <div class="col-xl-1 col-lg-1 col-md-2 col-sm-12 co-12 headingMockDill">
+            <label class="form-check-label">Comments:</label>
+        </div>
+        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12 pr-0">
+            @Html.TextAreaFor(x => x.mcas_mock_drill_comments, new { @rows = 3, @class = "form-control" })
         </div>
     </div>
 </div>
 
 <style>
     .headingMockDill {
-        font-weight:500;
+        font-weight: 500;
     }
 </style>

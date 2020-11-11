@@ -3599,7 +3599,7 @@ namespace TeleSpecialists.BLL.Service
                     cases = cases.Where(c => model.eAlert.Contains(c.ca.cas_is_ealert));
                 }
                 #endregion
-                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false || c.ca.cas_patient_type != 4);
+                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false && c.ca.cas_patient_type != 4);
                 #endregion
 
                 #region ----- Calculations -----
@@ -4421,8 +4421,8 @@ namespace TeleSpecialists.BLL.Service
                 }
 
                 #endregion
-                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false || c.ca.cas_patient_type != 4);
-
+                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false && c.ca.cas_patient_type != 4);
+                
                 #endregion
                 #region ----- Calculations -----
                 var patientType = PatientType.Inpatient.ToInt();
@@ -4566,14 +4566,7 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(m => model.WorkFlowType.Contains((m.ca.cas_patient_type.HasValue ? m.ca.cas_patient_type.Value : -1)) && m.ca.cas_ctp_key == (int)CaseType.StrokeAlert);
                 }
-                else
-                {
-                    List<int> workflowlist = new List<int>();
-                    workflowlist.Add(1);
-                    workflowlist.Add(3);
-                    model.WorkFlowType = workflowlist;
-                    cases = cases.Where(m => model.WorkFlowType.Contains((m.ca.cas_patient_type.HasValue ? m.ca.cas_patient_type.Value : -1)) && m.ca.cas_ctp_key == (int)CaseType.StrokeAlert);
-                }
+                
                 if (model.CallType != null)
                     cases = cases.Where(m => model.CallType.Contains((m.ca.cas_call_type.HasValue ? m.ca.cas_call_type.Value : -1)) && m.ca.cas_ctp_key == ((int)CaseType.StrokeAlert));
 
@@ -4633,6 +4626,7 @@ namespace TeleSpecialists.BLL.Service
                 }
                 #endregion
                 cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == true || c.ca.cas_patient_type == 4);
+                
                 #endregion
                 #region ----- Calculations -----
                 var patientType = PatientType.Inpatient.ToInt();
@@ -6585,7 +6579,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                     #endregion
                     //cases1 = cases1.Where(m => m.ca.cas_fac_key == Id);
-                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false || c.ca.cas_patient_type != 4);
+                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false && c.ca.cas_patient_type != 4);
                     #endregion
 
                     #region ----- Calculations -----
@@ -7434,7 +7428,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                     #endregion
                     //cases1 = cases1.Where(m => m.ca.cas_fac_key == Id);
-                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false || c.ca.cas_patient_type != 4);
+                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false && c.ca.cas_patient_type != 4);
                     #endregion
 
                     #region ----- Calculations -----
