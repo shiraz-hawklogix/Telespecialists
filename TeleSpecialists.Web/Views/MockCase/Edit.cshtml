@@ -54,12 +54,7 @@
     var disableControlsForPartnerPhysician = 0;
     var disableControlsForPhysician = 0;
     TimeSpan? elapsedTimeSpan = null;
-    //var startTime = Model.mcas_metric_stamp_time_est;
-    //var endTime = Model.mcas_metric_documentation_end_time_est ?? null;
-    //if (startTime.HasValue && endTime.HasValue)
-    //{
-    //    elapsedTimeSpan = endTime.Value - startTime;
-    //}
+
     if (elapsedTimeSpan.HasValue)
     {
         timeSpan = elapsedTimeSpan.FormatTimeSpan();
@@ -114,10 +109,7 @@
     {
         defualtBillingFollowUpDate = Model.mcas_follow_up_date.Value.FormatDate();
     }
-    //else if (Model.mcas_billing_date_of_consult.HasValue)
-    //{
-    //    defualtBillingFollowUpDate = Model.mcas_billing_date_of_consult.Value.AddDays(1).FormatDate();
-    //}
+ 
     else
     {
         defualtBillingFollowUpDate = null;
@@ -165,10 +157,6 @@
 <input type="hidden" name="hide-general" id="disable-physician-controls" value="@disableControlsForPhysician" />
 <input type="hidden" name="hdn-cas-eta" id="hdn-cas-eta" value="@Model.mcas_eta" />
 <input type="hidden" name="hdn-cas-followup_date" id="hdn-default-followup_date" value='@defualtBillingFollowUpDate' />
-@*<input type="hidden" name="hdn-discussed-neurointerventionalist" id="hdn-saved-discussed-neurointerventionalist"
-       value="@Model.mcas_metric_discussed_with_neurointerventionalist" />
-<input type="hidden" name="hdn-cas-is-lastwellknown" id="hdn-cas-is-lastwellknown" value='@Model.mcas_metric_is_lastwell_unknown.ToString()' />*@
-<!-- Add here for copy button, so if the user change the facility on run time then it display the updated time in copy preview -->
 <input type="hidden" id="five9_start_time" value="" />
 
 <div class="alert case-info">
@@ -228,23 +216,14 @@
             </div>
         </div>
 
-        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border p-0">
+        <div class="col-xl-2 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border p-0">
             <div class="col-12">
                 <strong>Facility Time:</strong> <span id="FacilityTime" style="display:none;"> @DateTime.UtcNow.ToTimezoneFromUtc(facilityTimeZone).ToString("HH:mm:ss") </span>
                 <span>@(Functions.GetTimeZoneAbbreviation(facilityTimeZone))</span>
             </div>
-            @*<div class="col-sm-12 d-inline-block">
-                <strong>Arrival Time:</strong>
-                @{
-                    if (caseModel.mcas_metric_door_time_est.HasValue)
-                    {
-                        <span>@(caseModel.mcas_metric_door_time_est.Value.ToString("H:mm:ss")) @(Functions.GetTimeZoneAbbreviation(facilityTimeZone)) @(caseModel.mcas_metric_door_time_est.Value.ToString("MM/dd/yyyy")) </span>
-                    }
-                }
-            </div>*@
         </div>
 
-        <div class="col-xl-2 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border p-0">
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border p-0">
             <div class="col-sm-12">
                 <strong>Physician: </strong>
                 @if (caseModel.PhysicianUser != null)
@@ -264,21 +243,20 @@
         </div>
 
         <!-- New Column-->
-        <div class="col-xl-2 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border" id="case_edit_header_col5">
-            <div class="row">
-
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
+        <div class="col-xl-2 col-lg-12 col-md-12 col-sm-8 col-8 case-header-height case-header-border" id="case_edit_header_col5">
+            <div class="row mt-1">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
                     <input type="button" value="Facility Info" id="popover" class="btn btn-dark btn-sm" />
 
                 </div>
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 text-xl-right">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-xl-right text-left">
                     <a target="@target" rel="noopener noreferrer" href="@emrLink" class="btn btn-dark btn-sm" data-toggle="tooltip" data-placement="top" title="@tooltipTitle">
                         EMR Link <img alt="EMR Icon" style="width:17px;" src="/Content/images/facility_rem_icon.png" class="facility-emr-link" />
                     </a>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
+            <div class="row mt-1">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
                     <a href="javascript:void(0)" data-type="ED Main" class="@(loggedInUser.EnableFive9 ? "edMainLinkClick" : "") btn btn-dark btn-sm">
                         ED Main &nbsp;
                         <span class="fa fa-phone text-white edMainHeaderLink">
@@ -286,7 +264,7 @@
                     </a>
                 </div>
 
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 text-xl-right">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-xl-right text-left">
                     <a href="javascript:void(0)" data-type="CallBack" class="@(loggedInUser.EnableFive9 ? "callLink" : "") btn btn-dark btn-sm" data-number="@Functions.ClearPhoneFormat(Model.mcas_callback)" data-formatted-number="@Model.mcas_callback">
                         Call Back
                         <span class="fa fa-phone text-white  edMainHeaderLink">
@@ -295,8 +273,8 @@
                 </div>
 
             </div>
-            <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
+            <div class="row mt-1">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
                     <a href="javascript:void(0)" data-type="Radiology" class="@(loggedInUser.EnableFive9 ? "edMainLinkClick" : "") btn btn-dark btn-sm">
                         Radiology
                         <span class="fa fa-phone text-white  edMainHeaderLink">
@@ -304,7 +282,7 @@
                     </a>
                 </div>
 
-                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 text-xl-right">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-xl-right text-left">
                     <a href="javascript:void(0)" data-type="Help Desk/ IT" class="@(loggedInUser.EnableFive9 ? "edMainLinkClick" : "") btn btn-dark btn-sm">
                         IT support
                         <span class="fa fa-phone text-white  edMainHeaderLink">
@@ -1839,43 +1817,6 @@
         }
     }
 
-    function disableReviewTabElements() {
-        $(`#metricResponse #cas_response_case_research,
-               #metricResponse #cas_response_case_qps_assessment,
-               #metricResponse #cas_response_case_facility_request_reviewed,
-               #metricResponse #response_case_qps_reviewed,
-               #metricResponse #cas_qps_assigned,
-               #metricResponse #cas_operations_review,
-               #metricResponse #cas_review_facility_communication,
-               #metricResponse #cas_review_internal_notes,
-               #metricResponse #operations_review_completed,
-               #cas_response_date_consult`).disable().attr("readonly");
-
-        $('#divReviewers input').disable().attr("readonly");
-        $('#cas_response_date_consult').kendoDatePicker({
-
-            close: function (e) {
-
-                $("#cas_billing_date_of_consult").val((e.sender.element.val()));
-            }
-        });
-
-        //Enabled RCA Initiate and Countermeasuer(s) button and its related fields
-        $(".rca input").disable().attr("readonly");
-        $("#dynamictable input").disable().attr("readonly");
-        $("#dynamictable textarea").disable().attr("readonly");
-        var currentTab = $("#menuTabs .active").attr("href");
-        if ((currentTab == 'metricResponse' || currentTab == '#metricResponse') && @userFacilityAdmin.ToString().ToLower() != true && @userFacilityPhysician.ToString().ToLower() != true) {
-            $('#btnSave').disable();
-            $('#btnSaveClose').disable();
-            $('#btnExportWord').disable();
-        }
-        else {
-            $('#btnSave').disable();
-            $('#btnSaveClose').disable();
-            $('#btnExportWord').disable();
-        }
-    }
 
    function MedicalStaffReadOnly() {
 

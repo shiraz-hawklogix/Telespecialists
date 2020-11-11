@@ -467,11 +467,12 @@ namespace TeleSpecialists.BLL.Service
             var caseTypelist = from m in _unitOfWork.FacilityPhysicianRepository.Query()
                                join n in GetUclData(UclTypes.State) on m.facility.fac_stt_key equals n.ucd_key into FacilityStates
                                from state in FacilityStates.DefaultIfEmpty()
-                               where
-                                m.fap_is_on_boarded == true
-                               && m.fap_is_active == true
+                               where 
+                               //(m.fap_is_on_boarded == true || m.facility.fac_go_live == true)
+                               //&& 
+                               m.fap_is_active == true
                                && m.fap_start_date != null
-                               && m.fap_end_date != null && m.fap_hide == false && m.facility.fac_go_live
+                               && m.fap_end_date != null && m.fap_hide == false 
                                orderby m.facility.fac_name
                                select new
                                {
