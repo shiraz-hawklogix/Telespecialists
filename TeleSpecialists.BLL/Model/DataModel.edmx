@@ -1481,6 +1481,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="mcas_language_exam_repetition_words" Type="bit" />
           <Property Name="mcas_nursing_verbalize_transfer_patient" Type="bit" />
           <Property Name="mcas_connectivity_issue" Type="bit" />
+          <Property Name="mcas_is_nav_blast" Type="bit" />
+          <Property Name="mcas_mock_drill_comments" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="nih_stroke_scale">
           <Key>
@@ -1904,6 +1906,14 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="rca_proposed_due_date" Type="datetime" />
           <Property Name="rca_rootcause_id" Type="int" />
           <Property Name="rca_completed_date" Type="datetime" />
+        </EntityType>
+        <EntityType Name="telecare_counters">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="counter_text" Type="varchar" MaxLength="100" />
+          <Property Name="counter_value" Type="bigint" />
         </EntityType>
         <EntityType Name="token">
           <Key>
@@ -3003,6 +3013,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="quality_goals" EntityType="Self.quality_goals" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="rapids_mailbox" EntityType="Self.rapids_mailbox" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="rca_counter_measure" EntityType="Self.rca_counter_measure" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="telecare_counters" EntityType="Self.telecare_counters" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="token" EntityType="Self.token" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ucl" EntityType="Self.ucl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ucl_data" EntityType="Self.ucl_data" Schema="dbo" store:Type="Tables" />
@@ -3655,25 +3666,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="token" EntitySet="tokens" />
           </AssociationSet>
-
-          <EntitySet Name="mock_case" EntityType="DataModel.mock_case" />
-          <AssociationSet Name="FK_mock_case_AspNetUsers" Association="DataModel.FK_mock_case_AspNetUsers">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="mock_case" EntitySet="mock_case" />
-          </AssociationSet>
-          <AssociationSet Name="FK_mock_case_AspNetUsers_Navigator" Association="DataModel.FK_mock_case_AspNetUsers_Navigator">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="mock_case" EntitySet="mock_case" />
-          </AssociationSet>
-          <AssociationSet Name="FK_mock_case_AspNetUsers1" Association="DataModel.FK_mock_case_AspNetUsers1">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="mock_case" EntitySet="mock_case" />
-          </AssociationSet>
-          <AssociationSet Name="FK_mock_case_facility" Association="DataModel.FK_mock_case_facility">
-            <End Role="facility" EntitySet="facilities" />
-            <End Role="mock_case" EntitySet="mock_case" />
-          </AssociationSet>
-
           <EntitySet Name="premorbid_correspondnce" EntityType="DataModel.premorbid_correspondnce" />
           <AssociationSet Name="FK_premorbid_correspondnce_case" Association="DataModel.FK_premorbid_correspondnce_case">
             <End Role="case" EntitySet="cases" />
@@ -3693,6 +3685,24 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <Parameter Name="StartDate" Mode="In" Type="DateTime" />
             <Parameter Name="edate" Mode="In" Type="DateTime" />
           </FunctionImport>
+          <EntitySet Name="mock_case" EntityType="DataModel.mock_case" />
+          <AssociationSet Name="FK_mock_case_AspNetUsers" Association="DataModel.FK_mock_case_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_AspNetUsers_Navigator" Association="DataModel.FK_mock_case_AspNetUsers_Navigator">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_AspNetUsers1" Association="DataModel.FK_mock_case_AspNetUsers1">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_facility" Association="DataModel.FK_mock_case_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <EntitySet Name="telecare_counters" EntityType="DataModel.telecare_counters" />
 
           </EntityContainer>
         <EntityType Name="alarm_setting">
@@ -6104,7 +6114,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="AspNetUser" ToRole="mock_case" />
           <NavigationProperty Name="mock_case1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="AspNetUser" ToRole="mock_case" />
           <NavigationProperty Name="mock_case2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="AspNetUser" ToRole="mock_case" />
-        </EntityType>
+          </EntityType>
 
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
@@ -6527,7 +6537,72 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
-
+        <EntityType Name="premorbid_correspondnce">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="pmc_cas_key" Type="Int32" />
+          <Property Name="pmc_cas_premorbid_patient_phone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="pmc_cas_premorbid_datetime_of_contact" Type="DateTime" Precision="3" />
+          <Property Name="pmc_cas_premorbid_spokewith" Type="Int32" />
+          <Property Name="pmc_cas_premorbid_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="pmc_cas_premorbid_successful_or_unsuccessful" Type="Int32" />
+          <Property Name="pmc_cas_premorbid_completedby" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="pmc_cas_patient_satisfaction_video_experience" Type="Int32" />
+          <Property Name="pmc_cas_patient_satisfaction_communication" Type="Int32" />
+          <Property Name="pmc_cas_willing_todo_interview" Type="Int32" />
+          <Property Name="pmc_cas_consent_sent" Type="Int32" />
+          <Property Name="pmc_cas_consent_received" Type="Int32" />
+          <NavigationProperty Name="case" Relationship="DataModel.FK_premorbid_correspondnce_case" FromRole="premorbid_correspondnce" ToRole="case" />
+        </EntityType>
+        <Association Name="FK_premorbid_correspondnce_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="0..1" />
+          <End Type="DataModel.premorbid_correspondnce" Role="premorbid_correspondnce" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="case">
+              <PropertyRef Name="cas_key" />
+            </Principal>
+            <Dependent Role="premorbid_correspondnce">
+              <PropertyRef Name="pmc_cas_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Forcast_Data">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Fac_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Fac_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Month_Name" Type="DateTime" Precision="3" />
+          <Property Name="Month_Prediction" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Created_Date" Type="DateTime" Precision="3" />
+        </EntityType>
+        <ComplexType Name="UspGetAllPhysicion_Result">
+          <Property Type="Int32" Name="fap_key" Nullable="false" />
+          <Property Type="Guid" Name="fap_fac_key" Nullable="false" />
+          <Property Type="String" Name="fap_user_key" Nullable="false" MaxLength="128" />
+          <Property Type="Boolean" Name="fap_is_on_boarded" Nullable="false" />
+          <Property Type="String" Name="Physician_Name" Nullable="false" MaxLength="513" />
+        </ComplexType>
+        <ComplexType Name="UspGetCaseDataForBCI_Result">
+          <Property Type="Guid" Name="cas_fac_key" Nullable="false" />
+          <Property Type="DateTime" Name="cas_metric_video_start_time" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="cas_metric_video_end_time" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="UspGetDailyVolimetircdata_Result">
+          <Property Type="Guid" Name="cas_fac_key" Nullable="false" />
+          <Property Type="DateTime" Name="cas_response_ts_notification" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="UspGetForecastData_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="Fac_Id" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="Fac_Name" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Month_Name" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Month_Prediction" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Created_Date" Nullable="true" Precision="23" />
+        </ComplexType>
         <EntityType Name="mock_case">
           <Key>
             <PropertyRef Name="mcas_key" />
@@ -6637,10 +6712,12 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="mcas_language_exam_repetition_words" Type="Boolean" />
           <Property Name="mcas_nursing_verbalize_transfer_patient" Type="Boolean" />
           <Property Name="mcas_connectivity_issue" Type="Boolean" />
+          <Property Name="mcas_is_nav_blast" Type="Boolean" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="mock_case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="mock_case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="mock_case" ToRole="AspNetUser" />
           <NavigationProperty Name="facility" Relationship="DataModel.FK_mock_case_facility" FromRole="mock_case" ToRole="facility" />
+          <Property Name="mcas_mock_drill_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_mock_case_AspNetUsers">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
@@ -6694,73 +6771,14 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
-
-        <EntityType Name="premorbid_correspondnce">
+        <EntityType Name="telecare_counters">
           <Key>
-            <PropertyRef Name="Id" />
+            <PropertyRef Name="id" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="pmc_cas_key" Type="Int32" />
-          <Property Name="pmc_cas_premorbid_patient_phone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="pmc_cas_premorbid_datetime_of_contact" Type="DateTime" Precision="3" />
-          <Property Name="pmc_cas_premorbid_spokewith" Type="Int32" />
-          <Property Name="pmc_cas_premorbid_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="pmc_cas_premorbid_successful_or_unsuccessful" Type="Int32" />
-          <Property Name="pmc_cas_premorbid_completedby" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="pmc_cas_patient_satisfaction_video_experience" Type="Int32" />
-          <Property Name="pmc_cas_patient_satisfaction_communication" Type="Int32" />
-          <Property Name="pmc_cas_willing_todo_interview" Type="Int32" />
-          <Property Name="pmc_cas_consent_sent" Type="Int32" />
-          <Property Name="pmc_cas_consent_received" Type="Int32" />
-          <NavigationProperty Name="case" Relationship="DataModel.FK_premorbid_correspondnce_case" FromRole="premorbid_correspondnce" ToRole="case" />
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="counter_text" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="counter_value" Type="Int64" />
         </EntityType>
-        <Association Name="FK_premorbid_correspondnce_case">
-          <End Type="DataModel.case" Role="case" Multiplicity="0..1" />
-          <End Type="DataModel.premorbid_correspondnce" Role="premorbid_correspondnce" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="case">
-              <PropertyRef Name="cas_key" />
-            </Principal>
-            <Dependent Role="premorbid_correspondnce">
-              <PropertyRef Name="pmc_cas_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="Forcast_Data">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Fac_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Fac_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Month_Name" Type="DateTime" Precision="3" />
-          <Property Name="Month_Prediction" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Created_Date" Type="DateTime" Precision="3" />
-        </EntityType>
-        <ComplexType Name="UspGetAllPhysicion_Result">
-          <Property Type="Int32" Name="fap_key" Nullable="false" />
-          <Property Type="Guid" Name="fap_fac_key" Nullable="false" />
-          <Property Type="String" Name="fap_user_key" Nullable="false" MaxLength="128" />
-          <Property Type="Boolean" Name="fap_is_on_boarded" Nullable="false" />
-          <Property Type="String" Name="Physician_Name" Nullable="false" MaxLength="513" />
-        </ComplexType>
-        <ComplexType Name="UspGetCaseDataForBCI_Result">
-          <Property Type="Guid" Name="cas_fac_key" Nullable="false" />
-          <Property Type="DateTime" Name="cas_metric_video_start_time" Nullable="true" Precision="23" />
-          <Property Type="DateTime" Name="cas_metric_video_end_time" Nullable="true" Precision="23" />
-        </ComplexType>
-        <ComplexType Name="UspGetDailyVolimetircdata_Result">
-          <Property Type="Guid" Name="cas_fac_key" Nullable="false" />
-          <Property Type="DateTime" Name="cas_response_ts_notification" Nullable="true" Precision="23" />
-        </ComplexType>
-        <ComplexType Name="UspGetForecastData_Result">
-          <Property Type="Int32" Name="Id" Nullable="false" />
-          <Property Type="String" Name="Fac_Id" Nullable="true" MaxLength="100" />
-          <Property Type="String" Name="Fac_Name" Nullable="true" MaxLength="100" />
-          <Property Type="DateTime" Name="Month_Name" Nullable="true" Precision="23" />
-          <Property Type="String" Name="Month_Prediction" Nullable="true" MaxLength="100" />
-          <Property Type="DateTime" Name="Created_Date" Nullable="true" Precision="23" />
-        </ComplexType>
 
         </Schema>
     </edmx:ConceptualModels>
@@ -8816,9 +8834,82 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </EntityTypeMapping>
           </EntitySetMapping>
 
+          <EntitySetMapping Name="premorbid_correspondnce">
+            <EntityTypeMapping TypeName="DataModel.premorbid_correspondnce">
+              <MappingFragment StoreEntitySet="premorbid_correspondnce">
+                <ScalarProperty Name="pmc_cas_consent_received" ColumnName="pmc_cas_consent_received" />
+                <ScalarProperty Name="pmc_cas_consent_sent" ColumnName="pmc_cas_consent_sent" />
+                <ScalarProperty Name="pmc_cas_willing_todo_interview" ColumnName="pmc_cas_willing_todo_interview" />
+                <ScalarProperty Name="pmc_cas_patient_satisfaction_communication" ColumnName="pmc_cas_patient_satisfaction_communication" />
+                <ScalarProperty Name="pmc_cas_patient_satisfaction_video_experience" ColumnName="pmc_cas_patient_satisfaction_video_experience" />
+                <ScalarProperty Name="pmc_cas_premorbid_completedby" ColumnName="pmc_cas_premorbid_completedby" />
+                <ScalarProperty Name="pmc_cas_premorbid_successful_or_unsuccessful" ColumnName="pmc_cas_premorbid_successful_or_unsuccessful" />
+                <ScalarProperty Name="pmc_cas_premorbid_comments" ColumnName="pmc_cas_premorbid_comments" />
+                <ScalarProperty Name="pmc_cas_premorbid_spokewith" ColumnName="pmc_cas_premorbid_spokewith" />
+                <ScalarProperty Name="pmc_cas_premorbid_datetime_of_contact" ColumnName="pmc_cas_premorbid_datetime_of_contact" />
+                <ScalarProperty Name="pmc_cas_premorbid_patient_phone" ColumnName="pmc_cas_premorbid_patient_phone" />
+                <ScalarProperty Name="pmc_cas_key" ColumnName="pmc_cas_key" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Forcast_Data">
+            <EntityTypeMapping TypeName="DataModel.Forcast_Data">
+              <MappingFragment StoreEntitySet="Forcast_Data">
+                <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
+                <ScalarProperty Name="Month_Prediction" ColumnName="Month_Prediction" />
+                <ScalarProperty Name="Month_Name" ColumnName="Month_Name" />
+                <ScalarProperty Name="Fac_Name" ColumnName="Fac_Name" />
+                <ScalarProperty Name="Fac_Id" ColumnName="Fac_Id" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllPhysicion" FunctionName="DataModel.Store.UspGetAllPhysicion">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllPhysicion_Result">
+                <ScalarProperty Name="fap_key" ColumnName="fap_key" />
+                <ScalarProperty Name="fap_fac_key" ColumnName="fap_fac_key" />
+                <ScalarProperty Name="fap_user_key" ColumnName="fap_user_key" />
+                <ScalarProperty Name="fap_is_on_boarded" ColumnName="fap_is_on_boarded" />
+                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetCaseDataForBCI" FunctionName="DataModel.Store.UspGetCaseDataForBCI">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetCaseDataForBCI_Result">
+                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
+                <ScalarProperty Name="cas_metric_video_start_time" ColumnName="cas_metric_video_start_time" />
+                <ScalarProperty Name="cas_metric_video_end_time" ColumnName="cas_metric_video_end_time" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetDailyVolimetircdata" FunctionName="DataModel.Store.UspGetDailyVolimetircdata">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetDailyVolimetircdata_Result">
+                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
+                <ScalarProperty Name="cas_response_ts_notification" ColumnName="cas_response_ts_notification" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetForecastData" FunctionName="DataModel.Store.UspGetForecastData">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetForecastData_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Fac_Id" ColumnName="Fac_Id" />
+                <ScalarProperty Name="Fac_Name" ColumnName="Fac_Name" />
+                <ScalarProperty Name="Month_Name" ColumnName="Month_Name" />
+                <ScalarProperty Name="Month_Prediction" ColumnName="Month_Prediction" />
+                <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
           <EntitySetMapping Name="mock_case">
             <EntityTypeMapping TypeName="DataModel.mock_case">
               <MappingFragment StoreEntitySet="mock_case">
+                <ScalarProperty Name="mcas_mock_drill_comments" ColumnName="mcas_mock_drill_comments" />
+                <ScalarProperty Name="mcas_is_nav_blast" ColumnName="mcas_is_nav_blast" />
                 <ScalarProperty Name="mcas_connectivity_issue" ColumnName="mcas_connectivity_issue" />
                 <ScalarProperty Name="mcas_nursing_verbalize_transfer_patient" ColumnName="mcas_nursing_verbalize_transfer_patient" />
                 <ScalarProperty Name="mcas_language_exam_repetition_words" ColumnName="mcas_language_exam_repetition_words" />
@@ -8927,78 +9018,15 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-
-          <EntitySetMapping Name="premorbid_correspondnce">
-            <EntityTypeMapping TypeName="DataModel.premorbid_correspondnce">
-              <MappingFragment StoreEntitySet="premorbid_correspondnce">
-                <ScalarProperty Name="pmc_cas_consent_received" ColumnName="pmc_cas_consent_received" />
-                <ScalarProperty Name="pmc_cas_consent_sent" ColumnName="pmc_cas_consent_sent" />
-                <ScalarProperty Name="pmc_cas_willing_todo_interview" ColumnName="pmc_cas_willing_todo_interview" />
-                <ScalarProperty Name="pmc_cas_patient_satisfaction_communication" ColumnName="pmc_cas_patient_satisfaction_communication" />
-                <ScalarProperty Name="pmc_cas_patient_satisfaction_video_experience" ColumnName="pmc_cas_patient_satisfaction_video_experience" />
-                <ScalarProperty Name="pmc_cas_premorbid_completedby" ColumnName="pmc_cas_premorbid_completedby" />
-                <ScalarProperty Name="pmc_cas_premorbid_successful_or_unsuccessful" ColumnName="pmc_cas_premorbid_successful_or_unsuccessful" />
-                <ScalarProperty Name="pmc_cas_premorbid_comments" ColumnName="pmc_cas_premorbid_comments" />
-                <ScalarProperty Name="pmc_cas_premorbid_spokewith" ColumnName="pmc_cas_premorbid_spokewith" />
-                <ScalarProperty Name="pmc_cas_premorbid_datetime_of_contact" ColumnName="pmc_cas_premorbid_datetime_of_contact" />
-                <ScalarProperty Name="pmc_cas_premorbid_patient_phone" ColumnName="pmc_cas_premorbid_patient_phone" />
-                <ScalarProperty Name="pmc_cas_key" ColumnName="pmc_cas_key" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
+          <EntitySetMapping Name="telecare_counters">
+            <EntityTypeMapping TypeName="DataModel.telecare_counters">
+              <MappingFragment StoreEntitySet="telecare_counters">
+                <ScalarProperty Name="counter_value" ColumnName="counter_value" />
+                <ScalarProperty Name="counter_text" ColumnName="counter_text" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Forcast_Data">
-            <EntityTypeMapping TypeName="DataModel.Forcast_Data">
-              <MappingFragment StoreEntitySet="Forcast_Data">
-                <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
-                <ScalarProperty Name="Month_Prediction" ColumnName="Month_Prediction" />
-                <ScalarProperty Name="Month_Name" ColumnName="Month_Name" />
-                <ScalarProperty Name="Fac_Name" ColumnName="Fac_Name" />
-                <ScalarProperty Name="Fac_Id" ColumnName="Fac_Id" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="UspGetAllPhysicion" FunctionName="DataModel.Store.UspGetAllPhysicion">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DataModel.UspGetAllPhysicion_Result">
-                <ScalarProperty Name="fap_key" ColumnName="fap_key" />
-                <ScalarProperty Name="fap_fac_key" ColumnName="fap_fac_key" />
-                <ScalarProperty Name="fap_user_key" ColumnName="fap_user_key" />
-                <ScalarProperty Name="fap_is_on_boarded" ColumnName="fap_is_on_boarded" />
-                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="UspGetCaseDataForBCI" FunctionName="DataModel.Store.UspGetCaseDataForBCI">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DataModel.UspGetCaseDataForBCI_Result">
-                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
-                <ScalarProperty Name="cas_metric_video_start_time" ColumnName="cas_metric_video_start_time" />
-                <ScalarProperty Name="cas_metric_video_end_time" ColumnName="cas_metric_video_end_time" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="UspGetDailyVolimetircdata" FunctionName="DataModel.Store.UspGetDailyVolimetircdata">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DataModel.UspGetDailyVolimetircdata_Result">
-                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
-                <ScalarProperty Name="cas_response_ts_notification" ColumnName="cas_response_ts_notification" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="UspGetForecastData" FunctionName="DataModel.Store.UspGetForecastData">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DataModel.UspGetForecastData_Result">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Fac_Id" ColumnName="Fac_Id" />
-                <ScalarProperty Name="Fac_Name" ColumnName="Fac_Name" />
-                <ScalarProperty Name="Month_Name" ColumnName="Month_Name" />
-                <ScalarProperty Name="Month_Prediction" ColumnName="Month_Prediction" />
-                <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
 
           </EntityContainerMapping>
       </Mapping>

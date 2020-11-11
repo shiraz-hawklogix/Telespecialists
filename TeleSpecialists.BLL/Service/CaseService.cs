@@ -791,7 +791,7 @@ namespace TeleSpecialists.BLL.Service
                              m.fap_user_key == phy_key
                              && m.fap_is_on_boarded == false
                               && m.fap_start_date != null
-                              && m.facility.fac_go_live
+                              && (m.facility.fac_go_live || m.facility.fac_is_active)
                               && m.fap_end_date != null
                               && m.fap_is_active == true
                              && m.fap_hide == false

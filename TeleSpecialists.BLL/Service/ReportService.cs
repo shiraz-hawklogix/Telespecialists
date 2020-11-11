@@ -9620,7 +9620,7 @@ namespace TeleSpecialists.BLL.Service
             var cd = new DateTime(current_date.Year, current_date.Month, 1);
             var currentdate = cd.AddMonths(1).AddDays(-1);
             //next month first and last date for forcaste db table data getting
-            var next_date = DateTime.Now.AddMonths(1);
+            var next_date = DateTime.Now;
             var next_month_start_date = new DateTime(next_date.Year, next_date.Month, 1);
             var next_month_end_date = next_month_start_date.AddMonths(1).AddDays(-1);
             //initialize model listing

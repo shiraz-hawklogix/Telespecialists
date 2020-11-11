@@ -24,7 +24,7 @@ namespace TeleSpecialists.BLL.Service.CaseServices
         /// <returns></returns>
         public DataSourceResult GetCaseDashboardPageData(DataSourceRequest request, string physician = "", List<Guid> facilities = null)
         {
-            var list = _unitOfWork.SqlQuery<ViewModels.CasePage.DashboardPage>("Exec usp_case_dashboard " + GetAllSqlParams(request,false, physician, facilities).ToString()).AsQueryable();
+            var list = _unitOfWork.SqlQuery<ViewModels.CasePage.DashboardPage>("Exec usp_case_dashboard_bkp " + GetAllSqlParams(request,false, physician, facilities).ToString()).AsQueryable();
             int Total = list.FirstOrDefault()?.TotalRecords ?? 0;
             if (request.Take == 0)
                 Total = list.Count();

@@ -268,6 +268,9 @@
     <Compile Include="Model\sp_getMenuAccess_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\telecare_counters.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\token.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>

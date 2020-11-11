@@ -601,9 +601,9 @@
                 <div>
                     <select id="mcas_cart_location_key" name="mcas_cart_location_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.mcas_cart_location_key : 0)"></select>
                 </div>
-                <div class="mt-1" id="div_cas_cart_location_text">
+                @*<div class="mt-1" id="div_cas_cart_location_text">
                     @Html.TextAreaFor(m => m.mcas_cart_location_text, new { @class = "form-control" })
-                </div>
+                </div>*@
                 @Html.ValidationMessageFor(m => m.mcas_cart_location_key, "", new { @class = "text-danger" })
             </div>
 

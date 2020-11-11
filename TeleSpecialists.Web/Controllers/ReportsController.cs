@@ -3535,9 +3535,9 @@ namespace TeleSpecialists.Controllers
                 List<string> namesrf = conrt_list.Split('*').ToList();
                 TempData["h1"] = namesrf.ToList();
                 TempData["b1"] = result.ToList();
-                string filePath = Server.MapPath("~/R-Scripting/ForecastingExport");
-                ViewBag.TempFilePath = filePath + ".csv";
-                _reportService.PrepareCastingExport(filePath, result);
+                //string filePath = Server.MapPath("~/R-Scripting/ForecastingExport");
+                //ViewBag.TempFilePath = filePath + ".csv";
+                //_reportService.PrepareCastingExport(filePath, result);
                 return JsonMax(result, JsonRequestBehavior.AllowGet);
 
             }

@@ -976,6 +976,8 @@ EntityTypes.StateAlertTemplate.ToInt()
         } else if (tab == "#premorbid") {
             window.setTimeout(function () {
                 $("#premorbidTabLink").tab("show");
+                $("#premorbidfilds :input").prop("disabled", false);
+                $('#premorbidfilds .k-i-clock').parent().removeAttr("style", "background-color:#e9ecef; pointer-events:none;");
                // validatepremorbidFields(false);
             }, time);
         }
