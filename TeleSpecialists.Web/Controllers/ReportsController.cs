@@ -548,16 +548,17 @@ namespace TeleSpecialists.Controllers
                                         .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
 
 
-            var workflowtype = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
+            ViewBag.WorkflowType = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
                                           Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
-                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
-            var Convertworkflowtype = workflowtype.ToList();
-            Convertworkflowtype.RemoveAt(1);
-            IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
-            ViewBag.WorkflowType = workflowlist;
+                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Where(x => x.Value != "4" && x.Value != "2").ToList();
+            //var Convertworkflowtype = workflowtype.ToList();
+            //Convertworkflowtype.RemoveAt(1);
+            //Convertworkflowtype.RemoveAt(2);
+            //IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
+            //ViewBag.WorkflowType = workflowlist;
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
                                     .Select(m => new
@@ -1144,16 +1145,17 @@ namespace TeleSpecialists.Controllers
                                         .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
 
 
-            var workflowtype = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
+            ViewBag.WorkflowType = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
                                           Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
-                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
-            var Convertworkflowtype = workflowtype.ToList();
-            Convertworkflowtype.RemoveAt(1);
-            IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
-            ViewBag.WorkflowType = workflowlist;
+                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Where(x => x.Value != "4" && x.Value != "2").ToList();
+            //var Convertworkflowtype = workflowtype.ToList();
+            //Convertworkflowtype.RemoveAt(1);
+            //Convertworkflowtype.RemoveAt(2);
+            //IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
+            //ViewBag.WorkflowType = workflowlist;
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
                                     .Select(m => new
@@ -1296,16 +1298,16 @@ namespace TeleSpecialists.Controllers
                                         .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
 
 
-            var workflowtype = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
+            ViewBag.WorkflowType = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
                                           Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
-                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
-            var Convertworkflowtype = workflowtype.ToList();
-            Convertworkflowtype.RemoveAt(1);
-            IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
-            ViewBag.WorkflowType = workflowlist;
+                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Where(x => x.Value == "4").ToList();
+            //var Convertworkflowtype = workflowtype.Where(x=>x.Value == "4").ToList();
+            //Convertworkflowtype.RemoveAt(1);
+            //IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
+            //ViewBag.WorkflowType = workflowlist;
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
                                     .Select(m => new
