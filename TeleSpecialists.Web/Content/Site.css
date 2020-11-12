@@ -762,7 +762,7 @@ ul.navbar-nav {
 ************************************************************************************/
 /* Donot change it without testing, It will effect the appearence of grid*/
 @media only screen and (max-width: 1600px) {
-    #kendoDataGrid, #Credentials-Expiring-container, .facility-grid-container #grid, #contactsGrid, #physicianGrid, #PhysicianPasswordkendoDataGrid, #protocols_grid,
+    #kendoDataGrid, #Credentials-Expiring-container, .facility-grid-container #grid, #contactsGrid, #physicianGrid, #PhysicianPasswordkendoDataGrid, #protocols_grid, #mockCasesGrid,
     #contractsGrid, #notesGrid, #FacilityDashboardGrid, #tPAcaseanalysisGrid, #pitrendsGrid, #casereviewtrendsGrid, #StrokeAlertCasesGrid, #CounterMeasureGrid, #VolumeMetricsGrid, #qualitygoalsGrid, #roles_grid, #users_grid, .kendo-ui-grid-control {
         font-size: 11px;
     }

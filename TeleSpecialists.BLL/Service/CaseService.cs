@@ -83,7 +83,7 @@ namespace TeleSpecialists.BLL.Service
         private readonly AdminService _adminService;
         private readonly UCLService _uclService;
         private readonly PhysicianStatusService _physicianStatusService;
-         static object _caseLocker = new object();
+        static object _caseLocker = new object();
 
         public CaseService() : base()
         {
@@ -791,7 +791,7 @@ namespace TeleSpecialists.BLL.Service
                              m.fap_user_key == phy_key
                              && m.fap_is_on_boarded == false
                               && m.fap_start_date != null
-                              && m.facility.fac_go_live
+                              && (m.facility.fac_go_live || m.facility.fac_is_active)
                               && m.fap_end_date != null
                               && m.fap_is_active == true
                              && m.fap_hide == false
@@ -883,7 +883,7 @@ namespace TeleSpecialists.BLL.Service
                            && x.cas_created_date >= criteriaDate)
                            .OrderByDescending(m => m.cas_key);
         }
-        public void Create(@case entity, bool commit = true )
+        public void Create(@case entity, bool commit = true)
         {
             lock (_caseLocker)
             {
@@ -1136,6 +1136,171 @@ namespace TeleSpecialists.BLL.Service
         public IQueryable<string> GetCart(Guid key)
         {
             return _unitOfWork.FacilityRepository.Query().Where(x => x.fac_key == key).Select(x => x.fac_cart_numbers);
+        }
+        public void EditMorbid(PremorbidCorrespondnce premorbid, int cas_key, bool commit = true)
+        {
+            //if (premorbid.pmc_cas_premorbid_completedby.Count > 0 && premorbid.pmc_cas_premorbid_completedby[0] != "")
+            //{
+                var isExist = _unitOfWork.premorbidRepository.Query().Where(x => x.pmc_cas_key == cas_key).ToList();
+                if (isExist.Count > 0)
+                {
+                    for (var i = 0; i < 3; i++)
+                    {
+                        isExist[i].pmc_cas_premorbid_patient_phone = premorbid.pmc_cas_premorbid_patient_phone;
+                        var checkdate = premorbid.pmc_cas_premorbid_datetime_of_contact[i];
+                        if(checkdate != "")
+                        {
+                            isExist[i].pmc_cas_premorbid_datetime_of_contact = Convert.ToDateTime(checkdate);
+                        }
+                        else
+                        {
+                            isExist[i].pmc_cas_premorbid_datetime_of_contact = null;
+                        }
+                        
+                        isExist[i].pmc_cas_premorbid_spokewith = premorbid.pmc_cas_premorbid_spokewith[i];
+                        isExist[i].pmc_cas_premorbid_comments = premorbid.pmc_cas_premorbid_comments[i];
+                        if (i == 0)
+                        {
+                            isExist[i].pmc_cas_premorbid_successful_or_unsuccessful = premorbid.pmc_cas_premorbid_successful_or_unsuccessful_first;
+                        }
+                        else if (i == 1)
+                        {
+                            isExist[i].pmc_cas_premorbid_successful_or_unsuccessful = premorbid.pmc_cas_premorbid_successful_or_unsuccessful_second;
+                        }
+                        else
+                        {
+                            isExist[i].pmc_cas_premorbid_successful_or_unsuccessful = premorbid.pmc_cas_premorbid_successful_or_unsuccessful_third;
+                        }
+                        isExist[i].pmc_cas_premorbid_completedby = premorbid.pmc_cas_premorbid_completedby[i];
+                        isExist[i].pmc_cas_patient_satisfaction_video_experience = premorbid.pmc_cas_patient_satisfaction_video_experience;
+                        isExist[i].pmc_cas_patient_satisfaction_communication = premorbid.pmc_cas_patient_satisfaction_communication;
+                        isExist[i].pmc_cas_willing_todo_interview = premorbid.pmc_cas_willing_todo_interview;
+                        isExist[i].pmc_cas_consent_sent = premorbid.pmc_cas_consent_sent;
+                        isExist[i].pmc_cas_consent_received = premorbid.pmc_cas_consent_received;
+                    }
+                    _unitOfWork.premorbidRepository.UpdateRange(isExist);
+                    if (commit)
+                    {
+                        _unitOfWork.Save();
+                        _unitOfWork.Commit();
+                    }
+                }
+                else
+                {
+
+                    List<premorbid_correspondnce> entity = new List<premorbid_correspondnce>();
+                    premorbid_correspondnce obj;
+                    for (var i = 0; i < 3; i++)
+                    {
+                        obj = new premorbid_correspondnce();
+                        obj.pmc_cas_key = cas_key;
+                        obj.pmc_cas_premorbid_patient_phone = premorbid.pmc_cas_premorbid_patient_phone;
+                        //obj.pmc_cas_premorbid_datetime_of_contact = Convert.ToDateTime(premorbid.pmc_cas_premorbid_datetime_of_contact[i]);
+                        var checkdate = premorbid.pmc_cas_premorbid_datetime_of_contact[i];
+                        if (checkdate != "")
+                        {
+                            obj.pmc_cas_premorbid_datetime_of_contact = Convert.ToDateTime(checkdate);
+                        }
+                        else
+                        {
+                            obj.pmc_cas_premorbid_datetime_of_contact = null;
+                        }
+                        obj.pmc_cas_premorbid_spokewith = premorbid.pmc_cas_premorbid_spokewith[i];
+                        obj.pmc_cas_premorbid_comments = premorbid.pmc_cas_premorbid_comments[i];
+                        if (i == 0)
+                        {
+                            obj.pmc_cas_premorbid_successful_or_unsuccessful = premorbid.pmc_cas_premorbid_successful_or_unsuccessful_first;
+                        }
+                        else if (i == 1)
+                        {
+                            obj.pmc_cas_premorbid_successful_or_unsuccessful = premorbid.pmc_cas_premorbid_successful_or_unsuccessful_second;
+                        }
+                        else
+                        {
+                            obj.pmc_cas_premorbid_successful_or_unsuccessful = premorbid.pmc_cas_premorbid_successful_or_unsuccessful_third;
+                        }
+                        obj.pmc_cas_premorbid_completedby = premorbid.pmc_cas_premorbid_completedby[i];
+                        obj.pmc_cas_patient_satisfaction_video_experience = premorbid.pmc_cas_patient_satisfaction_video_experience;
+                        obj.pmc_cas_patient_satisfaction_communication = premorbid.pmc_cas_patient_satisfaction_communication;
+                        obj.pmc_cas_willing_todo_interview = premorbid.pmc_cas_willing_todo_interview;
+                        obj.pmc_cas_consent_sent = premorbid.pmc_cas_consent_sent;
+                        obj.pmc_cas_consent_received = premorbid.pmc_cas_consent_received;
+                        entity.Add(obj);
+                    }
+                    if (entity.Count > 0)
+                    {
+                        _unitOfWork.premorbidRepository.InsertRange(entity);
+                    }
+
+
+                }
+                if (commit)
+                {
+                    _unitOfWork.Save();
+                    _unitOfWork.Commit();
+                }
+            //}
+
+        }
+        public PremorbidCorrespondnce GetPremorbidCorrespondnces(int cas_key)
+        {
+
+            PremorbidCorrespondnce obj = new PremorbidCorrespondnce();
+
+            List<string> _listpmc_cas_premorbid_datetime_of_contact = new List<string>();
+            string _objpmc_cas_premorbid_datetime_of_contact;
+
+            List<int?> _listpmc_cas_premorbid_spokewith = new List<int?>();
+            int? _objpmc_cas_premorbid_spokewith;
+
+            List<string> _listpmc_cas_premorbid_comments = new List<string>();
+            string _objpmc_cas_premorbid_comments;
+
+            List<string> _listpmc_cas_premorbid_completedby = new List<string>();
+            string _objpmc_cas_premorbid_completedby;
+
+            var model = _unitOfWork.premorbidRepository.Query().Where(x => x.pmc_cas_key == cas_key).ToList();
+
+
+
+            if (model.Count() > 0)
+            {
+                for (int i = 0; i < model.Count(); i++)
+                {
+
+                    _objpmc_cas_premorbid_datetime_of_contact = "";
+                    _objpmc_cas_premorbid_datetime_of_contact = model[i].pmc_cas_premorbid_datetime_of_contact.ToString();
+                    _listpmc_cas_premorbid_datetime_of_contact.Add(_objpmc_cas_premorbid_datetime_of_contact);
+
+                    _objpmc_cas_premorbid_spokewith = new int();
+                    _objpmc_cas_premorbid_spokewith = model[i].pmc_cas_premorbid_spokewith;
+                    _listpmc_cas_premorbid_spokewith.Add(_objpmc_cas_premorbid_spokewith);
+
+                    _objpmc_cas_premorbid_comments = "";
+                    _objpmc_cas_premorbid_comments = model[i].pmc_cas_premorbid_comments;
+                    _listpmc_cas_premorbid_comments.Add(_objpmc_cas_premorbid_comments);
+
+                    _objpmc_cas_premorbid_completedby = "";
+                    _objpmc_cas_premorbid_completedby = model[i].pmc_cas_premorbid_completedby;
+                    _listpmc_cas_premorbid_completedby.Add(_objpmc_cas_premorbid_completedby);
+
+                }
+                obj = new PremorbidCorrespondnce();
+                obj.pmc_cas_premorbid_patient_phone = model[0].pmc_cas_premorbid_patient_phone;
+                obj.pmc_cas_premorbid_successful_or_unsuccessful_first = model[0].pmc_cas_premorbid_successful_or_unsuccessful;
+                obj.pmc_cas_premorbid_successful_or_unsuccessful_second = model[1].pmc_cas_premorbid_successful_or_unsuccessful;
+                obj.pmc_cas_premorbid_successful_or_unsuccessful_third = model[2].pmc_cas_premorbid_successful_or_unsuccessful;
+                obj.pmc_cas_patient_satisfaction_video_experience = model[0].pmc_cas_patient_satisfaction_video_experience;
+                obj.pmc_cas_patient_satisfaction_communication = model[0].pmc_cas_patient_satisfaction_communication;
+                obj.pmc_cas_willing_todo_interview = model[0].pmc_cas_willing_todo_interview;
+                obj.pmc_cas_consent_sent = model[0].pmc_cas_consent_sent;
+                obj.pmc_cas_consent_received = model[0].pmc_cas_consent_received;
+                obj.pmc_cas_premorbid_datetime_of_contact = _listpmc_cas_premorbid_datetime_of_contact;
+                obj.pmc_cas_premorbid_spokewith = _listpmc_cas_premorbid_spokewith;
+                obj.pmc_cas_premorbid_comments = _listpmc_cas_premorbid_comments;
+                obj.pmc_cas_premorbid_completedby = _listpmc_cas_premorbid_completedby;
+            }
+            return obj;
         }
     }
 }

@@ -23,5 +23,16 @@ namespace TeleSpecialists.BLL.ModelEx
         public Nullable<double> cwh_totalcwh { get; set; }
         public Nullable<double> cwh_month_wise_cwh { get; set; }
         public Nullable<System.DateTime> cwh_date { get; set; }
+        public Nullable<System.DateTime> cas_metric_video_start_time { get; set; }
+        public Nullable<System.DateTime> cas_metric_video_end_time { get; set; } 
     }
+
+    public class BCIViewModel
+    {
+        public Nullable<System.DateTime> cas_metric_video_start_time { get; set; }
+        public Nullable<System.DateTime> cas_metric_video_end_time { get; set; }
+        public System.Guid cas_fac_key { get; set; }
+
+    }
+
 }

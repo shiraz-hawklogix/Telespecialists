@@ -288,9 +288,15 @@ function NHscheduler_view_range(e) {
     var endDate = formateDate(endDatePST);
     var physicians = checkMultiSelctVal($("#comboBox").data("kendoMultiSelect").value());
     $(sch.toolbar).children().remove("#ScheduleExportToExcel");
+    $(sch.toolbar).children().remove("#ScheduleExportToiCal");
 
     var ExportToExcel = $("<a role='button' id='ScheduleExportToExcel' href='/Schedule/ExportNHSchedule?startDate=" + startDate + " &endDate=" + endDate + "&Physicians=" + physicians + "' class='k-button k-excel'><span class='k-icon k-i-file-excel'></span> Export to Excel</a>");
     $(sch.toolbar).prepend(ExportToExcel);
+
+    if ($('#IsPhysician').val() == "1") {
+        var ExportToiCal = $("<button id='ScheduleExportToiCal' onclick='ExportToiCal();' class='k-button k-save'><span class='k-icon k-i-calendar'></span>Export to iCal</button>");
+        $(sch.toolbar).prepend(ExportToiCal);
+    }
 
 }
 function getPhysicians(onlyScheduledPhy) {
@@ -369,4 +375,74 @@ function SplitString(s) {
     var _index = getindex.split(')');
     console.log(arr);
     return parseFloat(_index[0]);
+}
+
+function getRandomString(length) {
+    var randomChars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    var result = '';
+    for (var i = 0; i < length; i++) {
+        result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+    }
+    return result;
+}
+
+function ExportToiCal() {
+    var scheduler = $("#scheduler").data("kendoScheduler");
+    var component = new ICAL.Component(['VCALENDAR', [], []]);
+    component.updatePropertyWithValue('PRODID', '-//Google Inc//Google Calendar 70.9054//EN');
+    component.updatePropertyWithValue('VERSION', '2.0');
+
+    var schedulerEvents = scheduler.dataSource.view().toJSON();
+
+    for (var i = 0; i < schedulerEvents.length; i++) {
+        var schedulerEvent = schedulerEvents[i];
+        var vevent = new ICAL.Component('VEVENT');
+        var event = new ICAL.Event(vevent);
+
+        event.uid = schedulerEvent.recurrenceId ? schedulerEvent.recurrenceId : getRandomString(26);
+        if (schedulerEvent.Title.length == 3) {
+            event.summary = schedulerEvent.title.substring(0, 20);
+        } else {
+            event.summary = schedulerEvent.title.substring(0, 19);
+        }
+
+        event.description = schedulerEvent.fullName;
+        event.startDate = ICAL.Time.fromDateTimeString(getISOString(schedulerEvent.start, true));
+        event.endDate = ICAL.Time.fromDateTimeString(getISOString(schedulerEvent.end, true));
+
+        if (schedulerEvent.recurrenceRule) {
+            event.component.addProperty(
+                new ICAL.Property(ICAL.parse.property("RRULE:" + schedulerEvent.recurrenceRule)));
+        }
+
+        if (schedulerEvent.recurrenceException) {
+            event.component.addProperty(
+                new ICAL.Property(ICAL.parse.property("EXDATE:" + schedulerEvent.recurrenceException)));
+        }
+
+        if (schedulerEvent.Id) {
+            event.recurrenceId = ICAL.Time.fromDateTimeString(getISOString(schedulerEvent.start, true));
+        }
+
+        event.component.addPropertyWithValue("DTSTAMP",
+            ICAL.Time.fromDateTimeString(getISOString(new Date(), true)));
+
+        component.addSubcomponent(vevent);
+    }
+
+    console.log(component.toString());
+
+    kendo.saveAs({
+        dataURI: "data:text/calendar," + component.toString(),
+        fileName: "ScheduleiCal_" + getISOString(new Date(), true).replace(/[_\W]+/g, "") + ".ics"
+    });
+}
+
+function getISOString(date, toUTC) {
+    date = toUTC ? kendo.timezone.convert(date, date.getTimezoneOffset(), "Etc/UTC") : date;
+    return kendo.toString(date, "yyyy-MM-ddTHH:mm:ssZ");
+}
+
+function getTimeZone(timezone) {
+    return timezone.toLowerCase() === "z" ? null : timezone;
 }

@@ -265,6 +265,7 @@
                     formatPhysicianInitials("#kendoDataGrid", 14);
 
                     applyColors();
+                    //PhysiciansColor();
                     if (refillFilters.applyFilters != 0) {
                         refillFilters();
                     }
@@ -315,7 +316,7 @@
                     { field: "cas_patient", title: "Patient Name", width: '135px' },
                     {
                         field: "phy_name", title: "Physician", width: '100px',
-                        attributes: { "class": "dash-case-grid-physician wrapWord" },
+                        attributes: { "class": "dash-case-grid-physician wrapWord " },
                         hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) ? "true" : "false"),
                     },
                     { field: "ResponseTime", title: "TS Response Time", width: '150px', attributes: { "class": "case-grid-response-time" } },
@@ -324,7 +325,10 @@
                     { field: "TPACandidate", title: "tPA", width: '50px' },
                     { field: "Navigator", title: "Navigator", width: '120px', hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "true" : "false"), },
                     { field: "StartToStamp", title: "Start to Stamp", width: '135px' },
-                    { field: "StartToAccept", title: "Start to Accepted", width: '135px' }                    
+                    { field: "StartToAccept", title: "Start to Accepted", width: '135px' },   
+                    { field: "UserInitial", hidden: true },
+                    { field: "psl_status_color", hidden: true },
+                    { field: "psl_status_name", hidden: true },
                 ]
             });
 
@@ -776,7 +780,31 @@
                     }
                 }
                 
-
+                var userinitial = row.find("td:nth-child(22)").text();
+                var usercolor = row.find("td:nth-child(23)").text();
+                var userstatus = row.find("td:nth-child(24)").text();
+                if (userinitial != "" && usercolor != "" && userstatus != "") {
+                    var userinitials = userinitial.split('/');
+                    var usercolors = usercolor.split('/');
+                    var userstatuss = userstatus.split('/');
+                    var data = "<div class='physicianstatusdiv'>";
+                    for (var i = 0; i < userinitials.length; i++) {
+                        if (userstatuss[i] == undefined)
+                        {
+                            userstatuss[i] = "Waiting to Accept";
+                        }
+                        if (usercolors[i] == undefined)
+                        {
+                            usercolors[i] = "Black";
+                        }
+                        data += "<span title='" + userstatuss[i] + "' style='color: " + usercolors[i] + ";font-weight:bold;'>" + userinitials[i] + "</span>/";
+                    }
+                    var html = data.substring(0, data.length - 1);
+                    html += "</div>";
+                    //row.find('.dash-case-grid-physician .physicianstatusdiv').empty();
+                    row.find('.dash-case-grid-physician').empty();
+                    row.children('.dash-case-grid-physician').append(html);
+                }
                 
                 //////////////////////////////////////////////////////////////
 
@@ -786,6 +814,34 @@
                 window.clearTimeout(applyColors.To);
 
             applyColors.To = window.setTimeout(applyColors, 2000);
+        }
+
+        function PhysiciansColor() {
+            $("#kendoDataGrid tr").each(function (index, element) {
+                debugger
+                var row = $(element);
+                var cas_key = parseInt(row.find("td:nth-child(1)").text());
+                var physician = row.find(".dash-case-grid-physician").text();
+                //var count = 0;
+                
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("PhysicianColors", "Reports")',
+                    dataType: 'json',
+                    data: { cas_key: cas_key, physician: physician },
+                    error: function (error) {
+
+                    },
+                    success: function (data) {
+                        debugger
+                        row.find('.dash-case-grid-physician .physicianstatusdiv').empty();
+                        row.children('.dash-case-grid-physician').append(data);
+                        //row.children("td:nth-child(14)").append(data);
+                        //count++;
+                    }
+
+                });
+            });
         }
 
         function refreshData() {

@@ -776,7 +776,7 @@ new SelectListItem {Text = "20", Value = "20"},
                     @Html.Partial("_ems")
                 </div>
             }
-            else if (Model.cas_patient_type == 2)
+            else if (Model.cas_patient_type == 2 || Model.cas_patient_type == 4)
             {
                 <div class="form-group row rca">
                     @Html.Partial("_inpatient")
@@ -1022,40 +1022,61 @@ new SelectListItem {Text = "20", Value = "20"},
                     </div>
                 </div>
             }
-            else if (workflowtype == "Inpatient")
+            else if (workflowtype == "Inpatient" || workflowtype == "Symptom Onset During ED Stay")
             {
 
                 #region Inpatient Diagram
+                var lastknownweltime = workflowtype == "Inpatient" ? Model.cas_metric_lastwell_date_est ?? null : Model.cas_metric_symptom_onset_during_ed_stay_time_est ?? null;
 
-                var _lastknownwelltime = Convert.ToDateTime(Model.cas_metric_lastwell_date_est).FormatTime();
-                double _knownweltimetostarttime = 0;
-                if (lastknownwel_time.HasValue && start_time.HasValue)
+                string labeldiagram = "";
+                string labeldiagramstime = "";
+                var _lastknownwelltime = "";
+                string workflowlabel = workflowtype;
+                if (workflowtype == "Inpatient")
                 {
-                    _knownweltimetostarttime = start_time.Value.Subtract(lastknownwel_time.Value).TotalMinutes;
+                    labeldiagramstime = "LKW-Time";
+                    labeldiagram = "LTN";
+                    _lastknownwelltime = Convert.ToDateTime(Model.cas_metric_lastwell_date_est).FormatTime();
+
+                }
+                else
+                {
+                    workflowlabel = "ED Onset";
+                    labeldiagramstime = "STN-Time";
+                    labeldiagram = "STN";
+                    _lastknownwelltime = Convert.ToDateTime(Model.cas_metric_symptom_onset_during_ed_stay_time_est).FormatTime();
+                }
+
+
+
+                double _knownweltimetostarttime = 0;
+                if (lastknownweltime.HasValue && start_time.HasValue)
+                {
+                    _knownweltimetostarttime = start_time.Value.Subtract(lastknownweltime.Value).TotalMinutes;
                 }
                 int knownweltimetostarttime = Convert.ToInt32(_knownweltimetostarttime);
                 double _knownweltimetologintime = 0;
-                if (lastknownwel_time.HasValue && login_time.HasValue)
+                if (lastknownweltime.HasValue && login_time.HasValue)
                 {
-                    _knownweltimetologintime = login_time.Value.Subtract(lastknownwel_time.Value).TotalMinutes;
+                    _knownweltimetologintime = login_time.Value.Subtract(lastknownweltime.Value).TotalMinutes;
                 }
                 int knownweltimetologintime = Convert.ToInt32(_knownweltimetologintime);
                 double _knownweltimetonihss = 0;
-                if (lastknownwel_time.HasValue && nihssstarttime.HasValue)
+                if (lastknownweltime.HasValue && nihssstarttime.HasValue)
                 {
-                    _knownweltimetonihss = nihssstarttime.Value.Subtract(lastknownwel_time.Value).TotalMinutes;
+                    _knownweltimetonihss = nihssstarttime.Value.Subtract(lastknownweltime.Value).TotalMinutes;
                 }
                 int knownweltimetonihss = Convert.ToInt32(_knownweltimetonihss);
                 double _knownweltimetotpaverbal = 0;
-                if (tpaverbaltime.HasValue && lastknownwel_time.HasValue)
+                if (tpaverbaltime.HasValue && lastknownweltime.HasValue)
                 {
-                    _knownweltimetotpaverbal = tpaverbaltime.Value.Subtract(lastknownwel_time.Value).TotalMinutes;
+                    _knownweltimetotpaverbal = tpaverbaltime.Value.Subtract(lastknownweltime.Value).TotalMinutes;
                 }
                 int knownweltimetotpaverbal = Convert.ToInt32(_knownweltimetotpaverbal);
                 double _knownweltimetoneedle = 0;
-                if (needle.HasValue && lastknownwel_time.HasValue)
+                if (needle.HasValue && lastknownweltime.HasValue)
                 {
-                    _knownweltimetoneedle = needle.Value.Subtract(lastknownwel_time.Value).TotalMinutes;
+                    _knownweltimetoneedle = needle.Value.Subtract(lastknownweltime.Value).TotalMinutes;
                 }
                 int knownweltimetoneedle = Convert.ToInt32(_knownweltimetoneedle);
                 #endregion
@@ -1082,7 +1103,7 @@ new SelectListItem {Text = "20", Value = "20"},
                                 <div class="graph-items__circle_item" style="background:@greens;">
                                     <ul><li style="line-height:100px;">0</li></ul>
                                     <!--Square outside arrow above/belore circle connecting to circle line-->
-                                    <div class="graph-items__circle_item-square text-center">@_lastknownwelltime LKW-Time @workflowtype</div>
+                                    <div class="graph-items__circle_item-square text-center">@_lastknownwelltime @labeldiagramstime @workflowlabel</div>
                                 </div>
                                 @if (knownweltimetostarttime < 0)
                                 {
@@ -1215,20 +1236,20 @@ new SelectListItem {Text = "20", Value = "20"},
                                 @if (knownweltimetoneedle <= 30)
                                 {
                                     <div class="graph-items__circle_item text-center" id="restart" style="background:@greens; border-radius:0;line-height:100px;">
-                                        LTN:@knownweltimetoneedle
+                                        @labeldiagram:@knownweltimetoneedle
                                     </div>
                                 }
                                 else if (knownweltimetoneedle > 30 && knownweltimetoneedle <= 45)
                                 {
 
                                     <div class="graph-items__circle_item text-center" id="restart" style="background:@yellows; border-radius:0;line-height:100px;">
-                                        LTN:@knownweltimetoneedle
+                                        @labeldiagram:@knownweltimetoneedle
                                     </div>
                                 }
                                 else if (knownweltimetoneedle > 45)
                                 {
                                     <div class="graph-items__circle_item text-center" id="restart" style="background:@reds; border-radius:0;line-height:100px;">
-                                        LTN:@knownweltimetoneedle
+                                        @labeldiagram:@knownweltimetoneedle
                                     </div>
                                 }
                                 <!--Circle Repeater ends here-->
@@ -1282,27 +1303,44 @@ new SelectListItem {Text = "20", Value = "20"},
                 }
             }
         });
-
+        
+        var valuebefore = $("#work-flow-ids").val();
         var arrayofrca = [];
+        if (valuebefore != "") {
+            arrayofrca = valuebefore.split(',');
+        }
+        
         if (@isarival== true) {
             $('.gotVal_rad').prop('checked', true);
-            arrayofrca.push($('.gotVal_rad').val());
+            var value = $('.gotVal_rad').val();
+            if ($.inArray(value, arrayofrca) == -1) {
+                arrayofrca.push(value);
+            }
             $('.childarivaldelay').show(200);
             $('.hideShowUl').show(200);
         }
         if (@isnihss== true) {
             $('.timeFirst').prop('checked', true);
-            arrayofrca.push($('.timeFirst').val());
+            var value = $('.timeFirst').val();
+            if ($.inArray(value, arrayofrca) == -1) {
+                arrayofrca.push(value);
+            }
             $('.childtimefirst').show(200);
         }
         if (@isvideostart== true) {
             $('.videostart').prop('checked', true);
-            arrayofrca.push($('.videostart').val());
+            var value = $('.videostart').val();
+            if ($.inArray(value, arrayofrca) == -1) {
+                arrayofrca.push(value);
+            }
             $('.childVideoStrt').show(200);
         }
         if (@isneedle== true) {
             $('.needleTime').prop('checked', true);
-            arrayofrca.push($('.needleTime').val());
+            var value = $('.needleTime').val();
+            if ($.inArray(value, arrayofrca) == -1) {
+                arrayofrca.push(value);
+            }
             $('.childarrivalneedle').show(200);
             if ($("#8").is(':checked')) {
                 $('.childmedicaldecisionmaking').show(200);
@@ -1315,7 +1353,7 @@ new SelectListItem {Text = "20", Value = "20"},
                 $('.childrelatedlab').hide(200);
             }
         }
-        $("#work-flow-ids").val(arrayofrca.toString());
+            $("#work-flow-ids").val(arrayofrca.toString());
     });
     $("#operations_review_completed").click(function () {
         if ($(this).is(":checked")) {
@@ -1456,7 +1494,6 @@ new SelectListItem {Text = "20", Value = "20"},
                     $.each(data, function (key, value) {
                         ArrFinal.push({ Id: value.rca_rootcause_id, RootCause: value.rca_root_cause, ProposedCountermeasure: value.rca_proposed_countermeasure, ResponsibleParty: value.rca_responsible_party, ProposedDueDate: value.rca_proposed_due_date, CompletedDate: value.rca_completed_date, RootId: value.rca_Id })
                     });
-                    debugger;
                     DisplayTable(ArrFinal);
                     DisableCounterForPhyAndPatner();
                 },

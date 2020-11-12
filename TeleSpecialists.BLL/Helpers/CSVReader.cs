@@ -8,7 +8,7 @@ using System.Text;
 
 namespace TeleSpecialists.BLL.Helpers
 {
-    
+
 
 
     public class CSVReader
@@ -58,8 +58,6 @@ namespace TeleSpecialists.BLL.Helpers
             string line = "";
             DataTable tbl = new DataTable();
             int count = 0;
-            int headerCCount = 0;
-            int headerColumnCount = 0;
             using (StreamReader streamReader = new StreamReader(fileStream))
             {
                 while (true)
@@ -69,21 +67,12 @@ namespace TeleSpecialists.BLL.Helpers
                     if (count == 0)
                     {
                         tbl = CreateDataTable(columns);
-                        headerCCount = columns.Count();
                     }
                     else
                     {
-                        //added by Bilal
-                        if (headerCCount > columns.Count())
-                        {
-                            headerColumnCount = columns.Count();
-                        }
-                        else
-                        {
-                            headerColumnCount = headerCCount;
-                        }
+
                         DataRow row = tbl.NewRow();
-                        for (int i = 0; i < headerColumnCount; i++)
+                        for (int i = 0; i < columns.Count(); i++)
                         {
                             row[i] = columns[i];
                         }

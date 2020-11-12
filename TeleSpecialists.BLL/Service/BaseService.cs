@@ -90,6 +90,27 @@ namespace TeleSpecialists.BLL.Service
             return query;
         }
 
+        public IQueryable<AspNetUser> GetMockPhysicians(string FilterRoleNames = "")
+        {
+            if (string.IsNullOrEmpty(FilterRoleNames))
+            {
+                FilterRoleNames = UserRoles.MockPhysician.ToDescription().ToLower();
+            }
+            var roles = FilterRoleNames.ToLower().Split(',').ToArray();
+
+            var physicianRoleIds = _unitOfWork.ApplicationRoles
+                                            .Where(m => roles.Contains(m.Name.ToLower()))
+                                            .Select(m => m.Id);
+
+            var query = (from m in _unitOfWork.UserRepository.Query()
+                         join role in _unitOfWork.UserRoleRepository.Query() on m.Id equals role.UserId
+                         where physicianRoleIds.Contains(role.RoleId)
+                         select m).Include(k => k.physician_status);
+
+
+            return query;
+        }
+
         #region Husnain Code Block
         public IQueryable<AspNetUser> GetPacPhysicians(string FilterRoleNames = "")
         {

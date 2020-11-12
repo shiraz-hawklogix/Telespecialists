@@ -1,0 +1,992 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.Models;
+@model TeleSpecialists.BLL.Model.mock_case
+@{
+    var isEdit = false;
+    var loggedInUser = ViewBag.loggedInUser as ApplicationUser;
+    var IsNavigator = User.IsInRole("Navigator");
+    bool isETAInMinutes = true;
+
+    string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+    if (Model.facility != null)
+    {
+        if (!string.IsNullOrEmpty(Model.facility.fac_timezone))
+        {
+            facilityTimeZone = Model.facility.fac_timezone;
+        }
+    }
+    //Getting timezone abbrivation
+    var timeZone = Functions.GetTimeZoneAbbreviation(facilityTimeZone);
+
+    if (Model != null && Model.mcas_key > 0)
+    {
+        isEdit = true;
+        if (!string.IsNullOrEmpty(Model.mcas_eta))
+        {
+            isETAInMinutes = Model.mcas_eta.All(char.IsNumber);
+        }
+
+    }
+
+    var callbackdate = "false";
+    var callbackred = "";
+    DateTime callbackcheckdate = Convert.ToDateTime("09/22/2020");
+    DateTime createddate = Convert.ToDateTime("1/1/0001");
+    if (Model != null && Model.mcas_key > 0)
+    {
+        if (Model.mcas_created_date > callbackcheckdate)
+        {
+            callbackdate = "true";
+            callbackred = "text-danger";
+        }
+    }
+    else if (Model != null)
+    {
+        if (Model.mcas_created_date == createddate)
+        {
+            callbackdate = "true";
+            callbackred = "text-danger";
+        }
+
+    }
+    var callTypes = Enum.GetValues(typeof(CallType)).Cast<CallType>()
+.Select(m => new
+{
+    Key = Convert.ToInt32(m).ToString(),
+    Value = m.ToDescription(),
+}).OrderBy(m => m.Value).ToDictionary(m => m.Key, m => m.Value);
+
+    List<string> GetFacilityCart = new List<string>();
+    if (Model.facility != null)
+    {
+        if (!string.IsNullOrWhiteSpace(Model.mcas_cart))
+        {
+            if (!string.IsNullOrWhiteSpace(Model.facility.fac_cart_numbers))
+            {
+                GetFacilityCart = Model.facility.fac_cart_numbers.Split('#').ToList();
+                GetFacilityCart.Add(Model.mcas_cart);
+            }
+            else
+            {
+                GetFacilityCart.Add(Model.mcas_cart);
+            }
+
+        }
+        else if (!string.IsNullOrWhiteSpace(Model.facility.fac_cart_numbers))
+        {
+            GetFacilityCart = Model.facility.fac_cart_numbers.Split('#').ToList();
+        }
+    }
+
+
+}
+
+@Html.AntiForgeryToken()
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+<input type="hidden" name="mRedirectPage" id="mRedirectPage" value="1" />
+
+<input type="hidden" name="mSelectedVal" id="mSelectedVal" value="">
+<input type="hidden" name="mhdnSaveAndSend" id="mhdnSaveAndSend" value="" />
+
+@Html.HiddenFor(m => m.mcas_key)
+@Html.HiddenFor(m => m.mcas_associate_id)
+@Html.HiddenFor(m => m.mcas_status_assign_date)
+@Html.HiddenFor(m => m.mcas_created_by)
+@Html.HiddenFor(m => m.mcas_created_by_name)
+@Html.HiddenFor(m => m.mcas_created_date)
+@Html.HiddenFor(m => m.mcas_case_number)
+@Html.HiddenFor(m => m.mcas_ani)
+@Html.HiddenFor(m => m.mcas_dnis)
+@Html.HiddenFor(m => m.mcas_time_stamp)
+@Html.HiddenFor(m => m.mcas_call_id)
+@Html.HiddenFor(m => m.mcas_physician_assign_date)
+@Html.HiddenFor(m => m.mcas_batch_id)
+@Html.HiddenFor(m => m.mcas_is_flagged)
+@Html.HiddenFor(m => m.mcas_caller_source_key_title)
+
+
+<div class="row general-tab">
+    <div class="col-xl-4 col-lg-4 col-md-12 left-panel">
+        <div class="form-group row">
+            <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4 text-danger">Case Type: </label>
+            <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
+
+                @{
+                    string caseTypedisabled = null;
+                    string readOnlyClass = null;
+                    if (isEdit)
+                    {
+
+                        var caseType = Model.mcas_ctp_key;
+                        if (caseType == CaseType.StatConsult.ToInt() || caseType == CaseType.StatEEG.ToInt() || caseType == CaseType.StrokeAlert.ToInt())
+                        {
+                            var isAdmin = User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription());
+
+                            if (!isAdmin)
+                            {
+                                caseTypedisabled = "readOnly";
+                                readOnlyClass = "readonly-color";
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                <select @caseTypedisabled id="mcas_ctp_key" name="mcas_ctp_key" class="form-control addValidation @readOnlyClass" data-selectedValue="@(Model != null ? Model.mcas_ctp_key : 0)" required></select>
+
+
+                <div class="error_msg" id="mcas_ctp_key_error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @*@Html.ValidationMessageFor(model => model.mcas_ctp_key, "", new { @class = "text-danger" })*@
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-md-4 col-xl-4 col-lg-12 col-sm-4 col-xs-6 text-danger">
+                Facility:  @*@if (isEdit)
+
+                    {
+                        <span id="popover-container-facility" class="pull-right">
+                            <span id="popover-facility" style="cursor:pointer;" data-toggle="popover" title="Facility Info">
+                                <span class="facility-tooltip text-body mt-1"></span>
+                            </span>
+
+
+                            @{
+                                var emrLink = "#";
+                                var target = "";
+                                var tooltipTitle = "No EMR link available";
+                                if (Model.facility != null)
+                                {
+                                    if (!string.IsNullOrEmpty(Model.facility.fac_emr))
+                                    {
+                                        emrLink = Model.facility.fac_emr;
+
+                                        if (!emrLink.StartsWith("http://") && !emrLink.StartsWith("https://"))
+                                        {
+                                            emrLink = "http://" + emrLink;
+                                        }
+
+                                        target = "_blank";
+                                        tooltipTitle = null;
+                                    }
+                                }
+                            }
+                            <a target="@target" href="@emrLink" data-toggle="tooltip" data-placement="top" title="@tooltipTitle">
+                                <img alt="EMR Icon" src="/Content/images/facility_rem_icon.png" class="facility-emr-link" />
+                            </a>
+                            <a class="fa fa-phone text-body ml-1 mr-1 mt-1 edMainLink @(loggedInUser.EnableFive9 ? "edMainLinkClick" : "")" href="javascript:void(0)" data-type="ED Main">
+                            </a>
+                        </span>
+                    }*@
+
+            </label>
+            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                <select id="mcas_fac_key" name="mcas_fac_key" class="form-control addValidation" data-searchFilter="true" data-selectedValue="@(Model != null ? Model.mcas_fac_key : Guid.Empty)" required></select>
+                <div class="error_msg" id="mcas_fac_key_error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(model => model.mcas_fac_key, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row hidewitheegs ">
+            <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4 requiredWithCaseType text-danger">Cart: </label>
+            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+
+                <select id="mcasecart" name="mcasecart" class="form-control addValidation" required>
+
+                    <option value="">-- Select --</option>
+                    @if (GetFacilityCart.Count > 0)
+                    {
+                        foreach (var item in GetFacilityCart)
+                        {
+                            var selected = false;
+                            if (!string.IsNullOrWhiteSpace(Model.mcas_cart))
+                            {
+                                if (item == Model.mcas_cart)
+                                {
+                                    selected = true;
+                                }
+                            }
+                            <option value="@item" selected="@selected">@item</option>
+                        }
+                    }
+                    <option value="other">Other</option>
+                </select>
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessage("mcasecart", "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row hidewitheegs" style="display:none;" id="mothercart">
+            <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4 requiredWithCaseType text-danger">Other Cart: </label>
+            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                @Html.TextBoxFor(m => m.mcas_cart, new { @class = "form-control", @required = true })
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(m => m.mcas_cart, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row  @(User.IsInRole(UserRoles.Physician.ToDescription())?"d-none" :"")">
+            <label class="control-label col-xl-4 col-lg-5 col-md-2 col-sm-2 col-xs-5 text-danger">Assigned Physician: </label>
+            <div class="col-xl-8 col-lg-12 col-md-8 col-sm-8 col-xs-12">
+                @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+                {
+                    <input type="hidden" value="@loggedInUser.Id" name="mcas_phy_key" />
+                }
+                else
+                {
+                    if (Model.mcas_cst_key == 20)
+                    {
+                        <select id="mcas_phy_key" name="mcas_phy_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.mcas_phy_key : "0")"></select>
+                        <input type="hidden" name="mcas_phy_key" value="@(Model != null ? Model.mcas_phy_key : "0")" />
+                    }
+                    else
+                    {
+                        <select id="mcas_phy_key" name="mcas_phy_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.mcas_phy_key : "0")"></select>
+                        <input type="hidden" name="mcas_phy_key" value="@(Model != null ? Model.mcas_phy_key : "0")" />
+                    }
+                }
+
+                <div class="error_msg" id="mcas_phy_key_error" style="display:none">
+                    <label>This field is required</label>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="form-group row">
+            <label class="control-label @(User.IsInRole(UserRoles.Physician.ToDescription()) ? "col-xl-4 col-lg-12 col-md-2 col-sm-2": "col-xl-4 col-lg-12 col-md-4 col-sm-4")">Status: </label>
+            <div class="col-xl-8 col-lg-12 col-md-8 col-sm-8 col-xs-12">
+
+                @{
+                    string caseStatusDisabled = null;
+                    readOnlyClass = null;
+                    if (User.IsInRole(UserRoles.Navigator.ToDescription()))
+                    {
+                        var caseStatus = Model.mcas_cst_key;
+
+                        if (caseStatus == CaseStatus.Cancelled.ToInt())
+                        {
+                            caseStatusDisabled = "readOnly";
+                            readOnlyClass = "readonly-color";
+                        }
+                    }
+                }
+
+                @if (Model.mcas_cst_key == CaseStatus.Complete.ToInt() && User.IsInRole(UserRoles.Navigator.ToDescription()))
+                {
+                    <label style="color: #a1a1a1;" id="case-complete-label">Complete </label>
+                    <input type="hidden" value="@CaseStatus.Complete.ToInt()" name="mcas_cst_key" id="mcas_cst_key" />
+                }
+                else if (!isEdit && (User.IsInRole(UserRoles.PartnerPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription())))
+                {
+                    <select @caseStatusDisabled id="mcas_cst_key" name="mcas_cst_key" class="form-control addValidation @readOnlyClass" data-selectedValue="@(CaseStatus.Accepted.ToInt())" required></select>
+                    @Html.ValidationMessageFor(model => model.mcas_cst_key, "", new { @class = "text-danger", id = "case_status_key_val" })
+                }
+                else
+                {
+                    <select @caseStatusDisabled id="mcas_cst_key" name="mcas_cst_key" class="form-control addValidation @readOnlyClass" data-selectedValue="@(Model != null ? Model.mcas_cst_key : 0)" required></select>
+                    @Html.ValidationMessageFor(model => model.mcas_cst_key, "", new { @class = "text-danger", id = "case_status_key_val" })
+                }
+
+
+                @if (!User.IsInRole(UserRoles.Physician.ToDescription()))
+                {
+                    <div class="text-right mt-1">
+                        @*<input type="button" class="btn btn-danger" value="Save & Send" id="btnSaveSend" disabled />*@
+                    </div>
+                }
+
+                @*@if (showPhyOfflinePopup)
+
+                {
+                    <div class="error_msg text-right" id="cas_phy_key_offline_error">
+                        <label>
+                            Physician is offline
+                        </label>
+                    </div>
+                }*@
+
+
+
+            </div>
+        </div>
+
+        @*<div class="form-group row">
+
+            <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">Performance: </label>
+            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                @if (!string.IsNullOrEmpty(startToStampTimeVal) && isEdit)
+                {
+                    <div class="row general-performance-container">
+                        <div class="col-12 forth-col">
+                            <div class=" col-12 row">
+                                <span id="startToTimer">
+                                    <strong>Start to Stamp Time: </strong>
+                                    <span id="custom">@startToStampTimeVal</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (Model.cas_time_stamp.HasValue)
+                {
+                    <div class="row  d-none performance-container">
+                        <div class="col-12 forth-col">
+                            <div class=" col-12 row">
+                                <span id="startTimer" class=" text-danger" style="display:none">
+                                    <strong>Start Time: </strong>
+                                    <span id="custom">
+                                        <span id="hours"></span>:<span id="minutes"></span>:<span id="seconds"></span>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="row  performance-container">
+                    <div class="col-12 forth-col">
+                        <div class=" col-12 row">
+                            <span id="assignmentTime">
+                                <strong>Waiting to Accept to Accepted:</strong>
+                                @if (Model.cas_cst_key == CaseStatus.WaitingToAccept.ToInt())
+                                {
+                                    <span id="custom">
+                                        <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+                                    </span>
+                                }
+                                else if (!string.IsNullOrEmpty(Model.FromWaitingToAcceptToAcceptTime))
+                                {
+                                    <span>@Model.FromWaitingToAcceptToAcceptTime</span>
+                                }
+                                else
+                                {
+                                    <span>00:00:00</span>
+                                }
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+        @*<div class="form-group row mcas_callback_container hideWithRoutineConsult ">
+                <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">Performance: </label>
+                <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                    @if (!string.IsNullOrEmpty(startToStampTimeVal) && isEdit)
+                    {
+                        <div class="row general-performance-container">
+                            <div class="col-12 forth-col">
+                                <div class=" col-12 row">
+                                    <span id="startToTimer">
+                                        <strong>Start to Stamp Time: </strong>
+                                        <span id="custom">@startToStampTimeVal</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.cas_time_stamp.HasValue)
+                    {
+                        <div class="row  d-none performance-container">
+                            <div class="col-12 forth-col">
+                                <div class=" col-12 row">
+                                    <span id="startTimer" class=" text-danger" style="display:none">
+                                        <strong>Start Time: </strong>
+                                        <span id="custom">
+                                            <span id="hours"></span>:<span id="minutes"></span>:<span id="seconds"></span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="row  performance-container">
+                        <div class="col-12 forth-col">
+                            <div class=" col-12 row">
+                                <span id="assignmentTime">
+                                    <strong>Waiting to Accept to Accepted:</strong>
+                                    @if (Model.cas_cst_key == CaseStatus.WaitingToAccept.ToInt())
+                                    {
+                                        <span id="custom">
+                                            <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+                                        </span>
+                                    }
+                                    else if (!string.IsNullOrEmpty(Model.FromWaitingToAcceptToAcceptTime))
+                                    {
+                                        <span>@Model.FromWaitingToAcceptToAcceptTime</span>
+                                    }
+                                    else
+                                    {
+                                        <span>00:00:00</span>
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+        <div class="form-group row cas_callback_container hideWithRoutineConsult ">
+            <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4 text-danger">Callback Phone: </label>
+            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                @Html.TextBoxFor(m => m.mcas_callback, new { @class = "form-control phone_number", @id = "mcas_callback" })
+                <div class="error_msg" id="mcas_callback_error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+                @Html.ValidationMessageFor(m => m.mcas_callback, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row  hideWithRoutineConsult">
+            <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">Extension: </label>
+            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                @Html.TextBoxFor(m => m.mcas_callback_extension, new { @class = "form-control type_integer", @maxlength = "10" })
+                @Html.ValidationMessageFor(m => m.mcas_callback_extension, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4 text-danger">Patient Name: </label>
+            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                @Html.TextBoxFor(m => m.mcas_patient, new { @class = "form-control", id = "mgeneral_cas_patient_name", @placeholder = "Last Name, First Name" })
+                <div class="error_msg" id="mgeneral_cas_patient_error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        @*<div class="form-group row showWithRoutineConsult">
+            <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">Date of Consult: </label>
+            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                @if (!isEdit)
+                {
+                    @Html.FormattedDateTextBoxFor(m => m.cas_billing_date_of_consult, new { @class = "form-control timepicker", @data_currentVal = (Model.cas_billing_date_of_consult.HasValue ? Model.cas_billing_date_of_consult.Value.FormatDateTime() : "") })
+                }
+                else
+                {
+                    <input type="text" id="general_cas_billing_date_of_consult" class="form-control timepicker" value="@(Model.cas_billing_date_of_consult.HasValue ? Model.cas_billing_date_of_consult.Value.FormatDateTime() : "")" data-currentVal="@(Model.cas_billing_date_of_consult.HasValue ? Model.cas_billing_date_of_consult.Value.FormatDateTime() : "")" />
+                }
+            </div>
+        </div>*@
+
+
+        <div class="form-group row">
+            <div class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">
+                <label class="control-label">ETA@(isETAInMinutes ? "(minutes)" : ""): </label>
+                <div class="form-check form-check-inline text-danger">
+                    <input class="form-check-input ml-2" type="checkbox" id="mcase-eta" value="Yes">
+                </div>
+            </div>
+            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+
+
+                @if (isETAInMinutes)
+                {
+                    @Html.TextBoxFor(m => m.mcas_eta, new { @class = "form-control type_integer eta_validation", @style = "display:none", @maxlength = 6 })
+                    <span class="text-danger" id="mcas_eta_errormsg" style="@(Model.mcas_eta.ToInt() > 10 ? "" : "display:none")">Cancel stroke alert. Callback hospital and recreate encounter at 10 minute mark</span>
+                }
+                else
+                {
+                    @Html.TextBoxFor(m => m.mcas_eta, new { @class = "form-control type_integer eta_validation", @style = "display:none" })
+                    <span class="text-danger" id="mcas_eta_errormsg" style="display:none;">Cancel stroke alert. Callback hospital and recreate encounter at 10 minute mark</span>
+                }
+
+                @Html.ValidationMessageFor(m => m.mcas_eta, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row hideWithRoutineConsult">
+            <div class="col-sm-10">
+                <label class="control-label">
+                    Pulled from <br class="d-none d-md-block mr-5 l-height" />
+                    Rounding:
+                </label>
+                @Html.CheckBoxFor(m => m.mcas_pulled_from_rounding, new { @class = "ml-2" })
+            </div>
+            <div class="col-sm-2">
+            </div>
+        </div>
+        <div class="form-group row hideWithRoutineConsult">
+            <div class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">
+                <label class="control-label">
+                    Physician Having<br class="d-none d-md-block mr-5 l-height" />
+                    Technical Issues:
+                </label>
+                @Html.CheckBoxFor(m => m.mcas_phy_has_technical_issue, new { @class = "ml-2" })
+            </div>
+            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
+                <div id="div_cas_phy_technical_issue_date_est" style="@(isEdit ? Model.mcas_phy_has_technical_issue ? "" : "display:none" : "display:none" )">
+                    <div class="timer-container">
+                        @Html.FormattedDateTextBoxFor(m => m.mcas_phy_technical_issue_date_est, new { @class = "form-control timepicker", @data_currentVal = (Model.mcas_phy_technical_issue_date_est.HasValue ? Model.mcas_phy_technical_issue_date_est.Value.FormatDateTime() : "") })
+                        <div class="est-container">
+                            @*<span>@timeZone</span>*@
+                        </div>
+                    </div>
+                    @if (isEdit)
+                    {
+                        <span class="text-danger" id="mcas_phy_technical_issue_date_est_errormsg" style="@(Model.mcas_phy_has_technical_issue ? "" : "display:none")">Remind physician to callback referring physician.</span>
+                        <br />
+                        <span id="mcas_phy_technical_issue_date_est_errormsg_required" class="text-danger" style="display:none">This field is required.</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger" id="mcas_phy_technical_issue_date_est_errormsg" style="display:none;">Remind physician to callback referring physician.</span>
+
+                    }
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-12 middle-panel">
+
+        <div class="form-group row">
+                <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4 text-blue">Date of Birth:</label>
+                <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                    <input type="text" name="mcas_billing_dob" id="mgeneral_cas_dob" value="@(Model.mcas_billing_dob?.FormatDate())" class="form-control datepicker" />
+                    <div id="mgeneral_cas_dob-error" class="error_msg" style="display:none;">
+                        <label>Invalid Date of Birth</label>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.mcas_billing_dob, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        <div class="form-group row" id="divCallType">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4 text-danger">Call Type: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                @Html.RadioButtonListFor(m => m.mcas_call_type, callTypes, new { @class = "disabled" })
+                <div class="error_msg" id="mcas_call_type_error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row " id="divCallerSource">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4">Caller Source: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                <div>
+                    <select id="mcas_caller_source_key" name="mcas_caller_source_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.mcas_caller_source_key : 0)"></select>
+                </div>
+                @*<div class="mt-1" id="div_cas_caller_source_text" ">
+                        @Html.TextAreaFor(m => m.mcas_caller_source_text, new { @class = "form-control" })
+                    </div>*@
+                @Html.ValidationMessageFor(m => m.mcas_caller_source_key, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+
+        <div class="form-group row">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4 text-blue">Caller: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                @Html.TextBoxFor(m => m.mcas_caller, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.mcas_caller, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @* TCARE-472 *@
+        <div class="form-group row" id="divCartLocation">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4 text-blue">Cart Location: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                <div>
+                    <select id="mcas_cart_location_key" name="mcas_cart_location_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.mcas_cart_location_key : 0)"></select>
+                </div>
+                @*<div class="mt-1" id="div_cas_cart_location_text">
+                    @Html.TextAreaFor(m => m.mcas_cart_location_text, new { @class = "form-control" })
+                </div>*@
+                @Html.ValidationMessageFor(m => m.mcas_cart_location_key, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4 text-blue">Identification Type: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                <select id="mgeneral_mcas_identification_type" name="mcas_identification_type" class="form-control addValidation mcas_identification_type"
+                        data-selectedValue="@(Model != null ? Model.mcas_identification_type : 0)"></select>
+                @Html.ValidationMessageFor(m => m.mcas_identification_type, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4 text-blue">Identification Number: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                @Html.TextBoxFor(m => m.mcas_identification_number, new { @class = "form-control", @id = "general_mcas_identification_number" })
+                @Html.ValidationMessageFor(model => model.mcas_identification_number, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row hideWithRoutineConsult">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4">Last 4 of SSN: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8 col-sm-8 col-xs-12">
+                @Html.TextBoxFor(m => m.mcas_last_4_of_ssn, new { @class = "form-control disabled", type = "number", step = "1", @onkeydown = "javascript: return event.keyCode == 69 ? false : true", @onkeypress = "return event.charCode >= 48 && event.charCode <= 57" })
+                @Html.ValidationMessageFor(model => model.mcas_last_4_of_ssn, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4">Referring Physician: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8 col-sm-8 col-xs-12">
+                @Html.TextBoxFor(m => m.mcas_referring_physician, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.mcas_referring_physician, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @* Added By Axim *@
+        <div class="form-group row hideWithRoutineConsult ">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4">RRC Manager Notes<span style="font-size:small">&nbsp;(Included in stamp)</span>: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                @if (IsNavigator)
+                {
+                    @Html.TextAreaFor(m => m.mcas_triage_notes, new { @class = "form-control", @readonly = "true" })
+                }
+                else
+                {
+                    @Html.TextAreaFor(m => m.mcas_triage_notes, new { @class = "form-control" })
+                }
+
+                @Html.ValidationMessageFor(model => model.mcas_triage_notes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4">Alert Notes<span style="font-size:small">&nbsp;(Included in stamp)</span>: </label>
+            @if (IsNavigator)
+            {
+                <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                    @Html.TextAreaFor(m => m.mcas_notes, new { @class = "form-control", @readonly = "true" })
+                    @Html.ValidationMessageFor(model => model.mcas_notes, "", new { @class = "text-danger" })
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                    @Html.TextAreaFor(m => m.mcas_notes, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.mcas_notes, "", new { @class = "text-danger" })
+                </div>
+            }
+        </div>
+
+
+        <div class="form-group row">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4">Navigator Notes<span style="font-size:small">&nbsp;(NOT included in stamp)</span>: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                @Html.TextAreaFor(m => m.mcas_navigator_notes, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.mcas_navigator_notes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        @*<div class="form-group row">
+                <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4">Navigator Stamp Notes&nbsp;<span style="font-size:small">(Included in stamp)</span>: </label>
+                <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                    @Html.TextAreaFor(m => m.mcas_navigator_stamp_notes, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.mcas_navigator_stamp_notes, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+        @* Ended BY Axim *@
+        <div class="form-group row showWithStatusConsult ">
+            <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4" id="mcas_callback_notes_label">Callback Response Delay Notes: </label>
+            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+                @if (!string.IsNullOrWhiteSpace(Model.mcas_callback_notes))
+                {
+                    @Html.TextAreaFor(x => x.mcas_callback_notes, new { @class = "form-control", @row = "2", @data_is_required = "true" })
+                    @*if (Model.CaseInterval.StartToCallbackMinutes > 15.0)
+                        {
+
+                        }
+                        else
+                        {*@
+                    @Html.TextAreaFor(x => x.mcas_callback_notes, new { @class = "form-control", @row = "2" })
+                    //}
+                }
+                else
+                {
+                    @Html.TextAreaFor(x => x.mcas_callback_notes, new { @class = "form-control", @row = "2" })
+                }
+
+                <div id="mcas_callback_notes-error" class="error_msg" style="display:none;">
+                    <label for="mcas_callback_notes">This field is required</label>
+                </div>
+            </div>
+        </div>
+        @*TCARE 387*@
+
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-12 right-panel hideWithRoutineConsult ">
+        <div class="form-group row  @(User.IsInRole(UserRoles.Physician.ToDescription())?"d-none" :"")">
+                <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4">Navigator Blast: </label>
+                <div class="col-xl-7 col-lg-12 col-lg-12 col-md-8  col-sm-8 col-xs-12">
+                    @Html.RadioButtonFor(model => model.mcas_is_nav_blast, true, new { id = "mcas_is_nav_blast_true", @class = "disabled" })
+                    @Html.Label("is-navigator-blast-true", "Yes")
+
+                    @Html.RadioButtonFor(model => model.mcas_is_nav_blast, false, new { id = "mcas_is_nav_blast_false", @class = "disabled" })
+                    @Html.Label("is-navigator-blast-false", "No")
+                </div>
+            </div>
+        <div class="form-group row  @(User.IsInRole(UserRoles.Physician.ToDescription())?"d-none" :"")">
+            <div class="col-sm-12 status-scroll">
+                <div id="physicianStatusGrid">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-1"></div>
+</div>
+
+
+<script>
+
+     @{
+
+         if(Model.mcas_cst_key == CaseStatus.WaitingToAccept.ToInt())
+         {
+
+             var date = Model.mcas_status_assign_date.HasValue ? Model.mcas_status_assign_date.Value : DateTime.Now.ToEST();
+
+                <Text>
+       upTime('@(date.ToUniversalTimeZone().ToString("MMM,dd,yyyy,HH:mm:ss"))', $("#assignmentTime"), function () {
+
+
+        var hr = parseInt($("#assignmentTime").find("#hours").html());
+        var min = parseInt($("#assignmentTime").find("#minutes").html());
+        var sec = parseInt($("#assignmentTime").find("#seconds").html());
+
+        if (hr > 0 || min >= 3) {
+            if (!$("#assignmentTime").hasClass("text-danger")) {
+                $("#assignmentTime").addClass("text-danger");
+
+            }
+        }
+
+    });
+                </Text>
+         }
+
+
+     }
+
+    function caseTypeChangeHandler() {
+
+    }
+    $("#mcase-eta").off("click").on("click", function () {
+        if ($(this).prop("checked")) {
+            $("#mcas_eta").show();
+        }
+        else {
+            $("#mcas_eta").hide();
+            $("#mcas_eta").val("");
+            $("#mcas_eta_errormsg").hide();
+        }
+        });
+
+        $('input:radio[name=mcas_call_type]').off("click").on("click", callTypeChangeCallBack);
+
+        function callTypeChangeCallBack() {
+            if ($('input:radio[name=mcas_call_type]:checked').val() == "@CallType.Indirect.ToInt()") {
+                $("#divCallerSource").removeClass("d-none");
+            }
+            else {
+                $("#divCallerSource").addClass("d-none");
+            }
+        }
+         function validateGeneralTabForm(isSaveAndClose, isCaseCompleteCall, isCreat) {
+             var result = true;
+             var mcas_ctp_key = true;
+             var mcas_fac_key = true;
+             //var mcas_cart = true;
+             var mcas_callback = true;
+             var mcas_phy_technical_issue_date_est = true;
+             var mgeneral_cas_patient_name = true;
+             var mcas_phy_key = true;
+             var mcas_cst_key = true;
+             var mgeneral_billing_dob = true;
+             //To check validation for cas_call_type as input:radio[name=cas_call_type]
+             var mcas_call_type = true;
+             var mcas_callback_notes = true;
+             //if ($.trim($("#mcas_cst_key").val()).toInt() == caseStatusEnum.Cancelled) {
+             //    return true;
+             //}
+
+             if ($("#mcas_ctp_key").val() == caseTypeEnum.StatConsult) {
+                 var callback_notes_required = $("#mcas_callback_notes").attr("data-is-required") != undefined ? true : false;
+                 if (callback_notes_required && $.trim($("#mcas_callback_notes").val()) == "" && $("#mcas_callback_notes").attr("display") != "none") {
+                     result = false;
+                     mcas_callback_notes = false;
+                     $("#mcas_callback_notes-error").show();
+                 }
+             }
+             if ($.trim($("#mcas_ctp_key").val()) == "") {
+             $("#mcas_ctp_key_error").show();
+             result = false;
+             mcas_ctp_key = false;
+         }
+         if ($.trim($("#mcas_fac_key").val()) == "") {
+            $("#mcas_fac_key_error").show();
+             result = false;
+             mcas_fac_key = false;
+             }
+
+             if (($.trim($("#mcas_ctp_key").val()) == caseTypeEnum.StatConsult)) {
+                     if (@callbackdate) {
+                         if ($("#mcas_callback_response_by").val() == "") {
+                             $("#mcas_callback_response_by_error").show();
+                             result = false;
+                             mcas_callback_response_by = false;
+                         }
+                     }
+                 }
+         if (isSaveAndClose) {
+             if (($("#basic").css("display").toLowerCase() != "none" || isCaseCompleteCall) && ($('a[href="#basic"]').length > 0 || isCreat)) {
+
+                 var selectedValue = $("#mcas_ctp_key").val();
+                 if ((selectedValue == caseTypeEnum.StrokeAlert || selectedValue == caseTypeEnum.StatConsult) && $.trim($("#cas_cart").val()) == "") {
+                    $("#cas_cart").parent().find(".error_msg").show();
+                     result = false;
+                     cas_cart = false;
+                 }
+
+                 if ($('input:radio[name=mcas_call_type]').length > 0 ) {
+                     if ($('input:radio[name=mcas_call_type]:checked').val() == undefined ) {
+                        $("#mcas_call_type_error").show();
+                         result = false;
+                         mcas_call_type = false;
+                     }
+                 }
+
+                 if (!($.trim($("#mcas_ctp_key").val()) == caseTypeEnum.RoundingNew
+                     || $.trim($("#mcas_ctp_key").val()) == caseTypeEnum.RoundingFollowUp
+                     || $.trim($("#mcas_ctp_key").val()) == caseTypeEnum.RoutineConsult
+                     || $.trim($("#mcas_ctp_key").val()) == caseTypeEnum.RoutineConsultNew
+                     || $.trim($("#mcas_ctp_key").val()) == caseTypeEnum.RoutineConsultFollowUp)) {
+                     if ($.trim($("#mcas_callback").val()) == "") {
+                        $("#mcas_callback_error").show();
+                         result = false;
+                         mcas_callback = false;
+                     }
+                 }
+                 if ($.trim($("#mgeneral_cas_patient_name").val()) == "") {
+                    $("#mgeneral_cas_patient_error").parent().find(".error_msg").show();
+                     result = false;
+                     mgeneral_cas_patient_name = false;
+                 }
+
+                 if ($("#mgeneral_cas_dob").val() != "") {
+                     if (!isValidDOB($("#mgeneral_cas_dob").val())) {
+                         result = false;
+                         mgeneral_billing_dob = false;
+                         $("#mgeneral_cas_dob-error").show();
+                     }
+                 }
+
+
+             }
+
+             var dateAndTime = $("#mcas_phy_technical_issue_date_est").val();
+
+             var physicianHasTechIssue = $("#mcas_phy_has_technical_issue").prop("checked");
+             if (physicianHasTechIssue &&  dateAndTime == "") {
+
+                 result = false;
+                 mcas_phy_technical_issue_date_est = false;
+                $("#mcas_phy_technical_issue_date_est_errormsg_required").show();
+             }
+             else {
+                $("#mcas_phy_technical_issue_date_est_errormsg_required").hide();
+
+             }
+         }
+
+
+
+             if ($("#mcas_phy_key").val() == "" || $("#mcas_phy_key").val() == "selected") {
+
+                 $("#mcas_phy_key_error").show();
+                 result = false;
+                 mcas_phy_key = false;
+             }
+         /// Focusing the first invalid control on the tab
+         if (!result) {
+
+
+             var element = null;
+
+
+             if (!mcas_ctp_key) {
+                 element = $("#mcas_ctp_key").parent(".k-dropdown");
+             }
+             else if (!mgeneral_billing_dob) {
+                 element = $("#mgeneral_cas_dob");
+             }
+             else if (!mcas_fac_key) {
+                 element = $("#mcas_fac_key").parent(".k-dropdown");
+             }
+             //else if (!mcas_cart) {
+             //    element = $("#cas_cart");
+             //}
+             else if (!mcas_phy_key) {
+                 element = $("#mcas_phy_key").parent(".k-dropdown");
+             }
+             else if (!mcas_cst_key) {
+                 element = $("#mcas_cst_key").parent(".k-dropdown");
+             }
+             else if (!mcas_callback) {
+                 element = $("#mcas_callback");
+             }
+             else if (!mgeneral_cas_patient_name) {
+                 element = $("#mgeneral_cas_patient_name");
+             }
+             else if (!mcas_phy_technical_issue_date_est) {
+                 element = $("#mcas_phy_technical_issue_date_est");
+             }
+             else if (!mcas_call_type) {
+                 element = $("input:radio[name=mcas_call_type]:first");
+             } else if (!mcas_callback_notes) {
+                 element = $("#mcas_callback_notes");
+             }
+             if (element !== null) {
+
+                 window.setTimeout(function () { $(element).focus(); }, 250)
+            }
+        }
+        return result;
+    }
+    function enableSaveSend() {
+
+        if ($.trim($("#mcas_ctp_key").val()).toInt() == caseTypeEnum.StrokeAlert
+            && $.trim($("#cas_cst_key").val()).toInt() == caseStatusEnum.WaitingToAccept
+            && $.trim($("#mcas_phy_key").val()) != ""
+        ) {
+            $("#btnSaveSend").enable();
+        }
+        else {
+            $("#btnSaveSend").disable();
+        }
+    }
+
+    $("#cas_phy_technical_issue_date_est,#mcas_callback_response_time_est").bind("change", function () {
+
+        ShowHideTimeZone($(this));
+    });
+
+    $("#mcasecart").off("change").change(function () {
+        var value = $(this).val();
+        if (value == "other") {
+            $("#mcas_cart").val("");
+            $("#mothercart").show();
+        } else {
+            $("#mcas_cart").val(value);
+            $("#mothercart").hide();
+        }
+
+    });
+    $(document).ready(function () {
+        $("#mcas_callback_response_by").fillKendoDropDown("/Case/GetUserByRoleId", "Text", "Value", "-- Select --");
+
+        callTypeChangeCallBack();
+    });
+</script>
+

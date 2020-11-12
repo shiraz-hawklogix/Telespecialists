@@ -138,8 +138,10 @@ namespace TeleSpecialists.BLL.Repository
         private IFacilityQuestionnaireContactRespository _facilityQuestionnaireContactRespository;
         private IFacilityRateRepository _facilityRateRepository;
         private IFacilityAvailabilityRateRepository _facilityAvailabilityRateRepository;
+
         private IMenuData _menuRepository;
         private IMenuAccessData _menuAccessRepository;
+        private IMockCaseRepository _mockCaseRepository;
 
         public IQueryable<AspNetUser> ApplicationUsers
         {
@@ -786,6 +788,18 @@ namespace TeleSpecialists.BLL.Repository
             }
         }
 
+        public IMockCaseRepository MockCaseRepository
+        {
+            get
+            {
+                if (this._mockCaseRepository == null)
+                {
+                    this._mockCaseRepository = new MockCaseRepository(context);
+                }
+                return _mockCaseRepository;
+            }
+        }
+
         public IFacilityQuestionnaireContactRespository FacilityQuestionnaireContactRespository
         {
             get
@@ -797,7 +811,6 @@ namespace TeleSpecialists.BLL.Repository
                 return _facilityQuestionnaireContactRespository;
             }
         }
-
 
         //_physician_Case_TempRepository
 
@@ -923,6 +936,18 @@ namespace TeleSpecialists.BLL.Repository
                     this._postAcuteCareRepository = new PostAcuteCareRepository(context);
                 }
                 return _postAcuteCareRepository;
+            }
+        }
+        private IPremorbidCorrespondnceRepository _premorbidRepository;
+        public IPremorbidCorrespondnceRepository premorbidRepository
+        {
+            get
+            {
+                if (this._premorbidRepository == null)
+                {
+                    this._premorbidRepository = new PremorbidCorrespondnceRepository(context);
+                }
+                return _premorbidRepository;
             }
         }
 

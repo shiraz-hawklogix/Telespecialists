@@ -14,12 +14,34 @@
     }
     var timeZone = Functions.GetTimeZoneAbbreviation(facilityTimeZone);
     var qpsList = ViewBag.QPSList;
+    var premorbidddl = Enum.GetValues(typeof(PreMorbidSpokeWith)).Cast<PreMorbidSpokeWith>().Select(m => new { Value = (int)m, Text = m.ToDescription() });
+    SelectList premorbidlist = new SelectList(premorbidddl, "Value", "Text");
+    var premorbid_list = premorbidlist.Prepend(new SelectListItem() { Text = "-- Select --", Value = "0" });
+    var PreMorbidSuccandUnsucc = Enum.GetValues(typeof(PreMorbidSuccessfulorUnSuccessful)).Cast<PreMorbidSuccessfulorUnSuccessful>()
+        .Select(m => new
+        {
+            Key = Convert.ToInt32(m).ToString(),
+            Value = m.ToDescription()
+        }).ToDictionary(m => m.Key, m => m.Value);
+    var PreMorbidSatisfaction = Enum.GetValues(typeof(PreMorbidSatisfaction)).Cast<PreMorbidSatisfaction>()
+        .Select(m => new
+        {
+            Key = Convert.ToInt32(m).ToString(),
+            Value = m.ToDescription()
+        }).ToDictionary(m => m.Key, m => m.Value);
+    var YesNoStatus = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+       .Select(m => new
+       {
+           Key = Convert.ToInt32(m).ToString(),
+           Value = m.ToDescription()
+       }).ToDictionary(m => m.Key, m => m.Value);
+    string LoggedInName = ViewBag.LoggedInName;
 }
 
-<div class="form-group row case-premorbid-tab">
-    <div class="col-xl-5  col-lg-6 col-md-12 col-sm-12">
+<div class="row case-premorbid-tab" id="premorbidfilds">
+    <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12">
         <div id="MorbidModule">
-            <label class="control-label col-sm-8">Pre-Morbid Modified Ranking Scale: </label>
+            <label class="control-label col-sm-8">90 Days Modified Ranking Scale: </label>
             <div class="container premorbid" style="background-color:lightgreen">
                 <div class="form-group row pt-3">
                     @if (Model.cas_premorbid_symptoms == 0)
@@ -105,17 +127,17 @@
                     <label class="control-label col-xl-11 col-sm-11 col-lg-11">Dead - 6 </label>
                 </div>
 
-                <div class="form-group row">
-                    @if (Model.cas_premorbid_symptoms == 7)
-                    {
-                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_7_UP" value="7" style="margin-left:10px; margin-top:05px" checked />
-                    }
-                    else
-                    {
-                        <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_7_UP" value="7" style="margin-left:10px; margin-top:05px" />
-                    }
-                    <label class="control-label col-xl-11 col-sm-11 col-lg-11">Information not available at this time </label>
-                </div>
+                @*<div class="form-group row">
+                        @if (Model.cas_premorbid_symptoms == 7)
+                        {
+                            <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_7_UP" value="7" style="margin-left:10px; margin-top:05px" checked />
+                        }
+                        else
+                        {
+                            <input type="radio" name="cas_premorbid_symptoms" id="cas_metric_has_morbid_symptoms_7_UP" value="7" style="margin-left:10px; margin-top:05px" />
+                        }
+                        <label class="control-label col-xl-11 col-sm-11 col-lg-11">Information not available at this time </label>
+                    </div>*@
             </div>
             <div class="form-group row">
                 @*<label class="control-label col-sm-2 text-danger"> </label>*@
@@ -129,37 +151,206 @@
                     @if (User.IsInRole(UserRoles.Physician.ToDescription()))
                     {
                         @Html.HiddenFor(x => x.cas_premorbid_completed_by);
-                        @Html.DropDownList("cas_premorbid_completed_by", (IEnumerable<SelectListItem>)qpsList, new { @class = "form-control" ,@disabled = "disabled" })
+                        @Html.DropDownList("cas_premorbid_completed_by", (IEnumerable<SelectListItem>)qpsList, new { @class = "form-control", @disabled = "disabled" })
                     }
                     else
                     {
-                        @Html.DropDownList("cas_premorbid_completed_by", (IEnumerable<SelectListItem>)qpsList, new { @class = "form-control"})
+                        @Html.DropDownList("cas_premorbid_completed_by", (IEnumerable<SelectListItem>)qpsList, new { @class = "form-control" })
                     }
                 </div>
             </div>
             <div class="form-group row">
                 <label class="control-label col-sm-4">Completed on: </label>
                 <div class="timer-container col-sm-8">
-                    @if (User.IsInRole(UserRoles.Physician.ToDescription()))
-                    {
-                        @Html.FormattedDateTextBoxFor(m => m.cas_premorbid_completed_date, new { @class = "form-control format-date", @readOnly = "readOnly" })
-                        <div class="est-container">
-                            <span>@timeZone</span>
-                        </div>
-                    }
-                    else
-                    {
-                        @Html.FormattedDateTextBoxFor(m => m.cas_premorbid_completed_date, new { @class = "form-control timepicker" })
-                        <div class="est-container">
-                            <span>@timeZone</span>
-                        </div>
-                    }
+                    @Html.FormattedDateTextBoxFor(m => m.cas_premorbid_completed_date, new { @class = "form-control timepicker" })
+                    <div class="est-container">
+                        <span>@timeZone</span>
+                    </div>
                 </div>
             </div>
         </div>
-
+        <label class="control-label">Pre-Morbid Modified Ranking Scale:<span class="pl-3" id="has_morbid_symptoms_premorbid">@Model.cas_metric_has_morbid_symptoms</span></label>
+    </div>
+    <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12">
+        <div class="form-group row">
+            <label class="control-label col-sm-2">Patient Phone: </label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control phone_number" name="pmc_cas_premorbid_patient_phone" id="pmc_cas_premorbid_patient_phone" value="">
+            </div>
+        </div>
+        <div class="form-group row">
+            <table class="table table-bordered morbidtables">
+                <thead>
+                    <tr class="d-flex">
+                        @*<th class="col-2">Attempt</th>*@
+                        <th class="col-3">Date and Time of Contact</th>
+                        <th class="col-2">Spoke With</th>
+                        <th class="col-3">Comments</th>
+                        <th class="col-2">Action</th>
+                        <th class="col-2">Completed By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="d-flex">
+                        @*<td class="col-2"><span class="font-weight-bold">1</span></td>*@
+                        <td class="col-3">
+                            <div class="timer-container">
+                                <input type="text" name="pmc_cas_premorbid_datetime_of_contact" id="pmc_cas_premorbid_datetime_of_contact_1" class="form-control timepicker" value="" />
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-2">
+                            <select id="pmc_cas_premorbid_spokewith_1" name="pmc_cas_premorbid_spokewith">
+                                @foreach (var item in premorbid_list)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </td>
+                        <td class="col-3">
+                            <textarea class="form-control" id="pmc_cas_premorbid_comments_1" name="pmc_cas_premorbid_comments" rows="3" cols="30"></textarea>
+                        </td>
+                        <td class="col-2">
+                            @foreach (var item in PreMorbidSuccandUnsucc)
+                            {
+                                <label><input type="radio" class="firstattempt" id="pmc_cas_premorbid_successful_or_unsuccessful_first" name="pmc_cas_premorbid_successful_or_unsuccessful_first" value="@item.Key" />@item.Value</label>
+                            }
+                        </td>
+                        <td class="col-2">
+                            <input type="text" name="pmc_cas_premorbid_completedby" id="pmc_cas_premorbid_completedby_1" class="form-control" value="" readonly />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-bordered morbidtables" id="attempt2" style="display:none;">
+                <tbody>
+                    <tr class="d-flex">
+                        @*<td class="col-2"><span class="font-weight-bold">1</span></td>*@
+                        <td class="col-3">
+                            <div class="timer-container">
+                                <input type="text" name="pmc_cas_premorbid_datetime_of_contact" id="pmc_cas_premorbid_datetime_of_contact_2" class="form-control timepicker" value="" />
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-2">
+                            <select id="pmc_cas_premorbid_spokewith_2" name="pmc_cas_premorbid_spokewith">
+                                @foreach (var item in premorbid_list)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </td>
+                        <td class="col-3">
+                            <textarea class="form-control" id="pmc_cas_premorbid_comments_2" name="pmc_cas_premorbid_comments" rows="3" cols="30"></textarea>
+                        </td>
+                        <td class="col-2">
+                            @foreach (var item in PreMorbidSuccandUnsucc)
+                            {
+                                <label><input type="radio" class="secondattempt" id="pmc_cas_premorbid_successful_or_unsuccessful_second" name="pmc_cas_premorbid_successful_or_unsuccessful_second" value="@item.Key" />@item.Value</label>
+                            }
+                        </td>
+                        <td class="col-2">
+                            <input type="text" name="pmc_cas_premorbid_completedby" id="pmc_cas_premorbid_completedby_2" class="form-control" value="" readonly />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-bordered" id="attempt3" style="display:none;">
+                <tbody>
+                    <tr class="d-flex">
+                        @*<td class="col-2"><span class="font-weight-bold">1</span></td>*@
+                        <td class="col-3">
+                            <div class="timer-container">
+                                <input type="text" name="pmc_cas_premorbid_datetime_of_contact" id="pmc_cas_premorbid_datetime_of_contact_3" class="form-control timepicker" value="" />
+                                <div class="est-container">
+                                    <span>@timeZone</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-2">
+                            <select id="pmc_cas_premorbid_spokewith_3" name="pmc_cas_premorbid_spokewith">
+                                @foreach (var item in premorbid_list)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </td>
+                        <td class="col-3">
+                            <textarea class="form-control" id="pmc_cas_premorbid_comments_3" name="pmc_cas_premorbid_comments" rows="3" cols="30"></textarea>
+                        </td>
+                        <td class="col-2">
+                            @foreach (var item in PreMorbidSuccandUnsucc)
+                            {
+                                <label><input type="radio" class="thirdattempt" id="pmc_cas_premorbid_successful_or_unsuccessful_third" name="pmc_cas_premorbid_successful_or_unsuccessful_third" value="@item.Key" />@item.Value</label>
+                            }
+                        </td>
+                        <td class="col-2">
+                            <input type="text" name="pmc_cas_premorbid_completedby" id="pmc_cas_premorbid_completedby_3" class="form-control" value="" readonly />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group row">
+            <div class="container container-fluid" style="background-color:lightgray;">
+                <div class="form-group row">
+                    <label class="control-label col-sm-4">Patient Satisfaction 1 - Video Experience: </label>
+                    <div class="col-sm-8">
+                        @foreach (var item in PreMorbidSatisfaction)
+                        {
+                            <label class="mr-3"><input type="radio" class="mr-1" id="pmc_cas_patient_satisfaction_video_experience" name="pmc_cas_patient_satisfaction_video_experience" value="@item.Key" />@item.Value</label>
+                        }
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4">Patient Satisfaction 2- Communication: </label>
+                    <div class="col-sm-8">
+                        @foreach (var item in PreMorbidSatisfaction)
+                        {
+                            <label class="mr-3"><input type="radio" class="mr-1" id="pmc_cas_patient_satisfaction_communication" name="pmc_cas_patient_satisfaction_communication" value="@item.Key" />@item.Value</label>
+                        }
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="control-label col-sm-4">Willing to do Interview: </label>
+                    <div class="col-sm-8">
+                        @foreach (var item in YesNoStatus)
+                        {
+                            <label class="mr-3"><input type="radio" class="willingtodointerview mr-1" id="pmc_cas_willing_todo_interview" name="pmc_cas_willing_todo_interview" value="@item.Key" />@item.Value</label>
+                        }
+                    </div>
+                </div>
+                <div class="form-group row" id="consent_sent" style="display:none;">
+                    <label class="control-label col-sm-4">Consent Sent: </label>
+                    <div class="col-sm-8">
+                        @foreach (var item in YesNoStatus)
+                        {
+                            <label class="mr-3"><input type="radio" class="mr-1" id="pmc_cas_consent_sent" name="pmc_cas_consent_sent" value="@item.Key" />@item.Value</label>
+                        }
+                    </div>
+                </div>
+                <div class="form-group row" id="consent_received" style="display:none;">
+                    <label class="control-label col-sm-4">Consent Received: </label>
+                    <div class="col-sm-8">
+                        @foreach (var item in YesNoStatus)
+                        {
+                            <label class="mr-3"><input type="radio" class="mr-1" id="pmc_cas_consent_received" name="pmc_cas_consent_received" value="@item.Key" />@item.Value</label>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+<style>
+    .morbidtables {
+        margin-bottom: 0rem;
+    }
+</style>
 <script>
     function validatepremorbidFields(isCaseCompleteCall) {
         // var result = true;
@@ -168,9 +359,9 @@
         // var cas_premorbid_symptoms_text = true;
         //// var cas_premorbid_symptoms = true;
 
-         if ($.trim($("#cas_cst_key").val()).toInt() == caseStatusEnum.Cancelled) {
-             return true;
-         }
+        if ($.trim($("#cas_cst_key").val()).toInt() == caseStatusEnum.Cancelled) {
+            return true;
+        }
 
         // if ($.trim($("#cas_premorbid_completed_date").val()) == "") {
         //     // $("#billing_cas_dob-error").show();
@@ -206,5 +397,138 @@
 
         //     return result;
         // }
+    }
+    $(".firstattempt").off('change').change(function () {
+        debugger
+        $("#pmc_cas_premorbid_completedby_1").val('@LoggedInName');
+        var value = parseInt($(this).val());
+        if (value == 2) {
+           
+            $("#attempt2").show();
+        } else {
+            $("#pmc_cas_premorbid_datetime_of_contact_2").val('');
+            $("#pmc_cas_premorbid_spokewith_2").val(0);
+            $("#pmc_cas_premorbid_comments_2").val('');
+            var value = $('input[name="pmc_cas_premorbid_successful_or_unsuccessful_second"]:checked').val();
+            $('input[name=pmc_cas_premorbid_successful_or_unsuccessful_second][value=' + value+']').prop('checked', false);
+            $("#pmc_cas_premorbid_completedby_2").val('');
+            
+            $("#pmc_cas_premorbid_datetime_of_contact_3").val('');
+            $("#pmc_cas_premorbid_spokewith_3").val(0);
+            $("#pmc_cas_premorbid_comments_3").val('');
+            var value = $('input[name="pmc_cas_premorbid_successful_or_unsuccessful_third"]:checked').val();
+            $('input[name=pmc_cas_premorbid_successful_or_unsuccessful_third][value=' + value + ']').prop('checked', false);
+            $("#pmc_cas_premorbid_completedby_3").val('');
+            $("#attempt2").hide();
+            $("#attempt3").hide();
+        }
+    });
+    $(".secondattempt").off('change').change(function () {
+        debugger
+         $("#pmc_cas_premorbid_completedby_2").val('@LoggedInName');
+        var value = parseInt($(this).val());
+        if (value == 2) {
+            $("#attempt3").show();
+        } else {
+            $("#pmc_cas_premorbid_datetime_of_contact_3").val('');
+            $("#pmc_cas_premorbid_spokewith_3").val(0);
+            $("#pmc_cas_premorbid_comments_3").val('');
+            var value = $('input[name="pmc_cas_premorbid_successful_or_unsuccessful_third"]:checked').val();
+            $('input[name=pmc_cas_premorbid_successful_or_unsuccessful_third][value=' + value + ']').prop('checked', false);
+            $("#pmc_cas_premorbid_completedby_3").val('');
+            $("#attempt3").hide();
+        }
+    });
+    $(".thirdattempt").off('change').change(function () {
+         $("#pmc_cas_premorbid_completedby_3").val('@LoggedInName');
+    })
+    $(".willingtodointerview").off('change').change(function () {
+        debugger
+        var value = parseInt($(this).val());
+        if (value == 1) {
+            $("#consent_sent").show();
+            $("#consent_received").show();
+        } else {
+            var pmc_cas_consent_sent = $('input[name="pmc_cas_consent_sent"]:checked').val();
+            var pmc_cas_consent_received = $('input[name="pmc_cas_consent_received"]:checked').val();
+            $("input[name=pmc_cas_consent_sent][value=" + pmc_cas_consent_sent + "]").prop('checked', false);
+            $("input[name=pmc_cas_consent_received][value=" + pmc_cas_consent_received + "]").prop('checked', false);
+            $("#consent_sent").hide();
+            $("#consent_received").hide();
+        }
+    });
+    function GetPreMorbidData() {
+        var cas_key = '@Model.cas_key';
+        $.ajax({
+            type: "POST",
+            url: "/Case/GetPreMorbidData",
+            dataType: 'json',
+            data: { cas_key: cas_key },
+            error: function (xhr, error) {
+
+            },
+            success: function (data) {
+                debugger
+                if (data.pmc_cas_premorbid_completedby != null) {
+                    $("#pmc_cas_premorbid_patient_phone").val(data.pmc_cas_premorbid_patient_phone);
+                    for (var i = 0; i < data.pmc_cas_premorbid_completedby.length; i++) {
+                        var checkdate = data.pmc_cas_premorbid_datetime_of_contact[i];
+                        if (checkdate != "") {
+                            var formatvalue = moment(data.pmc_cas_premorbid_datetime_of_contact[i], 'MM/DD/YYYY HH:mm:ss').format("MM/DD/YYYY HH:mm:ss");
+                            if (i == 0) {
+                                $("#pmc_cas_premorbid_datetime_of_contact_1").val(formatvalue);
+                            } else if (i == 1) {
+                                $("#pmc_cas_premorbid_datetime_of_contact_2").val(formatvalue);
+                            } else {
+                                $("#pmc_cas_premorbid_datetime_of_contact_3").val(formatvalue);
+                            }
+                        }
+
+                        if (i == 0) {
+                            $("#pmc_cas_premorbid_spokewith_1").val(data.pmc_cas_premorbid_spokewith[i]);
+                        } else if (i == 1) {
+                            $("#pmc_cas_premorbid_spokewith_2").val(data.pmc_cas_premorbid_spokewith[i]);
+                        } else {
+                            $("#pmc_cas_premorbid_spokewith_3").val(data.pmc_cas_premorbid_spokewith[i]);
+                        }
+
+                        if (i == 0) {
+                            $("#pmc_cas_premorbid_comments_1").val(data.pmc_cas_premorbid_comments[i]);
+                        } else if (i == 1) {
+                            $("#pmc_cas_premorbid_comments_2").val(data.pmc_cas_premorbid_comments[i]);
+                        } else {
+                            $("#pmc_cas_premorbid_comments_3").val(data.pmc_cas_premorbid_comments[i]);
+                        }
+                        $("input[name=pmc_cas_premorbid_successful_or_unsuccessful_first][value=" + data.pmc_cas_premorbid_successful_or_unsuccessful_first + "]").prop('checked', true);
+                        $("input[name=pmc_cas_premorbid_successful_or_unsuccessful_second][value=" + data.pmc_cas_premorbid_successful_or_unsuccessful_second + "]").prop('checked', true);
+                        $("input[name=pmc_cas_premorbid_successful_or_unsuccessful_third][value=" + data.pmc_cas_premorbid_successful_or_unsuccessful_third + "]").prop('checked', true);
+
+                        if (i == 0) {
+                            $("#pmc_cas_premorbid_completedby_1").val(data.pmc_cas_premorbid_completedby[i]);
+                        } else if (i == 1) {
+                            $("#pmc_cas_premorbid_completedby_2").val(data.pmc_cas_premorbid_completedby[i]);
+                        } else {
+                            $("#pmc_cas_premorbid_completedby_3").val(data.pmc_cas_premorbid_completedby[i]);
+                        }
+
+                        if (data.pmc_cas_premorbid_successful_or_unsuccessful_first == 2) {
+                            $("#attempt2").show();
+                        }
+                        if (data.pmc_cas_premorbid_successful_or_unsuccessful_second == 2) {
+                            $("#attempt3").show();
+                        }
+                    }
+                    $("input[name=pmc_cas_patient_satisfaction_video_experience][value=" + data.pmc_cas_patient_satisfaction_video_experience + "]").prop('checked', true);
+                    $("input[name=pmc_cas_patient_satisfaction_communication][value=" + data.pmc_cas_patient_satisfaction_communication + "]").prop('checked', true);
+                    $("input[name=pmc_cas_willing_todo_interview][value=" + data.pmc_cas_willing_todo_interview + "]").prop('checked', true);
+                    if (data.pmc_cas_willing_todo_interview == 1) {
+                        $("#consent_sent").show();
+                        $("#consent_received").show();
+                    }
+                    $("input[name=pmc_cas_consent_sent][value=" + data.pmc_cas_consent_sent + "]").prop('checked', true);
+                    $("input[name=pmc_cas_consent_received][value=" + data.pmc_cas_consent_received + "]").prop('checked', true);
+                }
+            }
+        });
     }
 </script>
