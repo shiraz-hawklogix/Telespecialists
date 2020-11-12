@@ -1795,6 +1795,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="tok_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="tok_phy_key" Type="nvarchar" MaxLength="128" />
           <Property Name="tok_phy_token" Type="nvarchar(max)" />
+          <Property Name="tok_device_type" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="ucl">
           <Key>
@@ -6208,6 +6209,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="tok_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="tok_phy_token" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_token_AspNetUsers" FromRole="token" ToRole="AspNetUser" />
+          <Property Name="tok_device_type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_token_AspNetUsers">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
@@ -8297,6 +8299,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="tokens">
             <EntityTypeMapping TypeName="DataModel.token">
               <MappingFragment StoreEntitySet="token">
+                <ScalarProperty Name="tok_device_type" ColumnName="tok_device_type" />
                 <ScalarProperty Name="tok_phy_token" ColumnName="tok_phy_token" />
                 <ScalarProperty Name="tok_phy_key" ColumnName="tok_phy_key" />
                 <ScalarProperty Name="tok_key" ColumnName="tok_key" />

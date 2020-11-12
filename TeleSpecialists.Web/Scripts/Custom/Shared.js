@@ -242,6 +242,9 @@ $(document).on("click", ".loadLinkAsync", function (e) {
 
     loadPageAsync(url, target)
 });
+$(document).on("click", ".signOutCurrentUser", function (e) {
+    signOutAndLogout();
+});
 
 $(document).on("click", ".loadLinkAsync-cancel", function (e) {
     e.preventDefault();

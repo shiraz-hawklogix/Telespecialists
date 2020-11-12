@@ -1949,7 +1949,17 @@ namespace TeleSpecialists.Web.Controllers
                 //new WebSocketEventHandler().CallJSMethod(model.cas_phy_key, new SocketResponseModel { MethodName = "showPhysicianNewCasePopup_def", Data = new List<object> { model.cas_key, true } });
             }
             #region Husnain code for firebase
-            bool sentStatus = _user_Fcm_Notification.SendNotification(model.cas_phy_key, model.cas_key);
+            #region written for ios
+            //below code is written for ios
+            List<string> list = new List<string>();
+            list.Add(model.cas_case_number.ToString());
+            list.Add(model.facility.fac_name);
+            list.Add(model.cas_fac_key.ToString());
+            string _name = model.AspNetUser2.FirstName + " " + model.AspNetUser2.LastName;
+            list.Add(_name);
+            // code end
+            #endregion
+            bool sentStatus = _user_Fcm_Notification.SendNotification(model.cas_phy_key, model.cas_key, strokeDetail:list);
             #endregion
 
         }

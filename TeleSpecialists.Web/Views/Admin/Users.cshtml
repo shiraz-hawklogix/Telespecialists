@@ -211,7 +211,7 @@
                 {
                     title: "Actions", width: '295px', template:  "<a class='btn btn-dark btn-sm py-1 loadLinkAsync' title='Edit' href='@Url.Action("EditUser", "Admin")/\#= Id#'>Edit</a>"
                         + "<a class='btn btn-dark btn-sm ml-1 py-1 loadLinkAsync' title='Change Password' href='@Url.Action("ChangePassword", "Admin")/\#= Id#'>Change Password</a>"
-                        + "# if(ShowRemoteLogin && !IsApiUser && !IsDisable) { #<a class='btn btn-dark btn-sm ml-1 py-1' title='Remote Login' href='@Url.Action("RemoteUserLogin", "Admin")/\#= Id#'>Remote Login</a># } else {#<p></p>#} #"
+                        + "# if(ShowRemoteLogin && !IsApiUser && !IsDisable) { #<a class='btn btn-dark btn-sm ml-1 py-1 signOutCurrentUser' title='Remote Login' href='@Url.Action("RemoteUserLogin", "Admin")/\#= Id#'>Remote Login</a># } else {#<p></p>#} #"
                 }
             ]
         });
@@ -242,7 +242,7 @@
                 $("#btnSearch").click();
 
         });
-
+       
     });
 
     function performSearch() {
@@ -423,6 +423,7 @@
             return null;
         }
     }
+   
 </script>
 
 

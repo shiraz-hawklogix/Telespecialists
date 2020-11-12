@@ -107,7 +107,7 @@ function GrpCreate(name, grptype, msg, physician, navArr) {
         }
         console.log('nva arr is  : ', navArr);
         autoSenderId = 'lvB46mLF5qbQuIIAm5eqHxDdMBv1';
-        autoSenderName = 'Muhammad Masud';
+        autoSenderName = 'Muhammad Masud Admin';
         autoSenderImage = '/Content/images/M.png';
         var refGrp = firebase.database().ref("Groups");
         refGrp.orderByChild("grpFor").equalTo(physician).once("value", snapshot => {
@@ -583,7 +583,7 @@ function loginUsernameFB(email, password, tele_id, username, img, userSqlid, sav
                     SaveUserInDB(userId, userSqlid);
                 else
                     SaveInDB(userId);
-                SignInStatus();
+                SignInStatus(userId);
 
                 UserUnreadMsgsChanged();
                 UserUnreadMsgsModify();
@@ -669,10 +669,18 @@ function SignInStatus(userid) {
     ref.on("child_added", function (snapshot) {
         ref.child(snapshot.key).child('Connections').on('child_added', function (data) {
             if (data.key === userid) {
+                console.log('update online users in connections');
                 var _ref = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
                 _ref.child(userid).update({
                     Online: true,
                     lastOnline: firebase.database.ServerValue.TIMESTAMP
+                }).then(function () {
+                    return _ref.child(userid).once("value");
+                }).then(function (childSnapshot) {
+                    var time = childSnapshot.val().lastOnline;
+                    _ref.child(userid).update({
+                        lastOnline: time * -1
+                    });
                 });
             }
         });
@@ -763,3 +771,47 @@ function AddUserConnections(userid, groupID, shortmsg, grpName, grpimg) {
     });
 }
 // husnain code end
+// logout function  call
+$('#signout').click(function () {
+    signOutAndLogout(true);
+});
+
+function signOutAndLogout(reload = false) {
+    console.log('logged out user : ' + SenderId);
+    if (SenderId) {
+        SignOutStatus();
+        log_out();
+        //if (reload)
+        //    window.location.href = "/Account/Signout";
+    }
+}
+function SignOutStatus() {
+    var ref = firebase.database().ref("TeleUsers");
+    ref.on("child_added", function (snapshot) {
+        ref.child(snapshot.key).child('Connections').on('child_added', function (data) {
+            if (data.key === SenderId) {
+                console.log('user going to be sign out');
+                var _ref = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
+                _ref.child(SenderId).update({
+                    Online: false,
+                    lastOnline: firebase.database.ServerValue.TIMESTAMP
+                }).then(function () {
+                    return _ref.child(SenderId).once("value");
+                }).then(function (childSnapshot) {
+                    var time = childSnapshot.val().lastOnline;
+                    _ref.child(SenderId).update({
+                        lastOnline: time * -1
+                    });
+                });
+            }
+        });
+    });
+}
+function log_out() {
+    firebase.auth().signOut().then(function () {
+
+    }).catch(function (error) {
+        // console.log("Error signing user out:", error);
+    });
+}
+// logout function end

@@ -28,6 +28,7 @@ namespace TeleSpecialists.BLL.ViewModels
         public string msg_body { get; set; }
         public string notify_img { get; set; }
         public List<string> phy_tokens { get; set; }
+        public string deviceType { get; set; }
 
 
         public object SendToken(string phy_key)
@@ -44,6 +45,8 @@ namespace TeleSpecialists.BLL.ViewModels
                 user_Fcm_Notification.msg_body = first.AspNetUser.FirstName + " " + first.AspNetUser.LastName + " You have New Stroke!";
                 user_Fcm_Notification.notify_img = "https://media.graytvinc.com/images/690*387/Stroke+MGN+graphic.JPG";
                 user_Fcm_Notification.phy_tokens = tokens;
+                if (!string.IsNullOrEmpty(first.tok_device_type))
+                    user_Fcm_Notification.deviceType = first.tok_device_type.ToLower();
             }
             return user_Fcm_Notification;
             //(user_Fcm_Notification, JsonRequestBehavior.AllowGet);
@@ -68,6 +71,8 @@ namespace TeleSpecialists.BLL.ViewModels
                 user_Fcm_Notification.msg_body = "Interal Blast Stroke Alert Sent !";
                 user_Fcm_Notification.notify_img = "https://media.graytvinc.com/images/690*387/Stroke+MGN+graphic.JPG";
                 user_Fcm_Notification.phy_tokens = tokens;
+                if (!string.IsNullOrEmpty(first.tok_device_type))
+                    user_Fcm_Notification.deviceType = first.tok_device_type.ToLower();
             }
             return user_Fcm_Notification;
             //(user_Fcm_Notification, JsonRequestBehavior.AllowGet);
@@ -75,7 +80,7 @@ namespace TeleSpecialists.BLL.ViewModels
 
 
 
-        public bool SendNotification(string phy_key = "", int caseId = 0, string jsonData = "", string caseType = "Open", int action = 1, List<object> Data = null, List<string> phy_ids = null, string strokeStamp="")
+        public bool SendNotification(string phy_key = "", int caseId = 0, string jsonData = "", string caseType = "Open", int action = 1, List<object> Data = null, List<string> phy_ids = null, string strokeStamp="", List<string> strokeDetail = null)
         {
             try
             {
@@ -106,6 +111,10 @@ namespace TeleSpecialists.BLL.ViewModels
                 #endregion
 
                 tRequest.ContentType = "application/json";
+
+                //var iosList = user_Fcm_Notification.
+
+                #region Web Payload
                 var payload = new
                 {
                     //to = "eI-JlOt4adcnJ6ip9gucNn:APA91bHAtuuzGNTaSs3wJjjSARj38pnbTNyyL2XLzIWXMobTh4BKc2mEPniwLGNvKOWiVPpbS_I1tJCqbmRLMvrSikV6ZI6Thrrn7GvxAVxgNhvvUqs3cI47eqrEzgG7lt-XUwONEZkr",
@@ -151,6 +160,68 @@ namespace TeleSpecialists.BLL.ViewModels
                         }
                     }
                 }
+                #endregion
+                #region IOS Payload
+                try
+                {
+                    var ioslist = _tokenservice.GetIOSAll(phy_key);
+                    if(ioslist.Count > 0)
+                    {
+                        var _payload = new
+                        {
+                            //to = "c7-pvfElKUmOklY94iRpr-:APA91bHTnBJen01zN2vvL3CNj47Goo9Ntoembl2ZiuXIOOtRe_VGF6PTgFEShRHlkChg7tUnI0mt1Xtj6SMGeNmeeDlL35JqaNwrblMLsxHHeYqepX6u-gtkF27w_SU8BuNvHB2GCApY",
+                            registration_ids = ioslist,//user_Fcm_Notification.phy_tokens,
+                            priority = "high",
+                            content_available = false,
+                            notification = new
+                            {
+                                body = user_Fcm_Notification.msg_body,
+                                title = user_Fcm_Notification.msg_title,
+                                click_action = "CASE",
+                                image = user_Fcm_Notification.notify_img,
+                                badge = 1
+                            },
+                            data = new
+                            {
+                                phy_key = phy_key,
+                                caseId = caseId,
+                                caseType = caseType,
+                                jsonData = jsonData,
+                                action = action,
+                                caseNumber = strokeDetail[0],
+                                fac_name = strokeDetail[1],
+                                fac_key = strokeDetail[2],
+                                phy_name = strokeDetail[3],
+                                objectData = Data
+                            }
+
+                        };
+                        string _postbody = JsonConvert.SerializeObject(_payload).ToString();
+                        Byte[] _byteArray = Encoding.UTF8.GetBytes(_postbody);
+                        tRequest.ContentLength = _byteArray.Length;
+                        using (Stream dataStream = tRequest.GetRequestStream())
+                        {
+                            dataStream.Write(_byteArray, 0, _byteArray.Length);
+                            using (WebResponse tResponse = tRequest.GetResponse())
+                            {
+                                using (Stream dataStreamResponse = tResponse.GetResponseStream())
+                                {
+                                    if (dataStreamResponse != null) using (StreamReader tReader = new StreamReader(dataStreamResponse))
+                                        {
+                                            String sResponseFromServer = tReader.ReadToEnd();
+                                            //result.Response = sResponseFromServer;
+                                        }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    
+                }
+                #endregion
+
                 #endregion
                 return true;
             }
