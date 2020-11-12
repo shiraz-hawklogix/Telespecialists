@@ -157,7 +157,7 @@ namespace TeleSpecialists.Controllers
             }
         }
 
-        [AccessRoles(Roles = "Administrator,Super Admin,Quality Team,Regional Medical Director,Navigator,QPS,RRC Manager,RRC Director,VP Quality, Quality Director,AOC")]
+        [AccessRoles(Roles = "Administrator,Super Admin,Quality Team,Regional Medical Director,Navigator,QPS,RRC Manager,RRC Director,VP Quality, Quality Director,AOC,Capacity Researcher")]
         public ActionResult Dashboard()
         {
             if (TempData.ContainsKey("Message"))
