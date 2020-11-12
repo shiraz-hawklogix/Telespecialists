@@ -759,5 +759,32 @@ namespace TeleSpecialists.Web.Controllers
             var GetRecord = _mockCaseService.GetCart(key);
             return Json(GetRecord, JsonRequestBehavior.AllowGet);
         }
+
+        public ActionResult GetFacilityTimeZone(Guid id, string inputDateTime)
+        {
+            try
+            {
+                var facility = _facilityService.GetDetails(id);
+                var timeZone = string.IsNullOrEmpty(facility.fac_timezone) ? BLL.Settings.DefaultTimeZone : facility.fac_timezone;
+                var facilityCurrentTime = DateTime.UtcNow.ToTimezoneFromUtc(timeZone);
+                var abbrivation = Functions.GetTimeZoneAbbreviation(timeZone);
+
+                if (inputDateTime != "")
+                {
+                    var convertedTime = inputDateTime.ToDateTime().Value.ToTimezoneFromUtc(timeZone);
+                    return Json(new { success = true, timeZoneOffset = Functions.GetTimeZoneOffset(timeZone), timeZone = timeZone, convertedTime = convertedTime.FormatDateTime(), abbrivation = abbrivation }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = true, timeZoneOffset = Functions.GetTimeZoneOffset(timeZone), timeZone = timeZone, abbrivation = abbrivation }, JsonRequestBehavior.AllowGet);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }
