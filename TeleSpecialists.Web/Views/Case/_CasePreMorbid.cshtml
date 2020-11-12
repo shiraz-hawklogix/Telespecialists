@@ -169,12 +169,12 @@
                 </div>
             </div>
         </div>
-        <label class="control-label">Pre-Morbid Modified Ranking Scale:<span class="pl-3" id="has_morbid_symptoms_premorbid">@Model.cas_metric_has_morbid_symptoms</span></label>
+        <label class="control-label">Pre-Morbid Modified Ranking Scale:<span class="pl-3" id="has_morbid_symptoms_premorbid">@(Model.cas_metric_has_morbid_symptoms.HasValue ? Model.cas_metric_has_morbid_symptoms.Value != 7 ? Model.cas_metric_has_morbid_symptoms.Value.ToString() : "" : "" )</span></label>
     </div>
     <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12">
         <div class="form-group row">
             <label class="control-label col-sm-2">Patient Phone: </label>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <input type="text" class="form-control phone_number" name="pmc_cas_premorbid_patient_phone" id="pmc_cas_premorbid_patient_phone" value="">
             </div>
         </div>

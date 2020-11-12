@@ -976,6 +976,8 @@ EntityTypes.StateAlertTemplate.ToInt()
         } else if (tab == "#premorbid") {
             window.setTimeout(function () {
                 $("#premorbidTabLink").tab("show");
+                $("#premorbidfilds :input").prop("disabled", false);
+                $('#premorbidfilds .k-i-clock').parent().removeAttr("style", "background-color:#e9ecef; pointer-events:none;");
                // validatepremorbidFields(false);
             }, time);
         }
@@ -1195,50 +1197,20 @@ EntityTypes.StateAlertTemplate.ToInt()
         //Added By Axim 29-10-2020
         $(".morbidSymptoms").on('change', function () {
             var currentVal = $('input:radio[name=cas_metric_has_morbid_symptoms]:checked').val();
-            $("#has_morbid_symptoms_premorbid").empty();
-            $("#has_morbid_symptoms_premorbid").append(currentVal);
-            //$('.premorbid :radio:not(:checked)').attr('disabled', false);
-            @*if (currentVal == "0") {
-                $("#cas_metric_has_morbid_symptoms_0_UP").prop('checked', true);
-            } if (currentVal == "1") {
-                $("#cas_metric_has_morbid_symptoms_1_UP").prop('checked', true);
-            } if (currentVal == "2") {
-                $("#cas_metric_has_morbid_symptoms_2_UP").prop('checked', true);
-            } if (currentVal == "3") {
-                $("#cas_metric_has_morbid_symptoms_3_UP").prop('checked', true);
-            } if (currentVal == "4") {
-                $("#cas_metric_has_morbid_symptoms_4_UP").prop('checked', true);
-            } if (currentVal == "5") {
-                $("#cas_metric_has_morbid_symptoms_5_UP").prop('checked', true);
-            } if (currentVal == "6") {
-                $("#cas_metric_has_morbid_symptoms_6_UP").prop('checked', true);
-            }if (currentVal == "7") {
-                $("#cas_metric_has_morbid_symptoms_7_UP").prop('checked', true);
+            if (currentVal != "7") {
+                $("#has_morbid_symptoms_premorbid").empty();
+                $("#has_morbid_symptoms_premorbid").append(currentVal);
+            } else {
+                $("#has_morbid_symptoms_premorbid").empty();
             }
+            
+            //$('.premorbid :radio:not(:checked)').attr('disabled', false);
+            @*
             if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' != 'True') {
                 $('.premorbid :radio:not(:checked)').attr('disabled', true);
             }*@
         });
-        @* $(".premorbid").on('change', function () {
-            var currentVal = $('input:radio[name=cas_premorbid_symptoms]:checked').val();
-            if (currentVal == "0") {
-                $("#cas_metric_has_morbid_symptoms_0").prop('checked', true);
-            } if (currentVal == "1") {
-                $("#cas_metric_has_morbid_symptoms_1").prop('checked', true);
-            } if (currentVal == "2") {
-                $("#cas_metric_has_morbid_symptoms_2").prop('checked', true);
-            } if (currentVal == "3") {
-                $("#cas_metric_has_morbid_symptoms_3").prop('checked', true);
-            } if (currentVal == "4") {
-                $("#cas_metric_has_morbid_symptoms_4").prop('checked', true);
-            } if (currentVal == "5") {
-                $("#cas_metric_has_morbid_symptoms_5").prop('checked', true);
-            } if (currentVal == "6") {
-                $("#cas_metric_has_morbid_symptoms_6").prop('checked', true);
-            } if (currentVal == "7") {
-                $("#cas_metric_has_morbid_symptoms_7").prop('checked', true);
-            }
-        });*@
+       
         //Ended By Axim 29-10-2020
 
         $("#cas_billing_visit_type").on('change', function () {
