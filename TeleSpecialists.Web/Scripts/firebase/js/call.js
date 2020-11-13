@@ -773,6 +773,7 @@ function AddUserConnections(userid, groupID, shortmsg, grpName, grpimg) {
 // husnain code end
 // logout function  call
 $('#signout').click(function () {
+    localStorage.clear();
     signOutAndLogout(true);
 });
 

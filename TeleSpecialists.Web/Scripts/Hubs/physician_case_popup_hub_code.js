@@ -219,7 +219,8 @@ function bindEventsForshowPhysicianNewCasePopup_def() {
         localStorage.setItem("strokePopStatus", "true");
         let phy_name = $("#cas_phy_name").val();
         let cas_number = $("#cas_number").val();
-        let msg = 'Dr ' + phy_name + ' has Rejected the Case # ' + cas_number;
+        let facility_name = $('#cas_fac_name').val();
+        let msg = 'Dr ' + phy_name + ' has been Rejected the Case # ' + cas_number + ', ' + facility_name;
         let physician = $("#cas_phy").val();
         AcceptCase(msg, physician);
         rejectCaseWithNoQueue(false);
@@ -233,7 +234,7 @@ function bindEventsForshowPhysicianNewCasePopup_def() {
         let phy_name = $("#cas_phy_name").val();
         let cas_number = $("#cas_number").val();
         let facility_name = $('#cas_fac_name').val();
-        let msg = 'Stroke Alert from ' + facility_name + ' has been Accepted by ' + phy_name;
+        let msg = 'Stroke Alert from ' + facility_name + ' has been Accepted by ' + phy_name + ', Case# ' + cas_number;
         let physician = $("#cas_phy").val();
         AcceptCase(msg, physician);
 

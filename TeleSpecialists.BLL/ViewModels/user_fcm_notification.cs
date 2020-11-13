@@ -165,12 +165,23 @@ namespace TeleSpecialists.BLL.ViewModels
                 try
                 {
                     var ioslist = _tokenservice.GetIOSAll(phy_key);
-                    if(ioslist.Count > 0)
+                    if (ioslist.Count > 0)
                     {
+                        WebRequest _tRequest = WebRequest.Create("https://fcm.googleapis.com/fcm/send");
+                        _tRequest.Method = "post";
+
+                        #region Code for telecare  db
+                        //serverKey - Key from Firebase cloud messaging server  
+                        _tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA1rwwbPI:APA91bGBQvXGabgDWOHGz8OEu9-yA7w3QhuXQoeAu9TEPGaEemYdoRXp_PRx1IkhYbGqwvb_xSf3LFk_ZErTSZd7HlehYUXeXxnROuL3Y22fspbWUWUwdVRrNtJHZ_dPL1ykSTLnTskS"));
+                        //Sender Id - From firebase project setting  
+                        _tRequest.Headers.Add(string.Format("Sender: id={0}", "BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o"));
+                        #endregion
+
+                        _tRequest.ContentType = "application/json";
+
                         var _payload = new
                         {
-                            //to = "c7-pvfElKUmOklY94iRpr-:APA91bHTnBJen01zN2vvL3CNj47Goo9Ntoembl2ZiuXIOOtRe_VGF6PTgFEShRHlkChg7tUnI0mt1Xtj6SMGeNmeeDlL35JqaNwrblMLsxHHeYqepX6u-gtkF27w_SU8BuNvHB2GCApY",
-                            registration_ids = ioslist,//user_Fcm_Notification.phy_tokens,
+                            registration_ids = ioslist, //user_Fcm_Notification.phy_tokens,
                             priority = "high",
                             content_available = false,
                             notification = new
@@ -198,17 +209,17 @@ namespace TeleSpecialists.BLL.ViewModels
                         };
                         string _postbody = JsonConvert.SerializeObject(_payload).ToString();
                         Byte[] _byteArray = Encoding.UTF8.GetBytes(_postbody);
-                        tRequest.ContentLength = _byteArray.Length;
-                        using (Stream dataStream = tRequest.GetRequestStream())
+                        _tRequest.ContentLength = _byteArray.Length;
+                        using (Stream _dataStream = _tRequest.GetRequestStream())
                         {
-                            dataStream.Write(_byteArray, 0, _byteArray.Length);
-                            using (WebResponse tResponse = tRequest.GetResponse())
+                            _dataStream.Write(_byteArray, 0, _byteArray.Length);
+                            using (WebResponse _tResponse = _tRequest.GetResponse())
                             {
-                                using (Stream dataStreamResponse = tResponse.GetResponseStream())
+                                using (Stream _dataStreamResponse = _tResponse.GetResponseStream())
                                 {
-                                    if (dataStreamResponse != null) using (StreamReader tReader = new StreamReader(dataStreamResponse))
+                                    if (_dataStreamResponse != null) using (StreamReader _tReader = new StreamReader(_dataStreamResponse))
                                         {
-                                            String sResponseFromServer = tReader.ReadToEnd();
+                                            String _sResponseFromServer = _tReader.ReadToEnd();
                                             //result.Response = sResponseFromServer;
                                         }
                                 }
@@ -216,9 +227,8 @@ namespace TeleSpecialists.BLL.ViewModels
                         }
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    
                 }
                 #endregion
 
