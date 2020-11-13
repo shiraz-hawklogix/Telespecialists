@@ -170,7 +170,9 @@ namespace TeleSpecialists.Controllers
             roles.Add(QPSId);
             roles.Add(QualityDirectorId);
             roles.Add(VPQualityId);
-            ViewBag.Facilities = _lookUpService.GetAllFacility(null).Select(m => new { Value = m.fac_key, Text = m.fac_name }).ToList().Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+
+            var facilities = _lookUpService.GetAllFacility(null).Select(m => new { Value = m.fac_key, Text = m.fac_name }).ToList().Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+            ViewBag.Facilities = facilities.Where(x => x.Value != id.ToString()).ToList();
             ViewBag.QPS_Numbers_List = _facilityService.GetUserByRole(roles, selected);
 
             facility.facility_contract = GetFacilityContract(facility.fac_key.ToString());
@@ -183,7 +185,6 @@ namespace TeleSpecialists.Controllers
         {
             if (ModelState.IsValid)
             {
-                
                 if (_facilityService.IsAlreadyExists(facility))
                     ModelState.AddModelError("fac_name", $"Type {facility.fac_name} already exists");
                 else
@@ -373,7 +374,7 @@ namespace TeleSpecialists.Controllers
 
 
         #region Shiraz Code For OnBoarding
-        
+
         public ActionResult CreateOnboarded(string fac_key, string issave)
         {
             ViewBag.fac_keys = fac_key;
@@ -399,7 +400,7 @@ namespace TeleSpecialists.Controllers
             ViewBag.Facilities = _lookUpService.GetAllFacility(null)
                                  .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                  .ToList()
-                                 .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+                                 .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text }).Where(x => x.Value != fac_key);
             var result = RenderPartialViewToString("EditButton", model);
             return Json(new { success = true, data = result });
             //return GetViewResult();
@@ -588,7 +589,7 @@ namespace TeleSpecialists.Controllers
             ViewBag.fnames = fname;
             ViewBag.user_ids = user_id;
             IEnumerable<Onboarded> model = lsit;
-            if (fap_key == null)
+            if (!string.IsNullOrWhiteSpace(fap_key))
             {
                 var ss = dbModel.fap_fac_key.ToString();
                 ViewBag.fap_keys = ss;
@@ -895,13 +896,12 @@ namespace TeleSpecialists.Controllers
             }
             return Json(isValid);
         }
-
         public ActionResult CopyOnboardTab(int onboardid, List<string> facilities)
         {
             try
             {
                 var model = _OnBoardedServices.GetDetailForOnboarded(onboardid);
-                
+
                 foreach (var item in facilities)
                 {
                     Onboarded On_boarded = new Onboarded();
@@ -924,7 +924,6 @@ namespace TeleSpecialists.Controllers
             }
 
         }
-
         #endregion
 
 

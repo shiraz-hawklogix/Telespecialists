@@ -289,6 +289,10 @@ namespace TeleSpecialists.BLL.Model
         public string cas_metric_viz_app_usage_text { get; set; }
         public Nullable<System.DateTime> cas_review_qps_reviewed_completed { get; set; }
         public Nullable<int> cas_metric_has_morbid_symptoms { get; set; }
+        public Nullable<int> cas_premorbid_symptoms { get; set; }
+        public string cas_premorbid_symptoms_text { get; set; }
+        public string cas_premorbid_completed_by { get; set; }
+        public Nullable<System.DateTime> cas_premorbid_completed_date { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<case_assign_history> case_assign_history { get; set; }

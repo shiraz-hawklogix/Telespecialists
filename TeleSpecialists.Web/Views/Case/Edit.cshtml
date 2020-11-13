@@ -162,7 +162,7 @@
     {
         textfreeExam = "true";
     }
-    
+
 }
 @Html.Partial("_facilityInfoPopover", caseModel)
 <div class="col-md-12">
@@ -352,22 +352,22 @@
                     </a>
                 </div>
             </div>
-                <div class="row mt-xl-3">
-                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
-                        <button type="button" onclick="openProtocolpopup()" ; class="btn btn-dark btn-sm" id="protocols">
-                            <span class="fa fa-hospital-o text-white  edMainHeaderLink">
-                            </span>
-                            Protocols
-                        </button>
-                    </div>
-
-                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 text-xl-right">
-                        <button type="button" onclick="openOnboardedpopup()" ; class="btn btn-dark btn-sm" id="onboardeds">
-                            Onboarding
-                        </button>
-                    </div>
+            <div class="row mt-xl-3">
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
+                    <button type="button" onclick="openProtocolpopup()" ; class="btn btn-dark btn-sm" id="protocols">
+                        <span class="fa fa-hospital-o text-white  edMainHeaderLink">
+                        </span>
+                        Protocols
+                    </button>
                 </div>
-            
+
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 text-xl-right">
+                    <button type="button" onclick="openOnboardedpopup()" ; class="btn btn-dark btn-sm" id="onboardeds">
+                        Onboarding
+                    </button>
+                </div>
+            </div>
+
         </div>
         <!-- End of New Column -->
     </div>
@@ -412,7 +412,13 @@ EntityTypes.StateAlertTemplate.ToInt()
             <li class="nav-item"><a id="templatesTabLink" data-toggle="tab" class="nav-link" href="#templates" onclick="showHideTabElements('#templates');">Templates</a></li>
         }
     }
-
+    @if ((User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription())))
+    {
+        if (Model.cas_ctp_key == CaseType.StrokeAlert.ToInt() || Model.cas_ctp_key == CaseType.StatConsult.ToInt())
+        {
+            <li class="nav-item"><a id="premorbidTabLink" data-toggle="tab" class="nav-link" href="#premorbid" onclick="showHideTabElements('#premorbid');">Hospital F/UP</a></li>
+        }
+    }
     @if (!(User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) || User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription())))
     {
         <li class="nav-item"><a id="billingTabLink" data-toggle="tab" class="nav-link @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ||  User.IsInRole(UserRoles.FacilityPhysician.ToDescription())) && !isMetricsVisible? "active" : "")" href="#billing" onclick="showHideTabElements('#billing');">Billing</a></li>
@@ -478,6 +484,11 @@ EntityTypes.StateAlertTemplate.ToInt()
 
             <div id="facilityMetric" role="tabpanel" class="tab-pane fade @(User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) ? "d-none": "")">
                 @Html.Partial("_CaseFacilityForm", Model)
+            </div>
+
+
+            <div id="premorbid" role="tabpanel" class="tab-pane fade">
+                @Html.Partial("_CasePreMorbid", Model)
             </div>
 
             <div id="billing" role="tabpanel" class="tab-pane fade @(User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) ? "d-none": "")
@@ -696,14 +707,14 @@ EntityTypes.StateAlertTemplate.ToInt()
     var casStatus;
     var checkCaseAlreadyUpdated = true;
 
-   
+
 
     $(".timer-container").find("input.timepicker").each(function (i, e) {
         ShowHideTimeZone($(e));
     });
 
     $(document).ready(function () {
-      
+
         $(window).on('beforeunload', function () {
             clearSoftSaveCase();
         });
@@ -900,10 +911,11 @@ EntityTypes.StateAlertTemplate.ToInt()
             if ('@(User.IsInRole(UserRoles.VPQuality.ToDescription()))' == 'True') {
                 $("#cas_review_qps_reviewed_completed").removeAttr('readonly');
             }
-            @*if (@(User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()).ToString().ToLower().ToString().ToLower()) ) {
-            disableAllControls();
-            enableReviewTabElements();
-        }*@
+        } else if (tab == '#premorbid' || tab == 'premorbid') {
+            if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' == 'True') {
+                $('.premorbid :radio:not(:checked)').attr('disabled', true);
+                $('#cas_premorbid_symptoms_text').attr('readonly', true);
+            }
         }
 
         //Disable and Enable buttons
@@ -922,8 +934,6 @@ EntityTypes.StateAlertTemplate.ToInt()
                   }
               }
             }
-
-
 
         //// If validation call is comming from complete case button, then we validate on each tab selection. other wise we do not need to check validation on tab selection.
         if (typeof (window.showErrorsOnTabClick) == "undefined" || window.showErrorsOnTabClick === false) {
@@ -965,6 +975,11 @@ EntityTypes.StateAlertTemplate.ToInt()
             window.setTimeout(function () {
                 $("#billingTabLink").tab("show");
                 validateBillingRequiredFields(true);
+            }, time);
+        } else if (tab == "#premorbid") {
+            window.setTimeout(function () {
+                $("#premorbidTabLink").tab("show");
+               // validatepremorbidFields(false);
             }, time);
         }
 
@@ -1045,7 +1060,6 @@ EntityTypes.StateAlertTemplate.ToInt()
                 $("#VisibleTabs").val(visibleTabs.join(","));
 
             }, 500);
-
 
             showHideTabElements(tab);
         }
@@ -1175,15 +1189,59 @@ EntityTypes.StateAlertTemplate.ToInt()
         });
         //ticket 557
 
-
-
-
         $("#general_cas_patient_name").on('change', function () {
             $("#billing_cas_patient_name").val($(this).val());
         });
         $("#billing_cas_patient_name").on('change', function () {
             $("#general_cas_patient_name").val($(this).val());
         });
+        //Added By Axim 29-10-2020
+        $(".morbidSymptoms").on('change', function () {
+            var currentVal = $('input:radio[name=cas_metric_has_morbid_symptoms]:checked').val();
+            $('.premorbid :radio:not(:checked)').attr('disabled', false);
+            if (currentVal == "0") {
+                $("#cas_metric_has_morbid_symptoms_0_UP").prop('checked', true);
+            } if (currentVal == "1") {
+                $("#cas_metric_has_morbid_symptoms_1_UP").prop('checked', true);
+            } if (currentVal == "2") {
+                $("#cas_metric_has_morbid_symptoms_2_UP").prop('checked', true);
+            } if (currentVal == "3") {
+                $("#cas_metric_has_morbid_symptoms_3_UP").prop('checked', true);
+            } if (currentVal == "4") {
+                $("#cas_metric_has_morbid_symptoms_4_UP").prop('checked', true);
+            } if (currentVal == "5") {
+                $("#cas_metric_has_morbid_symptoms_5_UP").prop('checked', true);
+            } if (currentVal == "6") {
+                $("#cas_metric_has_morbid_symptoms_6_UP").prop('checked', true);
+            }if (currentVal == "7") {
+                $("#cas_metric_has_morbid_symptoms_7_UP").prop('checked', true);
+            }
+            if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' != 'True') {
+                $('.premorbid :radio:not(:checked)').attr('disabled', true);
+            }
+        });
+        $(".premorbid").on('change', function () {
+            var currentVal = $('input:radio[name=cas_premorbid_symptoms]:checked').val();
+            if (currentVal == "0") {
+                $("#cas_metric_has_morbid_symptoms_0").prop('checked', true);
+            } if (currentVal == "1") {
+                $("#cas_metric_has_morbid_symptoms_1").prop('checked', true);
+            } if (currentVal == "2") {
+                $("#cas_metric_has_morbid_symptoms_2").prop('checked', true);
+            } if (currentVal == "3") {
+                $("#cas_metric_has_morbid_symptoms_3").prop('checked', true);
+            } if (currentVal == "4") {
+                $("#cas_metric_has_morbid_symptoms_4").prop('checked', true);
+            } if (currentVal == "5") {
+                $("#cas_metric_has_morbid_symptoms_5").prop('checked', true);
+            } if (currentVal == "6") {
+                $("#cas_metric_has_morbid_symptoms_6").prop('checked', true);
+            } if (currentVal == "7") {
+                $("#cas_metric_has_morbid_symptoms_7").prop('checked', true);
+            }
+        });
+        //Ended By Axim 29-10-2020
+
         $("#cas_billing_visit_type").on('change', function () {
 
             if ($(this).val() == 'Follow-Up') {
@@ -1261,9 +1319,6 @@ EntityTypes.StateAlertTemplate.ToInt()
         $("#cas_billing_bic_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.BillingCode.ToInt())), "ucd_title", "ucd_key", "-- Select --");
         $("#cas_billing_bic_key2").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.BillingCode.ToInt())), "ucd_title", "ucd_key", "-- Select --");
         $("#cas_billing_bic_key3").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.BillingCode.ToInt())), "ucd_title", "ucd_key", "-- Select --");
-
-
-
 
         if ($("#disable-partnerPhysician-controls").val() == "1") { // in case of partner physician diablle controls
             //$("#cas_fac_key").KendoDropDownReadOnly();
@@ -1400,6 +1455,7 @@ EntityTypes.StateAlertTemplate.ToInt()
 
                     if ($('#cas_response_first_atempt').data('kendoTimePicker') != undefined && !isAdmin)
                         $('#cas_response_first_atempt').data('kendoTimePicker').readonly();
+
                 }
                 else {
                     if ($('#cas_response_first_atempt').data('kendoTimePicker') != undefined && !isAdmin)
@@ -1430,6 +1486,8 @@ EntityTypes.StateAlertTemplate.ToInt()
             $("#cas_response_first_atempt").val($(this).val());
             firstLoginTimeCallBack();
         });
+
+
 
         function firstLoginTimeCallBack() {
             var value = $.trim($("#cas_response_first_atempt").val());
@@ -1585,6 +1643,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
         }
 
+
         $("#lnkCaseClose").off("click").click(function (e) {
             e.preventDefault();
             clearAutoSaveInterval();
@@ -1633,7 +1692,9 @@ EntityTypes.StateAlertTemplate.ToInt()
              if (@isReadOnlyCase.ToString().ToLower()) {
                  readOnlyAllFields();
             }
-            checkBillingRevisedCode();
+
+            //checkBillingRevisedCode();
+
             // temporary disabling it, to exclude it from production deployment
             submitCaseChanges(); // temporary direct call
             //if (checkCaseAlreadyUpdated) {
@@ -1655,23 +1716,12 @@ EntityTypes.StateAlertTemplate.ToInt()
             //    }
             //}
         });
-        //Added BY Axim 26-10-2020
-        function checkBillingRevisedCode() {
-            var billingCode = $("#cas_billing_bic_key3").val();
-            if (billingCode !== "") {
-                $('#cas_billing_bic_key').val(billingCode);//.change();
-                $('#cas_billing_bic_key_id').val(billingCode);//.change();
-                $('#cas_billing_bic_key').change();
-                $('#cas_billing_bic_key_id').change();
-            }
-        }
-         //Ended BY Axim 26-10-2020
+
         $("#btnSaveClose").off("click").click(function () {
             savetypeofcorrespondense();
             $(".error_msg").hide();
             var isCompleted = $("#cas_cst_key").val();
             if (isCompleted == @CaseStatus.Complete.ToInt()) {
-                checkBillingRevisedCode();
                 performCaseCompletion("1");
                 return;
             }
@@ -1686,13 +1736,12 @@ EntityTypes.StateAlertTemplate.ToInt()
             if (typeof (caseTemplateBeforeSubmit) != "undefined") {
                 caseTemplateBeforeSubmit();
             }
-            if (validateGeneralTabForm(true, false, false) && validateMetricsRequiredFields(false) && validateBillingRequiredFields(false) && validateTemplateTabRequiredFields($("#TemplateEntityType").val()@*@Model.TemplateEntityType.ToInt()*@, false) ) {
+            if (validateGeneralTabForm(true, false, false) && validateMetricsRequiredFields(false) /*&& validatepremorbidFields(false)*/ && validateBillingRequiredFields(false) && validateTemplateTabRequiredFields($("#TemplateEntityType").val()@*@Model.TemplateEntityType.ToInt()*@, false)) {
                 // check tpa fields in physician metrics tab, and reset hidden field values.
                 resetTpaCandidatehiddenFields();
                 GetCaseReviewers();
                 $("#RedirectPage").val("1");
                 clearAutoSaveInterval();
-                checkBillingRevisedCode();
                 submitCaseChanges();
             }
             else {
@@ -1703,16 +1752,20 @@ EntityTypes.StateAlertTemplate.ToInt()
                     }
                     saveFormData();
                 }
+
             }
         });
 
         function ValidateAllTabs() {
             $(".error_msg").hide();
+
             var generalTab = true;
             var metricTab = true;
             var templateTab = true;
             var billingTab = true;
+            var premorbidTab = true;
             var tabToShow = "";
+
 
          if (!validateBillingRequiredFields(true)) {
 
@@ -1727,7 +1780,9 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
 
            if (!validateMetricsRequiredFields(true)) {
+
                tabToShow = "#metricTabLink";
+
                metricTab = false;
            }
 
@@ -1735,17 +1790,26 @@ EntityTypes.StateAlertTemplate.ToInt()
 
                tabToShow = "#generalTABLink";
                generalTab = false;
-          }
+            }
+            if (!validatepremorbidFields(true)) {
+                tabToShow = "#premorbidTabLink";
+                premorbidTab = false;
+            }
+
 
             if (tabToShow !== null && tabToShow !== "") {
+
                 $(tabToShow).tab("show");
             }
+
 
             if (tabToShow == "#billingTabLink") {
                 if (casStatus !== '140') {
                     $("#btnCompleteCase").show();
                 }
+
             }
+
             else {
                 $("#btnCompleteCase").hide();
                 $('#btnCancelCase').hide();
@@ -1769,7 +1833,6 @@ EntityTypes.StateAlertTemplate.ToInt()
                 }
                 return;
             }
-            checkBillingRevisedCode();
             performCaseCompletion("1");
 
             window.showErrorsOnTabClick = false;
@@ -1868,6 +1931,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         //Remove popup functionality and currently showing popup modal in case when we click on H icone.
         //$('#popover-facility').showPopover('#divContentArea'); // #popover-container-facility'
 
+
         $('#popover, #popover-facility').click(function () {
             $('#tooltip').show();
             $('#popupModelFacility').modal({
@@ -1876,6 +1940,8 @@ EntityTypes.StateAlertTemplate.ToInt()
                 keyboard: false
                 });
         });
+
+
 
         // code to prevent form submit on enter
         $("input[type=text]").keyup(function (event) {
@@ -1991,6 +2057,8 @@ EntityTypes.StateAlertTemplate.ToInt()
             });
     })
 
+
+
     $("#btnDownloadTemplate").off("click").click(function () {
         ////added by ahmad 08-09-2020
         var criticalcareTimeDiv = true;
@@ -2040,6 +2108,7 @@ EntityTypes.StateAlertTemplate.ToInt()
 
             }
             else {
+
 
                 $.post(url, data, function (response) {
                     if (response.success) {
@@ -2193,7 +2262,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         if (typeof (caseTemplateBeforeSubmit) != "undefined") {
             caseTemplateBeforeSubmit();
         }
-        if (validateGeneralTabForm(true, true, false) && validateMetricsRequiredFields(true) && validateBillingRequiredFields(true) && validateTemplateTabRequiredFields($("#TemplateEntityType").val() @*@Model.TemplateEntityType.ToInt()*@, true)) {
+        if (validateGeneralTabForm(true, true, false) && validateMetricsRequiredFields(true) /*&& validatepremorbidFields(true)*/ && validateBillingRequiredFields(true) && validateTemplateTabRequiredFields($("#TemplateEntityType").val() @*@Model.TemplateEntityType.ToInt()*@, true)) {
             // check tpa fields in physician metrics tab, and reset hidden field values.
             resetTpaCandidatehiddenFields();
             GetCaseReviewers();
@@ -2208,7 +2277,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             if (@isReadOnlyCase.ToString().ToLower()) {
                 readOnlyAllFields();
             }
-           // checkBillingRevisedCode();
             $("#createForm").submit();
         }
         else {
@@ -2289,8 +2357,10 @@ EntityTypes.StateAlertTemplate.ToInt()
         else {
             if (@isReadOnlyCase.ToString().ToLower()) {
                         readOnlyAllFields();
+
             }
-            checkBillingRevisedCode();
+           // checkBillingRevisedCode();
+
             $("#createForm").submit();
         }
     }
@@ -3364,7 +3434,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         $("#cas_ctp_key").off("change").change(function () {
 
          BindBillingCodeDropdown($(this).val());
-     });
+        });
           var show = @Model.cas_metric_symptom_onset_during_ed_stay.ToString().ToLower();
 
         SymptomsOnSet(show);
@@ -3412,17 +3482,18 @@ EntityTypes.StateAlertTemplate.ToInt()
     });
 
     // Moving metric tab functionality here . Because some components such as datetime pickter did not render at _caseMetricForm.
-
+    
     function SymptomsOnSet(show) {
         if (show) {
-            $(".symptoms_onset_during_ed_stay").show();
+            $("input[name=cas_patient_type][value='4']").attr('checked', 'checked');
+            $("#symptoms_onset_during_ed_stay").show();
         }
-        else {
-            $(".symptoms_onset_during_ed_stay").hide();
-        }
+        //else {
+        //    $("#symptoms_onset_during_ed_stay").hide();
+        //}
     }
-
-    $("#cas_metric_symptom_onset_during_ed_stay").off('change').change(function () {
+    
+    @*$("#cas_metric_symptom_onset_during_ed_stay").off('change').change(function () {
 
         var show = $(this).prop("checked");
 
@@ -3432,7 +3503,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         }
 
         SymptomsOnSet(show);
-    });
+    });*@
 
     $(".callLink").off("click").click(function () {
 
@@ -3855,9 +3926,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         var billingCode = $(this).val();
         if (billingCode !== "") {
             $('#cas_billing_bic_key').val(billingCode);//.change();
-            $('#cas_billing_bic_key_id').val(billingCode);//.change();
             $('#cas_billing_bic_key').change();
-            $('#cas_billing_bic_key_id').change();
         }
             $('#lblRevised').html('Revised Billing Code Will Update the Billing Code!');
         });
@@ -3870,7 +3939,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             dataType: 'json',
             data: { fac_key: fac_key},
             error: function (xhr, error) {
-               
+
             },
             success: function (response) {
                 $(".hospitalprotocoldata").append(response.data);
@@ -3880,7 +3949,7 @@ EntityTypes.StateAlertTemplate.ToInt()
 
         });
     }
-    
+
     function openOnboardedpopup() {
         ShowLoading();
         var fac_key = '@Model.cas_fac_key';
@@ -3899,7 +3968,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
 
         });
-       
+
     }
 </script>
 

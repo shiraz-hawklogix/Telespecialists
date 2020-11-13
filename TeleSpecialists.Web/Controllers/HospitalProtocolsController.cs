@@ -107,6 +107,7 @@ namespace TeleSpecialists.Controllers
             ViewBag.Facilities = _lookUpService.GetAllFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
+                                                  .Where(x => x.Value != fac_key)
                                                   .ToList();
             var result = RenderPartialViewToString("Edit", model);
             return Json(new { success = true, data = result });

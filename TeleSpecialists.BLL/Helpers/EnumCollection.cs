@@ -221,7 +221,10 @@ namespace TeleSpecialists.BLL.Helpers
         Triage = 3,
 
         [Description("Inpatient")]
-        Inpatient = 2
+        Inpatient = 2,
+
+        [Description("Symptom Onset During ED Stay")]
+        SymptomOnsetDuringEDStay = 4
     }
 
 

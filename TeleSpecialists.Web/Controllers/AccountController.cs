@@ -505,7 +505,7 @@ namespace TeleSpecialists.Controllers
             }
             string PCName = GetUniqueMachineInfo(UserId);
 
-            var user =  _userVerificationService.userVerifications(UserId);
+            var user = _userVerificationService.userVerifications(UserId);
             if (settings.aps_enable_logout_from_other_devices && user.Count > 0 && !string.IsNullOrEmpty(PCName) && (string.IsNullOrEmpty(isLogout) || isLogout != "true"))
             {
                 if (user.Where(x => x.IsLoggedIn == true).ToList().Any(x => x.MachineName != PCName))
@@ -553,11 +553,11 @@ namespace TeleSpecialists.Controllers
             var phy_ids = firebaseUsers.ToList();
             var paramData = new List<object>();
             paramData.Add(JsonConvert.SerializeObject(phy_ids));
-           // bool sentStatus = true;
-            bool sentStatus = _user_Fcm_Notification.SendNotification(phy_key: model.UserId, caseType: "TwoFactorAuth", Data: paramData);
+            bool sentStatus = true;
+            //bool sentStatus = _user_Fcm_Notification.SendNotification(phy_key: model.UserId, caseType: "TwoFactorAuth", Data: paramData);
             if (sentStatus || !sentStatus)
             {
-                _userVerificationService.SignOutAllUsers(model.UserId);
+                //_userVerificationService.SignOutAllUsers(model.UserId);
                 return Json(new { result = true }, JsonRequestBehavior.AllowGet);
             }
             #endregion
@@ -966,8 +966,8 @@ namespace TeleSpecialists.Controllers
             _userVerificationService.userSignOut(user.Id.ToString(), PCName, isLogout);
 
             // get delete token from specific Machine
-            var tokens = _tokenservice.deleteToken(user.Id.ToString(), PCName);
-            _tokenservice.DeleteRange(tokens);
+            //var tokens = _tokenservice.deleteToken(user.Id.ToString(), PCName);
+            //_tokenservice.DeleteRange(tokens);
 
             LogAuditRecord(user.UserName, AuditRecordLogStatus.LogOut.ToString());
 

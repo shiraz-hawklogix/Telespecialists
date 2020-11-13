@@ -18,7 +18,6 @@ using TeleSpecialists.Web.Hubs;
 using TeleSpecialists.Web.Models;
 using TeleSpecialists.BLL.Service.CaseServices;
 using Kendo.DynamicLinq;
-using System.Web;
 
 namespace TeleSpecialists.Controllers
 {
@@ -355,7 +354,7 @@ namespace TeleSpecialists.Controllers
         }
         public ActionResult _AdvanceSearch(PageSource source, bool showFollowUp = true)
         {
-            ViewBag.cas_fac_key = _lookUpService.GetAllFacility("").Select(m => new SelectListItem
+            ViewBag.cas_fac_key = _lookUpService.GetAllActnNonActFacility("").Select(m => new SelectListItem
             {
                 Text = m.fac_name,
                 Value = m.fac_key.ToString()
@@ -880,7 +879,6 @@ namespace TeleSpecialists.Controllers
         public ActionResult Edit(int id, bool isReadOnly = false)
         {
             isCalculateBill = false;
-
             ViewBag.IsReadOnlyCase = isReadOnly;
             if (User.IsInRole(UserRoles.Finance.ToDescription()))
             {
@@ -890,6 +888,25 @@ namespace TeleSpecialists.Controllers
             ViewBag.EnableAutoSave = ApplicationSetting.aps_enable_case_auto_save;
             ViewBag.ShowNotesPopup = ApplicationSetting.aps_cas_facility_popup_on_load;
             //  var viewModel = new CaseViewModel();
+            //Added by Axim 29-10-2020
+            string selected = "";
+            List<string> roless = new List<string>();
+
+            var QPS = UserRoles.QPS.ToDescription();
+            var QualityDirector = UserRoles.QualityDirector.ToDescription();
+            var VPQuality = UserRoles.VPQuality.ToDescription();
+
+            var QPSId = RoleManager.Roles.Where(x => x.Description == QPS).Select(x => x.Id).FirstOrDefault();
+            var QualityDirectorId = RoleManager.Roles.Where(x => x.Description == QualityDirector).Select(x => x.Id).FirstOrDefault();
+            var VPQualityId = RoleManager.Roles.Where(x => x.Description == VPQuality).Select(x => x.Id).FirstOrDefault();
+
+            roless.Add(QPSId);
+            roless.Add(QualityDirectorId);
+            roless.Add(VPQualityId);
+            ViewBag.QPSList = _facilityService.GetUserByRole(roless, selected);
+
+            //Ended By Axim 29-10-2020
+
             try
             {
                 model = _caseService.GetDetails(id);
@@ -1378,7 +1395,7 @@ namespace TeleSpecialists.Controllers
                             showPhyOfflinePopup = IsUserOnline(model.cas_phy_key) ? "0" : "1";
                             if (showPhyOfflinePopup == "0")
                             {
-                                SendCaseToPhysician(model);
+                                 SendCaseToPhysician(model);
                             }
                         }
 
@@ -1416,11 +1433,40 @@ namespace TeleSpecialists.Controllers
             return Json("error", JsonRequestBehavior.AllowGet);
         }
 
+        public class rca_counter_measure_model
+        {
+            public int rca_Id { get; set; }
+            public int rca_key_id { get; set; }
+            public string rca_root_cause { get; set; }
+            public string rca_proposed_countermeasure { get; set; }
+            public string rca_responsible_party { get; set; }
+            public string rca_proposed_due_date { get; set; }
+            public int? rca_rootcause_id { get; set; }
+            public string rca_completed_date { get; set; }
+        }
+        
+
         public JsonResult GetRootRecord(int id)
         {
             var GetRecord = _rootCauseService.GetDetail(id);
 
-            return Json(GetRecord.Select(x => new
+            List<rca_counter_measure_model> _list = new List<rca_counter_measure_model>();
+            rca_counter_measure_model obj;
+            foreach (var item in GetRecord)
+            {
+                obj = new rca_counter_measure_model();
+
+                obj.rca_rootcause_id = item.rca_rootcause_id;
+                obj.rca_root_cause = item.rca_root_cause;
+                obj.rca_proposed_countermeasure = item.rca_proposed_countermeasure;
+                obj.rca_responsible_party = item.rca_responsible_party;
+                obj.rca_proposed_due_date = item.rca_proposed_due_date == null ? "" : item.rca_proposed_due_date.ToString();
+                obj.rca_completed_date = item.rca_completed_date == null ? "" : item.rca_completed_date.ToString();
+                obj.rca_Id = item.rca_Id;
+                _list.Add(obj);
+            }
+
+            return Json(_list.Select(x => new
             {
                 x.rca_rootcause_id,
                 x.rca_root_cause,
@@ -1657,7 +1703,8 @@ namespace TeleSpecialists.Controllers
                     model.cas_modified_by = loggedInUser.Id;
                     model.cas_modified_by_name = loggedInUser.FullName;
                     model.cas_modified_date = DateTime.Now.ToEST();
-
+                    //if (model.cas_billing_bic_key == null)
+                    //    model.cas_billing_bic_key = model.cas_billing_bic_key_initial;
                     #region TCARE-484 Advance Imaging Checkboxes
 
                     if (model.cas_metric_thrombectomy_medical_decision_making == null ||
@@ -1889,7 +1936,6 @@ namespace TeleSpecialists.Controllers
 
                     #region handling logging in case of physician updated
 
-
                     // handling status update time of physician
                     HandleCaseStatusCode(model, dbModel);
 
@@ -1901,11 +1947,6 @@ namespace TeleSpecialists.Controllers
                             model.cas_history_physician_initial = _caseService.GetCaseInitials(model.cas_key);
                         }
                     }
-
-
-
-
-
 
                     #endregion
 
@@ -2147,15 +2188,15 @@ namespace TeleSpecialists.Controllers
                     facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
                                              .Select(x => x.Facility).ToList();
                 }
-                else if (User.IsInRole(UserRoles.QPS.ToDescription()))
+                else if (User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
                 {
-                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
-                                             .Select(x => x.Facility).ToList();
-                }
-                else if (User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
-                {
-                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
-                    .Select(x => x.Facility).ToList();
+                    facilities = _lookUpService.GetAllActnNonActFacility("")
+                                             .Select(x => x.fac_key).ToList();
+                //}
+                //else if ()
+                //{
+                //    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
+                //    .Select(x => x.Facility).ToList();
                 }
                 var res = _caseGridService.GetCaseLisingPageData(request, userId, facilities); //Getting cases for listing
                 var jsonResult = Json(res, JsonRequestBehavior.AllowGet);
@@ -2191,15 +2232,15 @@ namespace TeleSpecialists.Controllers
                     facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
                                              .Select(x => x.Facility).ToList();
                 }
-                else if (User.IsInRole(UserRoles.QPS.ToDescription()))
+                else if (User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
                 {
-                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
-                                             .Select(x => x.Facility).ToList();
-                }
-                else if (User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
-                {
-                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
-                                             .Select(x => x.Facility).ToList();
+                    facilities = _lookUpService.GetAllActnNonActFacility("")
+                                             .Select(x => x.fac_key).ToList();
+                    //}
+                    //else if (User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()))
+                    //{
+                    //    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
+                    //                             .Select(x => x.Facility).ToList();
                 }
                 var res = _caseGridService.GetCaseDashboardPageData(request, userId, facilities);
                 var jsonResult = Json(res, JsonRequestBehavior.AllowGet);
@@ -5788,19 +5829,11 @@ namespace TeleSpecialists.Controllers
         public JsonResult CreateTokens(token model, string phy_token_key)
         {
             string phy_key = User.Identity.GetUserId();
-            // get MachineName
-            string PCName = "";
-            HttpCookie myCookie = Request.Cookies["PCCookieInfo_" + phy_key];
-            if (myCookie != null)
-            {
-                PCName = myCookie.Values["userid"].ToString();
-            }
-            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key, PCName);
+            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key);
             if (GetDetail == null)
             {
                 model.tok_phy_key = phy_key;
                 model.tok_phy_token = phy_token_key;
-                model.tok_machine_name = PCName;
                 _tokenservice.Create(model);
             }
             var detail = _fireBaseUserMailService.GetDetails(phy_key);
@@ -5809,13 +5842,7 @@ namespace TeleSpecialists.Controllers
         public JsonResult DeleteToken(string phy_token_key)
         {
             string phy_key = User.Identity.GetUserId();
-            string PCName = "";
-            HttpCookie myCookie = Request.Cookies["PCCookieInfo_" + phy_key];
-            if (myCookie != null)
-            {
-                PCName = myCookie.Values["userid"].ToString();
-            }
-            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key, PCName);
+            var GetDetail = _tokenservice.GetDetailById(phy_key, phy_token_key);
             if (GetDetail != null)
             {
                 int id = GetDetail.tok_key;

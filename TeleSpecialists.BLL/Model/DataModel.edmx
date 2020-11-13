@@ -554,6 +554,10 @@
           <Property Name="cas_metric_viz_app_usage_text" Type="varchar(max)" />
           <Property Name="cas_review_qps_reviewed_completed" Type="datetime" />
           <Property Name="cas_metric_has_morbid_symptoms" Type="int" />
+          <Property Name="cas_premorbid_symptoms" Type="int" />
+          <Property Name="cas_premorbid_symptoms_text" Type="varchar(max)" />
+          <Property Name="cas_premorbid_completed_by" Type="varchar" MaxLength="128" />
+          <Property Name="cas_premorbid_completed_date" Type="datetime" />
         </EntityType>
         <EntityType Name="case_assign_history">
           <Key>
@@ -1768,8 +1772,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="tok_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="tok_phy_key" Type="nvarchar" MaxLength="128" />
           <Property Name="tok_phy_token" Type="nvarchar(max)" />
-          <Property Name="tok_device_type" Type="varchar" MaxLength="100" />
-          <Property Name="tok_machine_name" Type="varchar" MaxLength="400" />
         </EntityType>
         <EntityType Name="ucl">
           <Key>
@@ -1798,20 +1800,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="ucd_created_by" Type="nvarchar" MaxLength="128" />
           <Property Name="ucd_modified_date" Type="datetime" />
           <Property Name="ucd_modified_by" Type="nvarchar" MaxLength="128" />
-        </EntityType>
-        <EntityType Name="user_access">
-          <Key>
-            <PropertyRef Name="user_key" />
-          </Key>
-          <Property Name="user_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="user_role_key" Type="nvarchar" MaxLength="128" />
-          <Property Name="user_id" Type="nvarchar" MaxLength="128" />
-          <Property Name="user_com_key" Type="int" />
-          <Property Name="user_isAllowed" Type="bit" />
-          <Property Name="user_createddate" Type="datetime" />
-          <Property Name="user_createdBy" Type="nvarchar" MaxLength="128" />
-          <Property Name="user_updateddate" Type="datetime" />
-          <Property Name="user_updatedBy" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <EntityType Name="user_login_verify">
           <Key>
@@ -2798,7 +2786,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="token" EntityType="Self.token" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ucl" EntityType="Self.ucl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ucl_data" EntityType="Self.ucl_data" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="user_access" EntityType="Self.user_access" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_login_verify" EntityType="Self.user_login_verify" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_schedule" EntityType="Self.user_schedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_schedule_nhalert" EntityType="Self.user_schedule_nhalert" Schema="dbo" store:Type="Tables" />
@@ -3121,7 +3108,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="physician_status_snooze" EntityType="DataModel.physician_status_snooze" />
           <EntitySet Name="physician_status_snooze_option" EntityType="DataModel.physician_status_snooze_option" />
           <EntitySet Name="rca_counter_measure" EntityType="DataModel.rca_counter_measure" />
-          <EntitySet Name="tokens" EntityType="DataModel.token" />
           <EntitySet Name="ucls" EntityType="DataModel.ucl" />
           <EntitySet Name="ucl_data" EntityType="DataModel.ucl_data" />
           <EntitySet Name="MDStaffFacilities" EntityType="DataModel.MDStaffFacility" />
@@ -3398,10 +3384,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="user_schedule" EntitySet="user_schedule" />
           </AssociationSet>
-          <AssociationSet Name="FK_token_AspNetUsers" Association="DataModel.FK_token_AspNetUsers">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="token" EntitySet="tokens" />
-          </AssociationSet>
           <AssociationSet Name="FK_user_login_verify_User_Id" Association="DataModel.FK_user_login_verify_User_Id">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="user_login_verify" EntitySet="user_login_verify" />
@@ -3427,7 +3409,11 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <FunctionImport Name="sp_getMenuAccess" ReturnType="Collection(DataModel.sp_getMenuAccess_Result)">
           <Parameter Name="Id" Mode="In" Type="String" />
           </FunctionImport>
-          <EntitySet Name="user_access" EntityType="DataModel.user_access" />
+          <EntitySet Name="tokens" EntityType="DataModel.token" />
+          <AssociationSet Name="FK_token_AspNetUsers" Association="DataModel.FK_token_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="token" EntitySet="tokens" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="alarm_setting">
           <Key>
@@ -4199,17 +4185,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="rca_rootcause_id" Type="Int32" />
           <Property Name="rca_completed_date" Type="DateTime" Precision="3" />
           <NavigationProperty Name="case" Relationship="DataModel.FK_rca_counter_measure_case" FromRole="rca_counter_measure" ToRole="case" />
-        </EntityType>
-        <EntityType Name="token">
-          <Key>
-            <PropertyRef Name="tok_key" />
-          </Key>
-          <Property Name="tok_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="tok_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="tok_phy_token" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_token_AspNetUsers" FromRole="token" ToRole="AspNetUser" />
-          <Property Name="tok_device_type" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="tok_machine_name" Type="String" MaxLength="400" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="ucl">
           <Key>
@@ -5255,6 +5230,10 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_case_AspNetUsers1" FromRole="case" ToRole="AspNetUser" />
           <Property Name="cas_review_qps_reviewed_completed" Type="DateTime" Precision="3" />
           <Property Name="cas_metric_has_morbid_symptoms" Type="Int32" />
+          <Property Name="cas_premorbid_symptoms" Type="Int32" />
+          <Property Name="cas_premorbid_symptoms_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cas_premorbid_completed_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="cas_premorbid_completed_date" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="facility">
           <Key>
@@ -5834,10 +5813,10 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <NavigationProperty Name="post_acute_care" Relationship="DataModel.FK_post_acute_care_users_AspNetUsers" FromRole="AspNetUser" ToRole="post_acute_care" />
           <NavigationProperty Name="physician_rate" Relationship="DataModel.FK_Rate_Rate" FromRole="AspNetUser" ToRole="physician_rate" />
           <NavigationProperty Name="user_schedule" Relationship="DataModel.FK_resource_scheduler_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule" />
-          <NavigationProperty Name="tokens" Relationship="DataModel.FK_token_AspNetUsers" FromRole="AspNetUser" ToRole="token" />
           <NavigationProperty Name="user_login_verify" Relationship="DataModel.FK_user_login_verify_User_Id" FromRole="AspNetUser" ToRole="user_login_verify" />
           <NavigationProperty Name="user_schedule_nhalert" Relationship="DataModel.FK_user_schedule_nhalert_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_nhalert" />
           <NavigationProperty Name="user_schedule_sleep" Relationship="DataModel.FK_user_schedule_sleep_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_sleep" />
+          <NavigationProperty Name="tokens" Relationship="DataModel.FK_token_AspNetUsers" FromRole="AspNetUser" ToRole="token" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
@@ -6083,18 +6062,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_token_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
-          <End Type="DataModel.token" Role="token" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="token">
-              <PropertyRef Name="tok_phy_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_user_login_verify_User_Id">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
           <End Type="DataModel.user_login_verify" Role="user_login_verify" Multiplicity="*" />
@@ -6250,20 +6217,27 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Type="Boolean" Name="cac_isAllowed" Nullable="false" />
           <Property Type="String" Name="cac_roleid" Nullable="true" MaxLength="128" />
         </ComplexType>
-        <EntityType Name="user_access">
+        <EntityType Name="token">
           <Key>
-            <PropertyRef Name="user_key" />
+            <PropertyRef Name="tok_key" />
           </Key>
-          <Property Name="user_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="user_role_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="user_id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="user_com_key" Type="Int32" />
-          <Property Name="user_isAllowed" Type="Boolean" />
-          <Property Name="user_createddate" Type="DateTime" Precision="3" />
-          <Property Name="user_createdBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="user_updateddate" Type="DateTime" Precision="3" />
-          <Property Name="user_updatedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="tok_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tok_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="tok_phy_token" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_token_AspNetUsers" FromRole="token" ToRole="AspNetUser" />
         </EntityType>
+        <Association Name="FK_token_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="DataModel.token" Role="token" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="token">
+              <PropertyRef Name="tok_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7035,17 +7009,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="tokens">
-            <EntityTypeMapping TypeName="DataModel.token">
-              <MappingFragment StoreEntitySet="token">
-                <ScalarProperty Name="tok_machine_name" ColumnName="tok_machine_name" />
-                <ScalarProperty Name="tok_device_type" ColumnName="tok_device_type" />
-                <ScalarProperty Name="tok_phy_token" ColumnName="tok_phy_token" />
-                <ScalarProperty Name="tok_phy_key" ColumnName="tok_phy_key" />
-                <ScalarProperty Name="tok_key" ColumnName="tok_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="ucls">
             <EntityTypeMapping TypeName="DataModel.ucl">
               <MappingFragment StoreEntitySet="ucl">
@@ -7593,6 +7556,10 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="cases">
             <EntityTypeMapping TypeName="DataModel.case">
               <MappingFragment StoreEntitySet="case">
+                <ScalarProperty Name="cas_premorbid_completed_date" ColumnName="cas_premorbid_completed_date" />
+                <ScalarProperty Name="cas_premorbid_completed_by" ColumnName="cas_premorbid_completed_by" />
+                <ScalarProperty Name="cas_premorbid_symptoms_text" ColumnName="cas_premorbid_symptoms_text" />
+                <ScalarProperty Name="cas_premorbid_symptoms" ColumnName="cas_premorbid_symptoms" />
                 <ScalarProperty Name="cas_metric_has_morbid_symptoms" ColumnName="cas_metric_has_morbid_symptoms" />
                 <ScalarProperty Name="cas_review_qps_reviewed_completed" ColumnName="cas_review_qps_reviewed_completed" />
                 <ScalarProperty Name="cas_metric_viz_app_usage_text" ColumnName="cas_metric_viz_app_usage_text" />
@@ -8313,18 +8280,12 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="user_access">
-            <EntityTypeMapping TypeName="DataModel.user_access">
-              <MappingFragment StoreEntitySet="user_access">
-                <ScalarProperty Name="user_updatedBy" ColumnName="user_updatedBy" />
-                <ScalarProperty Name="user_updateddate" ColumnName="user_updateddate" />
-                <ScalarProperty Name="user_createdBy" ColumnName="user_createdBy" />
-                <ScalarProperty Name="user_createddate" ColumnName="user_createddate" />
-                <ScalarProperty Name="user_isAllowed" ColumnName="user_isAllowed" />
-                <ScalarProperty Name="user_com_key" ColumnName="user_com_key" />
-                <ScalarProperty Name="user_id" ColumnName="user_id" />
-                <ScalarProperty Name="user_role_key" ColumnName="user_role_key" />
-                <ScalarProperty Name="user_key" ColumnName="user_key" />
+          <EntitySetMapping Name="tokens">
+            <EntityTypeMapping TypeName="DataModel.token">
+              <MappingFragment StoreEntitySet="token">
+                <ScalarProperty Name="tok_phy_token" ColumnName="tok_phy_token" />
+                <ScalarProperty Name="tok_phy_key" ColumnName="tok_phy_key" />
+                <ScalarProperty Name="tok_key" ColumnName="tok_key" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

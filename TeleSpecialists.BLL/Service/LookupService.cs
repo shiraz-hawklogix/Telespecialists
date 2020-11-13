@@ -33,7 +33,7 @@ namespace TeleSpecialists.BLL.Service
         {
             return GetFacilities(phoneNumber).Where(f=>f.fac_is_active);
         }
-        public IQueryable<facility> GetAll(string phoneNumber)
+ public IQueryable<facility> GetAllActnNonActFacility(string phoneNumber)
         {
             return GetFacilities(phoneNumber);
         }
@@ -44,6 +44,10 @@ namespace TeleSpecialists.BLL.Service
         public IQueryable<facility> GetAllLiveTeleStrokeFacility(string phoneNumber)
         {
             return GetFacilities(phoneNumber).Where(f => f.fac_go_live && f.facility_contract.fct_service_calc.Contains(ContractServiceTypes.TeleStroke.ToString()));
+        }
+        public IQueryable<facility> GetStrokeFacilitiesForOthercasetypes(string phoneNumber)
+        {
+            return GetFacilities(phoneNumber).Where(f => f.fac_go_live);
         }
         public IQueryable<facility> GetAllLiveTeleNeuroFacility(string phoneNumber)
         {

@@ -52,7 +52,6 @@
     /*
     function SendNewCaseEmail(data = []) {
         var cas_keys = parseInt(data);
-        debugger
         $.ajax({
             type: "POST",
             url: "Case/SendNewCaseEmail",
@@ -129,6 +128,7 @@
                 });
                 //LoadOperationsoutliersList();
                 DoColor();
+                //PhysicianColor();
                 //GetDetail();
             },
             columns: [
@@ -140,7 +140,8 @@
                         { field: "CaseType", width: 185, title: "CaseType" },
                         { field: "StartTime", width: 185, title: "Start Time" },
                         { field: "FacilityName", width: 250, title: "Facility" },
-                        { field: "Physician_Initials", width: 185, title: "Physician" },
+                        { field: "Physician_Initials", width: 250, title: "Physician Initials" },
+                        { field: "Physician_Status", width: 185, title: "Physician Status", template:"#= Physician_Status#" },
                         { field: "TS_Response_Time", width: 185, title: "TS Response Time" },
                         { field: "CallBack_Response_Time", width: 185, title: "CallBack Time" },
                     ]
@@ -153,8 +154,8 @@
     function DoColor() {
         $("#cases-operations-outliers-container tbody tr").each(function (index, element) {
             var row = $(element);
-            var respTime = row.find("td:nth-child(7)").text();
-            var callback = row.find("td:nth-child(8)").text();
+            var respTime = row.find("td:nth-child(8)").text();
+            var callback = row.find("td:nth-child(9)").text();
             var CaseType = row.find("td:nth-child(3)").text();
             var physician = row.find("td:nth-child(6)").text();
             var showPurple = false;
@@ -164,6 +165,7 @@
 
                 if (phyCount > 2) {
                     row.children("td").addClass("text-orange font-weight-bold");
+                    row.children("td:nth-child(7)").removeClass("text-orange font-weight-bold");
                     showPurple = true;
                 }
             }
@@ -185,8 +187,10 @@
 
                         if (showPurple) {
                             row.children("td").addClass("text-purple font-weight-bold");
+                            row.children("td:nth-child(7)").removeClass("text-purple font-weight-bold");
                         } else {
                             row.children("td").addClass("text-pink font-weight-bold");
+                            row.children("td:nth-child(7)").removeClass("text-pink font-weight-bold");
                         }
                     }
                 }
@@ -208,14 +212,42 @@
 
                         if (showPurple) {
                             row.children("td").addClass("text-purple font-weight-bold");
+                            row.children("td:nth-child(7)").removeClass("text-purple font-weight-bold");
                         } else {
                             row.children("td").addClass("text-pink font-weight-bold");
+                            row.children("td:nth-child(7)").removeClass("text-pink font-weight-bold");
                         }
                     }
                 }
             }
 
         });
+    }
+
+    function PhysicianColor() {
+        $("#cases-operations-outliers-container tbody tr").each(function (index, element)
+        {
+            debugger
+            var row = $(element);
+            var cas_key = parseInt(row.find("td:nth-child(1)").text());
+            var physician = row.find("td:nth-child(6)").text();
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("PhysicianColors", "Reports")',
+                dataType: 'json',
+                data: { cas_key: cas_key, physician: physician },
+                error: function (error) {
+
+                },
+                success: function (data) {
+                    debugger
+                    var detail = data;
+                    row.children("td:nth-child(6)").empty();
+                    row.children("td:nth-child(6)").append(data);
+                }
+
+            });
+        })
     }
 
     $('.operationsIndicator .nav-link').off("click").click(function (e) {
@@ -252,7 +284,6 @@
         var data;
         var array = []
         var getdata = [];
-        debugger
         for (var i = 0; i < AllData.length; i++) {
             array.push("" + AllData[i].CaseKey + "");
         }
@@ -264,7 +295,6 @@
         }
 
         for (var i = 0; i < array.length; i++) {
-            debugger
             var isfound = (getdata.indexOf(array[i]) > -1);
             if (!isfound) {
                 difference.push(array[i]);

@@ -1443,6 +1443,7 @@ namespace TeleSpecialists.BLL.Service
 
                 #region ----- Calculations -----
                 var patientType = PatientType.Inpatient.ToInt();
+                var EDStay = PatientType.Inpatient.ToInt();
                 var canceledCASE = CaseStatus.Cancelled.ToInt();
                 var statentitytype = EntityTypes.StateAlertTemplate.ToInt();
                 var case_template_stroke_neuro_tpa = EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt();
@@ -1492,7 +1493,7 @@ namespace TeleSpecialists.BLL.Service
                                    : 0,
 
                     last_known_well = x.ca.cas_metric_is_lastwell_unknown ? "Unknown" : DBHelper.FormatDateTime(DBHelper.ConvertToFacilityTimeZone(x.ca.facility.fac_timezone, x.ca.cas_metric_lastwell_date), true),
-                    workflow_type = x.ca.cas_ctp_key == (int)CaseType.StrokeAlert ? ((PatientType)x.ca.cas_patient_type).ToString() : "",
+                    workflow_type = x.ca.cas_ctp_key == (int)CaseType.StrokeAlert ? ((PatientType)x.ca.cas_patient_type).ToString() == "SymptomOnsetDuringEDStay" ? "Symptom Onset During ED Stay" : ((PatientType)x.ca.cas_patient_type).ToString() : "",
                     arrival_time = DBHelper.FormatDateTime(DBHelper.ConvertToFacilityTimeZone(x.ca.facility.fac_timezone, x.ca.cas_metric_door_time), true),
                     first_login_attempt = DBHelper.FormatDateTime(DBHelper.ConvertToFacilityTimeZone(x.ca.facility.fac_timezone, x.ca.cas_response_first_atempt), true),
                     video_start_time = DBHelper.FormatDateTime(DBHelper.ConvertToFacilityTimeZone(x.ca.facility.fac_timezone, x.ca.cas_metric_video_start_time), true),
@@ -1517,14 +1518,14 @@ namespace TeleSpecialists.BLL.Service
                     medical_descision_making_time = x.ca.cas_metric_tpa_verbal_order_time < x.ca.cas_metric_video_start_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_tpa_verbal_order_time, x.ca.cas_metric_video_start_time),
                     medical_descision_making_time_cmp = x.ca.cas_metric_tpa_verbal_order_time < x.ca.cas_metric_video_start_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_tpa_verbal_order_time, x.ca.cas_metric_video_start_time),
 
-                    arrival_needle_time = x.ca.cas_metric_symptom_onset_during_ed_stay == true && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ?
+                    arrival_needle_time = x.ca.cas_metric_symptom_onset_during_ed_stay == true || x.ca.cas_patient_type == EDStay && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ?
                     x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) :
                     x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time),
 
-                    arrival_needle_time_cmp = x.ca.cas_metric_symptom_onset_during_ed_stay == true && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ? x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) :
+                    arrival_needle_time_cmp = x.ca.cas_metric_symptom_onset_during_ed_stay == true || x.ca.cas_patient_type == EDStay && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ? x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) :
                       x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time),
 
-                    symptom_needle_time = x.ca.cas_metric_symptom_onset_during_ed_stay == true && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ?
+                    symptom_needle_time = x.ca.cas_metric_symptom_onset_during_ed_stay == true || x.ca.cas_patient_type == EDStay && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ?
                     x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) :
                     "",
 
@@ -1824,6 +1825,17 @@ namespace TeleSpecialists.BLL.Service
 
             return Final_list.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
+
+        public DataSourceResult GetUserPresenceGraph(DataSourceRequest request, List<string> UserStatus, DateTime startTime, DateTime endTime)
+        {
+           
+               var UsersList = _unitOfWork.SqlQuery<UserPresenceListings>(string.Format("Exec usp_UserPresence_Graph_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}'", startTime, endTime, UserStatus[0])).ToList();
+
+            var final_list = UsersList.AsQueryable();
+
+            return final_list.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+        }
+
         #endregion
 
         #region Quality Report by Ahmad junaid
@@ -2974,6 +2986,7 @@ namespace TeleSpecialists.BLL.Service
 
                 #region ----- Calculations -----
                 var patientType = PatientType.Inpatient.ToInt();
+                var EDStay = PatientType.SymptomOnsetDuringEDStay.ToInt();
                 var query = cases.Select(x => new
                 {
                     id = x.ca.cas_key,
@@ -2989,13 +3002,13 @@ namespace TeleSpecialists.BLL.Service
 
                     bedside_response_time = x.ca.cas_response_first_atempt < x.ca.cas_metric_stamp_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_stamp_time, x.ca.cas_response_first_atempt),
                     bedside_response_time_cmp = x.ca.cas_response_first_atempt < x.ca.cas_metric_stamp_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_stamp_time, x.ca.cas_response_first_atempt),
-                    arrival_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != patientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "" : "",
+                    arrival_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != patientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "" : "",
                     arrival_needle_time_cmp = x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time),
                     verbal_order_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_needle_time < x.ca.cas_metric_tpa_verbal_order_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_tpa_verbal_order_time) : "",
                     on_screen_time = x.ca.cas_metric_video_end_time < x.ca.cas_metric_video_start_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_video_end_time, x.ca.cas_metric_video_start_time),
                     on_screen_time_cmp = x.ca.cas_metric_video_end_time < x.ca.cas_metric_video_start_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_video_end_time, x.ca.cas_metric_video_start_time),
-                    activation_time = x.ca.cas_patient_type != patientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
-                    symptoms_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != patientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == true ? x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) : "" : "" : "",
+                    activation_time = x.ca.cas_patient_type != patientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
+                    symptoms_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != patientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == true || x.ca.cas_patient_type == EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) : "" : "" : "",
                     symptoms_to_needle_time_cmp = x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time),
                 });
 
@@ -3595,7 +3608,7 @@ namespace TeleSpecialists.BLL.Service
                     cases = cases.Where(c => model.eAlert.Contains(c.ca.cas_is_ealert));
                 }
                 #endregion
-                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false);
+                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false || c.ca.cas_patient_type != 4);
                 #endregion
 
                 #region ----- Calculations -----
@@ -4023,7 +4036,7 @@ namespace TeleSpecialists.BLL.Service
                 #endregion
 
                 query = query.OrderBy(m => m.on_screen_time);
-
+                List<QualityMetricsReportCls> final = new List<QualityMetricsReportCls>();
                 List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
                 string guids = "";
 
@@ -4120,6 +4133,7 @@ namespace TeleSpecialists.BLL.Service
                             {
                                 ca,
                                 navigator = ca.cas_created_by_name,
+                                navigatorID = ca.cas_created_by,
                                 waiting_to_accept_date = waitingToAccept.cah_created_date_utc,
                                 acceptedInfo_date = accepted.cah_created_date_utc,
                                 billingCode = billing_code != null ? billing_code.ucd_title : "",
@@ -4218,7 +4232,7 @@ namespace TeleSpecialists.BLL.Service
                     gender = x.ca.cas_metric_patient_gender != null && x.ca.cas_metric_patient_gender != "" ? x.ca.cas_metric_patient_gender == "F" ? "Female" : "Male" : "",
                     facility = (x.ca.facility != null && !String.IsNullOrEmpty(x.ca.facility.fac_name)) ? x.ca.facility.fac_name : "",
                     x.navigator,
-
+                    x.navigatorID,
                     handle_time = DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_stamp_time),
                     handle_time_cmp = DBHelper.DiffSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_stamp_time),
                 });
@@ -4227,73 +4241,83 @@ namespace TeleSpecialists.BLL.Service
 
                 query = query.OrderBy(m => m.handle_time);
 
+                var test = query.ToList();
+
                 List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
                 string guids = "";
-
-                QualityMetricsReportCls cls = new QualityMetricsReportCls();
-                List<double> _meanlist = new List<double>();
-                List<double> _medianlist = new List<double>();
-                List<string> handletime = query.Select(x => x.handle_time).ToList();
-                int count = 0;
-                if (handletime.Count > 0)
+                if (model.Physicians != null)
                 {
-                    foreach (var item in handletime)
+                    for (int i = 0; i < model.Physicians.Count; i++)
                     {
-                        if (item != "")
+                        QualityMetricsReportCls cls = new QualityMetricsReportCls();
+                        List<double> _meanlist = new List<double>();
+                        List<double> _medianlist = new List<double>();
+                        List<string> handletime = test.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
+                        int count = 0;
+                        if (handletime.Count > 0)
                         {
-                            var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
-                            _meanlist.Add(time);
-                            _medianlist.Add(time);
-                            count++;
+                            foreach (var item in handletime)
+                            {
+                                if (item != "")
+                                {
+                                    var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
+                                    _meanlist.Add(time);
+                                    _medianlist.Add(time);
+                                    count++;
+                                }
+                            }
                         }
-                    }
-                }
-                TimeSpan _meantime = new TimeSpan();
-                TimeSpan _mediantime = new TimeSpan();
-                if (_meanlist.Count > 0)
-                {
-                    double mean = _meanlist.Average();
-                    _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
-                }
-                if (_medianlist.Count > 0)
-                {
-                    int numbercount = _medianlist.Count();
-                    int halfindex = _medianlist.Count() / 2;
-                    var sortednumbers = _medianlist.OrderBy(x => x);
-                    double median;
-                    if ((numbercount % 2) == 0)
-                    {
-                        median = ((sortednumbers.ElementAt(halfindex) + sortednumbers.ElementAt(halfindex - 1))) / 2;
-                    }
-                    else
-                    {
-                        median = sortednumbers.ElementAt(halfindex);
-                    }
-                    _mediantime = TimeSpan.FromSeconds(Convert.ToDouble(median));
-                }
-                cls.hospitals = count;
-                cls._meantime = _meantime;
-                cls._mediantime = _mediantime;
-                result.Add(cls);
-                if (model.Facilities != null)
-                {
-                    foreach (var guid in model.Facilities)
-                    {
-                        guids += guid + ",";
-                    }
-                }
+                        TimeSpan _meantime = new TimeSpan();
+                        TimeSpan _mediantime = new TimeSpan();
+                        if (_meanlist.Count > 0)
+                        {
+                            double mean = _meanlist.Average();
+                            _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
+                        }
+                        if (_medianlist.Count > 0)
+                        {
+                            int numbercount = _medianlist.Count();
+                            int halfindex = _medianlist.Count() / 2;
+                            var sortednumbers = _medianlist.OrderBy(x => x);
+                            double median;
+                            if ((numbercount % 2) == 0)
+                            {
+                                median = ((sortednumbers.ElementAt(halfindex) + sortednumbers.ElementAt(halfindex - 1))) / 2;
+                            }
+                            else
+                            {
+                                median = sortednumbers.ElementAt(halfindex);
+                            }
+                            _mediantime = TimeSpan.FromSeconds(Convert.ToDouble(median));
+                        }
+                        cls.hospitals = count;
+                        cls._meantime = _meantime;
+                        cls._mediantime = _mediantime;
+                        cls.Navigator = test.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.navigator).ToList().FirstOrDefault();
+                        cls.NavigatorID = model.Physicians[i];
+                        if (model.Facilities != null)
+                        {
+                            foreach (var guid in model.Facilities)
+                            {
+                                guids += guid + ",";
+                            }
+                        }
 
-                guids = guids.TrimEnd(',');
-
-                string timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
+                        guids = guids.TrimEnd(',');
+                        cls.timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
+                        result.Add(cls);
+                    }
+                }
                 var finalresult = result.Select(x => new
                 {
                     id = guids,
+                    Navigator = x.Navigator,
+                    NavigatorID = x.NavigatorID,
                     hospitalname = x.hospitals,
                     mean = (string.Format("{0:00}:{1:00}:{2:00}", (x._meantime.Hours + x._meantime.Days * 24), x._meantime.Minutes, x._meantime.Seconds)),
                     median = (string.Format("{0:00}:{1:00}:{2:00}", (x._mediantime.Hours + x._mediantime.Days * 24), x._mediantime.Minutes, x._mediantime.Seconds)),
-                    timecycle = timeframe
-                }).AsQueryable();
+                    timecycle = x.timeframe
+                }).Where(x => x.hospitalname != 0).OrderBy(x => x.Navigator).AsQueryable();
 
                 return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
             }
@@ -4404,7 +4428,7 @@ namespace TeleSpecialists.BLL.Service
                 }
 
                 #endregion
-                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false);
+                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false || c.ca.cas_patient_type != 4);
 
                 #endregion
                 #region ----- Calculations -----
@@ -4615,7 +4639,7 @@ namespace TeleSpecialists.BLL.Service
                     cases = cases.Where(c => model.eAlert.Contains(c.ca.cas_is_ealert));
                 }
                 #endregion
-                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == true);
+                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == true || c.ca.cas_patient_type == 4);
                 #endregion
                 #region ----- Calculations -----
                 var patientType = PatientType.Inpatient.ToInt();
@@ -5420,7 +5444,7 @@ namespace TeleSpecialists.BLL.Service
                     obj.isNeedleTime45 = item.cas_metric_tpa_consult == true ? item.cas_metric_needle_time > item.cas_metric_door_time ? ts.TotalMinutes > 45 ? DiffBusinessDays(item.cas_created_date, currentdate) > 10 ? true : false : false : false : false;
                     _list.Add(obj);
                 }
-
+                /*
                 string qps_name = "";
 
                 if (!string.IsNullOrWhiteSpace(QPS[0]))
@@ -5432,6 +5456,155 @@ namespace TeleSpecialists.BLL.Service
                         qps_name = GetQPSName.FirstName + " " + GetQPSName.LastName;
                     }
                 }
+                */
+                foreach (var item in _list)
+                {
+                    CasesPendingReview pendingcasses = new CasesPendingReview();
+                    if (/*item.isStartToNeedleTime == true || item.isTimeFirstToNeedleTime == true || item.isStartToStamp == true || item.isStartToLoginTime == true || item.isstampToLoginTime == true || item.isarivalTostartTime == true || item.isfirstTimeLoginAttemtToVideostartTime == true || item.isfirstTimeLoginToNIHSSassTime == true ||*/ item.isNeedleTime == true || item.isNeedleTime45 == true)
+                    {
+
+                        pendingcasses.CaseKey = item.CaseKey;
+                        pendingcasses.FacilityName = item.FacilityName;
+                        pendingcasses.TC_CaseNumber = item.CaseNumber;
+                        pendingcasses.DateOfConsult = item.billingdateofconsult;
+                        /*
+                                                if (!string.IsNullOrWhiteSpace(qps_name))
+                                                {
+                                                    pendingcasses.QPS_Name = qps_name;
+                                                }
+                                                else
+                                                {
+                                                */
+                        pendingcasses.QPS_Name = item.qps_number;
+                        //}
+
+                        if (item.isNeedleTime45 == true)
+                        {
+                            pendingcasses.ColorRed = true;
+                        }
+                        else
+                        {
+                            pendingcasses.ColorRed = false;
+                        }
+
+                        result.CasesPendingReview.Add(pendingcasses);
+                    }
+                }
+                var finalresult = result.CasesPendingReview.Select(x => new
+                {
+                    CaseKey = x.CaseKey,
+                    FacilityName = x.FacilityName,
+                    DateOfConsult = x.DateOfConsult,
+                    QPS_Name = x.QPS_Name,
+                    TC_CaseNumber = x.TC_CaseNumber,
+                    ColorRed = x.ColorRed,
+                }).OrderByDescending(x => x.DateOfConsult).AsQueryable();
+
+                return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+            }
+        }
+
+        public DataSourceResult GetCasesCompletedReviewList(DataSourceRequest request, List<string> QPS, string period)
+        {
+            using (var context = new Model.TeleSpecialistsContext())
+            {
+
+                context.Configuration.AutoDetectChangesEnabled = false;
+                context.Configuration.ProxyCreationEnabled = false;
+                context.Configuration.LazyLoadingEnabled = false;
+                var result = new CasesPendingReviewListing();
+                var cases = from ca in context.cases
+                            join user in context.AspNetUsers on ca.facility.qps_number equals user.Id into name
+                            from user in name.DefaultIfEmpty()
+                            where ca.cas_is_active == true && ca.cas_cst_key == 20 && ca.cas_response_case_qps_reviewed == 1
+
+                            select (new
+                            {
+                                ca.cas_fac_key,
+                                ca.cas_key,
+                                ca.cas_case_number,
+                                ca.facility.fac_name,
+                                ca.cas_response_date_consult,
+                                ca.cas_billing_date_of_consult,
+                                ca.cas_metric_tpa_consult,
+                                ca.cas_metric_stamp_time,
+                                ca.cas_response_first_atempt,
+                                ca.cas_metric_video_start_time,
+                                ca.cas_metric_assesment_time,
+                                ca.cas_metric_needle_time,
+                                ca.cas_response_ts_notification,
+                                ca.cas_metric_door_time,
+                                ca.cas_metric_tpa_verbal_order_time,
+                                ca.cas_created_date,
+                                ca.facility.qps_number,
+                                qps_name = user.FirstName + " " + user.LastName
+                            });
+
+                DateTime currentdate = DateTime.Now.ToEST();
+                DateTime olddate = new DateTime();
+                if (!string.IsNullOrWhiteSpace(period))
+                {
+                    if (period == "Last Month")
+                    {
+                        olddate = currentdate.AddMonths(-1);
+                    }
+                    else if (period == "Last 2 Months")
+                    {
+                        olddate = currentdate.AddMonths(-2);
+                    }
+                    else
+                    {
+                        olddate = currentdate.AddMonths(-3);
+                    }
+                }
+
+
+                cases = cases.Where(x => DbFunctions.TruncateTime(x.cas_created_date) >= DbFunctions.TruncateTime(olddate) &&
+                                             DbFunctions.TruncateTime(x.cas_created_date) <= DbFunctions.TruncateTime(currentdate));
+
+
+
+                if (!string.IsNullOrWhiteSpace(QPS[0]))
+                {
+                    cases = cases.Where(x => QPS.Contains(x.qps_number));
+                }
+                List<caseCalculcation> _list = new List<caseCalculcation>();
+                caseCalculcation obj;
+                foreach (var item in cases)
+                {
+                    obj = new caseCalculcation();
+                    obj.qps_number = item.qps_name;
+                    obj.CaseKey = item.cas_key;
+                    obj.CaseNumber = item.cas_case_number;
+                    obj.FacilityName = item.fac_name;
+                    obj.billingdateofconsult = item.cas_billing_date_of_consult.HasValue ? item.cas_billing_date_of_consult.Value.ToString("MM/dd/yyyy") : "";
+                    obj.createddate = item.cas_created_date;
+                    TimeSpan ts = new TimeSpan();
+                    string abc = "";
+                    if (item.cas_metric_needle_time.HasValue && item.cas_metric_door_time.HasValue)
+                    {
+                        abc = (item.cas_metric_door_time - item.cas_metric_needle_time).FormatTimeSpan();
+                        ts = new TimeSpan(Convert.ToInt32(abc.Split(':')[0]), Convert.ToInt32(abc.Split(':')[1]), Convert.ToInt32(abc.Split(':')[2]));
+                    }
+
+                    obj.isNeedleTime = item.cas_metric_tpa_consult == true ? item.cas_metric_needle_time > item.cas_metric_door_time ? ts.TotalMinutes > 45 ? true : false : false : false;
+                    obj.isNeedleTime45 = item.cas_metric_tpa_consult == true ? item.cas_metric_needle_time > item.cas_metric_door_time ? ts.TotalMinutes > 45 ? DiffBusinessDays(item.cas_created_date, currentdate) > 10 ? true : false : false : false : false;
+                    _list.Add(obj);
+                }
+
+                /*
+                string qps_name = "";
+
+                if (!string.IsNullOrWhiteSpace(QPS[0]))
+                {
+                    string qpsid = QPS[0];
+                    var GetQPSName = _adminService.GetAspNetUsers().Where(m => m.Id == qpsid).Select(x => new { x.FirstName, x.LastName }).FirstOrDefault();
+                    if (GetQPSName != null)
+                    {
+                        qps_name = GetQPSName.FirstName + " " + GetQPSName.LastName;
+                    }
+                }
+                */
 
                 foreach (var item in _list)
                 {
@@ -5443,15 +5616,16 @@ namespace TeleSpecialists.BLL.Service
                         pendingcasses.FacilityName = item.FacilityName;
                         pendingcasses.TC_CaseNumber = item.CaseNumber;
                         pendingcasses.DateOfConsult = item.billingdateofconsult;
-
+                        /*
                         if (!string.IsNullOrWhiteSpace(qps_name))
                         {
                             pendingcasses.QPS_Name = qps_name;
                         }
                         else
                         {
-                            pendingcasses.QPS_Name = item.qps_number;
-                        }
+                        */
+                        pendingcasses.QPS_Name = item.qps_number;
+                        // }
 
                         if (item.isNeedleTime45 == true)
                         {
@@ -5870,39 +6044,105 @@ namespace TeleSpecialists.BLL.Service
 
                 List<OperationsOutliers> _list = new List<OperationsOutliers>();
                 OperationsOutliers obj;
-                foreach (var item in cases)
+                var result = cases.Where(x => (x.ResponseTime > 10 && x.casetypeid == 9) || (x.CallBackResponseTime > 15 && x.casetypeid == 10)).ToList();
+                string casekey = string.Join(",", result.Select(x => x.cas_key).ToList());
+
+                List<UserColorOutliers> ColorList = _unitOfWork.SqlQuery<UserColorOutliers>(string.Format("Exec sp_get_case_color_outliers @casekey = '{0}'", casekey)).ToList();
+                foreach (var item in result)
                 {
-                    if (item.ResponseTime > 10 && item.casetypeid == 9)
+
+                    obj = new OperationsOutliers();
+                    obj.CaseKey = item.cas_key;
+                    obj.CaseNumber = item.case_number;
+                    obj.CaseType = (item.casetypeid == 9) ? "Stroke Alert" : "STAT Consult";
+                    obj.StartTime = item.start_time;
+                    obj.FacilityName = item.fac_name;
+                    obj.Physician_Initials = item.physician;
+                    obj.Physician_Status = PhysicianColors(item.cas_key, item.physician, ColorList);
+                    if (item.casetypeid == 9)
                     {
-                        obj = new OperationsOutliers();
-                        obj.CaseKey = item.cas_key;
-                        obj.CaseNumber = item.case_number;
-                        obj.CaseType = "Stroke Alert";
-                        obj.StartTime = item.start_time;
-                        obj.FacilityName = item.fac_name;
-                        obj.Physician_Initials = item.physician;
                         obj.TS_Response_Time = item.TS_ResponseTime;
-                        obj.Created_Date = item.cas_created_date;
-                        _list.Add(obj);
                     }
-                    else if (item.CallBackResponseTime > 15 && item.casetypeid == 10)
+                    else
                     {
-                        obj = new OperationsOutliers();
-                        obj.CaseKey = item.cas_key;
-                        obj.CaseNumber = item.case_number;
-                        obj.CaseType = "STAT Consult";
-                        obj.StartTime = item.start_time;
-                        obj.FacilityName = item.fac_name;
-                        obj.Physician_Initials = item.physician;
                         obj.CallBack_Response_Time = item.CallBack_Response;
-                        obj.Created_Date = item.cas_created_date;
-                        _list.Add(obj);
                     }
+                    //obj.TS_Response_Time = (item.casetypeid == 9) ? item.TS_ResponseTime : item.CallBack_Response;
+                    obj.Created_Date = item.cas_created_date;
+                    _list.Add(obj);
+
+                    //else if (item.CallBackResponseTime > 15 && item.casetypeid == 10)
+                    //{
+                    //    obj = new OperationsOutliers();
+                    //    obj.CaseKey = item.cas_key;
+                    //    obj.CaseNumber = item.case_number;
+                    //    obj.CaseType = "STAT Consult";
+                    //    obj.StartTime = item.start_time;
+                    //    obj.FacilityName = item.fac_name;
+                    //    obj.Physician_Initials = item.physician;
+                    //    obj.Physician_Status = PhysicianColors(item.cas_key, item.physician, ColorList);
+                    //    obj.CallBack_Response_Time = item.CallBack_Response;
+                    //    obj.Created_Date = item.cas_created_date;
+                    //    _list.Add(obj);
+                    //}
                 }
 
                 var finalresult = _list.OrderByDescending(x => x.Created_Date).AsQueryable();
                 return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
             }
+        }
+
+        public string PhysicianColors(int cas_key, string physician, List<UserColorOutliers> ColorList)
+        {
+            //using (var context = new Model.TeleSpecialistsContext())
+            //{
+
+            //context.Configuration.AutoDetectChangesEnabled = false;
+            //context.Configuration.ProxyCreationEnabled = false;
+            //context.Configuration.LazyLoadingEnabled = false;
+            //var phy_initials = physician.Split('/').ToList();
+            //var cases = from userlog in _unitOfWork.PhysicianStatusLogRepository.Query()
+            //            where userlog.psl_cas_key == cas_key
+            //            join phy_status in _unitOfWork.PhysicianStatusRepository.Query() on userlog.psl_phs_key equals phy_status.phs_key into status
+            //            from phy_status in status.DefaultIfEmpty()
+            //                //join user in _unitOfWork.UserRepository.Query() on userlog.psl_user_key equals user.Id into users
+            //                //from user in users.DefaultIfEmpty()
+            //                //where user.IsActive == true && user.IsDeleted == false && user.IsDisable == false
+            //            select (new
+            //            {
+            //                userinitial = userlog.AspNetUser.UserInitial,
+            //                usercolor = userlog.psl_phs_key == phy_status.phs_key ? phy_status.phs_color_code : "",
+            //                userstatus = userlog.psl_status_name,
+            //            });
+
+            //List<string> checklist = new List<string>();
+            //var detail = cases.ToList();
+
+            var detail = ColorList.Where(x => x.psl_cas_key == cas_key).FirstOrDefault();
+            string html = "<div class='physicianstatusdiv'>";
+            if (detail != null)
+            {
+                string[] status = detail.psl_status_name.Split('/');
+                string[] color = detail.psl_status_color.Split('/');
+                string[] userIntitial = detail.UserInitial.Split('/');
+
+                for (var i = 0; i < userIntitial.Length; i++)
+                {
+                    if (color[i] == "")
+                    {
+                        color[i] = "Black";
+                    }
+                    if (status[i] == "")
+                    {
+                        status[i] = "Waiting to Accept";
+                    }
+                    html += "<span title='" + status[i] + "' style='color: " + color[i] + ";font-weight:bold;'>" + userIntitial[i] + "</span>/";
+                }
+            }
+            string result = html.TrimEnd('/');
+            result += "</div>";
+            return result;
+            //}
         }
 
         #endregion
@@ -6352,7 +6592,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                     #endregion
                     //cases1 = cases1.Where(m => m.ca.cas_fac_key == Id);
-                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false);
+                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false || c.ca.cas_patient_type != 4);
                     #endregion
 
                     #region ----- Calculations -----
@@ -6879,6 +7119,11 @@ namespace TeleSpecialists.BLL.Service
                 List<string> meanlist = new List<string>();
                 List<string> medianlist = new List<string>();
                 int count = 0;
+                if (model.Physicians != null && model.Physicians.Count > 0)
+                {
+                    if (model.Physicians[0] != string.Empty)
+                        cases = cases.Where(m => model.Physicians.Contains(m.ca.cas_created_by));
+                }
                 if (model.Facilities != null && model.Facilities.Count > 0)
                 {
                     if (model.Facilities[0] != Guid.Empty)
@@ -6934,7 +7179,7 @@ namespace TeleSpecialists.BLL.Service
                     if (model.BillingCode != null)
                         cases1 = cases1.Where(m => m.ca.cas_billing_bic_key.HasValue && model.BillingCode.Contains(m.ca.cas_billing_bic_key.Value));
                     if (model.Physicians != null)
-                        cases1 = cases1.Where(m => model.Physicians.Contains(m.ca.cas_phy_key));
+                        cases1 = cases1.Where(m => model.Physicians.Contains(m.ca.cas_created_by));
 
                     if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
                     {
@@ -7196,7 +7441,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                     #endregion
                     //cases1 = cases1.Where(m => m.ca.cas_fac_key == Id);
-                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false);
+                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false || c.ca.cas_patient_type != 4);
                     #endregion
 
                     #region ----- Calculations -----
@@ -7400,7 +7645,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                     #endregion
                     //cases1 = cases1.Where(m => m.ca.cas_fac_key == Id);
-                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == true);
+                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == true || c.ca.cas_patient_type == 4);
                     #endregion
                     #region ----- Calculations -----
                     //var patientType = PatientType.Inpatient.ToInt();

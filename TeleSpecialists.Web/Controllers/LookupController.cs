@@ -206,6 +206,44 @@ namespace TeleSpecialists.Controllers
                 return Json(new { success = false, data = "", error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+        public JsonResult GetStrokeFacilitiesForOthercasetypes(string phoneNumber)
+        {
+            try
+            {
+
+                if (User.IsInRole(UserRoles.Physician.ToDescription()))
+                {
+                    var phyFacList = _physicianService.GetPhsicianFacilities(loggedInUser.Id, phoneNumber).Where(f => f.fac_go_live)
+                                     .Select(m =>
+                                                         new
+                                                         {
+                                                             fac_key = m.fac_key,
+                                                             fac_name = m.fac_name
+                                                         });
+                    return Json(phyFacList, JsonRequestBehavior.AllowGet);
+
+                }
+                else
+                {
+
+                    var list = _lookupService.GetStrokeFacilitiesForOthercasetypes(phoneNumber)
+                                             .Select(m =>
+                                                        new
+                                                        {
+                                                            fac_key = m.fac_key,
+                                                            // Will be used in future
+                                                            //fac_name = !string.IsNullOrEmpty(m.fac_city) && !string.IsNullOrEmpty(m.state.stt_code) ? m.fac_name+" ("+m.fac_city+", "+m.state.stt_code+")" : m.fac_name
+                                                            fac_name = m.fac_name
+                                                        });
+                    return Json(list, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { success = false, data = "", error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
         [HttpGet]
         public JsonResult GetTeleNeuroFacility(string phoneNumber)
         {

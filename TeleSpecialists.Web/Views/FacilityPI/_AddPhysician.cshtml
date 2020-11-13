@@ -227,7 +227,6 @@ new SelectListItem { Value="168", Text = "1 Week" }
         $('#table1').show();
 
         $('#AllPhycision option:selected').each(function () {
-            debugger;
             var name = $(this).text();
             $("#table1").append("<tr><td style='display:none;'><input type='text' class ='form-control' value=" + $(this).val() + "  /><td><input type='text' class ='form-control' value='" + name + "' readonly  /></td><td><input type='text' class ='form-control' /></td><td  style='display:none!important'><input type='text' class ='form-control' value='0' /></td></tr>");
         });

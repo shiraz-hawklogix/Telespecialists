@@ -1,20 +1,12 @@
-﻿
-@{
-    ViewBag.Title = "Add Hospital Protocols";
-}
-
-@using TeleSpecialists.BLL.Helpers;
+﻿@using TeleSpecialists.BLL.Helpers;
 @using TeleSpecialists.BLL.Extensions;
 @using TeleSpecialists.BLL.Model;
-@model TeleSpecialists.BLL.Model.Hospital_Protocols
+@model TeleSpecialists.BLL.Model.Onboarded
 @{
-    List<Hospital_Protocols> Protocolsdataforpopups = ViewBag.protocolsdataforpopup;
-
+    List<Onboarded> On_Boarded_list = ViewBag.OnBoardingdata;
+    List<Onboarded> OnBoardingdataforpopups = ViewBag.OnBoardingdataforpopup;
 }
 <style>
-    body {
-        font-size: 16px !important;
-    }
     /*.shiraz {
         margin: 0;
         padding-top: 0px;
@@ -27,7 +19,7 @@
         background-color: #000;
         border: none;
         outline: none;
-    }*/
+    }
 
     .csss {
         height: 180px !important;
@@ -36,12 +28,12 @@
 
     .divborder {
         border-radius: 15px;
-    }
+    }*/
 
-    body {
+    /*body {
         margin: 0;
         font-family: Arial, Helvetica, sans-serif;
-    }
+    }*/
 
     .topnav {
         overflow: hidden;
@@ -73,7 +65,7 @@
 </style>
 <input type="hidden" value="@ViewBag.fac_keys" id="getfid" />
 <div class="alert alert-success removestyle" role="alert" style="display:none!important">
-    Hospital Protocols SuccessFuly Added.
+    Onboarding Successfully Added.
 </div>
 <div class="ajaxForm" id="basic">
     <div class="form-group row ">
@@ -81,7 +73,7 @@
             <div class="form-group row">
                 <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Facility: </label>
                 <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
-                    @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control protocol_fac_key Facilities", @multiple = "multiple" })
+                    @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control cas_fac_key", @multiple = "multiple" })
                     <div id="cas_fac_key-error" class="error_msg" style="display:none;">
                         <label for="cas_fac_key">This field is required</label>
                     </div>
@@ -101,7 +93,10 @@
             <div class="form-group row">
                 <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Upload Images: </label>
                 <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
-                    @Html.TextBoxFor(model => model.ParameterName_Image, new { @type = "file", @class = "form-control lenghts", @multiple = "multiple"@*, @accept = "image/*"*@, @id = "ParameterName_Image", @onclick = "removedivdata();" })
+                    @Html.TextBoxFor(model => model.ParameterName_Image, new { @type = "file", @class = "form-control lenghts", @multiple = "multiple"@*, @accept = "image/*"*@,
+@id = "ParameterName_Image",
+@onclick = "removedivdata();"
+})
                 </div>
             </div>
             <div class="form-group row divshowimages" style="display:none!important;">
@@ -123,40 +118,39 @@
     </div>
     <div class="form-group row">
         <div class="col-12">
-            @*<a class="btn btn-dark loadLinkAsync bthhideprotocolss" style="display:none!important" href="@Url.Action("Create","HospitalProtocols", new { fac_key = @ViewBag.fac_keys , issave= "1"})">Add Protocols</a>*@
-            <input type="button" class="btn btn-dark bthhideprotocolss" style="display:none!important" value="Add Protocols" onclick="addProtocolsData('@ViewBag.fac_keys','1','/HospitalProtocols/Create')" />
+            <a class="btn btn-dark loadLinkAsync bthhide" style="display:none!important" href="@Url.Action("CreateOnboarded","Facility", new { fac_key = @ViewBag.fac_keys , issave= "1"})">Add Onboarding</a>
             @*<a href="/Facility/Edit/@ViewBag.fac_keys" class="btn btn-dark loadLinkAsync" id="backpage" onclick="funlatecall();">Cancel</a>*@
-            <input type="button" class="btn btn-dark loadLinkAsync" id="backpageprotocols" onclick="funlatecall();" value="Cancel" />
-            <input type="button" value="Preview Protocols" onclick="openpopup()" ; class="btn btn-dark" id="Previewbtn" />
+            <input type="button" class="btn btn-dark loadLinkAsync" id="backpage" onclick="funlatecall();" value="Cancel" />
+            <input type="button" value="Preview Onboarding" onclick="openpopup()" ; class="btn btn-dark" id="Previewbtn" />
             <input type="button" value="Save" onclick="uplaod()" ; class="btn btn-dark" id="savebtn" />
         </div>
     </div>
 </div>
-<div class="modal" id="hospitalprotocolmodal">
+<div class="modal" id="graphmodal">
     <div class="modal-dialog modal-lg" style=" max-width:1532px; ">
         <div class="modal-content">
             <div class="modal-header">
-                <h4><b>Hospital Protocols</b></h4>
+                <h4><b>Onboarding</b></h4>
             </div>
             <div class="modal-body">
 
                 <div class="topnav" style="margin-bottom: 12px;margin-top: 12px;">
-                    @foreach (var item in Protocolsdataforpopups)
+                    @foreach (var item in OnBoardingdataforpopups)
                     {
                         <a href="javascript:void(0)">@item.ParameterName</a>
                     }
                     <a href="javascript:void(0)"><span id="submittername"></span></a>
                 </div>
-                @foreach (var item in Protocolsdataforpopups)
+                @foreach (var item in OnBoardingdataforpopups)
                 {
                     <div style="padding-bottom: 55px;" id="@item.ParameterName">
                         <h2><b>@item.ParameterName</b></h2>
                         @{
-                            var info_value = Protocolsdataforpopups.Where(x => x.ID == item.ID).Select(k => k.ParameterName_Info).FirstOrDefault();
+                            var info_value = OnBoardingdataforpopups.Where(x => x.Onboarded_ID == item.Onboarded_ID).Select(k => k.ParameterName_Info).FirstOrDefault();
 
                             @Html.Raw(info_value)
                         }
-                        @foreach (var value in Protocolsdataforpopups.Where(x => x.ID == item.ID))
+                        @foreach (var value in OnBoardingdataforpopups.Where(x => x.Onboarded_ID == item.Onboarded_ID))
                         {
                             <div class="row">
                                 <div class="col-md-4">
@@ -234,7 +228,7 @@
         }
         var values = "@ViewBag.FAC_value";
         $.each(values.split(","), function (i, e) {
-            $(".Facilities option[value='" + e + "']").prop("selected", true);
+            $("#Facilities option[value='" + e + "']").prop("selected", true);
         });
         $('#ParameterName').trigger("click");
     });
@@ -245,7 +239,7 @@
     function fun() {
         $("#divimages3").empty();
     }
-      //$('#hospitalprotocolmodal').modal({ backdrop: 'static', keyboard: false, hide: true })
+      
 </script>
 <script>
     $(function () {
@@ -284,7 +278,7 @@
 <script>
     $(document).ready(function () {
         showCKEditoronboard("ParameterName_Info");
-        $('.Facilities').multiselect({
+        $('#Facilities').multiselect({
             columns: 1,
             placeholder: 'Select Facility',
             selectAll: true,
@@ -317,10 +311,9 @@
 </script>
 <script>
     function validateFormData() {
-        debugger
         var result = true;
-        var facilities = $('.protocol_fac_key').val();
-        if (facilities.length == 0) {
+
+        if ($("#Facilities").val() == "") {
             result = false;
             $("#cas_fac_key-error").show();
             setTimeout(function () {
@@ -334,7 +327,8 @@
         if (validateFormData() == true) {
             var formData = new FormData();
             var totalFiles = document.getElementById("ParameterName_Image").files.length;
-            for (var i = 0; i < totalFiles; i++) {
+            for (var i = 0; i < totalFiles; i++)
+            {
                 var file = document.getElementById("ParameterName_Image").files[i];
                 formData.append("ParameterName_Image", file);
             }
@@ -348,18 +342,18 @@
             var info = Base64.encode(CKEDITOR.instances["ParameterName_Info"].getData());
             formData.append("parameterinfo", info);
             var cas_fac_Name_arrays = [];
-            $.each($(".protocol_fac_key option:selected"), function () {
+            $.each($(".cas_fac_key option:selected"), function () {
                 cas_fac_Name_arrays.push($(this).text());
             });
             formData.append("cas_fac_Name_array", cas_fac_Name_arrays);
             var cas_fac_key_arrays = [];
-            $.each($(".protocol_fac_key option:selected"), function () {
+            $.each($(".cas_fac_key option:selected"), function () {
                 cas_fac_key_arrays.push($(this).val());
             });
             formData.append("cas_fac_key_arrays", cas_fac_key_arrays);
             $.ajax({
                 type: "POST",
-                url: '/HospitalProtocols/Upload',
+                url: '/Facility/Upload',
                 data: formData,
                 dataType: 'json',
                 contentType: false,
@@ -367,9 +361,9 @@
                 success: function (response) {
                     $('#ParameterName').val('');
                     $("#message").html("");
-                    $(".bthhideprotocolss").trigger("click");
+                    $(".bthhide").trigger("click");
                 },
-                error: function (error) {
+                error: function ( error) {
                     console.log(error);
                 }
 
@@ -379,32 +373,32 @@
     }
     function funlatecall() {
         $("#message").html("");
-    }
 
+    }
+ 
 </script>
 
 <script>
-        function openpopup() {
-            $("#hospitalprotocolmodal").modal('show');
-            var ParameterName2 = $('#ParameterName').val();
-            $("#submittername").text(ParameterName2);
-            $("#submittername2").text(ParameterName2);
+    function openpopup() {
+        $("#graphmodal").modal('show');
+        var ParameterName2 = $('#ParameterName').val();
+        $("#submittername").text(ParameterName2);
+        $("#submittername2").text(ParameterName2);
 
 
-            var data = {};
-            data.bodyText = CKEDITOR.instances["ParameterName_Info"].getData();
-            $("#infovalue").html(data.bodyText);
-            abc();
-        }
-
-
-        function abc() {
-            var $button = $('.preview').clone();
-            $('.preview2').html($button);
+        var data = {};
+        data.bodyText = CKEDITOR.instances["ParameterName_Info"].getData();
+        $("#infovalue").html(data.bodyText);
+        abc();
     }
-    
-    $("#backpageprotocols").off('click').click(function () {
-        GetProtocolsData();
+
+
+    function abc() {
+        var $button = $('.preview').clone();
+        $('.preview2').html($button);
+    }
+    $("#backpage").off('click').click(function () {
+        GetOnboardingData();
     });
-    </script>
+</script>
 

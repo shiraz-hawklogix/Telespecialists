@@ -7,8 +7,8 @@ using System.Data.Entity;
 using TeleSpecialists.BLL.Helpers;
 using System.Collections.Generic;
 using TeleSpecialists.BLL.ViewModels;
-using System.Data;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace TeleSpecialists.BLL.Service
 {
@@ -156,13 +156,13 @@ namespace TeleSpecialists.BLL.Service
                                   && m.AspNetUser.IsDeleted == false
                                   && m.fap_is_active
                                   && m.fap_is_on_boarded
+                                  && m.fap_hide == false
                                   && (applyScheduleFilter == false || schedule.Contains(m.fap_user_key))
                                   select m;
 
-
             var busyPhysicianIds = getBusyPhysicians(fac_key.ToString(), currentDate);
 
-            // var busyPhysicianIdss = getBusyPhysicians(physiciansQuery.Select(m => m.AspNetUser.Id).ToList());
+            //var busyPhysicianIds = getBusyPhysicians(physiciansQuery.Select(m => m.AspNetUser.Id).ToList());
 
             var physicians = physiciansQuery.Select(m => new
             {
@@ -344,6 +344,7 @@ namespace TeleSpecialists.BLL.Service
                              m.fap_user_key == phy_key
                              && m.fap_is_active
                              && m.fap_is_on_boarded
+                             && !m.fap_hide
                              && physicianLicenseStates.Contains(m.facility.fac_stt_key)
                              && (phoneNumber == "" || (facilityContact.cnt_is_active && facilityContact.cnt_is_deleted == false && facilityContact.cnt_mobile_phone == phoneNumber))
                              select m.facility;
@@ -394,6 +395,7 @@ namespace TeleSpecialists.BLL.Service
             _unitOfWork.Save();
             _unitOfWork.Commit();
         }
+
         public void Edit(facility_physician entity, bool commitChange = true)
         {
 
@@ -406,7 +408,7 @@ namespace TeleSpecialists.BLL.Service
                 facilityPhsycian.fap_onboarded_date = DateTime.Now.ToEST();
                 facilityPhsycian.fap_onboarded_by_name = entity.fap_onboarded_by_name;
                 facilityPhsycian.fap_onboarded_date = DateTime.Now;
-
+                facilityPhsycian.fap_hide = entity.fap_hide;
                 _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
                 if (commitChange)
                 {
@@ -415,6 +417,7 @@ namespace TeleSpecialists.BLL.Service
                 }
             }
         }
+     
         public void EditForMultiple(IEnumerable<facility_physician> entity)
         {
             _unitOfWork.FacilityPhysicianRepository.UpdateRange(entity);
@@ -503,7 +506,6 @@ namespace TeleSpecialists.BLL.Service
 
             return availableFacilities;
         }
-
 
         private List<string> getBusyPhysicians(string fac_key, DateTime CurrentDate)
         {
@@ -604,7 +606,6 @@ namespace TeleSpecialists.BLL.Service
                     result = result.Where(m => Physicians.Contains(m.fap_user_key));
             }
             #endregion
-
             var finalresult = result.Select(x => new
             {
                 id = x.fap_key,

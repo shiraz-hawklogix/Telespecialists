@@ -31,5 +31,12 @@ namespace TeleSpecialists.BLL.ViewModels.CasePage
         public int TotalRecords { get; set; } // Property to set Total Records
 
         public bool cas_is_flagged_physician { get; set; }
+
+
+        public string UserInitial { get; set; }
+
+        public string psl_status_color { get; set; } 
+
+        public string psl_status_name { get; set; }
     }
 }
