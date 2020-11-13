@@ -166,6 +166,7 @@ function startBlastInterval(id, blastType, strokeStamp) {
         if (!animated)
             AnimateJS();
         playBlastNotification();
+        localStorage.setItem("activeBlastIds", checkBlastArr);
         localStorage.setItem("activeBlasts", $('#divInternalExternal').html());
     }
 }
@@ -209,3 +210,10 @@ function AnimateJS() {
             delay: 500
         });
 }
+
+$(document).ready(function () {
+    var _arrVal = localStorage.getItem('activeBlastIds');
+    if (_arrVal)
+        checkBlastArr = _arrVal.slice();
+    console.log('checkBlastArr:', checkBlastArr);
+});

@@ -317,6 +317,7 @@ namespace TeleSpecialists.Controllers
                 if (caseDetail.cas_phy_key == User.Identity.GetUserId())
                 {
                     ViewBag.CaseType = _uclService.GetDetails(caseDetail.cas_ctp_key)?.ucd_title;
+                    ViewBag.strokeStamp = GetCaseCopyData(caseDetail);
                     return GetViewResult("_NewCasePopupPhysician", caseDetail);
                 }
             }

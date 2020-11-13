@@ -1,6 +1,10 @@
 ﻿
 
 @model TeleSpecialists.BLL.Model.@case
+@{
+    string strokeStamp = ViewBag.strokeStamp;
+    strokeStamp = strokeStamp.Replace("##NewLine##", "<br/>");
+}
 
 <div class="modal-dialog modal-lg blink_border" id="newcasePopupAlert">
     <div class="modal-content">
@@ -21,16 +25,16 @@
 
         <!-- Modal body -->
         <div class="modal-body" style="min-height:200px;">
-
-            <div>
-                @Model.facility.fac_name
-            </div>
-            <div>
-                @ViewBag.CaseType
-            </div>
-            <div>
-                Case #@Model.cas_case_number
-            </div>
+            @Html.Raw(strokeStamp)
+            @*<div>
+                    @Model.facility.fac_name
+                </div>
+                <div>
+                    @ViewBag.CaseType
+                </div>
+                <div>
+                    Case #@Model.cas_case_number
+                </div>*@
 
 
         </div>
