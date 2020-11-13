@@ -4,7 +4,7 @@
     max-width: 1170px;
     margin: auto;
 }
-
+ 
 img {
     max-width: 100%;
 }
@@ -15,7 +15,10 @@ img {
     overflow: hidden;
     width: 22%;
     border-right: 1px solid #c4c4c4;
-    min-height:615px;
+    /*min-height: 615px;*/
+    max-height: 701px;
+    height: 100vh;
+    min-height: 701px;
 }
 
 .inbox_msg {
@@ -122,8 +125,9 @@ img {
 }
 
 .inbox_chat {
-    height: 550px;
+    /*height: 550px;*/
     overflow-y: scroll;
+    height: 100%;
 }
 
 .active_chat {
@@ -236,13 +240,16 @@ img {
     width: 33px;
 }
 
-.messaging {
+/* .messaging {
     padding: 0 0 50px 0;
-}
+} */
 
 .msg_history {
-    height: 516px;
     overflow-y: auto;
+    /*height: 516px;*/
+    max-height: 521px;
+    min-height: 605px;
+    height: 100vh;
 }
 .grpTextClr {
     color: #05728f;
@@ -377,4 +384,13 @@ img {
     display: inline-block;
     color: black;
     text-align: center;
+}
+
+
+#async-content-container > br {
+    display:none;
+}
+
+.message-wrapper {
+    margin: 0 -30px;
 }
