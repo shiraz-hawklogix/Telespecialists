@@ -1,4 +1,5 @@
 ﻿using Kendo.DynamicLinq;
+using Microsoft.Exchange.WebServices.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +8,14 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 using TeleSpecialists.BLL.Model;
+
 using TeleSpecialists.BLL.ViewModels;
 
 namespace TeleSpecialists.BLL.Service
 {
     public class MenuService : BaseService
     {
+       
         public DataSourceResult GetAll(DataSourceRequest request)
         {
             var _result = _unitOfWork.MenuRepository.Query()
@@ -74,47 +77,6 @@ namespace TeleSpecialists.BLL.Service
             var query = _unitOfWork.SqlQuery<sp_getMenuAccess_Result>(string.Format("Exec sp_getMenuAccess @Id = '{0}'", Id)).ToList();
             return query;
         }
-        //public IEnumerable<DataClassifications> DataClassificationTree(string ID)
-        //    {
-        //    DataClassifications _dataClassifications = new DataClassifications();
-        //    List<DataClassifications> _dataClassificationsList = new List<DataClassifications>();
-        //    Classificationstate _state = new Classificationstate();
-        //      //var ParentClassifications = _unitOfWork.MenuRepository.Query()
-        //        //                            .Where(x => x.com_status == true)
-        //        //                            .OrderBy(x => x.com_sortorder).ToList();
-        //        var ParentClassifications = _unitOfWork.SqlQuery<sp_getMenuAccess_Result>(string.Format("Exec sp_getMenuAccess @Id = '{0}'", ID)).ToList();
-
-
-
-        //        foreach (var item in ParentClassifications)
-        //        {
-        //            _dataClassifications = new DataClassifications();
-        //            _state = new Classificationstate();
-
-        //            _dataClassifications.id = item.com_key;
-        //            _dataClassifications.text = "<span class='fa-folder-opens-icon' id ='span_" + _dataClassifications.id + "'></span> " + item.com_page_title + " <div id='action_2' class='action_tree'>";
-
-        //            _dataClassifications.text = _dataClassifications.text + "</div>";
-        //            if (item.com_parentcomponentid != null)
-        //            {
-        //                _dataClassifications.parent = item.com_parentcomponentid.ToString();
-        //            }
-        //            else
-        //            {
-        //                _dataClassifications.parent = "#";
-        //            }
-
-        //            _state.opened = true;
-        //            _dataClassifications.state = _state;
-
-        //            _dataClassificationsList.Add(_dataClassifications);
-
-        //        }
-
-
-        //        return _dataClassificationsList;
-          
-        //}
         public void Edit(int MenuId, bool CheckboxStatus, string RoleId, string userId)
         {
             List<int> parentid = new List<int>();
@@ -141,6 +103,7 @@ namespace TeleSpecialists.BLL.Service
             }
         }
 
+        
         private void UpdateNodes(IEnumerable<int> firstLvlComponent, string roleId, string userId, bool CheckboxStatus)
         {
             foreach (var item in firstLvlComponent)
@@ -172,5 +135,59 @@ namespace TeleSpecialists.BLL.Service
                 }
             }
         }
+
+        public IEnumerable<ProfileAccessViewModel> GetRoleBasedUser(string RoleId)
+        {
+            var result = from anu in _unitOfWork.ApplicationUsers
+                         join anur in _unitOfWork.ApplicationUserRoles
+                         on anu.Id equals anur.UserId
+                         where anur.RoleId == RoleId
+                         select (new ProfileAccessViewModel { Value = anur.UserId, Text = anu.UserName });
+            return result.ToList();
+
+        }
+        public class ProfileAccessViewModel
+        {   
+            public string Value { get; set; }
+            public string Text { get; set; }
+        }
+
+        public List<user_access> getUserBasedMenu(string roleId, string userId)
+        {
+            return _unitOfWork.UserAccessRepository.Query().Where(x => x.user_role_key == roleId && x.user_id == userId).ToList();
+        }
+
+        public void updateUserAccess(int MenuId, bool CheckboxStatus, string RoleId, string userId, string loggedInUserId)
+        {
+            var result = _unitOfWork.UserAccessRepository.Query()
+                        .Where(x => x.user_role_key == RoleId && x.user_id == userId && x.user_com_key == MenuId)
+                        .FirstOrDefault();
+            if (result != null)
+            {
+                user_access entity = new user_access();
+               // result.cac_roleid = roleId;
+                result.user_isAllowed = CheckboxStatus;
+                //result.cac_com_key = item;
+                result.user_updatedBy = loggedInUserId;
+                result.user_updateddate = DateTime.Now;
+                _unitOfWork.UserAccessRepository.Update(result);
+                _unitOfWork.Save();
+                _unitOfWork.Commit();
+            }
+            else
+            {
+                user_access entity = new user_access();
+                entity.user_role_key = RoleId;
+                entity.user_isAllowed = CheckboxStatus;
+                entity.user_com_key = MenuId;
+                entity.user_id = userId;
+                entity.user_createddate = DateTime.Now;
+                entity.user_createdBy = loggedInUserId;
+                _unitOfWork.UserAccessRepository.Insert(entity);
+                _unitOfWork.Save();
+                _unitOfWork.Commit();
+            }
+        }
+
     }
 }

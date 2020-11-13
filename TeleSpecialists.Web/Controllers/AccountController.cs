@@ -85,9 +85,17 @@ namespace TeleSpecialists.Controllers
                     var IsApiUser = UserManager.GetRoles(user.Id).Contains(UserRoles.TeleCareApi.ToDescription());
                     if (user.IsActive && user.IsDisable == false && user.IsDeleted == false && !IsApiUser)
                     {
+                        
                         //commenting this code for temporary basis of build
-                        //var rolesaccess = _menuService.getMenuAccess(user.Roles.Select(x => x.RoleId).FirstOrDefault());
-                        //Session["RoleAccess"] = rolesaccess;
+                        var rolesaccess = _menuService.getMenuAccess(user.Roles.Select(x => x.RoleId).FirstOrDefault());
+                        var useraccess = _menuService.getUserBasedMenu(user.Roles.Select(x => x.RoleId).FirstOrDefault(), user.Roles.Select(x => x.UserId).FirstOrDefault());
+                        for (int i = 0; i < useraccess.Count; i++)
+                        {
+                            var bit = useraccess[i].user_isAllowed;
+                            var result2 = rolesaccess.Where(x => x.com_key == useraccess[i].user_com_key).FirstOrDefault();
+                            rolesaccess.Where(x => x.cac_key == result2.cac_key).FirstOrDefault().cac_isAllowed = bit;
+                        }
+                        Session["RoleAccess"] = rolesaccess;
                         //If Password was changed by admin OR user is going to login first time
                         if (ApplicationSetting.aps_secuirty_is_reset_password_required && !user.RequirePasswordReset)
                         {

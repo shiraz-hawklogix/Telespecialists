@@ -124,7 +124,8 @@ namespace TeleSpecialists.BLL.Service
         }
         public IQueryable<AspNetRole> GetAllRoles()
         {
-            return _unitOfWork.ApplicationRoles;
+            var result = _unitOfWork.ApplicationRoles;
+            return result;
         }
     }
 }

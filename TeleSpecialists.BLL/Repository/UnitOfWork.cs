@@ -140,6 +140,7 @@ namespace TeleSpecialists.BLL.Repository
         private IFacilityAvailabilityRateRepository _facilityAvailabilityRateRepository;
         private IMenuData _menuRepository;
         private IMenuAccessData _menuAccessRepository;
+        private IUserAccessData _userAccessRightsRepository;
 
         public IQueryable<AspNetUser> ApplicationUsers
         {
@@ -260,6 +261,17 @@ namespace TeleSpecialists.BLL.Repository
                     this._menuAccessRepository = new MenuAccessRepository(context);
                 }
                 return _menuAccessRepository;
+            }
+        } 
+        public IUserAccessData UserAccessRepository
+        {
+            get
+            {
+                if (this._userAccessRightsRepository == null)
+                {
+                    this._userAccessRightsRepository = new UserAccessRepository(context);
+                }
+                return _userAccessRightsRepository;
             }
         }
         public IFacilityRepository FacilityRepository

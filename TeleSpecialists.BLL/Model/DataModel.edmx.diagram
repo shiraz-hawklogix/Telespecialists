@@ -142,6 +142,7 @@
         <EntityTypeShape EntityType="DataModel.component_access" Width="1.5" PointX="21.625" PointY="11.75" />
         <EntityTypeShape EntityType="DataModel.component" Width="1.5" PointX="19.375" PointY="11" />
         <AssociationConnector Association="DataModel.FK_ComponentAccess_Component_Id" />
+        <EntityTypeShape EntityType="DataModel.user_access" Width="1.5" PointX="19.375" PointY="16.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
