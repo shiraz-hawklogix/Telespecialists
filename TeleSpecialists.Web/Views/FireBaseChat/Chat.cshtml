@@ -101,10 +101,15 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="myLargeModalLabel">Users List</h4>
+                <div class="srch_bar">
+                    <div class="stylish-input-group">
+                        <input type="text" class="search-bar font-style-custome" placeholder="Search" id="txtSearchGrpUsers">
+                    </div>
+                </div>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-body">
-                <div style="max-height:300px;overflow-y:auto">
+                <div style="max-height:400px;overflow-y:auto">
                     <ul class="chatonline style-none" id="userlistforGrp" style="list-style-type: none;"></ul>
                 </div>
 
@@ -611,6 +616,41 @@
             AfterModify();
         }
     });
+    $("#txtSearchGrpUsers").keyup(function (event) {
+        $("#userlistforGrp").html('');
+        var txt = $("#txtSearchGrpUsers").val();
+        console.log('groupUsers:', groupUsers);
+        if (txt) {
+            var newArr = [];
+            for (var i = 0; i < teleUsersForGrpArr.length; i++) {
+                if (teleUsersForGrpArr[i].searchname.match(txt.toLowerCase())) {
+                    newArr.push({ id: teleUsersForGrpArr[i].id, name: teleUsersForGrpArr[i].name, image: teleUsersForGrpArr[i].image });
+                }
+            }
+            var grpId = _receiverId;
+            var j = 1;
+            for (var i = 0; i < newArr.length; i++) {
+                var _userid = newArr[i].id;
+                var _photo = newArr[i].image;
+                var _name = newArr[i].name;
+                var checkExist = _userid + '-' + grpId;
+                var exist = groupUsers.map(e => e.id).indexOf(_userid);
+                if (exist > -1) {
+                    var liTag = "<li> <div class='row col-md-12'> <div style='width:80%'> <a href = 'javascript:void(0)'  data-senderid = '" + SenderId + "' data-receiverid = '" + _userid + "' data-receiverName = '" + _name + "' data-receiverPhoto = '" + _photo + "' class='text-decoration-none' > <img src='" + _photo + "' alt='user-img' class='chat_userList'> <span> " + _name + "</span></a> </div> <div class='checkbox checkbox-success'><input id = 'checkbox3" + j + "' type ='checkbox' class='Addusers' data-usrid='" + _userid + "' data-usrname='" + _name + "' data-usrimage='" + _photo + "' data-loop='" + j + "' checked ><label for='checkbox3'> </label></div> </div> </li > ";
+                    $("#userlistforGrp").append(liTag);
+                }
+                else {
+                    var liTag = "<li> <div class='row col-md-12'><div style='width:80%'> <a href = 'javascript:void(0)' data-senderid = '" + SenderId + "' data-receiverid = '" + _userid + "' data-receiverName = '" + _name + "' data-receiverPhoto = '" + _photo + "' class='text-decoration-none'  > <img src='" + _photo + "' alt='user-img' class='chat_userList '> <span> " + _name + "</span></a> </div> <div class='checkbox checkbox-success'><input id = 'checkbox3" + j + "' type ='checkbox' class='Addusers' data-usrid='" + _userid + "' data-usrname='" + _name + "' data-usrimage='" + _photo + "' data-loop='" + j + "'><label for='checkbox3'>  </label></div> </div></li > ";
+                    $("#userlistforGrp").append(liTag);
+                }
+                j++;
+            }
+        }
+        else {
+            //call load methoad
+            _LoadGrpUsers();
+        }
+    });
     $(document).on('click', "#addUserToGrp", function () {
         $("#userlistforGrp").html('');
         //GetGroupUsers();
@@ -623,6 +663,7 @@
         ref.on("child_added", function (snapshot) {
             _groupUsers.push({ id: snapshot.key });
         });
+        groupUsers = _groupUsers.slice();
         _GetGroupUsers(_groupUsers);
     }
     function _GetGroupUsers(_groupUsers) {
