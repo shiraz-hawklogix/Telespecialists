@@ -10,14 +10,13 @@
 namespace TeleSpecialists.BLL.Model
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class token
+    public partial class UspGetAllPhysicion_Result
     {
-        public int tok_key { get; set; }
-        public string tok_phy_key { get; set; }
-        public string tok_phy_token { get; set; }
-    
-        public virtual AspNetUser AspNetUser { get; set; }
+        public int fap_key { get; set; }
+        public System.Guid fap_fac_key { get; set; }
+        public string fap_user_key { get; set; }
+        public bool fap_is_on_boarded { get; set; }
+        public string Physician_Name { get; set; }
     }
 }

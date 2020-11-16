@@ -10,14 +10,10 @@
 namespace TeleSpecialists.BLL.Model
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class token
+    public partial class UspGetDailyVolimetircdata_Result
     {
-        public int tok_key { get; set; }
-        public string tok_phy_key { get; set; }
-        public string tok_phy_token { get; set; }
-    
-        public virtual AspNetUser AspNetUser { get; set; }
+        public System.Guid cas_fac_key { get; set; }
+        public Nullable<System.DateTime> cas_response_ts_notification { get; set; }
     }
 }

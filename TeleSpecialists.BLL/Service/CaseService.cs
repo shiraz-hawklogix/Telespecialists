@@ -3,7 +3,6 @@ using System.Linq;
 using TeleSpecialists.BLL.Model;
 using System.Data.Entity;
 using System;
-using System.Data;
 using TeleSpecialists.BLL.Extensions;
 using TeleSpecialists.BLL.Helpers;
 using System.Reflection;
@@ -13,7 +12,6 @@ using System.Text;
 using System.Threading;
 using System.Globalization;
 using System.Web;
-using System.Data.SqlClient;
 
 namespace TeleSpecialists.BLL.Service
 {
@@ -883,8 +881,7 @@ namespace TeleSpecialists.BLL.Service
                     .Where(x => x.cas_fac_key != null
                            && x.cas_fac_key == facilityId
                            && x.cas_created_date >= criteriaDate)
-                           .OrderByDescending(m => m.cas_key)
-                    .Take(10);
+                           .OrderByDescending(m => m.cas_key);
         }
         public void Create(@case entity, bool commit = true)
         {
@@ -898,7 +895,6 @@ namespace TeleSpecialists.BLL.Service
                     _unitOfWork.Save();
                     _unitOfWork.Commit();
                 }
-                Helpers.DBHelper.ExecuteNonQuery("usp_refresh_case");
             }
         }
         public void Edit(@case entity, bool commit = true)
@@ -911,7 +907,7 @@ namespace TeleSpecialists.BLL.Service
                 _unitOfWork.Save();
                 _unitOfWork.Commit();
             }
-            Helpers.DBHelper.ExecuteNonQuery("usp_refresh_case");
+
         }
 
         public void EditCaseOnly(@case entity, bool commit = true)
@@ -923,46 +919,7 @@ namespace TeleSpecialists.BLL.Service
                 _unitOfWork.Save();
                 _unitOfWork.Commit();
             }
-            Helpers.DBHelper.ExecuteNonQuery("usp_refresh_case");
-        }
-        public void UpdateBlast (int cas_key, string response_key, string associated_key, string phy_key, int ctp_key, string modifiedby, DateTime modifiedon, int cst_key, DateTime status_assign, DateTime responseTime, DateTime phy_assignDate, string initials)
-        {
-            //_unitOfWork.SqlQuery<int>("Exec usp_Update_caseForBlast @cas_key='" + cas_keys + "'");
-            var sqlParameters = new List<SqlParameter>();
-            sqlParameters.Add(new SqlParameter("@cas_key", cas_key));
-            sqlParameters.Add(new SqlParameter("@response_phy_key", response_key));
-            sqlParameters.Add(new SqlParameter("@associated_key", associated_key));
-            sqlParameters.Add(new SqlParameter("@cas_phy_key", phy_key));
-            sqlParameters.Add(new SqlParameter("@ctp_key", ctp_key));
-            sqlParameters.Add(new SqlParameter("@modified_by", modifiedby));
-            sqlParameters.Add(new SqlParameter("@modified_on", modifiedon));
-            sqlParameters.Add(new SqlParameter("@cst_key", cst_key));
-            sqlParameters.Add(new SqlParameter("@status_assign_date", status_assign));
-            sqlParameters.Add(new SqlParameter("@response_time_phy", responseTime));
-            sqlParameters.Add(new SqlParameter("@phy_assign_date", phy_assignDate));
-            sqlParameters.Add(new SqlParameter("@phy_initial", initials));
 
-            Helpers.DBHelper.ExecuteNonQuery("usp_Update_caseForBlast", sqlParameters.ToArray());
-        }
-
-        public bool CheckRead(int id)
-        {
-            var record = _unitOfWork.SqlQuery<int>("Exec usp_case_read_status @cas_key='" + id + "'");
-            if (record.First() == CaseStatus.WaitingToAccept.ToInt())
-                return false;
-            else
-                return true;
-        }
-
-        public void detached(@case entity)
-        {
-            _unitOfWork.DetachedTbl(entity);
-        }
-        public void EditCaseOnlyForBlast(@case entity, bool commit = true)
-        {
-            _unitOfWork.SaveBlast(entity);
-            _unitOfWork.Commit();
-            Helpers.DBHelper.ExecuteNonQuery("usp_refresh_case");
         }
 
         public EntityTypes? CheckTemplateType(int cas_key, Guid fac_key, bool tpa, bool isStrokeAlert)

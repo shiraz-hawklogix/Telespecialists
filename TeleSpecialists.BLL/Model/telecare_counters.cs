@@ -12,12 +12,10 @@ namespace TeleSpecialists.BLL.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class token
+    public partial class telecare_counters
     {
-        public int tok_key { get; set; }
-        public string tok_phy_key { get; set; }
-        public string tok_phy_token { get; set; }
-    
-        public virtual AspNetUser AspNetUser { get; set; }
+        public int id { get; set; }
+        public string counter_text { get; set; }
+        public Nullable<long> counter_value { get; set; }
     }
 }

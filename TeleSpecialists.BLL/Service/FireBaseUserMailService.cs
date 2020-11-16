@@ -143,12 +143,5 @@ namespace TeleSpecialists.BLL.Service
                 return false;
             }
         }
-        public firebase_usersemail CreateAndReturn(firebase_usersemail entity)
-        {
-            _unitOfWork.FireBaseUserMailRepository.Insert(entity);
-            _unitOfWork.Save();
-            _unitOfWork.Commit();
-            return entity;
-        }
     }
 }

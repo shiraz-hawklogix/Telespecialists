@@ -12,14 +12,10 @@
 // config wetting of teleCare db
 
 var blastInterval; 
-var checkBlastArr = [];
-var animated = false;
 var listener = new BroadcastChannel('listener');
 listener.onmessage = function (e) {
     //console.log('Got message from service worker', e);
-    let loggedUser = $('#hdnUser').val();
     var _payload = e.data.data;
-    let physician_key = _payload['phy_key'];
     let caseId = _payload['caseId'];
     let caseType = _payload['caseType'];
     console.log('Got message from service worker id is' + caseId);
@@ -27,24 +23,15 @@ listener.onmessage = function (e) {
     let jsonData = _payload['jsonData'];
     let action = _payload['action'];
     let objectData = _payload['objectData'];
-    let strokeStamp = _payload['strokeStamp'];
     console.log('case type is : ' + caseType);
-    if (caseType === StatusArray[0]) {
-        if (loggedUser === physician_key)
-            SendStrokeToPhysician(caseId, true);
-    }
+    if (caseType === StatusArray[0])
+        SendStrokeToPhysician(caseId, true);
     else if (caseType === StatusArray[1])
         snoozePoupReloadCode_edit();
-    else if (caseType === StatusArray[2]) {
-        hidePopAcceptReject(caseId);
-        if (loggedUser === physician_key)
-            showNavigatorAcceptCasePopupWithNoQueue_def(jsonData);
-    }
-    else if (caseType === StatusArray[3]) {
-        hidePopAcceptReject(caseId);
-        if (loggedUser === physician_key)
-            showNavigatorRejectCasePopupWithNoQueue_def(caseId, action);
-    }
+    else if (caseType === StatusArray[2])
+        showNavigatorAcceptCasePopupWithNoQueue_def(jsonData);
+    else if (caseType === StatusArray[3])
+        showNavigatorRejectCasePopupWithNoQueue_def(caseId, action);
     else if (caseType === StatusArray[4])
         closeNavigatorCasePopupWithNoQueue_def();
     else if (caseType === StatusArray[5])
@@ -52,11 +39,11 @@ listener.onmessage = function (e) {
     else if (caseType === StatusArray[6])
         syncCaseInfoFromAdmin_def(objectData);
     else if (caseType === StatusArray[7])
-        ShowBlastStrokeAlert(caseId, true, objectData, 'INTERNAL BLAST', strokeStamp);
+        ShowBlastStrokeAlert(caseId, true, objectData, 'INTERNAL BLAST');
     else if (caseType === StatusArray[8])
-        ShowBlastStrokeAlert(caseId, true, objectData, 'EXTERNAL BLAST', strokeStamp);
+        ShowBlastStrokeAlert(caseId, true, objectData, 'EXTERNAL BLAST');
     else if (caseType === StatusArray[9])
-        stopBlastInterval(caseId);
+        LogoutOtherSystems(objectData); // we have to call function for twofactor
 };
 
 var isCaseFound = $('#lblCaseId').val();
@@ -67,34 +54,27 @@ if (isCaseFound)
 firebase.messaging().onMessage(function (payload) {
    // debugger;
     console.log("Message received. ", payload);
-    let loggedUser = $('#hdnUser').val();
     // get record from data node 
     $('#imgForBlast').hide();
     let arr_data = payload.data;
-    let physician_key = arr_data['phy_key'];
     let caseId = arr_data['caseId'];
     let caseType = arr_data['caseType'];
     let jsonData = arr_data['jsonData'];
     let action = arr_data['action'];
     let objectData = arr_data['objectData'];
-    let strokeStamp = arr_data['strokeStamp'];
-
     console.log('case type is : ' + caseType);
-    if (caseType === StatusArray[0]) {
-        if (loggedUser === physician_key)
-            SendStrokeToPhysician(caseId, true);
-    }
+    if (caseType === StatusArray[0])
+        SendStrokeToPhysician(caseId, true);
     else if (caseType === StatusArray[1])
         snoozePoupReloadCode_edit();
     else if (caseType === StatusArray[2]) {
-        hidePopAcceptReject(caseId);
-        if (loggedUser === physician_key)
-            showNavigatorAcceptCasePopupWithNoQueue_def(jsonData);
+        
+        hidePopAcceptReject();
+        showNavigatorAcceptCasePopupWithNoQueue_def(jsonData);
     }
     else if (caseType === StatusArray[3]) {
-        hidePopAcceptReject(caseId);
-        if (loggedUser === physician_key)
-            showNavigatorRejectCasePopupWithNoQueue_def(caseId, action);
+        hidePopAcceptReject();
+        showNavigatorRejectCasePopupWithNoQueue_def(caseId, action);
     }
     else if (caseType === StatusArray[4])
         closeNavigatorCasePopupWithNoQueue_def();
@@ -103,12 +83,31 @@ firebase.messaging().onMessage(function (payload) {
     else if (caseType === StatusArray[6])
         syncCaseInfoFromAdmin_def(objectData);
     else if (caseType === StatusArray[7])
-        ShowBlastStrokeAlert(caseId, true, objectData, 'INTERNAL BLAST', strokeStamp);
+        ShowBlastStrokeAlert(caseId, true, objectData, 'INTERNAL BLAST');
     else if (caseType === StatusArray[8])
-        ShowBlastStrokeAlert(caseId, true, objectData, 'EXTERNAL BLAST', strokeStamp);
+        ShowBlastStrokeAlert(caseId, true, objectData, 'EXTERNAL BLAST');
     else if (caseType === StatusArray[9])
-        stopBlastInterval(caseId);
+        LogoutOtherSystems(objectData); // we have to call function for twofactor
     
+    
+    //SendStrokeInternalBlast(caseId, true);
+    
+
+    // get Record from notification  node by husnain
+    //let arr_nf = payload.notification;
+    //let title = arr_nf['title'];
+    //let body = arr_nf['body'];
+    //let img = arr_nf['image'];
+    //let div = "<div><h2>" + title + "</h2><strong>" + body + "</strong><br><img style='height:10%;width:20%' src='" + img + "'/></div>";
+    //$("#divData").html('');
+    //$("#divData").append(div);
+    //appendMessage(payload);
+    //console.log('found notification title is : ' + title);
+    //for (let key in payload.notification) {
+    //    console.log('NF value is : ' + key);
+    //}
+    //let body = arr_nf['body'];
+    //let img = arr_nf['image'];
 });
 
 function appendMessage(payload) {
@@ -156,64 +155,23 @@ $('#imgForBlast').click(function () {
     SendStrokeInternalBlast(id, true);
 });
 
-function startBlastInterval(id, blastType, strokeStamp) {
-    var arraycontainBlast = (checkBlastArr.indexOf(id) > -1);
-    console.log('arraycontainBlast result : ' + arraycontainBlast);
-    if (!arraycontainBlast) {
-        checkBlastArr.push(id);
-        var divBlast = "<a href='javascript:void(0);' id='" + id + "'   onclick='GetBlastDetail(" + id + ");' data-strokeStamp='" + strokeStamp+"' > <span class='ml6 font_12px'><span class='text-wrapper'> <span class='letters' id='lblBlast" + id + "'>" + blastType + "</span></span> </span> </a>";
-        $('#divInternalExternal').append(divBlast);
-        if (!animated)
-            AnimateJS();
-        playBlastNotification();
-        localStorage.setItem("activeBlastIds", checkBlastArr);
-        localStorage.setItem("activeBlasts", $('#divInternalExternal').html());
-    }
+function startBlastInterval(blastType) {
+    //$('#imgForBlast').show();
+    //blastInterval = setInterval(AnimateImg, 500);
+    $('#lblBlast').html(blastType);
+    $('#btnBlast').show();
 }
-function stopBlastInterval(id) {
-    console.log('blast going to be hide :', id);
-    $('#lblBlast' + id).html('');
-    $('#' + id).remove();
-    localStorage.setItem("activeBlasts", $('#divInternalExternal').html());
+function stopBlastInterval() {
+    //clearInterval(blastInterval);
+    //$('#imgForBlast').hide();
+    //blastInterval = null;
+    $('#lblBlast').html('');
+    $('#btnBlast').hide();
 }
 
-$('.btnBlast').click(function () {
+$('#btnBlast').click(function () {
     stopBlastInterval();
     var id = $('#cas_key_blast').val();
     SendStrokeInternalBlast(id, true);
 });
 
-function GetBlastDetail(e) {
-   // var _strokeStamp = //$(this).attr('data-strokeStamp');
-    console.log('open stamp: ', e);
-    //stopBlastInterval(e);
-    SendStrokeInternalBlast(e, true);
-}
-
-function AnimateJS() {
-    animated = true;
-    var textWrapper = document.querySelector('.ml6 .letters');
-    textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
-
-    anime.timeline({ loop: true })
-        .add({
-            targets: '.ml6 .letter',
-            translateY: ["1.1em", 0],
-            translateZ: 0,
-            duration: 500,
-            delay: (el, i) => 50 * i
-        }).add({
-            targets: '.ml6',
-            opacity: 0,
-            duration: 500,
-            easing: "easeOutExpo",
-            delay: 500
-        });
-}
-
-$(document).ready(function () {
-    var _arrVal = localStorage.getItem('activeBlastIds');
-    if (_arrVal)
-        checkBlastArr = _arrVal.slice();
-    console.log('checkBlastArr:', checkBlastArr);
-});

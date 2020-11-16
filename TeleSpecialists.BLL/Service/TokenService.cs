@@ -13,12 +13,7 @@ namespace TeleSpecialists.BLL.Service
             var model = _unitOfWork.TokenRepository.Query().Where(x => x.tok_phy_key == token).ToList();
             return model;
         }
-        public List<string> GetIOSAll(string phy_key)
-        {
-            var model = _unitOfWork.TokenRepository.Query().Where(x => x.tok_phy_key == phy_key && x.tok_device_type == "iOS").ToList();
-            var list = model.Select(x => x.tok_phy_token).ToList();
-            return list;
-        }
+
         public token GetDetailById(string phy_key, string phy_token_key)
         {
             var model = _unitOfWork.TokenRepository.Query().Where(x => x.tok_phy_key == phy_key && x.tok_phy_token == phy_token_key).FirstOrDefault();

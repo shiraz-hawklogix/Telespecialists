@@ -10,14 +10,14 @@
 namespace TeleSpecialists.BLL.Model
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class token
+    public partial class UspGetForecastData_Result
     {
-        public int tok_key { get; set; }
-        public string tok_phy_key { get; set; }
-        public string tok_phy_token { get; set; }
-    
-        public virtual AspNetUser AspNetUser { get; set; }
+        public int Id { get; set; }
+        public string Fac_Id { get; set; }
+        public string Fac_Name { get; set; }
+        public Nullable<System.DateTime> Month_Name { get; set; }
+        public string Month_Prediction { get; set; }
+        public Nullable<System.DateTime> Created_Date { get; set; }
     }
 }

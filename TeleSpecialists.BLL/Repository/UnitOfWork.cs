@@ -1126,21 +1126,6 @@ namespace TeleSpecialists.BLL.Repository
         }
         #endregion
 
-        #region Case Rejection Reason
-        private ICaseRejectRepository _casRejectRepository;
-        public ICaseRejectRepository CaseRejectRepository
-        {
-            get
-            {
-                if (this._casRejectRepository == null)
-                {
-                    this._casRejectRepository = new CaseRejectRepository(context);
-                }
-                return _casRejectRepository;
-            }
-        }
-        #endregion
-
         #endregion ----- Repositories -----
 
         #region ----- Save -----
@@ -1151,17 +1136,6 @@ namespace TeleSpecialists.BLL.Repository
         }
         public void Save()
         {
-            context.SaveChanges();
-        }
-        // added by hunsnain for blast
-        public void DetachedTbl(@case entry)
-        {
-            context.Entry(entry).State = EntityState.Detached;
-            context.SaveChanges();
-        }
-        public void SaveBlast(@case entry)
-        {
-            context.Entry(entry).State = EntityState.Modified;
             context.SaveChanges();
         }
         #endregion
