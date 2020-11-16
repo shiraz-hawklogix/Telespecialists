@@ -17,5 +17,6 @@ namespace TeleSpecialists.BLL.Model
         public int BCI_ID { get; set; }
         public string Phy_Name { get; set; }
         public string Phy_Bci_Value { get; set; }
+        public string Phy_Id { get; set; }
     }
 }

@@ -9601,21 +9601,49 @@ namespace TeleSpecialists.BLL.Service
 
         }
 
-
-        public DataSourceResult GetBCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+public DataSourceResult GetBCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
         {
             List<BCI_ReportData> Finallist = new List<BCI_ReportData>();
             Finallist = _unitOfWork.SqlQuery<BCI_ReportData>(string.Format("Exec UspGetAllPhyDataForBCI")).ToList();
+            if (facilities != null && facilities.Count > 0)
+            {
+                if (facilities[0] != Guid.Empty)
+                    Finallist = Finallist.Where(m => Physicians.Contains(new Guid(m.Phy_Id))).ToList();
+            }
             var finalresult = Finallist.Select(x => new
             {
-                Phy_Name = x.Phy_Name,
-                Phy_Bci_Value = x.Phy_Bci_Value
+                    Phy_Name = x.Phy_Name,
+                    Phy_Bci_Value = x.Phy_Bci_Value
 
-            }).OrderBy(x => x.Phy_Name).AsQueryable();
+            }).OrderBy(x=>x.Phy_Name).AsQueryable();
 
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
+
+    public DataSourceResult GetCCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        {
+
+            List<CCIReport_Data> Finallist = new List<CCIReport_Data>();
+            Finallist = _unitOfWork.SqlQuery<CCIReport_Data>(string.Format("Exec UspGetAllPhyDataForCCI")).ToList();
+
+            if (facilities != null && facilities.Count > 0)
+            {
+                if (facilities[0] != Guid.Empty)
+                    Finallist = Finallist.Where(m => Physicians.Contains(new Guid(m.Physician_Id))).ToList();
+            }
+            //Convert List To Queryable
+            var finalresult = Finallist.Select(x => new
+            {
+                Physician_Name = x.Physician_Name,
+                Physician_CCI = x.Physician_CCI
+
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+
         public DataSourceResult GetDailyForecastBydb(DataSourceRequest request, string facilitiess)
         {
             List<Monthly_Forecast> volumelist = new List<Monthly_Forecast>();
@@ -9711,24 +9739,7 @@ namespace TeleSpecialists.BLL.Service
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
-        public DataSourceResult GetCCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
-        {
-
-            List<CCIReport_Data> Finallist = new List<CCIReport_Data>();
-            Finallist = _unitOfWork.SqlQuery<CCIReport_Data>(string.Format("Exec UspGetAllPhyDataForCCI")).ToList();
-
-
-            //Convert List To Queryable
-            var finalresult = Finallist.Select(x => new
-            {
-                Physician_Name = x.Physician_Name,
-                Physician_CCI = x.Physician_CCI
-
-            }).AsQueryable();
-
-            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
-
-        }
+      
 
 
     }

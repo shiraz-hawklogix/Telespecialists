@@ -257,6 +257,7 @@
           <Property Name="BCI_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Phy_Name" Type="nvarchar" MaxLength="100" />
           <Property Name="Phy_Bci_Value" Type="nvarchar" MaxLength="100" />
+          <Property Name="Phy_Id" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="call_history">
           <Key>
@@ -6896,6 +6897,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Name="BCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Phy_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Phy_Bci_Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Phy_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="CCIReport_Data">
           <Key>
@@ -9240,6 +9242,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySetMapping Name="BCI_ReportData">
             <EntityTypeMapping TypeName="DataModel.BCI_ReportData">
               <MappingFragment StoreEntitySet="BCI_ReportData">
+                <ScalarProperty Name="Phy_Id" ColumnName="Phy_Id" />
                 <ScalarProperty Name="Phy_Bci_Value" ColumnName="Phy_Bci_Value" />
                 <ScalarProperty Name="Phy_Name" ColumnName="Phy_Name" />
                 <ScalarProperty Name="BCI_ID" ColumnName="BCI_ID" />
