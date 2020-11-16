@@ -6140,6 +6140,15 @@ namespace TeleSpecialists.BLL.Service
             //}
         }
 
+        public DataSourceResult GetStatusSnapshot(DataSourceRequest request, string datevalue)
+        {
+            DateTime Date = Convert.ToDateTime(datevalue);
+            DateTime Time = Convert.ToDateTime(datevalue);
+            List<StatusSnapshotcls> Physician_StatusList = _unitOfWork.SqlQuery<StatusSnapshotcls>(string.Format("Exec sp_get_status_snapshot @Date = '{0}',@Time = '{1}'", Date,Time)).ToList();
+            var finalresult = Physician_StatusList.AsQueryable();
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+        }
+
         #endregion
 
         #region Graph Quality Report by Ahmad junaid
