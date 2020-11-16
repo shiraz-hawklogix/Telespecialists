@@ -12,16 +12,10 @@ namespace TeleSpecialists.BLL.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class user_access
+    public partial class BCI_ReportData
     {
-        public int user_key { get; set; }
-        public string user_role_key { get; set; }
-        public string user_id { get; set; }
-        public Nullable<int> user_com_key { get; set; }
-        public bool user_isAllowed { get; set; }
-        public Nullable<System.DateTime> user_createddate { get; set; }
-        public string user_createdBy { get; set; }
-        public Nullable<System.DateTime> user_updateddate { get; set; }
-        public string user_updatedBy { get; set; }
+        public int BCI_ID { get; set; }
+        public string Phy_Name { get; set; }
+        public string Phy_Bci_Value { get; set; }
     }
 }

@@ -3586,6 +3586,36 @@ namespace TeleSpecialists.Controllers
         }
 
 
+        public ActionResult CCIReport()
+        {
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
+                        .Select(m => new { Value = m.fac_key, Text = m.fac_name })
+                        .ToList()
+                        .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+
+            ViewBag.Physicians = _lookUpService.GetPhysicians().Where(m => m.IsActive == true && m.IsStrokeAlert == true)
+                                  .OrderBy(m => m.LastName)
+                                  .Select(m => new { Value = m.Id, Text = m.LastName + " " + m.FirstName })
+                                  .ToList()
+                                  .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+            return GetViewResult();
+        }
+
+        public JsonResult GetCCI(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        {
+            try
+            {
+                var result = _reportService.GetCCIData(request, facilities, Physicians);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
 
         public PartialViewResult AddPhysician()
         {

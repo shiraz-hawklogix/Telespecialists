@@ -12,16 +12,13 @@ namespace TeleSpecialists.BLL.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class user_access
+    public partial class view_user_schedule
     {
-        public int user_key { get; set; }
-        public string user_role_key { get; set; }
-        public string user_id { get; set; }
-        public Nullable<int> user_com_key { get; set; }
-        public bool user_isAllowed { get; set; }
-        public Nullable<System.DateTime> user_createddate { get; set; }
-        public string user_createdBy { get; set; }
-        public Nullable<System.DateTime> user_updateddate { get; set; }
-        public string user_updatedBy { get; set; }
+        public long uss_key { get; set; }
+        public string uss_user_id { get; set; }
+        public bool IsStrokeAlert { get; set; }
+        public Nullable<long> DayNumber { get; set; }
+        public Nullable<long> TIMEFROM { get; set; }
+        public Nullable<long> TIMETO { get; set; }
     }
 }

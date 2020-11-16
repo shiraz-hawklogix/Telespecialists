@@ -12,16 +12,15 @@ namespace TeleSpecialists.BLL.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class user_access
+    public partial class view_facility_physician
     {
-        public int user_key { get; set; }
-        public string user_role_key { get; set; }
-        public string user_id { get; set; }
-        public Nullable<int> user_com_key { get; set; }
-        public bool user_isAllowed { get; set; }
-        public Nullable<System.DateTime> user_createddate { get; set; }
-        public string user_createdBy { get; set; }
-        public Nullable<System.DateTime> user_updateddate { get; set; }
-        public string user_updatedBy { get; set; }
+        public int fap_key { get; set; }
+        public System.Guid fap_fac_key { get; set; }
+        public string fap_user_key { get; set; }
+        public bool fap_is_active { get; set; }
+        public string fac_name { get; set; }
+        public bool fac_is_active { get; set; }
+        public bool fap_is_on_boarded { get; set; }
+        public bool fac_go_live { get; set; }
     }
 }

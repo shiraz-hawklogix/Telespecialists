@@ -12,16 +12,13 @@ namespace TeleSpecialists.BLL.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class user_access
+    public partial class CCIReport_Data
     {
-        public int user_key { get; set; }
-        public string user_role_key { get; set; }
-        public string user_id { get; set; }
-        public Nullable<int> user_com_key { get; set; }
-        public bool user_isAllowed { get; set; }
-        public Nullable<System.DateTime> user_createddate { get; set; }
-        public string user_createdBy { get; set; }
-        public Nullable<System.DateTime> user_updateddate { get; set; }
-        public string user_updatedBy { get; set; }
+        public int CCI_ID { get; set; }
+        public string Physician_Id { get; set; }
+        public string Physician_CCI { get; set; }
+        public Nullable<System.DateTime> Month { get; set; }
+        public Nullable<System.DateTime> Date { get; set; }
+        public string Physician_Name { get; set; }
     }
 }

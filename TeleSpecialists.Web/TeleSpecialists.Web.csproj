@@ -3546,6 +3546,7 @@
     <Content Include="Views\Reports\DailyFacilityVolumetricReport.cshtml" />
     <Content Include="Views\Reports\Daily_forecast.cshtml" />
     <Content Include="Views\Reports\MOnth_forecast.cshtml" />
+    <Content Include="Views\Reports\CCIReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

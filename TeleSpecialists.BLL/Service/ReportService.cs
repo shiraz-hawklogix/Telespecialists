@@ -9600,202 +9600,12 @@ namespace TeleSpecialists.BLL.Service
             }
 
         }
-        
+
+
         public DataSourceResult GetBCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
         {
-            //Get Data From Database for cases
-            var date = new DateTime(2020, 01, 01);
-            var startdate = date.ToString("yyyy-MM-dd");
-
-            //var datess = new DateTime(2020, 10, 01);
-            //var currentdate = datess.ToString("yyyy-MM-dd");
-
-
-            var current_date = DateTime.Now.AddMonths(-1);
-            var cd = new DateTime(current_date.Year, current_date.Month, 1);
-            var currentdate = cd.AddMonths(1).AddDays(-1);
-            //next month first and last date for forcaste db table data getting
-            var next_date = DateTime.Now;
-            var next_month_start_date = new DateTime(next_date.Year, next_date.Month, 1);
-            var next_month_end_date = next_month_start_date.AddMonths(1).AddDays(-1);
-            //initialize model listing
-            List<BCIViewModel> cases = new List<BCIViewModel>();
-            List<GetAllPhycision> _GetAllPhycision = new List<GetAllPhycision>();
-            List<Forcast_Data> values_next_month = new List<Forcast_Data>();
-            List<BCIReport> volumelist = new List<BCIReport>();
-            List<BCIPhysicion> Finallist = new List<BCIPhysicion>();
-            BCIReport report;
-            BCIPhysicion bCIPhysicion;
-            _GetAllPhycision = _unitOfWork.SqlQuery<GetAllPhycision>(string.Format("Exec UspGetAllPhysicion")).ToList();
-            values_next_month = _unitOfWork.SqlQuery<Forcast_Data>(string.Format("Exec UspGetForecastData @StartDate = '{0}',@edate = '{1}'", next_month_start_date, next_month_end_date)).ToList();
-            cases = _unitOfWork.SqlQuery<BCIViewModel>(string.Format("Exec UspGetCaseDataForBCI @StartDate = '{0}',@edate = '{1}'", startdate, currentdate)).ToList();
-            // Step 1
-            // Average Video Time Per Facility Per Stroke Alert
-            int _recordCount = 0;
-            string Time_string_list = "";
-            if (facilities != null && facilities.Count > 0)
-            {
-                if (facilities[0] != Guid.Empty)
-                    cases = cases.Where(m => facilities.Contains(m.cas_fac_key)).ToList();
-                values_next_month = values_next_month.Where(m => facilities.Contains(new Guid(m.Fac_Id))).ToList();
-            }
-            foreach (var fac in facilities)
-            {
-                report = new BCIReport();
-                report.fac_name = _FacilityService.GetFacilityNameForreport(fac);
-                report.fac_Id = fac.ToString();
-                var case_list = cases.Where(x => x.cas_fac_key == fac).ToList();
-                foreach (var item in case_list)
-                {
-                    DateTime? d1 = item.cas_metric_video_start_time;
-                    DateTime? d2 = item.cas_metric_video_end_time;
-                    DateTime date1 = d1 ?? DateTime.MinValue;
-                    DateTime date2 = d2 ?? DateTime.MinValue;
-                    TimeSpan Time_value = date2.Subtract(date1);
-                    Time_string_list += Time_value + ",";
-                }
-                List<double> _meanlist = new List<double>();
-                var times = Time_string_list.Split(',').ToArray();
-                int count = 0;
-                foreach (var item in times)
-                {
-                    if (item != "")
-                    {
-                        var chk_formt = item.ToString().Split(':')[0];
-                        if (chk_formt.Contains("."))
-                        {
-                            var ts = TimeSpan.Parse(item).TotalSeconds;
-                            _meanlist.Add(ts);
-                        }
-                        else
-                        {
-                            var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
-                            _meanlist.Add(time);
-                        }
-                        count++;
-                    }
-                }
-                TimeSpan _meantime = new TimeSpan();
-                if (_meanlist.Count > 0)
-                {
-                    double mean = _meanlist.Average();
-                    _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
-                }
-                report.Mean_Per_Facilitys = string.Format("{0:00}:{1:00}:{2:00}", (_meantime.Hours + _meantime.Days * 24), _meantime.Minutes, _meantime.Seconds);
-                volumelist.Add(report);
-                Time_string_list = "";
-                //Step 2
-                // Demand Next Month Prediction
-                foreach (var item in values_next_month)
-                {
-                    var get_id = fac.ToString();
-                    var model_id = item.Fac_Id;
-                    if (get_id == model_id)
-                    {
-                        var _items = volumelist[_recordCount];
-                        _items.Next_Month_Data = Math.Round(item.Month_Prediction.ToDouble(), 2).ToString();
-                        break;
-                    }
-                }
-                _recordCount = _recordCount + 1;
-            }
-            var report_values = volumelist.Where(x => facilities.Contains(new Guid(x.fac_Id))).ToList();
-            //Step 3
-            //Next Month Video Time
-            int counter = 0;
-            foreach (var item in report_values)
-            {
-                if (item.Mean_Per_Facilitys != "")
-                {
-                    var get_mean_data = item.Mean_Per_Facilitys;
-                    var time = new TimeSpan(int.Parse(get_mean_data.Split(':')[0]), int.Parse(get_mean_data.Split(':')[1]), int.Parse(get_mean_data.Split(':')[2])).TotalMinutes;
-                    var next_month_data = item.Next_Month_Data;
-                    double next_month_video_time = (double)time * next_month_data.ToDouble();
-                    var _item = volumelist[counter];
-                    if (next_month_video_time.ToString() == "∞" || next_month_video_time.ToString() == "NaN")
-                    {
-                        _item.Next_Month_Video_Time = "0";
-                    }
-                    else
-                    {
-                        _item.Next_Month_Video_Time = next_month_video_time.ToString();
-                    }
-                    counter++;
-                }
-            }
-            // Step 4
-            //Time Adjusted Demand Ratio
-            double Total_Demand_Video_Time = 0;
-            int countes_val = 0;
-            double cal_sum = 0;
-            double mul_value = 0;
-            var Sum_All_Video_Time = report_values.Select(x => x.Next_Month_Video_Time).ToList();
-            foreach (var item in Sum_All_Video_Time)
-            {
-                Total_Demand_Video_Time = Total_Demand_Video_Time.ToDouble() + item.ToDouble();
-            }
-
-            foreach (var item in report_values)
-            {
-                var cal = (double)item.Next_Month_Video_Time.ToDouble() / Total_Demand_Video_Time;
-                if (cal.ToString() == "NaN")
-                {
-                    cal_sum += cal;
-                    var items = volumelist[countes_val];
-                    items.Time_Adjusted_Demand_Ratio = "0";
-                    double get_percenatge = (double)0 * 100;
-                    items.Percentage = get_percenatge.ToString();
-                    mul_value += get_percenatge;
-                    countes_val++;
-                }
-                else
-                {
-                    cal_sum += cal;
-                    var items = volumelist[countes_val];
-                    items.Time_Adjusted_Demand_Ratio = cal.ToString();
-                    double get_percenatge = (double)cal * 100;
-                    items.Percentage = get_percenatge.ToString();
-                    mul_value += get_percenatge;
-                    countes_val++;
-                }
-
-            }
-
-            // Step 5 
-
-            var chk_phy = _GetAllPhycision.ToList();
-            var Physician = _lookUpService.GetPhysicians().Where(m => m.IsActive == true && m.IsStrokeAlert == true)
-                      .OrderBy(m => m.LastName)
-                      .Select(m => new { Value = m.Id, Text = m.LastName + " " + m.FirstName })
-                      .ToList();
-            if (Physicians != null && Physicians.Count > 0)
-            {
-                if (facilities[0] != Guid.Empty)
-                    Physician = Physician.Where(m => Physicians.Contains(new Guid(m.Value))).ToList();
-            }
-            foreach (var phy in Physician)
-            {
-                bCIPhysicion = new BCIPhysicion();
-                double Total_phy_video_time = 0;
-                var get_onboarded_list = chk_phy.Where(x => x.fap_user_key == phy.Value).ToList();
-                if (facilities != null && facilities.Count > 0)
-                {
-                    if (facilities[0] != Guid.Empty)
-                        get_onboarded_list = get_onboarded_list.Where(m => facilities.Contains(m.fap_fac_key)).ToList();
-                }
-                foreach (var item in get_onboarded_list)
-                {
-                    var get_video_value = report_values.Where(x => x.fac_Id == item.fap_fac_key.ToString()).Select(m => m.Time_Adjusted_Demand_Ratio).FirstOrDefault();
-                    Total_phy_video_time += get_video_value.ToDouble();
-                }
-
-                bCIPhysicion.Phy_Name = phy.Text;
-                var _vals = Total_phy_video_time * 100;
-                bCIPhysicion.Phy_Bci_Value = Math.Round(_vals, 2);
-                Finallist.Add(bCIPhysicion);
-                Total_phy_video_time = 0;
-            }
-            //Convert List To Queryable
+            List<BCI_ReportData> Finallist = new List<BCI_ReportData>();
+            Finallist = _unitOfWork.SqlQuery<BCI_ReportData>(string.Format("Exec UspGetAllPhyDataForBCI")).ToList();
             var finalresult = Finallist.Select(x => new
             {
                 Phy_Name = x.Phy_Name,
@@ -9888,6 +9698,8 @@ namespace TeleSpecialists.BLL.Service
 
             }
 
+
+
             //Convert List To Queryable
             var finalresult = volumelist.Select(x => new
             {
@@ -9899,7 +9711,25 @@ namespace TeleSpecialists.BLL.Service
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
-        
+        public DataSourceResult GetCCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        {
+
+            List<CCIReport_Data> Finallist = new List<CCIReport_Data>();
+            Finallist = _unitOfWork.SqlQuery<CCIReport_Data>(string.Format("Exec UspGetAllPhyDataForCCI")).ToList();
+
+
+            //Convert List To Queryable
+            var finalresult = Finallist.Select(x => new
+            {
+                Physician_Name = x.Physician_Name,
+                Physician_CCI = x.Physician_CCI
+
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+
 
     }
 }
