@@ -47,4 +47,10 @@ namespace TeleSpecialists.BLL.ViewModels
         public decimal date { get; set; }
         public int Physcian_count { get; set; }
     }
+
+    public class FacilityListDayTime
+    {
+        public string start_date { get; set; }
+        public bool isFlagged { get; set; }
+    }
 }
