@@ -1,8 +1,6 @@
-﻿
-@using TeleSpecialists.BLL.Helpers;
+﻿@using TeleSpecialists.BLL.Helpers;
 @using TeleSpecialists.BLL.Extensions;
 @using TeleSpecialists.BLL.Model;
-
 @{
     ViewBag.Title = "Physician Billing by Amount (New)";
     var currentDate = DateTime.Now.ToEST();
@@ -205,6 +203,7 @@
                         EEG: { type: "number" },
                         LTM_EEG: { type: "number" },
                         TC: { type: "number" },
+                        TotalCases: { type: "number" },
                         Amount: { type: "number" }
                     }
                 },
@@ -220,6 +219,7 @@
                         { field: "EEG", aggregate: "sum" },
                         { field: "LTM_EEG", aggregate: "sum" },
                         { field: "TC", aggregate: "sum" },
+                        { field: "TotalCases", aggregate: "sum" },
                         { field: "Amount", aggregate: "sum" }
                     ]
                 },
@@ -232,19 +232,16 @@
                 { field: "EEG", aggregate: "sum" },
                 { field: "LTM_EEG", aggregate: "sum" },
                 { field: "TC", aggregate: "sum" },
+                { field: "TotalCases", aggregate: "sum" },
                 { field: "Amount", aggregate: "sum" }],
             serverPaging: false,
             serverFiltering: false,
             serverSorting: false,
-
-            //serverPaging: true,
-            //serverFiltering: false,
-            //serverSorting: true,
         },
         dataBound: function (e) {
             $("#kendoDataGrid th").css("font-weight", "bold");
-            // making the blast row bolder
 
+            //// making the blast row bolder
             $("#kendoDataGrid tr").each(function (index, element) {
                 var row = $(element);
                 var text = $.trim(row.find("td:nth-child(3)").text());
@@ -253,17 +250,7 @@
                 }
             });
 
-            // making the total earened row bolder
-
-            //$("#kendoDataGrid tr").each(function (index, element) {
-            //    var row = $(element);
-            //    var text = $.trim(row.find("td:nth-child(2)").text());
-            //    if (text.toLowerCase().indexOf("total earned") != -1) {
-            //        row.children("td").addClass("font-weight-bold");
-            //    }
-            //});
-
-            // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+           // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
             $('[data-role="dropdownlist"]').each(function () {
                 var kendoDropDown = $(this).data("kendoDropDownList");
                 if (kendoDropDown)
@@ -276,24 +263,18 @@
             { field: "AssignDate", title: "Date", width: '120px', groupFooterTemplate:"Total Earned" },
             { field: "Schedule", title: "Schedule", width: '120px' },
             { field: "Physician", title: "Physician", width: '180px'},
-            { field: "CC1_StrokeAlert", title: "CC1-StrokeAlert", width: '150px'},
-            { field: "CC1_STAT", title: "CC1-STAT", width: '100px'},
-            { field: "New", title: "New", width: '80px'},
-            { field: "FU", title: "FU", width: '80px' },
-            { field: "EEG", title: "EEG", width: '80px' },
-            { field: "LTM_EEG", title: "LTM-EEG", width: '100px' },
-            { field: "TC", title: "TC", width: '50px' },
-            //{ field: "Not_Seen", title: "Not-Seen", width: '100px' },
-            //{ field: "Open", title: "Open", width: '80px'},
-            //{ field: "WaitingToAccept", title: "WaitingToAccept", width: '150px' },
-            //{ field: "Accepted", title: "Accepted", width: '100px'},
-            //{ field: "Complete", title: "Complete", width: '100px' },
-            //{ field: "Blast", title: "Blast", width: '80px' },
-            { field: "Amount", title: "Total Earned", width: '120px', format: "{0:c}",groupFooterTemplate:"$#=sum#" }
+            { field: "CC1_StrokeAlert", title: "CC1-StrokeAlert", width: '150px', groupFooterTemplate: "#=sum#"},
+            { field: "CC1_STAT", title: "CC1-STAT", width: '100px', groupFooterTemplate: "#=sum#"},
+            { field: "New", title: "New", width: '80px', groupFooterTemplate: "#=sum#"},
+            { field: "FU", title: "FU", width: '80px', groupFooterTemplate: "#=sum#"},
+            { field: "EEG", title: "EEG", width: '80px', groupFooterTemplate: "#=sum#"},
+            { field: "LTM_EEG", title: "LTM-EEG", width: '100px', groupFooterTemplate: "#=sum#" },
+            { field: "TC", title: "TC", width: '50px', groupFooterTemplate: "#=sum#" },
+            { field: "TotalCases", title: "Total Cases", width: '80px', groupFooterTemplate: "#=sum#" },
+            { field: "Amount", title: "Total Earned", width: '120px',format: "{0:c}",groupFooterTemplate:"$#=sum#" }
         ],
         pageable: {
             refresh: true,
-            //pageSizes: true,
             pageSize: 10,
             pageSizes: [5, 10, 15, 20, 30, 50, 'All']
         },
