@@ -571,7 +571,7 @@
                     if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
                     {
                         colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
-                        <div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3" id="phycisian-listing-container">
+                        <div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3 phycisian-listing-container" id="phycisian-listing-container">
                         </div>
                     }
                     @*<div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3">
@@ -1184,7 +1184,23 @@ $(document).ready(function () {
     }
 }
 <script>
-   
+    // JavaScript Document
+
+		window.onload = init;
+		var divsWithClass = null;
+
+
+		function init() {
+			if (window.location.href.indexOf("chat") >= 0) {
+				this.divsWithClass = document.getElementsByClassName("phycisian-listing-container");
+				var index = 0;
+				while (index < divsWithClass.length) {
+					divsWithClass[index].className += " physician-tbl-ui";
+					index++;
+				}
+			}
+			console.log(divsWithClass);
+		}
 </script>
 
 
