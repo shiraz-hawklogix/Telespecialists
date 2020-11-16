@@ -113,17 +113,23 @@
     <Compile Include="Extensions\HtmlExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Helpers\AttributeHelper.cs" />
+    <Compile Include="Helpers\BCIPhysicion.cs" />
+    <Compile Include="Helpers\BCIReport.cs" />
     <Compile Include="Helpers\CaseReviewTrends.cs" />
     <Compile Include="Helpers\CSVReader.cs" />
     <Compile Include="Helpers\CWHGraphReport.cs" />
     <Compile Include="Helpers\CWHReport.cs" />
+    <Compile Include="Helpers\DailyVolematricReport.cs" />
     <Compile Include="Helpers\DBHelper.cs" />
     <Compile Include="Helpers\EmailHelper.cs" />
     <Compile Include="Helpers\EnumCollection.cs" />
     <Compile Include="Helpers\FacilityDashboardcls.cs" />
     <Compile Include="Helpers\Functions.cs" />
+    <Compile Include="Helpers\GetAllPhycision.cs" />
     <Compile Include="Helpers\HourlyMeanReport.cs" />
+    <Compile Include="Helpers\Monthly_Forecast.cs" />
     <Compile Include="Helpers\PredicateUtils.cs" />
+    <Compile Include="Helpers\PremorbidCorrespondnce.cs" />
     <Compile Include="Helpers\QualityGoalscls.cs" />
     <Compile Include="Helpers\QualityMetricsGraphReport.cs" />
     <Compile Include="Helpers\QualityMetricsReportCls.cs" />
@@ -133,6 +139,8 @@
     <Compile Include="Helpers\VolumeMetricsReport.cs" />
     <Compile Include="Helpers\WebScrapper.cs" />
     <Compile Include="ModelEx\CaseModel.cs" />
+    <Compile Include="ModelEx\DailyVolimatricModel.cs" />
+    <Compile Include="ModelEx\mock_case.cs" />
     <Compile Include="ModelEx\PhysicianModel.cs" />
     <Compile Include="Model\alarm_setting.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
@@ -200,10 +208,16 @@
     <Compile Include="Model\firebase_usersemail.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\Forcast_Data.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\goals_data.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\Hospital_Protocols.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\mock_case.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\Onboarded.cs">
@@ -239,6 +253,9 @@
     <Compile Include="Model\post_acute_care.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\premorbid_correspondnce.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\quality_goals.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -249,6 +266,9 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\sp_getMenuAccess_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\telecare_counters.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\token.cs">
@@ -263,6 +283,12 @@
     <Compile Include="Model\user_schedule_sleep.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\UspGetAllPhysicion_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetCaseDataForBCI_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\UspGetCWHData2_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -270,6 +296,12 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\UspGetCWHData_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetDailyVolimetircdata_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetForecastData_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\UspGetRCIData_Result.cs">
@@ -298,6 +330,7 @@
     <Compile Include="Repository\ICwhData.cs" />
     <Compile Include="Repository\MenuAccessRepository.cs" />
     <Compile Include="Repository\MenuRepository.cs" />
+    <Compile Include="Repository\MockCaseRepository.cs" />
     <Compile Include="Repository\NHRepository.cs" />
     <Compile Include="Repository\OnBoardedRepository.cs" />
     <Compile Include="Repository\PostAcuteCareRepository.cs" />
@@ -306,6 +339,7 @@
     <Compile Include="Repository\PhysicianPercentageRateRepository.cs" />
     <Compile Include="Repository\PhysicianRateRepository.cs" />
     <Compile Include="Repository\Physician_Case_TempRepository.cs" />
+    <Compile Include="Repository\PremorbidCorrespondnceRepository.cs" />
     <Compile Include="Repository\QualityGoalsRepository.cs" />
     <Compile Include="Repository\RapidsMailboxRepository.cs" />
     <Compile Include="Repository\RateRepository.cs" />
@@ -328,6 +362,7 @@
     <Compile Include="Service\FireBaseUserMailService.cs" />
     <Compile Include="Service\HospitalprotocolServices.cs" />
     <Compile Include="Service\MenuService.cs" />
+    <Compile Include="Service\MockCaseService.cs" />
     <Compile Include="Service\NHService.cs" />
     <Compile Include="Service\OnBoardedServices.cs" />
     <Compile Include="Service\PhysicianCaseTempService.cs" />

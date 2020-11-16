@@ -1,0 +1,211 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+}
+
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL;
+@using System;
+
+@model TeleSpecialists.BLL.Model.mock_case
+@{
+    ViewBag.Title = "Create Case";
+    ViewBag.CurrentView = "Create";
+    var guid = Guid.NewGuid().ToString();
+
+
+}
+
+<div class="ajaxForm" id="basic">
+    <form method="post" class="form-horizontal" id="createForm" action="@(Url.Action("Create"))">
+        <input type="hidden" name="AddNumber" id="AddNumber" value="0">
+        <input type="hidden" name="cas_cancelled_type" id="cas_cancelled_type" />
+        <input type="hidden" name="IsAutoSave" id="IsAutoSave" value="0">
+        @*<input type="hidden" id="five9_intial_utc_time" value="@(Model.cas_time_stamp.HasValue ? Model.cas_time_stamp.Value.FormatDateTime() : "")" />
+            <input type="hidden" id="five9_start_time" value="@(Model.cas_time_stamp.HasValue ? Model.cas_time_stamp.Value.FormatDateTime() : "")" />*@
+        <input type="hidden" id="cas_pct_key" name="cas_pct_key" value="@guid" />
+
+        @Html.Partial("_mockCase", Model)
+        @*@Html.Partial("_caseCancellationReason")*@
+    </form>
+</div>
+<div class="row">
+    <div class="col-6 offset-6">
+        <div id="physicianStatusGrid">
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-2 btn-copy-popup">
+        @*<input type="button" value="Copy" class="btn btn-dark" id="btnCopy" disabled="disabled" />*@
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-8 col-xs-5 btn-save-close-cancel">
+        <a href="/case" class="btn btn-link CaseCancelled">Cancel</a>
+        <input type="button" class="btn btn-dark" value="Save" id="btnSave" />
+        <input type="button" class="btn btn-dark" value="Save & Close" id="btnSaveClose" />
+    </div>
+    <div class="col-1"></div>
+</div>
+
+@*@Html.Partial("_CaseCopyPopup")*@
+
+
+<div id="div15MinuteRulePopUp" class="modal" data-backdrop="static" data-keyboard="false"></div>
+
+<script>
+
+    var mockcaseTypeDropDown = null;
+    var mockfacilityDropdown = null;
+    var mockphysicianDropDown = null;
+    var mockcaseStatusDropDown = null;
+
+    var uclData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.UclData, Newtonsoft.Json.Formatting.Indented));
+
+    function submitMockCaseChanges() {
+        debugger;
+        var currentStatus = $.trim($("#mcas_cst_key").val()).toInt();
+        if (currentStatus == caseStatusEnum.Cancelled) {
+            $('#toolTipCancel').show();
+            $('#popupModelCaseCancel').modal({
+                'show': true,
+                backdrop: 'static',
+                keyboard: false
+            });
+        }
+        else {
+            $("#createForm").submit();
+        }
+    }
+
+    function GetFacilityCart(cas_key) {
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/MockCase/GetFacilityCart?key=' + cas_key,
+            success: function (data) {
+                var fac_cart = [];
+                $.each(data, function (key, val) {
+                    if (val) {
+                        fac_cart = val.split('#');
+                    }
+                })
+                var html = "";
+                html += '<option value="">-- Select --</option>';
+                if (fac_cart.length > 0) {
+                    for (var i = 0; i < fac_cart.length; i++) {
+                        var sel = "";
+                        var isExist = '@Model.mcas_cart';
+                        if (isExist) {
+                            if (fac_cart[i] === isExist) {
+                                sel = 'selected';
+                            }
+                        }
+                        html += '<option value="' + fac_cart[i] + '" ' + sel + '>' + fac_cart[i] + '</option>';
+                    }
+                }
+                html += '<option value="other">Other</option>';
+                $("#mcasecart").empty();
+                $("#mcasecart").append(html);
+            },
+            error: function () {
+
+            }
+
+        });
+    }
+
+
+    $(document).ready(function () {
+
+        var caseTypeDll = getUclDataByType(uclData, @(UclTypes.MockCaseType.ToInt()));
+        var result = null;
+
+        mockcaseTypeDropDown = $("#mcas_ctp_key").fillStaticKendoDropDown(result == null || result == undefined ?caseTypeDll:result, "ucd_title", "ucd_key", "-- Select --",
+                function () {
+              });
+
+        mockcaseTypeDropDown.unbind("change").bind('change', function (e) {
+
+        });
+        loadFacilityDropdown();
+        loadPhyscicianDropdown();
+
+        function loadFacilityDropdown() {
+                mockfacilityDropdown = $("#mcas_fac_key").fillKendoDropDown("/LookUp/GetAllMockFacilities", "fac_name", "fac_key", "--Select--",
+                    function () {
+                });
+        }
+
+        function loadPhyscicianDropdown() {
+            mockphysicianDropDown = $("#mcas_phy_key").fillKendoDropDown("/LookUp/GetAllMockPhyscians", "phy_name", "phy_key", "--Select--",
+                function () {
+                });
+        }
+
+        mockcaseStatusDropDown = $("#mcas_cst_key").fillKendoDropDown("/LookUp/GetCaseStatus?allowCompleteOption=false", "ucd_title", "ucd_key", "-- Select --", function () {
+            //if ($("#cas_phy_key").val() == "" || $("#cas_phy_key").val() == null || $("#cas_phy_key").val() == "00000000-0000-0000-0000-000000000000") {
+            //    $("#cas_cst_key_listbox .k-item").eq(acceptedStatusIndex).hide();
+            //}
+        });
+
+        $("#mgeneral_mcas_identification_type").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.IdentificationType.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+
+        var caller_source = $("#mcas_caller_source_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.CallerSource.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+
+         var cart_location = $("#mcas_cart_location_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.CartLocation.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+
+        $('#mgeneral_cas_dob').kendoDatePicker();
+
+        $('#mcas_callback_response_time_est').kendoDatePicker();
+
+        $('#mcas_fac_key').change(function () {
+            GetFacilityCart($('#mcas_fac_key').val());
+        });
+        $("#btnSave, #btnSaveClose,#btnSaveSend").off("click").click(function () {
+        $(".error_msg").hide();
+        $("#mhdnSaveAndSend").val("0");
+        $("#mRedirectPage").val("0");
+        var isSaveAndClose = false;
+
+        if ($(this).attr("id") === "btnSaveSend") {
+            $("#mhdnSaveAndSend").val("1");
+        }
+
+        if ($(this).attr("id") === "btnSaveClose") {
+            isSaveAndClose = true;
+            $("#mRedirectPage").val("1");
+        }
+
+        if (!validateGeneralTabForm(isSaveAndClose,false, true)) {
+            return false;
+        }
+
+        if (!$("#createForm").valid()) {
+            $("#createForm").validate();
+        }
+        else {
+
+            submitMockCaseChanges();
+        }
+         });
+
+         $(".CaseCancelled").off("click").on("click", function (e) {
+            e.preventDefault();
+            $("#divModelPopUp").empty().showConfirmPopUp("Confirm", "<span>Are you sure you want to close this case without saving?</span>", function () {
+                    var url = '@Url.Action("Index","Case")';
+                    $("#divModelPopUp").modal("hide");
+                     loadPageAsync(url);
+                }, "Yes", function () {
+                $("#divModelPopUp").modal("hide");
+            });
+         });
+
+        maskPhoneNumber();
+
+        $('#mcas_is_nav_blast_false').prop("checked", true);
+
+    });
+</script>
+

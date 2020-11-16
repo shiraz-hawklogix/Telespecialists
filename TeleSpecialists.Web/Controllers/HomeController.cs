@@ -108,6 +108,10 @@ namespace TeleSpecialists.Controllers
             {
                 return RedirectToAction("Index", "Case");
             }
+            if (User.IsInRole(UserRoles.MockPhysician.ToDescription()))
+            {
+                return RedirectToAction("Index", "Case");
+            }
             if (User.IsInRole(UserRoles.CapacityResearcher.ToDescription()))
             {
                 return RedirectToAction("Index", "Reports");

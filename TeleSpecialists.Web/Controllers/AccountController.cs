@@ -557,7 +557,7 @@ namespace TeleSpecialists.Controllers
             //bool sentStatus = _user_Fcm_Notification.SendNotification(phy_key: model.UserId, caseType: "TwoFactorAuth", Data: paramData);
             if (sentStatus || !sentStatus)
             {
-                //_userVerificationService.SignOutAllUsers(model.UserId);
+                _userVerificationService.SignOutAllUsers(model.UserId);
                 return Json(new { result = true }, JsonRequestBehavior.AllowGet);
             }
             #endregion

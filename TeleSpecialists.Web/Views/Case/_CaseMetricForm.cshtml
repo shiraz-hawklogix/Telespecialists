@@ -20,14 +20,14 @@
     }
 
     // Added by Axim 21-10-2020
-    DateTime morbidDatetime =  Convert.ToDateTime("10/21/2020");
-    var morbid_order =  "false";
-    var morbid_Danger =  "";
-    if ( Model.cas_created_date > morbidDatetime)
-    { 
-        morbid_order =  "true";
-        morbid_Danger =  "text-danger";
-    } 
+    //DateTime morbidDatetime =  Convert.ToDateTime("10/21/2020");
+    //var morbid_order =  "false";
+    //var morbid_Danger =  "";
+    //if ( Model.cas_created_date > morbidDatetime)
+    //{ 
+    //    morbid_order =  "true";
+    //    morbid_Danger =  "text-danger";
+    //} 
     //Ended by Axim 21-10-2020
 
     bool isStateConsultCase = false;
@@ -1036,7 +1036,7 @@
                 @if (Model.cas_ctp_key == CaseType.StrokeAlert.ToInt())
                 {
                     <div id="MorbidModule">
-                        <label class="control-label col-sm-8 @morbid_Danger">Pre-Morbid Modified Ranking Scale: </label>
+                        <label class="control-label col-sm-8 text-danger">Pre-Morbid Modified Ranking Scale: </label>
                         <div id="morbid-error" class="error_msg" style="display:none;">
                             <label for="MorbidModule">This field is required</label>
                         </div>
@@ -2630,6 +2630,16 @@
                         }
                     }
                 }
+                if ($("#cas_ctp_key").val() == caseTypeEnum.StrokeAlert) {
+                    if ($('input:radio[name=cas_metric_has_morbid_symptoms]').length > 0) {
+                        if ($('input:radio[name=cas_metric_has_morbid_symptoms]:checked').val() == undefined) {
+                            $("#morbid-error").show();
+                            result = false;
+                            cas_metric_has_morbid_symptoms = false;
+                        }
+                    }
+                }
+
                 //if (($("#metric").css("display").toLowerCase() != "none" ||
                 //Added by Axim 25-09-2020
                 if (@attestation_order) {

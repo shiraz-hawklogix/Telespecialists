@@ -1,0 +1,157 @@
+﻿@{
+    ViewBag.Title = "Daily Facility Volumetric Report";
+}
+<style>
+
+    #myProgress {
+        width: 100%;
+        background-color: #ddd;
+    }
+
+    #myBar {
+        width: 1%;
+        height: 30px;
+        background-color: #4CAF50;
+    }
+</style>
+<div class="alert alert-success removestyle" role="alert" style="display:none!important">
+    <h5><b>Processing...</b></h5>
+</div>
+@Html.Partial("_ReportLayout")
+<div class="form-row align-items-center" id="divLocalFilters" style="padding-bottom:20px!important">
+    <div class="col-auto  col-4">
+        <span>Facility</span>
+        @Html.DropDownList("Facilities", ViewBag.Facilities as List<SelectListItem>, new { @class = "form-control cas_fac_key", @multiple = "multiple" })
+    </div>
+    <div class="col-auto">
+        <label>Select Date</label>
+        <input type="text" id=FromMonth name=FromMonth placeholder="From Date" class="form-control datepicker" />
+        <div id="FromDateerror" class="error_msg" style="display:none;">
+            <label for="FromDate">From Date field is required</label>
+        </div>
+    </div>
+    <div class="col-auto">
+        <label>To Date</label>
+        <input type="text" id="ToMonth" name="ToMonth" placeholder="To Date" class="form-control  datepicker" />
+        <div id="ToDateerror" class="error_msg" style="display:none;">
+            <label for="ToDate">To Date field is required</label>
+        </div>
+    </div>
+
+    <div class="col-auto" style="padding-top:28px!important">
+        <button type="button" class="btn btn-dark" id="btnSearch" onclick="uplaod();">Search</button>
+        <a class="btn btn-dark loadLinkAsync hidebtn" onclick="showpopup();" href="@Url.Action("MOnth_forecast","Reports")">Show Monthly Forcasting</a>
+        <a class="btn btn-dark loadLinkAsync hidebtn" onclick="showpopup();" href="@Url.Action("Daily_forecast","Reports")">Show Daily Forcasting</a>
+        <button class="exportToExcel btn btn-dark hideexcelbtn">Export Excel</button>
+    </div>
+    <div id="partialView" style="padding-top: 20px;">
+    </div>
+</div>
+
+
+<script>
+    function validateFormData() {
+        debugger
+        var result = true;
+
+        if ($("#FromMonth").val() == "") {
+            result = false;
+            $("#FromDateerror").show();
+            setTimeout(function () {
+                $('#FromDateerror').fadeOut('fast');
+            }, 2000);
+        }
+        if ($("#ToMonth").val() == "") {
+            result = false;
+            $("#ToDateerror").show();
+            setTimeout(function () {
+                $('#ToDateerror').fadeOut('fast');
+            }, 2000);
+        }
+        return result;
+    }
+
+</script>
+<script>
+    function showpopup() {
+        $(".removestyle").removeAttr("style");
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('.hidebtn').hide();
+        $('.hideexcelbtn').hide();
+        $('#btnExportPdf').hide();
+        $('#btnExportExcel').hide();
+        $('#divLocalFilters').appendTo('#divFilters');
+        $('#Facilities').multiselect({
+            columns: 1,
+            placeholder: 'Select Facility',
+            selectAll: true,
+            search: true,
+            searchOptions: {
+                'default': 'Search Facility'
+            }
+        });
+
+    });
+
+    $('.datepicker').kendoDatePicker({
+        open: function (e) {
+            onDatePickerOpen(e);
+        }
+    });
+    function uplaod() {
+        if (validateFormData() == true)
+        {
+            ShowLoading();
+            $(".removestyle").removeAttr("style");
+            var formData = new FormData();
+            var names = $('#FromMonth').val();
+            formData.append("FromMonth", names);
+            var names2 = $('#ToMonth').val();
+          formData.append("ToMonth", names2);
+
+            var Getphysician = $(".cas_fac_key").val();
+            if (Getphysician == "") {
+                $('.cas_fac_key option').prop('selected', true);
+            }
+
+
+                var cas_fac_key_arrays = [];
+                $.each($(".cas_fac_key option:selected"), function () {
+                    cas_fac_key_arrays.push($(this).val());
+                });
+          formData.append("cas_fac_key_arrays", cas_fac_key_arrays);
+          var select_button_text = $('.cas_fac_key option:selected').toArray().map(item => item.text).join('*');
+          formData.append("cas_fac_Name_array", select_button_text);
+
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Reports/GetDailyFacilityVolumetricReport',
+                    data: formData,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        //move();
+                        $('.hidebtn').show();
+                        $('.hideexcelbtn').show();
+                        $(".removestyle").css({ 'display': 'none' });
+                        $('.cas_fac_key option').prop('selected', false);
+                        HideLoading();
+                        var lists = response;
+                        $("#partialView").load('@Url.Content("/Reports/AddPhysician")', lists);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+
+                });
+        }
+
+        }
+</script>
+
+

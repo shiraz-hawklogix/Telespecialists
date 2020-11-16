@@ -75,7 +75,7 @@ namespace TeleSpecialists.BLL.Helpers
     {
         
         BillingCode = 10,
-        CaseType,
+        CaseType,        
         CaseStatus,
         EMR,
         ContractType,
@@ -137,8 +137,8 @@ namespace TeleSpecialists.BLL.Helpers
         [Description("Past Medical History ")]
         PMH = 44,
         SleepCodes = 45,
-        FacilityAI = 46
-
+        FacilityAI = 46,
+        MockCaseType = 47
 
     }
 
@@ -288,7 +288,9 @@ namespace TeleSpecialists.BLL.Helpers
         QualityDirector,
         
         [Description("Medical Staff")]
-        MedicalStaff
+        MedicalStaff,
+        [Description("Mock Physician")]
+        MockPhysician,
 
     }
 
@@ -1520,6 +1522,35 @@ namespace TeleSpecialists.BLL.Helpers
         Michelle_McWhorter = 6,
         [Description("Kristy Reese")]
         Kristy_Reese = 7,
+    }
+    public enum PreMorbidSpokeWith
+    {
+        [Description("Family")]
+        family = 1,
+        [Description("Patient")]
+        patient = 2,
+        [Description("Nurse")]
+        nurse = 3
+    }
+    public enum PreMorbidSuccessfulorUnSuccessful
+    {
+        [Description("Completed")]
+        completed = 1,
+        [Description("Unsuccessful")]
+        unsuccessful = 2
+    }
+    public enum PreMorbidSatisfaction
+    {
+        [Description("1")]
+        one = 1,
+        [Description("2")]
+        two = 2,
+        [Description("3")]
+        three = 3,
+        [Description("4")]
+        four = 4,
+        [Description("5")]
+        five = 5
     }
     #endregion
 

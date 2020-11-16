@@ -152,6 +152,12 @@
                 {
                     field: "InpatientPercent", width: 120, title: "Proportion Inpatient"
                 },
+                {
+                    field: "EDOnset", width: 100, title: "ED Onset #"
+                },
+                {
+                    field: "EDOnsetPercent", width: 120, title: "Proportion ED Onset"
+                },
             ]
         });
     }
@@ -245,6 +251,9 @@
                         //else if (id == "InpatientPercent") {
                         //    datasour.push({ category: "Inpatient", value: dat, color: "@ChartColors.Grayish.ToDescription()" });
                         //}
+                        else if (id == "EDOnset") {
+                            datasour.push({ category: "ED Onset", value: dat, color: "@ChartColors.Teal.ToDescription()" });
+                        }
                         else if (id == "patienttypecounts") {
                             patientcount = "Total PatientType Cases" + " - " + dat;
                         }

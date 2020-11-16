@@ -33,7 +33,7 @@
 
     bool isReadOnlyCase = ViewBag.IsReadOnlyCase;
     TeleSpecialists.Models.ApplicationUser loggedInUser = ViewBag.loggedInUser;
-
+    ViewBag.LoggedInName = loggedInUser.FullName;
     ViewBag.Title = "Edit Case";
     ViewBag.CurrentView = "Edit";
     var caseModel = (@case)ViewBag.CaseModel;
@@ -162,7 +162,6 @@
     {
         textfreeExam = "true";
     }
-
 }
 @Html.Partial("_facilityInfoPopover", caseModel)
 <div class="col-md-12">
@@ -412,13 +411,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             <li class="nav-item"><a id="templatesTabLink" data-toggle="tab" class="nav-link" href="#templates" onclick="showHideTabElements('#templates');">Templates</a></li>
         }
     }
-    @if ((User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription())))
-    {
-        if (Model.cas_ctp_key == CaseType.StrokeAlert.ToInt() || Model.cas_ctp_key == CaseType.StatConsult.ToInt())
-        {
-            <li class="nav-item"><a id="premorbidTabLink" data-toggle="tab" class="nav-link" href="#premorbid" onclick="showHideTabElements('#premorbid');">Hospital F/UP</a></li>
-        }
-    }
     @if (!(User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) || User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription())))
     {
         <li class="nav-item"><a id="billingTabLink" data-toggle="tab" class="nav-link @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ||  User.IsInRole(UserRoles.FacilityPhysician.ToDescription())) && !isMetricsVisible? "active" : "")" href="#billing" onclick="showHideTabElements('#billing');">Billing</a></li>
@@ -427,7 +419,13 @@ EntityTypes.StateAlertTemplate.ToInt()
     {
         <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#metricResponse" onclick="showHideTabElements('metricResponse');">Case Review</a></li>
     }
-
+    @if ((User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())))
+    {
+        if (Model.cas_ctp_key == CaseType.StrokeAlert.ToInt() || Model.cas_ctp_key == CaseType.StatConsult.ToInt())
+        {
+            <li class="nav-item"><a id="premorbidTabLink" data-toggle="tab" class="nav-link" href="#premorbid" onclick="showHideTabElements('#premorbid');">Follow Up</a></li>
+        }
+    }
 </ul>
 @{
     var editUrl = Url.Action("Edit");
@@ -912,10 +910,9 @@ EntityTypes.StateAlertTemplate.ToInt()
                 $("#cas_review_qps_reviewed_completed").removeAttr('readonly');
             }
         } else if (tab == '#premorbid' || tab == 'premorbid') {
-            if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' == 'True') {
-                $('.premorbid :radio:not(:checked)').attr('disabled', true);
-                $('#cas_premorbid_symptoms_text').attr('readonly', true);
-            }
+            GetPreMorbidData();
+            $("#premorbidfilds :input").prop("disabled", false);
+            $('#premorbidfilds .k-i-clock').parent().removeAttr("style", "background-color:#e9ecef; pointer-events:none;");
         }
 
         //Disable and Enable buttons
@@ -979,6 +976,8 @@ EntityTypes.StateAlertTemplate.ToInt()
         } else if (tab == "#premorbid") {
             window.setTimeout(function () {
                 $("#premorbidTabLink").tab("show");
+                $("#premorbidfilds :input").prop("disabled", false);
+                $('#premorbidfilds .k-i-clock').parent().removeAttr("style", "background-color:#e9ecef; pointer-events:none;");
                // validatepremorbidFields(false);
             }, time);
         }
@@ -1015,6 +1014,60 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
             enableSaveSend();
         }
+    }
+    function changefacility() {
+        debugger;
+        var caseType = $("#cas_ctp_key").val();
+        loadFacilityDropdown(caseType);
+    }
+    var facilityDropdown = null;
+    function loadFacilityDropdown(caseType) {
+        debugger
+        if (@Model.cas_cst_key == @CaseStatus.Complete.ToInt()) {
+
+             facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilitiesAll?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                    onLoadCompleteCode();
+                }
+            });
+
+        } else {
+            if (caseType == @CaseType.RoutineConsultNew.ToInt()
+                || caseType == @CaseType.RoutineConsultFollowUp.ToInt()
+                || caseType == @CaseType.StatEEG.ToInt()
+                || caseType == @CaseType.RoutineEEG.ToInt()
+                || caseType == @CaseType.LongTermEEG.ToInt()) {
+            facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetTeleNeuroFacility?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                    onLoadCompleteCode();
+                }
+            });
+        }
+        else if (caseType == @CaseType.StatConsult.ToInt()
+                || caseType == @CaseType.DrtoDr.ToInt()
+                || caseType == @CaseType.NursetoDr.ToInt()
+                || caseType == @CaseType.TestResults.ToInt()
+                || caseType == @CaseType.RadiologyCallback.ToInt()
+                || caseType == @CaseType.TransferAlert.ToInt()) {
+            facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilitiesForOthercasetypes?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                    onLoadCompleteCode();
+                }
+            });
+        }
+        else {
+            facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilities?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                    onLoadCompleteCode();
+                }
+            });
+        }
+        }
+        
     }
 
     $(document).ready(function () {
@@ -1065,14 +1118,26 @@ EntityTypes.StateAlertTemplate.ToInt()
         }
         // mask phone number field
         maskPhoneNumber();
+        var casetype = '@Model.cas_ctp_key';
+        loadFacilityDropdown(casetype);
         // case general info
-        var facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilities?phoneNumber=", "fac_name", "fac_key", "-- Select --",function () {
-            if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
 
-                onLoadCompleteCode();
-            }
-        });
+        @*if (@Model.cas_cst_key != @CaseStatus.Complete.ToInt()) {
+            var facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilities?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
 
+                    onLoadCompleteCode();
+                }
+            });
+        }
+        else {
+            var facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilitiesAll?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                    onLoadCompleteCode();
+                }
+            });
+        }*@
         var cas_phy_key_val = '@Model.cas_phy_key';
         var caseStatusDropDown = null;
         if(@Model.cas_cst_key != @CaseStatus.Complete.ToInt() && '@(User.IsInRole(UserRoles.Navigator.ToDescription()))' == 'True') {
@@ -1198,48 +1263,20 @@ EntityTypes.StateAlertTemplate.ToInt()
         //Added By Axim 29-10-2020
         $(".morbidSymptoms").on('change', function () {
             var currentVal = $('input:radio[name=cas_metric_has_morbid_symptoms]:checked').val();
-            $('.premorbid :radio:not(:checked)').attr('disabled', false);
-            if (currentVal == "0") {
-                $("#cas_metric_has_morbid_symptoms_0_UP").prop('checked', true);
-            } if (currentVal == "1") {
-                $("#cas_metric_has_morbid_symptoms_1_UP").prop('checked', true);
-            } if (currentVal == "2") {
-                $("#cas_metric_has_morbid_symptoms_2_UP").prop('checked', true);
-            } if (currentVal == "3") {
-                $("#cas_metric_has_morbid_symptoms_3_UP").prop('checked', true);
-            } if (currentVal == "4") {
-                $("#cas_metric_has_morbid_symptoms_4_UP").prop('checked', true);
-            } if (currentVal == "5") {
-                $("#cas_metric_has_morbid_symptoms_5_UP").prop('checked', true);
-            } if (currentVal == "6") {
-                $("#cas_metric_has_morbid_symptoms_6_UP").prop('checked', true);
-            }if (currentVal == "7") {
-                $("#cas_metric_has_morbid_symptoms_7_UP").prop('checked', true);
+            if (currentVal != "7") {
+                $("#has_morbid_symptoms_premorbid").empty();
+                $("#has_morbid_symptoms_premorbid").append(currentVal);
+            } else {
+                $("#has_morbid_symptoms_premorbid").empty();
             }
+            
+            //$('.premorbid :radio:not(:checked)').attr('disabled', false);
+            @*
             if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' != 'True') {
                 $('.premorbid :radio:not(:checked)').attr('disabled', true);
-            }
+            }*@
         });
-        $(".premorbid").on('change', function () {
-            var currentVal = $('input:radio[name=cas_premorbid_symptoms]:checked').val();
-            if (currentVal == "0") {
-                $("#cas_metric_has_morbid_symptoms_0").prop('checked', true);
-            } if (currentVal == "1") {
-                $("#cas_metric_has_morbid_symptoms_1").prop('checked', true);
-            } if (currentVal == "2") {
-                $("#cas_metric_has_morbid_symptoms_2").prop('checked', true);
-            } if (currentVal == "3") {
-                $("#cas_metric_has_morbid_symptoms_3").prop('checked', true);
-            } if (currentVal == "4") {
-                $("#cas_metric_has_morbid_symptoms_4").prop('checked', true);
-            } if (currentVal == "5") {
-                $("#cas_metric_has_morbid_symptoms_5").prop('checked', true);
-            } if (currentVal == "6") {
-                $("#cas_metric_has_morbid_symptoms_6").prop('checked', true);
-            } if (currentVal == "7") {
-                $("#cas_metric_has_morbid_symptoms_7").prop('checked', true);
-            }
-        });
+       
         //Ended By Axim 29-10-2020
 
         $("#cas_billing_visit_type").on('change', function () {
@@ -1672,6 +1709,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 if (@isReadOnlyCase.ToString().ToLower()) {
                     $("#activetab").val('#metricResponse');
                 }
+                checkBillingRevisedCode();
                 performCaseCompletion("0");
                 return;
             }
@@ -1693,8 +1731,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                  readOnlyAllFields();
             }
 
-            //checkBillingRevisedCode();
-
+            checkBillingRevisedCode();
             // temporary disabling it, to exclude it from production deployment
             submitCaseChanges(); // temporary direct call
             //if (checkCaseAlreadyUpdated) {
@@ -1717,11 +1754,24 @@ EntityTypes.StateAlertTemplate.ToInt()
             //}
         });
 
+        //Added BY Axim 26-10-2020
+        function checkBillingRevisedCode() {
+            var billingCode = $("#cas_billing_bic_key3").val();
+            if (billingCode /*!== "" || billingCode !== undefined || billingCode !== 'undefined'*/) {
+                $('#cas_billing_bic_key').val(billingCode);//.change();
+                //$('#cas_billing_bic_key').change();
+                $('#cas_billing_bic_key_id').val(billingCode);//.change();
+                //$('#cas_billing_bic_key_id').change();
+            }
+        }
+         //Ended BY Axim 26-10-2020
+
         $("#btnSaveClose").off("click").click(function () {
             savetypeofcorrespondense();
             $(".error_msg").hide();
             var isCompleted = $("#cas_cst_key").val();
             if (isCompleted == @CaseStatus.Complete.ToInt()) {
+                checkBillingRevisedCode();
                 performCaseCompletion("1");
                 return;
             }
@@ -1742,6 +1792,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 GetCaseReviewers();
                 $("#RedirectPage").val("1");
                 clearAutoSaveInterval();
+                checkBillingRevisedCode();
                 submitCaseChanges();
             }
             else {
@@ -1763,7 +1814,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             var metricTab = true;
             var templateTab = true;
             var billingTab = true;
-            var premorbidTab = true;
+            //var premorbidTab = true;
             var tabToShow = "";
 
 
@@ -1791,10 +1842,10 @@ EntityTypes.StateAlertTemplate.ToInt()
                tabToShow = "#generalTABLink";
                generalTab = false;
             }
-            if (!validatepremorbidFields(true)) {
-                tabToShow = "#premorbidTabLink";
-                premorbidTab = false;
-            }
+            //if (!validatepremorbidFields(true)) {
+            //    tabToShow = "#premorbidTabLink";
+            //    premorbidTab = false;
+            //}
 
 
             if (tabToShow !== null && tabToShow !== "") {
@@ -1833,6 +1884,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 }
                 return;
             }
+            checkBillingRevisedCode();
             performCaseCompletion("1");
 
             window.showErrorsOnTabClick = false;
@@ -2484,8 +2536,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             $('#btnExportWord').enable();
          ///TCARE-547
 
-
-
         if (@enableControlsInReadOnly.ToString().ToLower()) {
 
             enableReviewTabElements();
@@ -2559,8 +2609,6 @@ EntityTypes.StateAlertTemplate.ToInt()
 
     $('#metricResponse #contactdatatable .k-i-clock').parent().unbind('keyup keydown keypress', function (evt) { return false; });
         $('#metricResponse #contactdatatable .k-i-clock').parent().removeAttr("style", "background-color:#e9ecef; pointer-events:none;");
-
-
 
             $('#divReviewers input').enable().removeAttr("readonly");;
             //$('#cas_response_date_consult').kendoDatePicker({
@@ -3081,8 +3129,6 @@ EntityTypes.StateAlertTemplate.ToInt()
                         if (!@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) && !@(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
                             onLoadCompleteCode();
                         }
-
-
                     });
                 }
 
@@ -3332,11 +3378,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             });
     }
 
-
-
-
-
-
     $(document).ready(function () {
 
         @*if (@userRegionalMD.ToString().ToLower()) {
@@ -3482,7 +3523,7 @@ EntityTypes.StateAlertTemplate.ToInt()
     });
 
     // Moving metric tab functionality here . Because some components such as datetime pickter did not render at _caseMetricForm.
-    
+
     function SymptomsOnSet(show) {
         if (show) {
             $("input[name=cas_patient_type][value='4']").attr('checked', 'checked');
@@ -3492,7 +3533,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         //    $("#symptoms_onset_during_ed_stay").hide();
         //}
     }
-    
+
     @*$("#cas_metric_symptom_onset_during_ed_stay").off('change').change(function () {
 
         var show = $(this).prop("checked");
@@ -3510,7 +3551,6 @@ EntityTypes.StateAlertTemplate.ToInt()
         var number = $.trim($(this).data("number"));
         var formattedNumber = $.trim($(this).data("formatted-number"));
         var type = $.trim($(this).data("type"));
-
 
         if (number != "" && formattedNumber != "" && type != "") {
             callToNumber(number, formattedNumber,type);
@@ -3539,8 +3579,6 @@ EntityTypes.StateAlertTemplate.ToInt()
                 });
 
                 $("#edMainCallModel").modal("show");
-
-
             }
             else if (contacts.length == 1) {
                 callToNumber(contacts[0].phone_number, contacts[0].phone_number_formatted, type);
@@ -3565,8 +3603,6 @@ EntityTypes.StateAlertTemplate.ToInt()
         $this = $("#createForm");
         var url = $this.attr("action").addParamToUrl("ShowSuccessOnly","1");
         var data = $this.serialize();
-
-
 
         $("#divContentArea").find("input:button, input:submit").disable();
         $.ajax({
@@ -3704,10 +3740,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         const element = CKEDITOR.instances["cas_review_template_html"].getData()
         exportHTML(element);
     });
-
-
             $("#btnExportWord").off("click").click(function () {
-
 
         if (@isReadOnlyCase.ToString().ToLower()) {
             readOnlyAllFields();
@@ -3880,26 +3913,20 @@ EntityTypes.StateAlertTemplate.ToInt()
                 $("#commentContainer").show();
                 hide = false;
             }
-
-
          return hide;
     }
 
     //TCARE 559 Start
     function onCriticalOptionsChanged() {
         $("#divcriticalCare").find("input[type=radio]").off("change").change(function () {
-
-
             var value = $(this).val();
             if (value == "true") {
 
                 $("#criticalcareTimeDiv").show();
                 //$("#criticalcareTimeDiv").find("input").val();
-
             }
             else {
                 $("#criticalcareTimeDiv").hide();
-
             }
         });
     }
@@ -3911,7 +3938,6 @@ EntityTypes.StateAlertTemplate.ToInt()
             $("#divcriticalCare").find("input[type=radio]").first().attr("checked", true);
             $("#criticalcareTimeDiv").show();
             //$("#criticalcareTimeDiv").find("input").val();
-
         }
     }
     $(document).ready(function () {
@@ -3921,15 +3947,22 @@ EntityTypes.StateAlertTemplate.ToInt()
     $('#cas_billing_bic_key3').change(function () {
         $("#cas_billing_bic_key").removeAttr('disabled');
         var oldBillingkey = $("#cas_billing_bic_key").val();
-        console.log('biiling key is ' + oldBillingkey);
         $('#key_revised').val(oldBillingkey);
         var billingCode = $(this).val();
-        if (billingCode !== "") {
+        if (billingCode /*!== "" || billingCode !== undefined || billingCode !== 'undefined'*/) {
             $('#cas_billing_bic_key').val(billingCode);//.change();
-            $('#cas_billing_bic_key').change();
+            //$('#cas_billing_bic_key').change();
         }
             $('#lblRevised').html('Revised Billing Code Will Update the Billing Code!');
-        });
+    });
+    $('#cas_billing_bic_key').change(function () {
+        var billingCode = $(this).val();
+        if (billingCode /*!== ""*/) {
+            $('#cas_billing_bic_key_id').val(billingCode);//.change();
+            //$('#cas_billing_bic_key_id').change();
+        }
+    });
+
     function openProtocolpopup() {
         ShowLoading();
         var fac_key = '@Model.cas_fac_key';
@@ -3970,6 +4003,8 @@ EntityTypes.StateAlertTemplate.ToInt()
         });
 
     }
+
+
 </script>
 
 @if (ShowPopup)

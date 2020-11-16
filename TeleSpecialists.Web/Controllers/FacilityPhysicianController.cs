@@ -492,7 +492,7 @@ namespace TeleSpecialists.Controllers
         }
         public ActionResult PhysicianPassword()
         {
-            ViewBag.Facilities = _LookupService.GetAll(null)
+            ViewBag.Facilities = _LookupService.GetAllActnNonActFacility(null)
                                                   .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                                   .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text })
                                                   .ToList();

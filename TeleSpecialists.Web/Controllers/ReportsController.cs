@@ -9,6 +9,9 @@ using TeleSpecialists.BLL.Helpers;
 using TeleSpecialists.BLL.Service;
 using TeleSpecialists.BLL.ViewModels.Reports;
 using TeleSpecialists.BLL.ViewModels;
+using TeleSpecialists.Web.Models;
+using System.Diagnostics;
+using System.IO;
 
 namespace TeleSpecialists.Controllers
 {
@@ -548,16 +551,17 @@ namespace TeleSpecialists.Controllers
                                         .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
 
 
-            var workflowtype = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
+            ViewBag.WorkflowType = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
                                           Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
-                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
-            var Convertworkflowtype = workflowtype.ToList();
-            Convertworkflowtype.RemoveAt(1);
-            IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
-            ViewBag.WorkflowType = workflowlist;
+                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Where(x => x.Value != "4" && x.Value != "2").ToList();
+            //var Convertworkflowtype = workflowtype.ToList();
+            //Convertworkflowtype.RemoveAt(1);
+            //Convertworkflowtype.RemoveAt(2);
+            //IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
+            //ViewBag.WorkflowType = workflowlist;
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
                                     .Select(m => new
@@ -1144,16 +1148,17 @@ namespace TeleSpecialists.Controllers
                                         .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
 
 
-            var workflowtype = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
+            ViewBag.WorkflowType = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
                                           Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
-                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
-            var Convertworkflowtype = workflowtype.ToList();
-            Convertworkflowtype.RemoveAt(1);
-            IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
-            ViewBag.WorkflowType = workflowlist;
+                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Where(x => x.Value != "4" && x.Value != "2").ToList();
+            //var Convertworkflowtype = workflowtype.ToList();
+            //Convertworkflowtype.RemoveAt(1);
+            //Convertworkflowtype.RemoveAt(2);
+            //IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
+            //ViewBag.WorkflowType = workflowlist;
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
                                     .Select(m => new
@@ -1296,16 +1301,16 @@ namespace TeleSpecialists.Controllers
                                         .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
 
 
-            var workflowtype = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
+            ViewBag.WorkflowType = Enum.GetValues(typeof(PatientType)).Cast<PatientType>()
                                       .Select(m => new
                                       {
                                           Key = Convert.ToInt32(m).ToString(),
                                           Value = m.ToDescription() == "Symptom Onset During ED Stay" ? "ED Onset" : m.ToDescription()
-                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value });
-            var Convertworkflowtype = workflowtype.ToList();
-            Convertworkflowtype.RemoveAt(1);
-            IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
-            ViewBag.WorkflowType = workflowlist;
+                                      }).ToList().Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Where(x => x.Value == "4").ToList();
+            //var Convertworkflowtype = workflowtype.Where(x=>x.Value == "4").ToList();
+            //Convertworkflowtype.RemoveAt(1);
+            //IEnumerable<SelectListItem> workflowlist = Convertworkflowtype;
+            //ViewBag.WorkflowType = workflowlist;
 
             ViewBag.CallType = Enum.GetValues(typeof(CallType)).Cast<CallType>()
                                     .Select(m => new
@@ -2984,7 +2989,26 @@ namespace TeleSpecialists.Controllers
         {
             try
             {
-                var result = _reportService.GetUserPresence(request, Physicians, startDate, endDate, ReportType);
+                    var result = _reportService.GetUserPresence(request, Physicians, startDate, endDate, ReportType);
+                    return JsonMax(/*new { Data = result, Total = result.Count()}*/result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult GetUserPresenceGraphReport(DataSourceRequest request,
+                                                      string Physicians,
+                                                      DateTime startDate
+                                                      )
+        {
+            try
+            {
+                
+                var result = _reportService.GetUserPresenceGraph(request, Physicians, startDate);
                 return JsonMax(/*new { Data = result, Total = result.Count()}*/result, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -3454,6 +3478,121 @@ namespace TeleSpecialists.Controllers
             return Json(_result, JsonRequestBehavior.AllowGet);
         }
 
+
+        public ActionResult BCIReport()
+        {
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
+                        .Select(m => new { Value = m.fac_key, Text = m.fac_name })
+                        .ToList()
+                        .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+
+            ViewBag.Physicians = _lookUpService.GetPhysicians().Where(m => m.IsActive == true && m.IsStrokeAlert == true)
+                                  .OrderBy(m => m.LastName)
+                                  .Select(m => new { Value = m.Id, Text = m.LastName + " " + m.FirstName })
+                                  .ToList()
+                                  .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+            return GetViewResult();
+        }
+        public JsonResult GetBCI(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        {
+            try
+            {
+                var result = _reportService.GetBCIData(request, facilities, Physicians);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public JsonResult GetFacilityVolumetricReport(DataSourceRequest request, List<Guid> facilities, DateTime FromMonth, DateTime ToMonth)
+        {
+            try
+            {
+                var result = _reportService.GetFacilityVolumetricReports(request, facilities, FromMonth, ToMonth);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public ActionResult DailyFacilityVolumetricReport()
+        {
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
+                                 .Select(m => new { Value = m.fac_key, Text = m.fac_name })
+                                 .ToList()
+                                 .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+            return GetViewResult();
+        }
+
+        public ActionResult GetDailyFacilityVolumetricReport(string cas_fac_key_arrays, DateTime FromMonth, DateTime ToMonth, string cas_fac_Name_array)
+        {
+            try
+            {
+                var result = _reportService.GetDailyFacilityVolumetricReports(cas_fac_key_arrays, FromMonth, ToMonth.AddDays(1), cas_fac_Name_array);
+                var conrt_list = result.Select(x => x.fac_name).FirstOrDefault();
+                List<string> namesrf = conrt_list.Split('*').ToList();
+                TempData["h1"] = namesrf.ToList();
+                TempData["b1"] = result.ToList();
+                //string filePath = Server.MapPath("~/R-Scripting/ForecastingExport");
+                //ViewBag.TempFilePath = filePath + ".csv";
+                //_reportService.PrepareCastingExport(filePath, result);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(false, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public ActionResult R_daily_Forecast(DataSourceRequest request, string facilities)
+        {
+            try
+            {
+                var result = _reportService.GetDailyForecastBydb(request, facilities);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public ActionResult MOnth_forecast()
+        {
+            return GetViewResult();
+        }
+        public ActionResult Daily_forecast()
+        {
+            return GetViewResult();
+        }
+        public ActionResult R_Index(DataSourceRequest request, string facilities)
+        {
+            try
+            {
+                var result = _reportService.GetMontlyForecastBydb(request, facilities);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+
+        public PartialViewResult AddPhysician()
+        {
+            ViewBag.Header = TempData["h1"];
+            ViewBag.body = TempData["b1"];
+            return PartialView("_AddPhysician");
+        }
         #region ----- Disposable -----
         private bool disposed = false; // to detect redundant calls
         protected override void Dispose(bool disposing)
