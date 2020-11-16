@@ -1,0 +1,2931 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@using TeleSpecialists.BLL;
+@model mock_case
+@{
+
+    var enableControlsInReadOnly = User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription());
+
+    var userFacilityAdmin = User.IsInRole(UserRoles.FacilityAdmin.ToDescription());
+    var userFacilityPhysician = User.IsInRole(UserRoles.FacilityPhysician.ToDescription());
+    var userRegionalMD = User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription());
+    var userCredentialingTeam = User.IsInRole(UserRoles.CredentialingTeam.ToDescription());
+    var userQPS = User.IsInRole(UserRoles.QPS.ToDescription());
+    var userVPQuality = User.IsInRole(UserRoles.VPQuality.ToDescription());
+    var userQualityDirector = User.IsInRole(UserRoles.QualityDirector.ToDescription());
+    var userMedicalStaff = User.IsInRole(UserRoles.MedicalStaff.ToDescription());
+    var userFinance = User.IsInRole(UserRoles.Finance.ToDescription());
+
+
+    var userRRCDirector = User.IsInRole(UserRoles.RRCDirector.ToDescription());
+
+    bool isReadOnlyCase = ViewBag.IsReadOnlyCase;
+    TeleSpecialists.Models.ApplicationUser loggedInUser = ViewBag.loggedInUser;
+
+    ViewBag.Title = "Edit Case";
+    ViewBag.CurrentView = "Edit";
+    var caseModel = (mock_case)ViewBag.CaseModel;
+    ViewBag.ShowTab = true;
+    var defualtBillingFollowUpDate = "";
+    string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+    var isTeleNeuroFacility = false;
+
+    if (Model.facility != null)
+    {
+        if (Model.facility.facility_contract != null)
+        {
+            if (Model.facility.facility_contract.fct_service_calc != null
+                && Model.facility.facility_contract.fct_service_calc != ""
+                && Model.facility.facility_contract.fct_service_calc.Contains(ContractServiceTypes.TeleNeuro.ToString()))
+            {
+                isTeleNeuroFacility = true;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(Model.facility.fac_timezone))
+        {
+            facilityTimeZone = Model.facility.fac_timezone;
+        }
+    }
+
+    var timeSpan = "";
+    var showRed = 0;
+    var disableControlsForPartnerPhysician = 0;
+    var disableControlsForPhysician = 0;
+    TimeSpan? elapsedTimeSpan = null;
+
+    if (elapsedTimeSpan.HasValue)
+    {
+        timeSpan = elapsedTimeSpan.FormatTimeSpan();
+        if (elapsedTimeSpan.Value.Hours > 0)
+        {
+            showRed = 1;
+        }
+
+        else if (elapsedTimeSpan.Value.TotalMinutes > 7)
+        {
+            showRed = 1;
+        }
+    }
+    if (User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+    {
+        disableControlsForPartnerPhysician = 1;
+    }
+    if (User.IsInRole(UserRoles.Physician.ToDescription()))
+    {
+        disableControlsForPhysician = 1;
+    }
+    
+    var dictCaseTypes = new Dictionary<int, string>();
+    if (ViewBag.CaseTypes != null)
+    {
+        dictCaseTypes = ViewBag.CaseTypes;
+    }
+    var ShowPopup = false;
+    var initialSave = false;
+
+    if (Request.Params["isInitialSave"] != null)
+    {
+        initialSave = Request.Params["isInitialSave"].ToString().ToLower() == "true" ? true : false;
+    }
+
+    if (initialSave)
+    {
+        ShowPopup = true;
+    }
+    else if (ViewBag.ShowNotesPopup)
+    {
+        if (Request.Params["showPopupOnLoad"] != null)
+        {
+
+            ShowPopup = Request.Params["showPopupOnLoad"].ToString().ToLower() == "false" ? false : true;
+
+        }
+    }
+
+    // Billing default followup date.
+    if (Model.mcas_follow_up_date.HasValue)
+    {
+        defualtBillingFollowUpDate = Model.mcas_follow_up_date.Value.FormatDate();
+    }
+ 
+    else
+    {
+        defualtBillingFollowUpDate = null;
+    }
+
+    var dictContractType = new Dictionary<int, string>();
+    string serviceType = "";
+
+    if (Model.facility?.facility_contract != null)
+    {
+        serviceType = Model.facility.facility_contract.fct_service_calc;
+    }
+    bool isMetricsVisible = false;
+
+    bool enableAutoSave = ViewBag.EnableAutoSave;
+
+    var isCompleted = ViewBag.CaseStatus;
+    if (isCompleted == @CaseStatus.Complete.ToInt())
+    {
+        enableAutoSave = false;
+    }
+
+    var caseTypeList = new List<CaseType>() { CaseType.LongTermEEG, CaseType.StatEEG, CaseType.RoutineEEG, CaseType.RoutineConsultNew, CaseType.RoutineConsultFollowUp }.Select(m => new { ucd_key = m.ToInt(), ucd_title = m.ToDescription() }).OrderBy(m => m.ucd_title);
+    var cas_status = Model.mcas_cst_key;
+
+    var textfreeExam = "false";
+    DateTime examdate = Convert.ToDateTime("09/22/2020");
+    if (Model.mcas_created_date > examdate)
+    {
+        textfreeExam = "true";
+    }
+
+}
+@Html.Partial("_facilityInfoPopover", caseModel)
+<div class="col-md-12">
+    <div class="hospitalprotocoldata"></div>
+    <div class="onboardingdata"></div>
+</div>
+<input type="hidden" name="case_created_date" value="@caseModel.mcas_created_date.ToUniversalTimeZone(facilityTimeZone).ToString("MMM,dd,yyyy,HH:mm")" id="mcase_created_date" />
+@Html.HiddenFor(m => m.mcas_modified_date)
+<input type="hidden" id="lblPhyCancel" />
+<input type="hidden" name="elapsed-time" id="elapsed-time" value="@timeSpan" />
+<input type="hidden" name="show-red" id="show-red" value="@showRed" />
+<input type="hidden" name="disable-general" id="disable-partnerPhysician-controls" value="@disableControlsForPartnerPhysician" />
+<input type="hidden" name="hide-general" id="disable-physician-controls" value="@disableControlsForPhysician" />
+<input type="hidden" name="hdn-cas-eta" id="hdn-cas-eta" value="@Model.mcas_eta" />
+<input type="hidden" name="hdn-cas-followup_date" id="hdn-default-followup_date" value='@defualtBillingFollowUpDate' />
+<input type="hidden" id="five9_start_time" value="" />
+
+<div class="alert case-info">
+    <div class="row">
+        <div class="col-xl-2 col-lg-6 col-md-6 col-sm-12 case-header-height p-0">
+            <div class="col-12 ">
+                <strong>@Model.mcas_patient</strong>
+            </div>
+            <div class="col-12">
+                <strong>
+                    @(Model.mcas_billing_dob.HasValue ? DateTime.Now.CalculateAge(caseModel.mcas_billing_dob.Value).ToString() : "")
+                </strong>
+                @*<strong>
+                    @(Model.mcas_metric_patient_gender?[0].ToString().ToUpper())
+                </strong>*@
+                <strong>@(Model.mcas_billing_dob?.FormatDate())</strong>
+
+            </div>
+            <div class="col-12 ">
+                <strong>
+                    <span>
+                        @Model.mcas_identification_Title
+                    </span>
+                    <span>
+                        @Model.mcas_identification_number
+                    </span>
+                </strong>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border p-0">
+            <div class="col-12">
+                <strong>Facility:</strong> <span>@Model.facility.fac_name</span>
+                @{
+                    var emrLink = "#";
+                    var target = "";
+                    var tooltipTitle = "No EMR link available";
+                    if (!string.IsNullOrEmpty(caseModel.facility.fac_emr))
+                    {
+                        emrLink = caseModel.facility.fac_emr;
+
+                        if (!emrLink.StartsWith("http://") && !emrLink.StartsWith("https://"))
+                        {
+                            emrLink = "http://" + emrLink;
+                        }
+                        target = "_blank";
+                        tooltipTitle = null;
+                    }
+                }
+            </div>
+            <div class="col-12">
+                <strong>Case Type:</strong> <span>Mock Drill</span>
+            </div>
+            <div class="col-12">
+                <strong>Cart:</strong>
+                <span>@caseModel.mcas_cart</span>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border p-0">
+            <div class="col-12">
+                <strong>Facility Time:</strong> <span id="FacilityTime" style="display:none;"> @DateTime.UtcNow.ToTimezoneFromUtc(facilityTimeZone).ToString("HH:mm:ss") </span>
+                <span>@(Functions.GetTimeZoneAbbreviation(facilityTimeZone))</span>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 case-header-height case-header-border p-0">
+            <div class="col-sm-12">
+                <strong>Physician: </strong>
+                @if (caseModel.PhysicianUser != null)
+                {
+                    <span>
+                        @caseModel.PhysicianUser.FirstName @caseModel.PhysicianUser.LastName
+                    </span>
+                }
+            </div>
+            <div class="col-sm-12">
+                <strong>Navigator: </strong>
+                <span>@Model.mcas_created_by_name </span>
+            </div>
+            <div class="col-sm-12 align-text-bottom">
+                <strong>Case:</strong> <span id="spnCaseNumber"> @caseModel.mcas_case_number </span>
+            </div>
+        </div>
+
+        <!-- New Column-->
+        <div class="col-xl-2 col-lg-12 col-md-12 col-sm-8 col-8 case-header-height case-header-border" id="case_edit_header_col5">
+            <div class="row mt-1">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                    <input type="button" value="Facility Info" id="popover" class="btn btn-dark btn-sm" />
+
+                </div>
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-xl-right text-left">
+                    <a target="@target" rel="noopener noreferrer" href="@emrLink" class="btn btn-dark btn-sm" data-toggle="tooltip" data-placement="top" title="@tooltipTitle">
+                        EMR Link <img alt="EMR Icon" style="width:17px;" src="/Content/images/facility_rem_icon.png" class="facility-emr-link" />
+                    </a>
+                </div>
+            </div>
+            <div class="row mt-1">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                    <a href="javascript:void(0)" data-type="ED Main" class="@(loggedInUser.EnableFive9 ? "edMainLinkClick" : "") btn btn-dark btn-sm">
+                        ED Main &nbsp;
+                        <span class="fa fa-phone text-white edMainHeaderLink">
+                        </span>
+                    </a>
+                </div>
+
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-xl-right text-left">
+                    <a href="javascript:void(0)" data-type="CallBack" class="@(loggedInUser.EnableFive9 ? "callLink" : "") btn btn-dark btn-sm" data-number="@Functions.ClearPhoneFormat(Model.mcas_callback)" data-formatted-number="@Model.mcas_callback">
+                        Call Back
+                        <span class="fa fa-phone text-white  edMainHeaderLink">
+                        </span>
+                    </a>
+                </div>
+
+            </div>
+            <div class="row mt-1">
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                    <a href="javascript:void(0)" data-type="Radiology" class="@(loggedInUser.EnableFive9 ? "edMainLinkClick" : "") btn btn-dark btn-sm">
+                        Radiology
+                        <span class="fa fa-phone text-white  edMainHeaderLink">
+                        </span>
+                    </a>
+                </div>
+
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 text-xl-right text-left">
+                    <a href="javascript:void(0)" data-type="Help Desk/ IT" class="@(loggedInUser.EnableFive9 ? "edMainLinkClick" : "") btn btn-dark btn-sm">
+                        IT support
+                        <span class="fa fa-phone text-white  edMainHeaderLink">
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- End of New Column -->
+    </div>
+</div>
+<ul class="nav nav-tabs" role="tablist" id="menuTabs">
+    @if (!(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())))
+    {
+        <li class="nav-item"><a id="generalTABLink" data-toggle="tab" class="nav-link active" href="#basic" onclick="showHideTabElements('#basic');">General</a></li>
+        <li class="nav-item"><a id="mockdrillTABLink" data-toggle="tab" class="nav-link" href="#mockdrill" onclick="showHideTabElements('#mockdrill');">Mock Drill Competency check list</a></li>
+    }
+</ul>
+@{
+    var editUrl = Url.Action("Edit");
+
+    if (isReadOnlyCase)
+    {
+        editUrl = editUrl + "?isReadOnly=true";
+    }
+    else
+    {
+        editUrl = editUrl + "?isReadOnly=false";
+    }
+}
+<div class="ajaxForm">
+    <form method="post" class="form-horizontal" id="createForm" action="@editUrl">
+        <input type="hidden" name="cas_cancelled_type" id="cas_cancelled_type" value="@Model.mcas_cancelled_type" />
+        @Html.Partial("_caseCancellationReason")
+        <div class="tab-content" style="margin-top:27px;">
+            <div id="basic" role="tabpanel" class="tab-pane fade in active show">
+                @Html.HiddenFor(m => m.mcas_is_active)
+                @Html.Partial("_mockCase", Model)
+            </div>
+
+            <div id="mockdrill" role="tabpanel" class="tab-pane fade">
+                @Html.HiddenFor(m => m.mcas_is_active)
+                @Html.Partial("_mockcasecompitencydrill", Model)
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="caseTemplateModel" class="modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm(new { role = "form" }))
+        {
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Case Template</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div id="validationSummary">
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <textarea class="form-control" id="cas_template_html" name="cas_template_html"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <div class="col-2 text-left">
+                        <a class="btn btn-link" href="#" id="btnCancelTemplatePopup">Cancel</a>
+                    </div>
+                    <div class="col-10 text-right">
+                        <input type="button" class="btn btn-dark" id="btnSaveTemplate" value="Save" />
+
+                        @*<input type="button" class="btn btn-dark" id="btnSaveAndCopyTemplate" value="Save & Finalize" data-clipboard-action="copy" data-clipboard-target="#editorContentHolder" />*@
+                        <input type="button" class="btn btn-dark" id="btnSaveAndCloseTemplate" value="Save & Close" />
+                        <div id="editorContentHolder" style="height:0.5px; width:0.5px; overflow:hidden;"></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div id="casereviewtemplatemodal" class="modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm(new { role = "form" }))
+        {
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Case Review Template</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div id="Reviewvalidation">
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <textarea class="form-control" id="cas_review_template_html" name="cas_review_template_html"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <div class="col-2 text-left">
+                        <a class="btn btn-link" href="#" id="btnCancelReviewTemplatePopup">Cancel</a>
+                    </div>
+                    <div class="col-10 text-right">
+                        <input type="button" class="btn btn-dark" id="btnSaveReviewTemplate" value="Save" />
+                        <input type="button" class="btn btn-dark" id="btnSaveAndCloseReviewTemplate" value="Save & Close" />
+                        <input type="button" class="btn btn-dark" id="btnPdfExport" value="Export PDF" style="display:none" />
+                        <input type="button" class="btn btn-dark" id="btnWordDocumentExport" value="Export Word" />
+
+                        <div id="editorContentHolder" style="height:0.5px; width:0.5px; overflow:hidden;"></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    @*<div class="col-2 btn-copy-popup">
+        <input type="button" value="Copy" class="btn btn-dark" id="btnCopy" disabled="disabled" />
+    </div>*@
+    <div class="col-lg-12 col-md-12 col-sm-8 col-12 btn-save-close-cancel">
+        @if (!string.IsNullOrEmpty(Request.Params["RedirectUrl"]))
+        {
+            <a href="@Request.Params["RedirectUrl"]" class="btn btn-link loadLinkAsync-cancel">Cancel</a>
+        }
+        else
+        {
+            <a href="/case" class="btn btn-link loadLinkAsync-cancel">Cancel</a>
+        }
+
+        <input type="button" class="btn btn-dark" value="Save" id="btnSave" disabled="disabled" />
+        <input type="button" class="btn btn-dark" value="Save & Close" id="btnSaveClose" disabled="disabled" />        
+        <input type="button" class="btn btn-danger" value="Cancel Case" id="btnCancelCase" disabled="disabled" style="display:none" />
+    </div>
+    <div class="col-1"></div>
+</div>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div>
+        <br />
+        @Html.ShowBootStrapAlert("", Html.ValidationSummary().ToHtmlString(), BootStrapeAlertType.Danger);
+    </div>
+}
+
+@Html.Partial("_CaseCopyPopup")
+
+<div id="caseTemplatePreviewModal" class="modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Copy Preview</h4>
+                <button type="button" class="close btnCloseTemplatePreview">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="caseTemplateReviewData">
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <div class="col-2 text-left">
+                    <input type="button" class="btn btn-dark btnCloseTemplatePreview" id="btnCancelTemplatePreview" value="Close" />
+                </div>
+                <div class="col-10 text-right">
+                    <input type="button" class="btn btn-dark" id="btnOKTemplatePreview" value="OK" />
+                    <input type="button" class="btn btn-dark d-none " id="btnCopyTemplatePreview" value="copyTemplateAlt" data-clipboard-action="copy" data-clipboard-target="#caseTemplateReviewData" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="casereviewremplatepreviewmodal" class="modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Copy Preview</h4>
+                <button type="button" class="close btnCloseReviewTemplatePreview">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="caseReviewTemplateReviewData">
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <div class="col-2 text-left">
+                    <input type="button" class="btn btn-dark btnCloseReviewTemplatePreview" id="btnCancelReviewTemplatePreview" value="Close" />
+                </div>
+                <div class="col-10 text-right">
+                    <input type="button" class="btn btn-dark" id="btnOKReviewTemplatePreview" value="OK" />
+                    <input type="button" class="btn btn-dark d-none " id="btnCopyReviewTemplatePreview" value="copyTemplateAlt" data-clipboard-action="copy" data-clipboard-target="#caseReviewTemplateReviewData" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*@Html.Partial("_EDMainCallPopup")*@
+
+<script src="~/Scripts/clipboard.min.js"></script>
+
+<script src="~/Content/case/pdf/jspdf.min.js"></script>
+<script src="~/Content/case/pdf/html2canvas.min.js"></script>
+<script src="~/Content/case/pdf/html2pdf.bundle.min.js"></script>
+<script type="text/javascript">
+        var AutoSaveBool = @enableAutoSave.ToString().ToLower();
+
+        function PauseAutoSave() {
+            AutoSaveBool = false;
+            clearAutoSaveInterval();
+        }
+        function ResumeAutoSave() {
+            AutoSaveBool = true;
+            autoSaveCase();
+        }
+    var casStatus;
+    var checkCaseAlreadyUpdated = true;
+
+
+
+    $(".timer-container").find("input.timepicker").each(function (i, e) {
+        ShowHideTimeZone($(e));
+    });
+
+    $(document).ready(function () {
+
+        $(window).on('beforeunload', function () {
+            clearSoftSaveCase();
+        });
+
+        @*var checkRevised = "@Model.mcas_billing_bic_key_initial";
+        if (checkRevised)
+            $('#mcas_billing_bic_key').attr("disabled", true);
+        window.showErrorsOnTabClick = false;
+         casStatus = "@cas_status";
+        if (casStatus === "140") {
+            DisableFields();
+        }*@
+    })
+    //$('#mcas_cst_key').change(function () {
+    //    var id = $('#mcas_cst_key').val();
+    //    if (id !== '140') {
+    //        EnableFields();
+    //    }
+    //});
+    function EnableFields() {
+        var ctp_key = $('#mcas_ctp_key').data("kendoDropDownList");
+        var fac_key = $('#mcas_fac_key').data("kendoDropDownList");
+        var bic_key = $('#mcas_billing_bic_key').data("kendoDropDownList");
+        var bic_key3 = $('#mcas_billing_bic_key3').data("kendoDropDownList");
+        var ident_type = $('#mbilling_cas_identification_type').data("kendoDropDownList");
+        var phy_key = $('#mcas_phy_key').data("kendoDropDownList");
+        var cas_ident_type = $('#mgeneral_cas_identification_type').data("kendoDropDownList");
+        var loc_key = $('#mcas_cart_location_key').data("kendoDropDownList");
+        var tpa_key = $('#mcas_metric_tpaDelay_key').data("kendoDropDownList");
+        var lod_key = $('#mcas_billing_lod_key').data("kendoDropDownList");
+        var reason_key = $('#mcas_metric_non_tpa_reason_key').data("kendoDropDownList");
+
+        ctp_key.enable(true); fac_key.enable(true); bic_key.enable(true); bic_key3.enable(true); ident_type.enable(true); phy_key.enable(true);
+        cas_ident_type.enable(true); loc_key.enable(true); tpa_key.enable(true); lod_key.enable(true); reason_key.enable(true);
+
+        $('#mcas_metric_lastwell_date_est').data('kendoTimePicker').readonly(false);
+        $('#mcas_metric_door_time_est').data('kendoTimePicker').readonly(false);
+        $('#mcas_response_first_atempt').data('kendoTimePicker').readonly(false);
+        $('#mcas_response_ts_notification').data('kendoTimePicker').readonly(false);
+        $('#mcas_metric_stamp_time_est').data('kendoTimePicker').readonly(false);
+        $('#mcas_metric_video_start_time_est').data('kendoTimePicker').readonly(false);
+
+        $('#mcas_metric_assesment_time_est').data('kendoTimePicker').readonly(false);
+        $('#mcas_metric_video_end_time_est').data('kendoTimePicker').readonly(false);
+        $('#mcas_metric_tpa_verbal_order_time_est').data('kendoTimePicker').readonly(false);
+
+        $('#mmetric_cas_dob').data('kendoDatePicker').readonly(false);
+        $('#mbilling_cas_dob').data('kendoDatePicker').readonly(false);
+        $(".physicianValidationID [name='mcas_billing_date_of_consult']").data('kendoDatePicker').enable();
+
+        $('input[type="text"]').removeAttr('disabled');//prop("disabled", false);
+        $('input[type="text"], textarea').removeAttr('disabled');
+        $("input.ml-2").removeAttr("disabled");
+        $("input.track_change").removeAttr("disabled");
+        $("input.form-check-input").removeAttr("disabled");
+        $(".addValidation").removeAttr('disabled');
+        $('select').removeAttr("disabled");
+        $("#mcas_cst_key").removeAttr("disabled");
+        $("#mcas_callback_response_by").removeAttr("disabled");
+        for (var i = 1; i <= 15; i++) {
+            var id = '#case_template_telestroke_notpa_ctt_nihss_' + i;
+            $(id).attr("disabled", false);
+        }
+        for (var i = 1; i <= 15; i++) {
+            var id = '#case_template_stroke_notpa_ctn_nihss_' + i;
+            $(id).attr("disabled", false);
+        }
+
+        $('.k-i-clock').removeAttr('disabled');
+        $('.disabled').removeAttr("disabled");
+        $('#cas_metric_is_lastwell_unknown').removeAttr("disabled");
+        $("input.disabled").removeAttr("disabled");
+        $('#cas_metric_lastwell_date_est').removeAttr("disabled");
+        $('.readonly').removeAttr("disabled");
+        $('.staticDropDown').removeAttr("disabled");
+        $('input[type=checkbox]').removeAttr("disabled");
+        $('input[type=radio]').removeAttr("disabled");
+    }
+    function DisableFields() {
+        $('input[type="text"]').prop("disabled", true);
+        $('input[type="text"], textarea').prop("disabled", true);
+        $("input.ml-2").attr("disabled", true);
+        $("input.track_change").attr("disabled", true);
+        $("input.form-check-input").attr("disabled", true);
+        $(".addValidation").attr("disabled", true);
+        $('select').attr('disabled', true);
+        $("#mcas_callback_response_by").KendoDropDownDisable();
+       // $("#mcas_cst_key").removeAttr("disabled");
+        for (var i = 1; i <= 15; i++) {
+            var id = '#case_template_telestroke_notpa_ctt_nihss_' + i;
+            $(id).attr("disabled", true);
+        }
+        for (var i = 1; i <= 15; i++) {
+            var id = '#case_template_stroke_notpa_ctn_nihss_' + i;
+            $(id).attr("disabled", true);
+        }
+        //for (var i = 1; i <= 15; i++) {
+        //    var id = '#case_template_statconsult_ctt_nihss_' + i;
+        //    $(id).attr("disabled", true);
+        //}
+        $('#mcas_billing_bic_key').attr("disabled", true);
+        $('#mcas_billing_bic_key3').attr("disabled", true);
+        $('.disabled').attr("disabled", true);
+        $('#mcas_metric_is_lastwell_unknown').attr("disabled", true);
+        $("input.disabled").attr("disabled", true);
+        $('#mcas_metric_lastwell_date_est').attr("disabled", true);
+        $('.readonly').attr("disabled", true);
+        $('.staticDropDown').attr("disabled", true);
+        $('input[type=checkbox]').attr('disabled', 'true');
+        $('input[type=radio]').attr('disabled', 'true');
+
+        $('#btnSave, #btnSaveClose, #btnExportWord, #btnCopy, #btnCompleteCase, #btnSaveTemplate, #btnSaveAndCloseTemplate, #btnDownloadTemplate').hide();//attr('disabled', true);
+
+    }
+    var acceptedStatusIndex = 2;
+    clearAutoSaveInterval();
+    var uclData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.UclData, Newtonsoft.Json.Formatting.Indented));
+    var clipboard;
+    var browserName = getBrowserName();
+    var previousCaseStatus = null;
+    var isAdmin = @((User.IsInRole("Administor") || User.IsInRole("Super Admin")).ToString().ToLower());
+    var physicianDropDown = null;
+    function showHideTabElements(tab) {
+        $("#btnExportWord").hide();
+        $("#btnDownloadTemplate").hide();
+        $("#btnCompleteCase").hide();
+        $("#btnCopy").hide();
+        $("#btnSaveSend").hide();
+        $("#btnCancelCase").hide();
+        $('#btnSave, #btnSaveClose, #btnExportWord').attr('disabled', false);
+
+        if (tab == '#basic') {
+
+                $("#btnCopy").show();
+                $("#btnSaveSend").show();
+            if ('@(User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))' == 'True') {
+                $('#btnCopy, #btnSave, #btnSaveClose, #btnExportWord').attr('disabled', true)
+            }
+        }
+        else if (tab == '#mockdrill') {
+            if ('@(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))' == 'True') {
+                $('#btnSave, #btnSaveClose, #btnExportWord').attr('disabled', true)
+            }
+        }
+        var time = 250;
+
+        if (tab == "#basic") {
+            if ($("#mcas_ctp_key").parent(".k-dropdown").length > 0 && $("#mcas_fac_key").parent(".k-dropdown").length > 0) {
+                window.setTimeout(function () {
+                    $("#generalTABLink").tab("show");
+                    validateGeneralTabForm(true, true, false);
+                }, time);
+            }
+
+        }
+        else if (tab == "#mockdrill") {
+            window.setTimeout(function () {
+                $("#mockdrillTABLink").tab("show");               
+            }, time);
+        }
+
+   }
+
+    function checkIfCaseUpdatedBefore() {
+        var url = "/Case/checkIfCaseUpdatedBefore";
+        var result = null;
+        $.ajax({
+            async: false,
+            type: 'Get',
+            url: url,
+            data: {
+                cas_key: $.trim($("#createForm").find("#mcas_key").val()).toInt(),
+                cas_cst_key: $.trim($("#mcas_cst_key").val()).toInt(),
+                cas_modified_date: $("#mcas_modified_date").val(),
+                VisibleTabs: $("#VisibleTabs").val()
+            },
+            success: function (response) {
+                result = response;
+            }
+        });
+        return result;
+    }
+
+    function onLoadCompleteCode() {
+        if ('@(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))' != 'True' || '@(User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))' != 'True'  && @((!isReadOnlyCase).ToString().ToLower())) {
+            $("#btnCopy").enable(); $("#btnSave").enable(); $("#btnSaveClose").enable(); $("#btnCompleteCase").enable(); $("#btnCancelCase").enable();
+            if (AutoSaveBool) {
+                window.setTimeout(function () { $('#createForm').watch("mcas_key,mcas_fac_key,mcas_phy_key,mcas_ctp_key,mcas_cst_key,nihssDropDown,mcas_metric_stamp_time_est,mcas_response_ts_notification");}, 2000);
+                autoSaveCase();
+            }
+            enableSaveSend();
+        }
+    }
+
+    $(document).ready(function () {
+        var Status = 1;
+        $("#mcas_cst_key-list").remove();
+        document.title = $("#title-prefix").val() + '@ViewBag.Title';
+        $("#review-initiated-wrap .form-check-inline input[type='radio']:checked").click();
+        var tab = $("#activetab").val();
+
+        var clickfromhome = localStorage.getItem("clickfromhome");
+        if (clickfromhome === "casespendingreview") {
+            tab = "#metricResponse";
+            localStorage.setItem('clickfromhome', 'null');
+        }
+
+        // fix for activeTab not found on page load
+        if (tab == '') {
+            $("#menuTabs").find('.nav-link').first().addClass("active");
+            tab = $("#menuTabs .active ").attr("href");
+        }
+        if (tab != "") {
+            var panId = tab.replace("#", "");
+            $('.nav-tabs .nav-link').removeClass("active");
+            $('.tab-content .tab-pane').removeClass("fade in active show");
+            $('.nav-tabs a[href="' + tab + '"]').addClass("active");
+            $('.tab-content div[id="' + panId + '"]').addClass("fade in active show");
+
+            $("#activetab").val("");
+
+            $("#activetab").val("");
+            window.setTimeout(function () {
+
+                var visibleTabs = [];
+                $("#menuTabs a").each(function (index, item) {
+                    visibleTabs.push($(this).attr("href").replace("#", ""));
+                    var test = "";
+                });
+                $("#VisibleTabs").val(visibleTabs.join(","));
+
+            }, 500);
+
+
+            showHideTabElements(tab);
+        }
+        // mask phone number field
+        maskPhoneNumber();
+        // case general info
+        var facilityDropDown = $("#mcas_fac_key").fillKendoDropDown("/LookUp/GetAllMockFacilities", "fac_name", "fac_key", "-- Select --",function () {
+            if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                onLoadCompleteCode();
+            }
+        });
+
+        var cas_phy_key_val = '@Model.mcas_phy_key';
+        var caseStatusDropDown = null;
+        if(@Model.mcas_cst_key != @CaseStatus.Complete.ToInt() && '@(User.IsInRole(UserRoles.Navigator.ToDescription()))' == 'True') {
+            caseStatusDropDown =  $("#mcas_cst_key").fillKendoDropDown("/LookUp/GetCaseStatus?allowCompleteOption=false", "ucd_title", "ucd_key", "-- Select --", function () {
+                if (cas_phy_key_val == "" || cas_phy_key_val == null) {
+                    $("#mcas_cst_key_listbox .k-item").eq(acceptedStatusIndex).hide();
+                }
+                else {
+                    $("#mcas_cst_key_listbox .k-item").eq(acceptedStatusIndex).show();
+                }
+            });
+        }
+        else if('@(User.IsInRole(UserRoles.Navigator.ToDescription()))' != 'True'){
+            caseStatusDropDown =   $("#mcas_cst_key").fillKendoDropDown("/LookUp/GetCaseStatus?allowCompleteOption=true", "ucd_title", "ucd_key", "-- Select --", function () {
+                if (cas_phy_key_val == "" || cas_phy_key_val == null) {
+                    $("#mcas_cst_key_listbox .k-item").eq(acceptedStatusIndex).hide();
+                }
+                else {
+                    $("#mcas_cst_key_listbox .k-item").eq(acceptedStatusIndex).show();
+                }
+            });
+        }
+
+        if (caseStatusDropDown != null) {
+            caseStatusDropDown.bind('change', function (e) {
+                previousCaseStatus = $("#mcas_cst_key").val();
+                enableSaveSend();
+            });
+        }
+
+        var caseTypeDropDown = null;
+        var caseTypeJson = null;
+        var batch_id = $("#mcas_batch_id").val();
+        if ($.trim(batch_id) != "") {
+             caseTypeJson =   @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(caseTypeList, Newtonsoft.Json.Formatting.Indented));
+        }
+        var caseTypeDropDown = $("#mcas_ctp_key").fillStaticKendoDropDown(caseTypeJson == null ? getUclDataByType(uclData, @(UclTypes.MockCaseType.ToInt())) : caseTypeJson, "ucd_title", "ucd_key", "-- Select --", caseTypeChangeHandler, hideFieldsForEEGCases);
+        $("#mgeneral_mcas_identification_type").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.IdentificationType.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+        $("#mbilling_cas_identification_type").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.IdentificationType.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+        var caller_source = $("#mcas_caller_source_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.CallerSource.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+        var cart_location = $("#mcas_cart_location_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.CartLocation.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+
+        caller_source.bind('change', function (e) {
+
+            $("#div_cas_caller_source_text").hide();
+            var value = $(this).find("option:selected").text();
+            if ($.trim(value).toLowerCase() == 'other') {
+                $("#div_cas_caller_source_text").show();
+            }
+        });
+
+        @*TCARE - 472 *@
+        cart_location.bind('change', function (e) {
+
+            $("#div_cas_cart_location_text").hide();
+            var value = $(this).find("option:selected").text();
+            if ($.trim(value).toLowerCase() == 'other') {
+                $("#div_cas_cart_location_text").show();
+            }
+        });
+
+        /*************************************************************************************************************************************
+         ******************************* On field change, Automatically update it value in its duplicate field********************************
+         ************************************************************* (if exist) in other tabs.**********************************************
+         *************************************************************************************************************************************/
+        //caseTypeDropDown.bind('change', caseTypeChangeHandler);
+        caseTypeDropDown.bind("change", function (e) {
+            if ($(this).val() == '@CaseType.StrokeAlert.ToInt()') {
+                $(".date_consult_timepicker").addClass('d-none ');
+                $(".date_consult_datepicker").removeClass('d-none ');
+                $("[name = mcas_billing_date_of_consult]").val($(".date_consult_datepicker input").val().split(" ")[0]);
+                $(".date_consult_datepicker").parent().siblings("label").removeClass("text-danger");
+            }
+            else {
+                $(".date_consult_datepicker").addClass('d-none ');
+                $(".date_consult_timepicker").removeClass('d-none ');
+                $("[name = cas_billing_date_of_consult]").val($(".date_consult_timepicker input").val());
+                $(".date_consult_timepicker").parent().siblings("label").addClass("text-danger");
+            }
+            caseTypeChangeHandler();
+            if ($.trim($("#mcas_fac_key").val()) != "" && $("#mcas_fac_key").val() != "00000000-0000-0000-0000-000000000000") {
+                loadPhysicianDropDown($("#mcas_fac_key").val(), true);
+            }
+        });
+        $("#mgeneral_cas_billing_date_of_consult,.date_consult_timepicker .timepicker, .date_consult_datepicker .datepicker").off("change").change(function () {
+            $("[name = cas_billing_date_of_consult]").val($(this).val());
+
+        });
+        $("#mgeneral_cas_identification_type").on('change', function () {
+            $("#billing_cas_identification_type").data('kendoDropDownList').value(this.value);
+        });
+        $("#mbilling_cas_identification_type").on('change', function () {
+            $("#general_cas_identification_type").data('kendoDropDownList').value(this.value);
+        });
+        $("#mgeneral_cas_identification_number").on('change', function () {
+            $("#billing_cas_identification_number").val($(this).val());
+            $("#review_cas_identification_number").val($(this).val());
+        });
+        $("#mbilling_cas_identification_number").on('change', function () {
+            $("#general_cas_identification_number").val($(this).val());
+            $("#review_cas_identification_number").val($(this).val());
+        });
+        $("#mgeneral_cas_dob").on('change', function () {
+            $("#mbilling_cas_dob").val($(this).val());
+            $("#mmetric_cas_dob").val($(this).val());
+        });
+        $("#mbilling_cas_dob").on('change', function () {
+            $("#mgeneral_cas_dob").val($(this).val());
+            $("#mmetric_cas_dob").val($(this).val());
+        });
+        //ticket 557
+
+        $("#mgeneral_cas_patient_name").on('change', function () {
+            $("#mbilling_cas_patient_name").val($(this).val());
+        });
+        $("#mbilling_cas_patient_name").on('change', function () {
+            $("#mgeneral_cas_patient_name").val($(this).val());
+        });
+        $("#mcas_billing_visit_type").on('change', function () {
+
+            if ($(this).val() == 'Follow-Up') {
+                $("#mbilling_followUp_date").val($("#hdn-default-followup_date").val());
+                $("#mbilling_followUp_date_container").removeClass('d-none');
+            }
+            else {
+                $("#mbilling_followUp_date").val("");
+                $("#mbilling_followUp_date_container").addClass('d-none');
+            }
+        });
+
+        /*************************************************************************************************************************************/
+        loadPhysicianDropDown("@Model.mcas_fac_key", false);
+
+        @*GetFacilityCart("@Model.mcas_fac_key");*@
+
+        facilityDropDown.bind("change", function (e) {
+            $("#btnCopy").disable(); // making the button disabled by default.
+            if ($("#mcas_fac_key").val() == undefined || $("#mcas_fac_key").val() == "00000000-0000-0000-0000-000000000000" || $("#mcas_fac_key").val() == "") {
+                $('#mcas_phy_key').data('kendoDropDownList').enable(false);
+            }
+            else {
+                $("#mcas_phy_key_offline_error").hide();
+                $("#mcas_phy_key").removeAttr("disabled");
+                $("#mcas_phy_key").val("");
+                loadPhysicianDropDown($("#mcas_fac_key").val(), true);
+                //loadFacilityTimeZone($("#mcas_fac_key").val());
+                checkFacilityServiceType($("#mcas_fac_key").val());
+                GetFacilityCart($("#mcas_fac_key").val());
+            }
+        });
+
+
+        // case billing
+        $("#mcas_billing_lod_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.LoginDelay.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+        $("#mcas_billing_bic_key").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.BillingCode.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+        $("#mcas_billing_bic_key2").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.BillingCode.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+        $("#mcas_billing_bic_key3").fillStaticKendoDropDown(getUclDataByType(uclData, @(UclTypes.BillingCode.ToInt())), "ucd_title", "ucd_key", "-- Select --");
+
+        if ($("#disable-partnerPhysician-controls").val() == "1") { // in case of partner physician diablle controls
+            $("#mcas_phy_key").KendoDropDownReadOnly();
+            $("#mcas_is_nav_blast_true").attr('disabled', 'disabled');
+            $("#mcas_is_nav_blast_false").attr('disabled', 'disabled');
+        }
+        if ($("#disable-physician-controls").val() == "1") { // in case of physician diablle controls
+            $("#mcas_fac_key").KendoDropDownReadOnly(); // disable facility dropdown.
+        }
+
+        $(".eta_validation").change(function () {
+            var minutes = $(this).val().toInt();
+            if (minutes > 10) {
+                $("#mcas_eta_errormsg").show();
+                previousCaseStatus = $("#mcas_cst_key").val();
+                $('#mcas_cst_key').data('kendoDropDownList').value(caseStatusEnum.Cancelled);
+            }
+            else {
+                $("#mcas_eta_errormsg").hide();
+                if (previousCaseStatus != null)
+                    $('#mcas_cst_key').data('kendoDropDownList').value(previousCaseStatus);
+            }
+        });
+
+        $("#mcas_phy_has_technical_issue").off("change").change(function () {
+            var tech_issue_date = $("#cas_phy_has_technical_issue").val();
+            $("#mcas_response_first_atempt").val(tech_issue_date);
+            $("#mcas_phy_has_technical_issue").change();
+        });
+
+        $("#mcas_response_first_atempt").off("change").change(function () {
+            ShowHideTimeZone($(this));
+            $("#mcas_metric_video_start_time_est").val($(this).val());
+            ShowHideTimeZone($("#mcas_metric_video_start_time_est"));
+            firstLoginTimeCallBack();
+
+        });
+
+        $("#mcas_callback_notes").off("change").change(function () {
+            $("#mmetric_cas_callback_notes").val($(this).val());
+        });
+
+        $("#mcas_callback_response_time_est").off("change").change(function () {
+            $("#mmetric_cas_callback_responsetime").val($(this).val());
+            CallBackResponseTime();
+        });
+        function CallBackResponseTime() {
+            var value = $.trim($("#mcas_callback_response_time_est").val());
+            $("#mcas_callback_notes").removeAttr("data-is-required");
+            $("#mcas_callback_notes_label").removeClass("text-danger");
+            $("#mmetric_cas_callback_notes").removeAttr("data-is-required");
+            $("#mmetric_cas_callback_notes_label").removeClass("text-danger");
+            if (value != "") {
+                var startDate = moment($("#mcas_response_ts_notification").val());
+                var callback = moment(value);
+                var duration = moment.duration(callback.diff(startDate.format("YYYY-MM-DD HH:mm:ss")));
+                if (duration.asMinutes() > 15.0) {
+                    $("#divModelPopUp").empty().showConfirmPopUpWithYesNo("Confirm",
+                        "Your callback is more than 15 minutes from the start time. Is this time correct?",
+                        function () {
+                            $("#mcas_callback_notes").attr("data-is-required", "true");
+                            $("#mcas_callback_notes_label").addClass("text-danger");
+                            $("#mmetric_cas_callback_notes").attr("data-is-required", "true");
+                            $("#mmetric_cas_callback_notes_label").addClass("text-danger");
+                            $("#divModelPopUp").modal("hide");
+                        },
+                        function () {
+                            $("#mcas_callback_response_time_est").val("");
+                        }
+                    );
+                    // Changing the Cancel button text to No.
+                    $("#divModelPopUp").find(".modal-dialog").find(".modal-footer").find(".cancel").text("No");
+                }
+            }
+        }
+        function metricCallBackResponseTime() {
+            var value = $.trim($("#mmetric_cas_callback_responsetime").val());
+            $("#mmetric_cas_callback_notes").removeAttr("data-is-required");
+            $("#mmetric_cas_callback_notes_label").removeClass("text-danger");
+            $("#mcas_callback_notes").removeAttr("data-is-required");
+            $("#mcas_callback_notes_label").removeClass("text-danger");
+            if (value != "") {
+                var startDate = moment($("#mcas_response_ts_notification").val());
+                var callback = moment(value);
+                var duration = moment.duration(callback.diff(startDate.format("YYYY-MM-DD HH:mm:ss")));
+                if (duration.asMinutes() > 15.0) {
+                    $("#divModelPopUp").empty().showConfirmPopUpWithYesNo("Confirm",
+                        "Your callback is more than 15 minutes from the start time. Is this time correct?",
+                        function () {
+                            $("#mmetric_cas_callback_notes").attr("data-is-required", "true");
+                            $("#mmetric_cas_callback_notes_label").addClass("text-danger");
+                            $("#mcas_callback_notes").attr("data-is-required", "true");
+                            $("#mcas_callback_notes_label").addClass("text-danger");
+                            $("#divModelPopUp").modal("hide");
+                        },
+                        function () {
+                            $("#mmetric_cas_callback_responsetime").val("");
+                        }
+                    );
+                    // Changing the Cancel button text to No.
+                    $("#divModelPopUp").find(".modal-dialog").find(".modal-footer").find(".cancel").text("No");
+                }
+            }
+        }
+        $("#mcas_phy_has_technical_issue").off("change").change(function () {
+            if ($(this).prop("checked")) {
+                if ($.trim($("#mcas_phy_technical_issue_date_est").val()) == "") {
+                    var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm:ss");
+
+                    $("#mcas_phy_technical_issue_date_est").val(currentDateTime);
+                    $("#mcas_response_first_atempt").val(currentDateTime);
+                    $("#mcas_response_first_atempt").attr("readonly", "true");
+
+                    $("#mcas_phy_technical_issue_date_est").change();
+
+                    if ($('#mcas_response_first_atempt').data('kendoTimePicker') != undefined && !isAdmin)
+                        $('#mcas_response_first_atempt').data('kendoTimePicker').readonly();
+
+                }
+                else {
+                    if ($('#mcas_response_first_atempt').data('kendoTimePicker') != undefined && !isAdmin)
+                        $('#mcas_response_first_atempt').data('kendoTimePicker').readonly();
+
+                }
+                $("#div_cas_phy_technical_issue_date_est").show();
+                $("#mcas_phy_technical_issue_date_est_errormsg").show();
+            }           
+        });
+
+        $("#mcas_phy_technical_issue_date_est").change(function () {
+            $("#mcas_response_first_atempt").val($(this).val());
+            firstLoginTimeCallBack();
+        });
+
+        function firstLoginTimeCallBack() {
+            var value = $.trim($("#mcas_response_first_atempt").val());
+            $("#mcas_metric_notes").removeAttr("data-is-required");
+            $("#mcas_metric_notes_label").removeClass("text-danger");
+            if (value != "")
+            {
+                var startDate = moment($("#mcas_metric_stamp_time_est").val());
+                var loginDate = moment(value);
+                var duration = moment.duration(loginDate.diff(startDate.format("YYYY-MM-DD HH:mm:ss")));
+                if (duration.asMinutes() > 10.0) {
+                    $("#divModelPopUp").empty().showConfirmPopUpWithYesNo("Confirm",
+                        "Your initial login is more than 10 minutes from the stamp time. Is this time correct?",
+                        function () {
+                            $("#mcas_metric_notes").attr("data-is-required", "true");
+                            $("#mcas_metric_notes_label").addClass("text-danger");
+                            $("#divModelPopUp").modal("hide");
+                        },
+                        function () {
+                            $("#mcas_response_first_atempt").val("");
+                            $("#mcas_phy_technical_issue_date_est").val("");
+                        }
+                    );
+                    // Changing the Cancel button text to No.
+                    $("#divModelPopUp").find(".modal-dialog").find(".modal-footer").find(".cancel").text("No");
+                }
+            }
+        }
+
+        // counter up timer -- kendoTimePicker
+        $(".timepicker").kendoTimePicker({
+            open: function (e) {
+                e.preventDefault();
+                var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm:ss");
+                if ('@(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))' != 'True' || '@(User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))' != 'True'  && @((!isReadOnlyCase).ToString().ToLower())) {
+                    this.element.first().val(currentDateTime);
+                    // handling arrival time in metric and general tab
+
+                    if (this.element.first().attr("id") == "mcas_phy_technical_issue_date_est") {
+                        $("#mcas_response_first_atempt").val(currentDateTime);
+                        firstLoginTimeCallBack();
+                    }
+                }
+                if (this.element.first().attr("name") == "mcas_billing_date_of_consult") {
+                    $("[name = mcas_billing_date_of_consult]").val(this.element.first().val());
+                    $("#mgeneral_cas_billing_date_of_consult").val(this.element.first().val());
+                }
+
+                if (this.element.first().attr("id") == "mgeneral_cas_billing_date_of_consult") {
+                    $("[name = mcas_billing_date_of_consult]").val(this.element.first().val());
+                }
+
+                var timePicker = this.element.first();
+                ShowHideTimeZone(timePicker);
+
+            },
+            close: function (e) {
+                e.preventDefault(); //prevent popup closing
+            }
+        });
+
+
+        $(".timer-container").find("input.timepicker").bind("change", function () {
+
+            ShowHideTimeZone($(this));
+
+        });
+
+        $(".timepicker").kendoMaskedTextBox({
+            mask:  "00/00/0000 00:00:00"
+        });
+
+        $(".datepicker").kendoDatePicker({
+            open: function (e) {
+                onDatePickerOpen(e);
+            },
+            disableDates: function (date) {
+                if (@(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.FacilityPhysician.ToDescription()).ToString().ToLower()) || @(isReadOnlyCase.ToString().ToLower())) {
+                    return true;
+                }
+            }
+        });
+
+        if ($("#elapsed-time").val() != "") {
+            $("#custom").html($("#elapsed-time").val());
+            $("#elapsedTimeArrival").show();
+            var t = $("#mcas_cst_key").val();
+            if ($("#show-red").val() == "1" && @Model.mcas_cst_key != @CaseStatus.Accepted.ToInt())
+                $("#custom").addClass("elapsed-time");
+        }
+       
+        $("#lnkCaseClose").off("click").click(function (e) {
+            e.preventDefault();
+            clearAutoSaveInterval();
+            loadPageAsync("@Url.Action("Index")");
+        });
+
+        $("#btnSave,#btnSaveSend").off("click").click(function () {
+            debugger;
+            if ($('#mcas_cst_key').val() == "" || $('#mcas_cst_key').val() == null || $('#mcas_cst_key').val() == undefined) {
+                $('#mcase_status_key_val').text('Status is required.')
+                return false;
+            } else {
+                $('#case_status_key_val').text('');
+            }
+            //savetypeofcorrespondense();
+            $(".error_msg").hide();
+            if ($(this).attr("id") === "btnSaveSend") {
+                $("#mhdnSaveAndSend").val("1");
+            }
+            else {
+                $("#mhdnSaveAndSend").val("0");
+            }
+
+            var caseId = $("#createForm").find("#mcas_key").val();
+            var isCompleted = $("#mcas_cst_key").val();
+            if (caseId != "0" && isCompleted == @CaseStatus.Complete.ToInt()) {
+                if (@isReadOnlyCase.ToString().ToLower()) {
+                    $("#activetab").val('#metricResponse');
+                }
+                performCaseCompletion("0");
+                return;
+            }
+            if (typeof (caseTemplateBeforeSubmit) != "undefined") {
+                caseTemplateBeforeSubmit();
+            }
+            if (!validateGeneralTabForm(false, false, false)) {
+                return false;
+            }
+            $("#mRedirectPage").val("0");
+            var currentTab = $("#menuTabs .active ").attr("href");
+            $("#activetab").val(currentTab);
+            //clearAutoSaveInterval();
+
+             if (@isReadOnlyCase.ToString().ToLower()) {
+                 readOnlyAllFields();
+            }
+            submitCaseChanges(); // temporary direct call
+        });
+
+        $("#btnSaveClose").off("click").click(function () {
+            $(".error_msg").hide();
+            var isCompleted = $("#mcas_cst_key").val();
+            if (isCompleted == @CaseStatus.Complete.ToInt()) {
+                performCaseCompletion("1");
+                return;
+            }
+
+            if ($('#mcas_cst_key').val() == "" || $('#mcas_cst_key').val() == null || $('#mcas_cst_key').val() == undefined) {
+                $('#mcase_status_key_val').text('Status is required.')
+                return false;
+            } else {
+                $('#case_status_key_val').text('');
+            }
+
+            //if (typeof (caseTemplateBeforeSubmit) != "undefined") {
+            //    caseTemplateBeforeSubmit();
+            //}
+            if (validateGeneralTabForm(true, false, false)) {
+                $("#mRedirectPage").val("1");              
+                submitCaseChanges();
+            }
+            else {
+                if (!(isCompleted == @CaseStatus.Complete.ToInt())) {
+
+                    if (@isReadOnlyCase.ToString().ToLower()) {
+                        readOnlyAllFields();
+                    }
+                    saveFormData();
+                }
+
+            }
+        });
+
+        function ValidateAllTabs() {
+            $(".error_msg").hide();
+
+            var generalTab = true;
+            var metricTab = true;
+            var templateTab = true;
+            var billingTab = true;
+            var tabToShow = "";
+           if (!validateGeneralTabForm(true, true, false)) {
+
+               tabToShow = "#generalTABLink";
+               generalTab = false;
+          }
+
+
+            if (tabToShow !== null && tabToShow !== "") {
+                $(tabToShow).tab("show");
+            }
+
+
+            if (tabToShow == "#billingTabLink") {
+                if (casStatus !== '140') {
+                    $("#btnCompleteCase").show();
+                }
+
+            }
+            else {
+                $("#btnCompleteCase").hide();
+                $('#btnCancelCase').hide();
+            }
+
+           return  (generalTab && metricTab && templateTab && billingTab)
+        }
+
+        $("#btnCancelCase").off("click").click(function () {
+            $('#lblPhyCancel').val('found');
+            var cas_id = "@Model.mcas_ctp_key";
+            if (cas_id === '9')
+                ShowCancelMessage();
+            else {
+                $('#toolTipCancel').show();
+                $('#popupModelCaseCancel').modal({
+                    'show': true,
+                    backdrop: 'static',
+                    keyboard: false
+                });
+            }
+                //CancelCase();
+        });
+        function ShowCancelMessage() {
+
+            $("#divModelPopUp").empty().showAlertPopUp("Confirm",
+                "You cannot cancel a stroke alert case. Please contact your Navigator!",
+                function () {
+                    $("#divModelPopUp").modal("hide");
+                }
+            );
+        }
+
+        $("#review-initiated-wrap .form-check-inline input[type='radio']").off("click").click(function () {
+            if ($(this).val() == 1) {
+                $("#mcas_response_case_number").prop('readonly', false);
+            }
+        });
+      
+        if ($("#hdn-cas-eta").val() != null && $("#hdn-cas-eta").val() != "") {
+            $("#mcase-eta").prop("checked", true);
+            $("#mcas_eta").show();
+        }
+
+        generateStatusFilter()
+
+        $('#popover, #popover-facility').click(function () {
+            $('#tooltip').show();
+            $('#popupModelFacility').modal({
+                'show': true,
+                backdrop: 'static',
+                keyboard: false
+                });
+        });
+
+        // code to prevent form submit on enter
+        $("input[type=text]").keyup(function (event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+            }
+        });
+        // code to hide and show "tPA early order" message if all the options are selected
+        // to "No" form "LB2S2 Criteria" section in metrics tab.
+        $('#lb2s2-contianer :radio').on("change", function () {
+            var Is_allSelectedTo_No = true;
+            var totalLb2s2Options = 5;
+            var count = 0;
+            $('#lb2s2-contianer :radio:checked').each(function () {
+                if ($(this).val() != "0") {
+                    Is_allSelectedTo_No = false;
+                    return;
+                }
+                else {
+                    count++;
+                }
+            });
+            if (Is_allSelectedTo_No && count == totalLb2s2Options) {
+                $("#early-tpa-order-indicator").removeClass("d-none");
+            } else {
+                $("#early-tpa-order-indicator").addClass("d-none");
+            }
+        });
+
+        if (showFacilityTime.To != undefined)
+            window.clearTimeout(showFacilityTime.To);
+
+        showFacilityTime(@Functions.GetTimeZoneOffset(facilityTimeZone));
+        // If user is facility admin, user not allow to make changes in case.
+        if (@(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()).ToString().ToLower().ToString().ToLower()) || @(User.IsInRole(UserRoles.FacilityPhysician.ToDescription()).ToString().ToLower().ToString().ToLower())  @*|| @(User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()).ToString().ToLower().ToString().ToLower())*@
+            || @(isReadOnlyCase.ToString().ToLower())) {
+            window.setTimeout(function () {
+                disableAllControls();
+            }, 400);
+
+        }       
+    });
+
+    $("input[name='mcas_billing_physician_blast']").on("change", function (e) {
+        if ($(this).val() == "true") {
+            var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm:ss");
+            var currentDateTime_est = moment().utcOffset(@Functions.GetTimeZoneOffset(Settings.DefaultTimeZone)).format("MM/DD/YYYY HH:mm:ss");
+            $("#mcas_billing_physician_blast_date_est").val(currentDateTime_est);
+            $("#mcas_billing_physician_blast_date").val(currentDateTime);
+        }
+        else {
+            $("#mcas_billing_physician_blast_date").val("");
+            $("#mcas_billing_physician_blast_date_est").val("");
+        }
+    });
+    // case template scripts
+    $('textarea.mechanism_stroke_text').on('keyup', function () {
+        var maxlen = $(this).attr('maxlength');
+        var length = $(this).val().length;
+        if (length > maxlen - 1) {
+            $(this).siblings("span").text('max length ' + maxlen + ' characters only.')
+        }
+        else {
+            $(this).siblings("span").text('');
+        }
+    });
+
+    $(".track_change").off("change").change(function () {
+        if (typeof (caseTemplateBeforeSubmit) != "undefined") {
+            caseTemplateBeforeSubmit();
+        }
+    });
+
+
+    var responsestringGenerateTemplate = '';
+    var showeditorresponseGenerateTemplate = false;
+
+   $("#btnDownloadTemplate").off("click").click(function () {
+        ////added by ahmad 08-09-2020
+        var criticalcareTimeDiv = true;
+        var criticalCar = $("#divcriticalCare").find("input[type=radio]:checked").val();
+        var criticalCarProvided = $("#criticalcareTimeDiv").find("input[type=number]").val();
+        if (criticalCar == "true") {
+            if (criticalCarProvided == "" || criticalCarProvided == null || criticalCarProvided == undefined) {
+                $("#criticalcareTimeDiv").find(".error_msg").show();
+                criticalcareTimeDiv = false;
+            }
+        }
+
+
+////ended by ahmad
+        if (criticalcareTimeDiv) {
+            $("#criticalcareTimeDiv").find(".error_msg").hide();
+
+        if ($(this).val() == 'Generate Template') {
+            GetCaseReviewers();
+            if (!@userMedicalStaff.ToString().ToLower())
+            {
+                saveFormData();
+            }
+           // caseTemplateBeforeSubmit();
+            var url = "@Url.Action("GenerateCaseTemplate", "Case")";
+            var data = $("#createForm").serialize();
+            if (@userMedicalStaff.ToString().ToLower()) {
+
+                $.post(url, data, function (response) {
+                    if (response.success) {
+                        if (showeditorresponseGenerateTemplate) {
+                            $("#mcas_template_html").val(responsestringGenerateTemplate);
+                            //showCKEditor("mcas_template_html");
+                            $("#caseTemplateModel").modal("show");
+                            if (browserName == "Edge" || browserName == "FireFox") {
+                                copyTemplateAlt("#btnSaveAndCopyTemplate", false);
+                            }
+                        }
+                        else {
+                            $("#btnCancelTemplatePreview").show();
+                            $("#btnOKTemplatePreview").val("Copy");
+                            $("#caseTemplateReviewData").html(response.data);
+                            $("#caseTemplatePreviewModal").modal("show");
+                        }
+                    }
+                });
+
+            }
+            else {
+
+
+                $.post(url, data, function (response) {
+                    if (response.success) {
+                        if (response.showEditor) {
+                            $("#cas_template_html").val(response.data);
+                            showCKEditor("cas_template_html");
+                            $("#caseTemplateModel").modal("show");
+                            if (browserName == "Edge" || browserName == "FireFox") {
+                                copyTemplateAlt("#btnSaveAndCopyTemplate", false);
+                            }
+                        }
+                        else {
+                            $("#btnCancelTemplatePreview").show();
+                            $("#btnOKTemplatePreview").val("Copy");
+                            $("#caseTemplateReviewData").html(response.data);
+                            $("#caseTemplatePreviewModal").modal("show");
+                        }
+                    }
+                });
+            }
+        }
+        else if ($(this).val() == 'Load Template') {
+
+            }
+        }
+        $("#btnSaveTemplate,#btnSaveAndCloseTemplate").off("click").click(function () {
+            var isSaveAndClose = $(this).attr("id") == "btnSaveAndCloseTemplate" ? true : false;
+            saveTemplateData(false).done(function (response) {
+
+                window.setTimeout(function () {
+
+                    if (response.success) {
+
+                        if (browserName != "Edge" || browserName != "FireFox") {
+                            copyHtmlToClipboard(CKEDITOR.instances["cas_template_html"].getData());
+                        }
+
+                        if (!isSaveAndClose) {
+                            $("#cas_template_html").val(CKEDITOR.instances["cas_template_html"].getData());
+                            showCKEditor("cas_template_html");
+                            $("#caseTemplateModel").find("#validationSummary").empty().showBSSuccessAlert("", "Template changes saved successfully");
+                        }
+                        else {
+                            $("#caseTemplateModel").modal("hide");
+                        }
+                    }
+                    else {
+                        $("#caseTemplateModel").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                    }
+                }, 100);
+            })
+        });
+        $("#btnCancelTemplatePopup").off("click").click(function () {
+            var isDirty = CKEDITOR.instances["cas_template_html"].checkDirty();
+            if (isDirty) {
+                $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+                    "Are you sure you want to close this template without saving?",
+                    function () {
+                        $("#caseTemplateModel").modal("hide");
+                        $("#divModelPopUp").modal("hide");
+                    });
+            }
+            else {
+                $("#caseTemplateModel").modal("hide");
+                $("#divModelPopUp").modal("hide");
+            }
+        });
+        $(".btnCloseTemplatePreview").off("click").click(function () {
+            $("#caseTemplateModel").modal("hide");
+            $("#divModelPopUp").modal("hide");
+            $("#caseTemplatePreviewModal").modal("hide");
+        });
+        $("#btnSaveAndCopyTemplate").off("click").click(function () {
+            $("#editorContentHolder").html(CKEDITOR.instances["cas_template_html"].getData());
+            saveTemplateData(true).done(function (response) {
+                if (response.success) {
+                    $("#btnDownloadTemplate").val("Load Template");
+                    $("#btnCancelTemplatePreview").hide();
+                    $("#btnOKTemplatePreview").val("OK");
+                    if (browserName != "Edge" || browserName != "FireFox") {
+                        copyHtmlToClipboard(CKEDITOR.instances["cas_template_html"].getData());
+                    }
+                    $("#caseTemplateReviewData").html(CKEDITOR.instances["cas_template_html"].getData());
+                    $("#caseTemplateModel").modal("hide");
+                    $("#caseTemplatePreviewModal").modal("show");
+                    $("#caseTemplateReviewData").find(".datetime").show();
+                }
+                else {
+                    $("#caseTemplateModel").find("#validationSummary").empty().showBSDangerAlert("", response.data);
+                }
+            });
+        });
+        $("#btnOKTemplatePreview").off("click").click(function () {
+            if ($("#btnOKTemplatePreview").val().toLowerCase() == "copy") {
+                if (browserName == "Edge") {
+                    copyTemplateAlt("#btnCopyTemplatePreview", true);
+                }
+                else {
+                    copyHtmlToClipboard($("#caseTemplateReviewData").html());
+                }
+                alert('Template has been copied to clipboard.');
+            }
+            else {
+                $("#caseTemplateModel").modal("hide");
+                $("#divModelPopUp").modal("hide");
+                $("#caseTemplatePreviewModal").modal("hide");
+            }
+        });
+    });
+
+
+
+    function copyTemplateAlt(targetElement, doTriggerClick) {
+        try {
+            clipboard.destroy();
+        } catch (e) { }
+
+        clipboard = new ClipboardJS(targetElement);
+        clipboard.on('success', function (e) {
+            logToConsole('text copied to clipboard');
+            e.clearSelection();
+        });
+        clipboard.on('error', function (e) {
+            logToConsole(e);
+            e.clearSelection();
+        });
+
+        if (doTriggerClick)
+            $(targetElement).trigger("click");
+    }
+    function performCaseCompletion(redirectedPage) {
+        $(".error_msg").hide();
+        //if (typeof (caseTemplateBeforeSubmit) != "undefined") {
+        //    caseTemplateBeforeSubmit();
+        //}
+        if (validateGeneralTabForm(true, true, false)) {
+            $("#mRedirectPage").val(redirectedPage);
+            if ('@(User.IsInRole(UserRoles.Administrator.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()))' == 'True') {
+                var completed = @CaseStatus.Complete.ToInt()
+                $('#mcas_cst_key').data('kendoDropDownList').value(completed);
+            }
+            else {
+                $("[name=IsCaseCompleted]").val("True");
+            }
+            if (@isReadOnlyCase.ToString().ToLower()) {
+                readOnlyAllFields();
+            }
+            $("#createForm").submit();
+        }
+        else {
+            $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("","Please fill all required fields in all tabs before setting this case as completed.");
+        }
+    }
+    function saveTemplateData(bIsFinal) {
+        var deffer = $.Deferred();
+        var url = "@Url.Action("SaveTemplate")";
+        var postData = {
+            cas_key: $("#createForm").find("#cas_key").val(),
+            entityKey: $("#TemplateEntityType").val(),
+            is_finalized: bIsFinal,
+            ptemplateData: Base64.encode(CKEDITOR.instances["cas_template_html"].getData())
+        };
+        $.post(url, postData, function (data) {
+             return deffer.resolve(data);
+        });
+        return deffer.promise();
+    }
+
+
+    function submitCaseChanges() {
+        var previousStatus = @Model.mcas_cst_key;
+        var currentStatus = $.trim($("#mcas_cst_key").val()).toInt();
+
+        $("#createForm").submit();
+
+        if (currentStatus == caseStatusEnum.Cancelled) {
+           //$('#toolTipCancel').show();
+           // $('#popupModelCaseCancel').modal({
+           //     'show': true,
+           //     backdrop: 'static',
+           //     keyboard: false
+           // });
+
+            if (@isReadOnlyCase.ToString().ToLower()) {
+                        readOnlyAllFields();
+             }
+            $("#createForm").submit();
+        }
+        else {
+            if (@isReadOnlyCase.ToString().ToLower()) {
+                        readOnlyAllFields();
+             }
+            $("#createForm").submit();
+        }
+    }
+
+    function removeAllDropdownError(scoreContainer) {
+        var result = true;
+        $(".nihss select").each(function (item) {
+            var selectedtext = $(this).find("option:selected").text();
+            var itemid = $(this)[0].id;
+            var idd = "#" + itemid + "-error";
+            $(idd).hide();
+        });
+        return result;
+    }
+    function disableAllControls() {
+        $("#case-complete-label").disable();
+
+        $('#btnCompleteCase').hide();
+        $('#btnCancelCase').hide();
+
+        $('#createForm input').disable();
+        $('#createForm textarea').disable();
+        $('#createForm select').disable();
+        // Dropdown lists
+        $("#mcas_caller_source_key").KendoDropDownDisable();
+        $("#mcas_ctp_key").KendoDropDownDisable();
+        $("#mcas_phy_key").KendoDropDownDisable();
+        $("#mcas_cst_key").KendoDropDownDisable();
+        $("#mcas_fac_key").KendoDropDownDisable();
+        $("#mgeneral_cas_identification_type").KendoDropDownDisable();
+        if (!@userFinance.ToString().ToLower())
+        {
+            $("#mbilling_cas_identification_type").KendoDropDownDisable();
+        }
+        $("#mcas_metric_tpaDelay_key").KendoDropDownDisable();
+        $("#mcas_metric_non_tpa_reason_key").KendoDropDownDisable();
+        $("#mcas_billing_lod_key").KendoDropDownDisable();
+        $("#mcas_billing_bic_key").KendoDropDownDisable();
+        $("#mcas_billing_bic_key2").KendoDropDownDisable();
+        $("#mcas_cart_location_key").KendoDropDownDisable();
+        $("#mcas_phy").KendoDropDownDisable();
+        $("#mcas_callback_response_by").KendoDropDownDisable();
+        // DatePicker
+        $('#mgeneral_cas_dob').data('kendoDatePicker').enable(false);
+        if ($("#mcas_ctp_key").val() == '@CaseType.StrokeAlert.ToInt()') {
+            $(".date_consult_datepicker [name='cas_billing_date_of_consult']").data('kendoDatePicker').enable(false);
+        }
+        $('#billing_cas_dob').data('kendoDatePicker').enable(false);
+        $('#billing_followUp_date').data('kendoDatePicker').enable(false);
+        $('#cas_response_date_consult').data('kendoDatePicker').enable(false);
+        // Buttons
+        $('#btnCompleteCase').disable();
+        $('#btnCancelCase').disable();
+
+        $('#btnDownloadTemplate').disable();
+        if ($('#btnDownloadTemplate').val() == 'Load Template')
+            $('#btnDownloadTemplate').enable();
+        $('#btnOKTemplatePreview').enable();
+        $('#btnCancelTemplatePreview').enable();
+        $('#btnSave').disable();
+        $('#btnSaveClose').disable();
+        if (@userFacilityPhysician.ToString().ToLower() != true) {// added by Nabeel to disable button if user is Facility Physician
+            $("#btnCopy").enable();
+
+        }
+        if (!@userMedicalStaff.ToString().ToLower()) {
+            $('#btnExportWord').disable();
+        }
+        if ($('#btnExportWord').val() == 'Load Review Template')
+            $('#btnExportWord').enable();
+         ///TCARE-547
+
+
+
+        if (@enableControlsInReadOnly.ToString().ToLower()) {
+
+            enableReviewTabElements();
+        }
+        else
+        {
+            // Multiselect
+            $("#casereviewers").multiselect("disable");
+            // DatePicker
+             $('#cas_response_date_consult').data('kendoDatePicker').enable(false);
+            // Other Fields
+            $("#metricResponse #cas_response_case_research,#metricResponse  #cas_response_case_qps_assessment,#metricResponse #cas_response_case_facility_request_reviewed,#metricResponse #response_case_qps_reviewed,#metricResponse #cas_qps_assigned").disable();
+
+            //Disabled RCA Initiate and Countermeasuer(s) button and its related fields
+            $(".rca input").disable()
+        }
+
+        @*if (@userRegionalMD.ToString().ToLower()) {
+            enableReviewTabElements();
+        }*@
+
+    $('.k-i-clock').parent().bind('keyup keydown keypress', function (evt) { return false; });
+        $(".k-i-clock").parent().attr("style", "background-color:#e9ecef; pointer-events:none;");
+        if (@userQPS.ToString().ToLower()) {
+            enableReviewTabElements();
+            enableReviewersBox();
+        }
+
+        if (@userFinance.ToString().ToLower()) {
+            $('#btnSave').enable();
+            $('#btnSaveClose').enable();
+            $('#btnExportWord').enable();
+
+            $('#billing input').enable();
+            $('#billing textarea').enable();
+            $('#billing select').enable();
+
+            $('#billing_cas_dob').data('kendoDatePicker').enable();
+            $('#billing_followUp_date').data('kendoDatePicker').enable();
+            $(".date_consult_datepicker [name='cas_billing_date_of_consult']").data('kendoDatePicker').enable();
+        }
+
+        if (@userQualityDirector.ToString().ToLower()) {
+            enableReviewTabElements();
+            enableReviewersBox();
+        }
+        if (@userVPQuality.ToString().ToLower()) {
+            enableReviewTabElements();
+            enableReviewersBox();
+        }
+    }
+
+    function enableReviewTabElements() {
+        var casStatus = "@cas_status";
+        if (casStatus === "140") {
+            return;
+        }
+        else {
+            $(`#metricResponse #cas_response_case_research,
+               #metricResponse #cas_response_case_qps_assessment,
+               #metricResponse #cas_response_case_facility_request_reviewed,
+               #metricResponse #response_case_qps_reviewed,
+               #metricResponse #cas_qps_assigned,
+               #metricResponse #cas_operations_review,
+               #metricResponse #cas_review_facility_communication,
+               #metricResponse #cas_review_internal_notes,
+               #metricResponse #operations_review_completed,
+                #metricResponse #contactdatatable .readonly,
+
+               #cas_response_date_consult`).enable().removeAttr("readonly");
+
+            $('#metricResponse #contactdatatable .k-i-clock').parent().unbind('keyup keydown keypress', function (evt) { return false; });
+            $('#metricResponse #contactdatatable .k-i-clock').parent().removeAttr("style", "background-color:#e9ecef; pointer-events:none;");
+
+            $('#divReviewers input').enable().removeAttr("readonly");;
+
+            //Enabled RCA Initiate and Countermeasuer(s) button and its related fields
+            $(".rca input").enable().removeAttr("readonly");
+            $("#dynamictable input").enable().removeAttr("readonly");
+            $("#dynamictable textarea").enable().removeAttr("readonly");
+            var currentTab = $("#menuTabs .active").attr("href");
+            if ((currentTab == 'metricResponse' || currentTab == '#metricResponse') && @userFacilityAdmin.ToString().ToLower() != true && @userFacilityPhysician.ToString().ToLower() != true) {
+                $('#btnSave').enable();
+                $('#btnSaveClose').enable();
+                $('#btnExportWord').enable();
+            }
+            else {
+                $('#btnSave').disable();
+                $('#btnSaveClose').disable();
+                $('#btnExportWord').disable();
+            }
+        }
+    }
+
+    function enableReviewersBox() {
+         var casStatus = "@cas_status";
+        if (casStatus === "140") {
+            return;
+        }
+        else {
+            $(`#metricResponse #casereviewers`).disable().attr("readonly");
+            $(`#metricResponse #casereviewers`).enable();
+            $(`#metricResponse #cas_response_reviewer`).enable();
+            $(`#metricResponse #divReviewers button`).enable();
+
+        }
+    }
+
+
+   function MedicalStaffReadOnly() {
+
+          $("#case-complete-label").readonly();
+
+        $('#btnCompleteCase').hide();
+        $('#btnCancelCase').hide();
+
+        $('#createForm input').readonly();
+        $('#createForm textarea').readonly();
+        $('#createForm select').readonly();
+        // Dropdown lists
+        $("#mcas_caller_source_key").KendoDropDownReadOnly();
+        $("#mcas_ctp_key").KendoDropDownReadOnly();
+        $("#mcas_phy_key").KendoDropDownReadOnly();
+        $("#mcas_cst_key").KendoDropDownReadOnly();
+        $("#mcas_fac_key").KendoDropDownReadOnly();
+        $("#mgeneral_cas_identification_type").KendoDropDownReadOnly();
+        $("#mbilling_cas_identification_type").KendoDropDownReadOnly();
+        $("#mcas_metric_tpaDelay_key").KendoDropDownReadOnly();
+        $("#mcas_metric_non_tpa_reason_key").KendoDropDownReadOnly();
+        $("#mcas_billing_lod_key").KendoDropDownReadOnly();
+        $("#mcas_billing_bic_key").KendoDropDownReadOnly();
+        $("#mcas_billing_bic_key2").KendoDropDownReadOnly();
+        $("#mcas_cart_location_key").KendoDropDownReadOnly();
+       $("#mcas_phy").KendoDropDownReadOnly();
+       $("#mcas_callback_response_by").KendoDropDownReadOnly();
+        // DatePicker
+        $('#mgeneral_cas_dob').data('kendoDatePicker').readonly(true);
+        if ($("#cas_ctp_key").val() == '@CaseType.StrokeAlert.ToInt()') {
+            $(".date_consult_datepicker [name='cas_billing_date_of_consult']").data('kendoDatePicker').readonly(true);
+        }
+        $('#mbilling_cas_dob').data('kendoDatePicker').readonly(true);
+        $('#mbilling_followUp_date').data('kendoDatePicker').readonly(true);
+        $('#mcas_response_date_consult').data('kendoDatePicker').readonly(true);
+        // Buttons
+        $('#mbtnCompleteCase').disable();
+        $('#mbtnCancelCase').disable();
+
+        $('#btnDownloadTemplate').disable();
+        if ($('#btnDownloadTemplate').val() == 'Load Template')
+            $('#btnDownloadTemplate').enable();
+        $('#btnOKTemplatePreview').enable();
+        $('#btnCancelTemplatePreview').enable();
+        $('#btnSave').disable();
+        $('#btnSaveClose').disable();
+        if (@userFacilityPhysician.ToString().ToLower() != true) {// added by Nabeel to disable button if user is Facility Physician
+            $("#btnCopy").enable();
+
+        }
+        $('#btnExportWord').disable();
+        if ($('#btnExportWord').val() == 'Load Review Template')
+            $('#btnExportWord').enable();
+         ///TCARE-547
+    }
+
+    function readOnlyAllFields() {
+        $("input[name='__RequestVerificationToken']").readonly();
+        $("#case-complete-label").readonly();
+        $('#createForm input').readonly();
+        $('#createForm textarea').readonly();
+        $('#createForm select').readonly();
+        // Dropdown lists
+        $("#mcas_ctp_key").KendoDropDownReadOnly();
+        $("#mcas_phy_key").KendoDropDownReadOnly();
+        $("#mcas_cst_key").KendoDropDownReadOnly();
+        $("#mcas_fac_key").KendoDropDownReadOnly();
+        $("#mgeneral_cas_identification_type").KendoDropDownReadOnly();
+        $("#mbilling_cas_identification_type").KendoDropDownReadOnly();
+        $("#mcas_metric_tpaDelay_key").KendoDropDownReadOnly();
+        $("#mcas_metric_non_tpa_reason_key").KendoDropDownReadOnly();
+        $("#mcas_billing_lod_key").KendoDropDownReadOnly();
+        $("#mcas_billing_bic_key").KendoDropDownReadOnly();
+        $("#mcas_billing_bic_key2").KendoDropDownReadOnly();
+        $("#mcas_cart_location_key").KendoDropDownReadOnly();
+        $("#mcas_phy").KendoDropDownReadOnly();
+        $("#mcas_callback_response_by").KendoDropDownReadOnly();
+        // DatePicker
+        $('#mgeneral_cas_dob').data('kendoDatePicker').enable(true);
+        $(".date_consult_datepicker [name='cas_billing_date_of_consult']").readonly();
+        $('#mbilling_cas_dob').readonly();
+        $('#mbilling_followUp_date').readonly();
+        ////////////
+        $("#dynamictable input,#dynamictable textarea").attr("readonly", false)
+    }
+
+      function validateTemplateTabRequiredFields(entityType, isCaseCompleteCall) {
+
+        var templateId = parseInt(entityType);
+
+        var tPATypeYes = templateId == @EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt() || templateId == @EntityTypes.StrokeAlertTemplateTpa.ToInt() || templateId == @EntityTypes.StateAlertTemplate.ToInt();
+
+        var result = true;
+
+        var divComment = true;
+        var divImpression = true;
+        var divBP = true;
+          var divBloodGlucose = true;
+          var divpulse = true;
+          var divcriticalCare = true;
+          var criticalcareTimeDiv = true;
+        var divHpi = true;
+        var divComplaint = true;
+        var divGender = true;
+          var conditionAllow = false;
+          var cas_exam_free_text = true;
+          var current_Tab = $("#menuTabs .active").attr("href");
+        if ($.trim($("#cas_cst_key").val()).toInt() == caseStatusEnum.Cancelled) {
+            return true;
+        }
+        var _d1 = $('#case_created_date').val();
+        var _d2 = '2020-05-21';
+        var caseDate = new Date(_d1);
+        var compareDate = new Date(_d2);
+        //$(".error_msg").hide();
+        var cas_type = $('#cas_ctp_key').val();
+        cas_type = parseInt(cas_type);
+        if (caseDate > compareDate && cas_type === @CaseType.StatConsult.ToInt() ) {
+            conditionAllow = true;
+        }
+        else {
+            if (cas_type === @CaseType.StatConsult.ToInt()) {
+                conditionAllow = false;
+            }
+            else {
+                conditionAllow = true;
+            }
+          }
+          if (isCaseCompleteCall || current_Tab == '#templates' || current_Tab == 'templates') {
+              if (cas_type === @CaseType.StrokeAlert.ToInt() || cas_type === @CaseType.StatConsult.ToInt() || cas_type === @CaseType.TransferAlert.ToInt()) {
+                  if (@textfreeExam) {
+                      if ($("#divexamTextFree").css("display").toLowerCase() != "none") {
+                          var characters = $.trim($("#cas_exam_free_text").val());
+                          var trimmedcharacters = characters.replace(/\s/g, "");
+                          if (trimmedcharacters.length < 50) {
+                              $("#divexamFree").find(".error_msg").show();
+                              result = false;
+                              cas_exam_free_text = false;
+                              //setTimeout(function () {
+                              //    $("#cas_exam_free_text-error").hide();
+                              //}, 5000);
+                          }
+                      }
+
+                      if ($.trim($("#divBP").find("textarea").val()) == "") {
+                          $("#divBP").find(".error_msg").show();
+                          result = false;
+                          divBP = false;
+                      }
+
+                      if ($.trim($("#divBloodGlucose").find("textarea").val()) == "") {
+                          $("#divBloodGlucose").find(".error_msg").show();
+                          result = false;
+                          divBloodGlucose = false;
+                      }
+
+                      if ($.trim($("#divpulse").find("textarea").val()) == "") {
+                          $("#divpulse").find(".error_msg").show();
+                          result = false;
+                          divpulse = false;
+                      }
+                  }
+                  else {
+                      if (tPATypeYes) {
+                          if (cas_type !== @CaseType.StatConsult.ToInt() && cas_type !== @CaseType.TransferAlert.ToInt()) {
+                              if ($.trim($("#divBP").find("textarea").val()) == "") {
+                                  $("#divBP").find(".error_msg").show();
+                                  result = false;
+                                  divBP = false;
+                              }
+
+                              if ($.trim($("#divBloodGlucose").find("textarea").val()) == "") {
+                                  $("#divBloodGlucose").find(".error_msg").show();
+                                  result = false;
+                                  divBloodGlucose = false;
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+        if (conditionAllow) {
+            if (($("#templates").css("display").toLowerCase() != "none" || isCaseCompleteCall) && $('a[href="#templates"]').length > 0) {
+                var tempComments = $.trim($("#divComment").find("textarea").val());
+                if (tempComments == "") {
+                    $("#divComment").find(".error_msg").show();
+                    result = false;
+                    divComment = false;
+                } else {
+
+                    // use the \s quantifier to remove all white space
+                    let remSpaces = tempComments.replace(/\s/g, "")
+
+                    if (remSpaces.length < 100) {
+                        result = false;
+                        divComments = false;
+                    }
+                }
+               if (cas_type === @CaseType.StatConsult.ToInt() || cas_type === @CaseType.TransferAlert.ToInt()) {
+                    if ($.trim($("#divImpression").find("textarea").val()) == "") {
+                        if ($("#divImpression input:checked").length == 0) {
+                            $("#divImpression").find(".error_msg").show();
+                            result = false;
+                            divImpression = false;
+                        }
+                    }
+
+                    if ($.trim($("#divComplaint").find("textarea").val()) == "") {
+                        $("#divComplaint").find(".error_msg").show();
+                        result = false;
+                        divComplaint = false;
+                    }
+                    if ($.trim($("#divHPI").find("textarea").val()) == "") {
+                        $("#divHPI").find(".error_msg").show();
+                        result = false;
+                        divHpi = false;
+                    }
+                    var _patient = $("#divPatient").find("input[type=radio]:checked").val();
+                    if (_patient == undefined || _patient == null) {
+                        $("#divPatient").find(".error_msg").show();
+                        result = false;
+                        divGender = false;
+                    }
+
+                }
+                else {
+                    if ($.trim($("#divImpression").find("textarea").val()) == "" && $("#divImpression input:checked").length == 0) {
+                        $("#divImpression").find(".error_msg").show();
+                        result = false;
+                        divImpression = false;
+                    }
+                }
+
+                //TCARE-559
+                var criticalCar = $("#divcriticalCare").find("input[type=radio]:checked").val();
+                if (criticalCar == undefined || criticalCar == null) {
+                    $("#divcriticalCare").find(".error_msg").show();
+                    result = false;
+                    divcriticalCare = false;
+                }
+                if (criticalCar == "true") {
+                    var criticalCarProvided = $("#criticalcareTimeDiv").find("input[type=number]").val();
+                    if (criticalCarProvided == "" || criticalCarProvided == null || criticalCarProvided == undefined) {
+                        $("#criticalcareTimeDiv").find(".error_msg").show();
+                        result = false;
+                        criticalcareTimeDiv = false;
+
+                    }
+                }
+            }
+        }
+
+         /// Focusing the first invalid control on the tab
+        if (!result) {
+
+            var element = null;
+            if (!divImpression) {
+                element = $("#divImpression").find("textarea");
+
+            }
+            else if (!divComment) {
+                element = $("#divComment").find("textarea");
+            }
+            else if (!divBP) {
+                element = $("#divBP").find("textarea");
+            }
+            else if (!divBloodGlucose) {
+                element = $("#divBloodGlucose").find("textarea");
+            }
+            else if (!divpulse) {
+                element = $("#divpulse").find("textarea");
+            }
+            else if (!cas_exam_free_text) {
+                element = $("#divexamFree").find("textarea");
+            }
+            else if (!divcriticalCare) {
+                element = $("#divcriticalCare").find("input[type=radio]");
+                console.log("Criticle Care has issues");
+            } else if (!criticalcareTimeDiv) {
+                element = $("#criticalcareTimeDiv").find("input[type=number]");
+                console.log("Criticle Care has issues");
+            }
+            else if (!divComplaint) {
+                element = $("#divComplaint").find("textarea");
+            }
+            else if (!divHpi) {
+                element = $("#divHPI").find("textarea");
+            }
+            else if (!divGender) {
+                element = $("#divPatient").find("input[type=radio]");
+            }
+
+
+            if (element !== null) {
+
+                window.setTimeout(function () { $(element).focus(); }, 250);
+            }
+        }
+
+        return result;
+    }
+
+    function loadFacilityTimeZone(id) {
+          if ($.trim(id) != "" && id != "00000000-0000-0000-0000-000000000000") {
+              var url = "@Url.Action("GetFacilityTimeZone")";
+              var stamp_time = $.trim($("#cas_response_ts_notification_utc").val());
+              $.get(url, { id: id, inputDateTime: stamp_time }, function (response) {
+                  if (response.success) {
+                      changeAbbrivation(response.abbrivation);
+                      $("#hdnFacilityTimeZone").val(response.timeZone);
+                      $("#hdnFacilityTimeZoneOffSet").val(response.timeZoneOffset);
+
+                      if (@userFacilityPhysician.ToString().ToLower() != true) {// added by Nabeel to disable button if user is Facility Physician
+                          $("#btnCopy").enable();
+
+                      }
+                      if (response.convertedTime != "") {
+                          $("#five9_start_time").val(response.convertedTime);
+                      }
+                  }
+                  else {
+                      $("#mainContentArea").find("#validationSummary").empty().showBSSuccessAlert("", "An error has occurred while converting time to facility time zone, please contact support");
+                  }
+              });
+          }
+    }
+
+    function GetCaseReviewers()
+    {
+        var reviewers = $.trim($("#casereviewers").val());
+        $("#cas_response_reviewer").val(reviewers);
+    }
+    function ClickToDial(number, isenabled) {
+        if (number != "" && isenabled.toLowerCase() == "true") {
+            DialNumber(number);
+        }
+    }
+    function GetFacilityCart(cas_key) {
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/MockCase/GetFacilityCart?key=' + cas_key,
+            success: function (data) {
+                debugger;
+                var fac_cart = [];
+                $.each(data, function (key, val) {
+                    if (val) {
+                        fac_cart = val.split('#');
+                    }
+                })
+                @*var cas_cart = '@Model.mcas_cart';
+                if (cas_cart != "" && fac_cart.indexOf(cas_cart) == -1) {
+                    fac_cart.push(cas_cart);
+                }*@
+                var html = "";
+                html += '<option value="">-- Select --</option>';
+                if (fac_cart.length > 0) {
+                    for (var i = 0; i < fac_cart.length; i++) {
+                        var sel = "";
+                        var isExist = '@Model.mcas_cart';
+                        if (isExist) {
+                            if (fac_cart[i] === isExist) {
+                                sel = 'selected';
+                            }
+                        }
+                        html += '<option value="' + fac_cart[i] + '" ' + sel + '>' + fac_cart[i] + '</option>';
+                    }
+                }
+                html += '<option value="other">Other</option>';
+                $("#mcasecart").empty();
+                $("#mcasecart").append(html);
+            },
+            error: function () {
+
+            }
+
+        });
+    }
+
+    function loadPhysicianDropDown(fac_key, isfacilityChanged) {
+        physicianDropDown = $("#mcas_phy_key").fillKendoDropDown("/LookUp/GetAllMockPhyscians", "phy_name", "phy_key", "--Select--",
+            function () {
+            });
+    }
+
+    function checkFacilityServiceType(facilityKey) {
+        $.ajax({
+            type: 'get',
+            url: '/FacilityContract/CheckFacilityIsTeleneuro?fct_key=' + facilityKey,
+            success: function (data) {
+                if (data.success) {
+                    $("#billing_facility_visit_type").removeClass('d-none');
+                    $("#billing_facility_visit_type select").val("");
+                    $("#billing_followUp_date_container").addClass('d-none');
+                    $("#billing_followUp_date_container input").val("");
+                }
+                else {
+                    $("#billing_facility_visit_type").addClass('d-none');
+                    $("#billing_facility_visit_type select").val("");
+                    $("#billing_followUp_date_container").addClass('d-none');
+                    $("#billing_followUp_date_container input").val("");
+                }
+            }
+        });
+    }
+    function generateStatusFilter() {
+        $('#casereviewers').multiselect({
+            columns: 1,
+            placeholder: 'Select User',
+            search: false,
+            selectAll: true,
+            onOptionClick: function () {
+                GetCaseReviewers();
+            }
+        });
+    }
+    //function LoadNotes(key)
+    //{
+    //    var url = "/Case/DisplayNotes?id=" + key;
+    //    $.get(url, function (response) {
+    //        if (response) {
+    //            $("#divModelPopUp").empty().html(response);
+    //            $("#divModelPopUp").modal("show");
+    //        }
+    //    });
+    //}
+
+    function toggleNeurointerventionControl(isYes) {
+        // Show container
+        if (isYes.toLowerCase() == "true")
+            $("#metric_discussed_neurointerventionalist_container").removeClass("d-none");
+        else
+            $("#metric_discussed_neurointerventionalist_container").addClass("d-none");
+        // Reset value
+        if ($("#hdn-saved-discussed-neurointerventionalist").val().toLowerCase() == "true")
+            $("input[name='cas_metric_discussed_with_neurointerventionalist'][value='true']").prop('checked', true);
+        else if ($("#hdn-saved-discussed-neurointerventionalist").val().toLowerCase() == "false")
+            $("input[name='cas_metric_discussed_with_neurointerventionalist'][value='false']").prop('checked', true);
+    }
+
+    function validateBasicInfo() {
+        var result = true;
+        if ($.trim($("#mcas_ctp_key").val()) == "") {
+            result = false;
+        }
+        if ($.trim($("#mcas_fac_key").val()) == "") {
+            result = false;
+        }
+        return result;
+    }
+
+    function autoSaveCase() {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (currentUrl.indexOf("/case/edit") > -1 || currentUrl.indexOf("_physicianstatuslist") > -1) {
+          clearAutoSaveInterval();
+
+            autoSaveCase.timeout = window.setTimeout(autoSaveCallBack, 15000);
+        }
+    }
+
+    function autoSaveCallBack() {
+        var currentUrl = $("#hdnCurrentUrl").val().toLowerCase();
+        if (validateBasicInfo()) {
+
+            $(".error_msg").hide();
+            var url = "@Url.Action("autoSaveCaseData")";
+            if (url.indexOf("?") == -1)
+                url += "?";
+            else
+                url += "&";
+            url += "rnd=" + (Math.floor(Math.random() * 10000) + 1);
+            if ($("#createForm").length == 0 || (currentUrl.indexOf("/case/edit") > -1 || currentUrl.indexOf("_physicianstatuslist") > -1) == false)
+                return;
+
+            var includeList = "#SelectedNIHSQuestionResponse,#case_template_stroke_notpa_ctn_impression,#case_template_stroke_notpa_ctn_mechanism_stroke,#case_template_stroke_notpa_ctn_antiplatelet_therapy_recommedned,#case_template_stroke_notpa_ctn_PMH,#case_template_stroke_notpa_ctn_imaging_studies_recommedned,#case_template_stroke_notpa_ctn_therapies,#case_template_stroke_notpa_ctn_dysphaghia_screen,#case_template_stroke_notpa_ctn_dvt_prophylaxis,#case_template_stroke_notpa_ctn_disposition,#case_template_stroke_notpa_ctn_sign_out,#case_template_stroke_tpa_cts_acute_stroke,#case_template_stroke_tpa_cts_mechanism_stroke,#case_template_stroke_tpa_cts_verbal_consent,#case_template_stroke_neuro_tpa_csn_acute_stroke,#case_template_stroke_neuro_tpa_csn_mechanism_stroke,#case_template_stroke_neuro_tpa_csn_verbal_consent,#case_template_stroke_neuro_tpa_csn_additional_recomendations,#case_template_telestroke_notpa_ctt_impression,#case_template_telestroke_notpa_ctt_mechanism_stroke,#case_template_telestroke_notpa_ctt_sign_out,#case_template_telestroke_notpa_ctt_antiplatelet_therapy_recommedned,#case_template_telestroke_notpa_ctt_PMH,#cas_response_reviewer";
+            var data = $("#createForm").getWatchChanges(includeList);
+            if (data.length > 0) {
+
+                GetCaseReviewers();
+                if (typeof (caseTemplateBeforeSubmit) != "undefined") {
+                    caseTemplateBeforeSubmit();
+                }
+
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: url,
+                    data: {
+                        Id: $("#createForm").find("#cas_key").val(),@*@Model.cas_key,*@
+                        FormData: data,
+                        TemplateKey: $.trim($("#TemplateKey").val()).toInt(),
+                        TemplateKeyName: $.trim($("#TemplateKeyName").val()),
+                        TemplateEntityType: $.trim($("#TemplateEntityType").val()).toInt(),
+                        FacilityTimeZone: $.trim($("#FacilityTimeZone").val())
+                    },
+
+                    global: false
+                }).done(function (response) {
+                    if (response.success) {
+                        if ($.trim($("#TemplateKey").val()).toInt() == 0)
+                            $("#TemplateKey").val($("#createForm").find("#cas_key").val());
+
+                        $(data).each(function (index, item) {
+                            var selector = "[name='" + item.key + "']";
+                            if (selector.length == 1) {
+                                $(selector).attr("data-original-value", Base64.decode(item.value));
+                            }
+                            else {
+                                $(selector).each(function () {
+                                    if ($(this).attr("data-IgnoreAutoSave") == undefined)
+                                        $(this).attr("data-original-value", Base64.decode(item.value));
+                                });
+                            }
+
+                        });
+                    }
+                    autoSaveCase();
+                });
+            }
+            else {
+                autoSaveCase();
+            }
+        }
+        else {
+            clearAutoSaveInterval();
+
+            autoSaveCase();
+        }
+    }
+
+            function CancelCase() {
+                var caseKey = $.trim($("#createForm").find("#cas_key").val()).toInt();
+        $("#divModelPopUp").empty().showConfirmPopUpWithYesNo("Cancel Case",
+            "<span>Would you like to save this case as cancelled?</span>",
+            function () {
+                $("#divModelPopUp").modal("hide");
+                $.ajax({
+                        type: 'post',
+                    url: '/Case/CancelCase?casKey=' + caseKey @*@Model.cas_key*@,
+                        success: function (data) {
+                            if (data.success) {
+                                loadPageAsync('@Url.Action("index", "case")')
+                            }
+                        }
+                });
+            }, function () {
+                $("#divModelPopUp").modal("hide");
+            });
+    }
+
+
+
+
+
+
+    $(document).ready(function () {
+
+        @*if (@userRegionalMD.ToString().ToLower()) {
+            disableAllControls();
+        }
+        else {
+            console.log("Regional MD: " + @userRegionalMD.ToString().ToLower())
+        }*@
+
+        if (@userCredentialingTeam.ToString().ToLower()) {
+            disableAllControls();
+        }
+        if (@userQPS.ToString().ToLower()) {
+            disableAllControls();
+        }
+        if (@userFinance.ToString().ToLower()) {
+            disableAllControls();
+        }
+
+        function restrictKeys() {
+            $('#billing input').bind('keyup keydown keypress', function (evt) { return false; });
+            $("#billing input").attr("style", "background-color:#e9ecef; pointer-events:none;");
+            $('#billing textarea').bind('keyup keydown keypress', function (evt) { return false; });
+            $("#billing textarea").attr("style", "background-color:#e9ecef; pointer-events:none;");
+            $("#cas_billing_visit_type").attr("style", "background-color:#e9ecef; pointer-events:none;");
+            $('#cas_billing_visit_type').bind('keyup keydown keypress', function (evt) { return false; });
+            $('#billing radio').bind('keyup keydown keypress', function (evt) { return false; });
+        };
+
+        if (@userVPQuality.ToString().ToLower()) {
+
+            restrictKeys();
+            $("#billing_cas_identification_type").KendoDropDownReadOnly();
+            $("#cas_billing_bic_key").KendoDropDownReadOnly();
+            $("#cas_billing_bic_key2").KendoDropDownReadOnly();
+            $(".date_consult_datepicker [name='cas_billing_date_of_consult']").data('kendoDatePicker').readonly(true);
+            $('#billing_cas_dob').data('kendoDatePicker').readonly(true);
+            $('#billing_followUp_date').data('kendoDatePicker').readonly(true);
+
+            $("#metricResponse input").readonly();
+            $("#metricResponse [name='cas_response_date_consult']").data('kendoDatePicker').readonly(true);
+            $("#metricResponse [name='cas_response_date_consult']").attr("style", "background-color:#e9ecef; pointer-events:none;");
+            $("#metricResponse [name='cas_response_date_consult']").bind('keyup keydown keypress', function (evt) { return false; });
+
+            enableReviewTabElements();
+            enableReviewersBox();
+        }
+
+        if (@userQualityDirector.ToString().ToLower()) {
+
+            restrictKeys();
+            $("#billing_cas_identification_type").KendoDropDownReadOnly();
+            $("#cas_billing_bic_key").KendoDropDownReadOnly();
+            $("#cas_billing_bic_key2").KendoDropDownReadOnly();
+            $(".date_consult_datepicker [name='cas_billing_date_of_consult']").data('kendoDatePicker').readonly(true);
+            $('#billing_cas_dob').data('kendoDatePicker').readonly(true);
+            $('#billing_followUp_date').data('kendoDatePicker').readonly(true);
+
+            $("#metricResponse input").readonly();
+            $("#metricResponse [name='cas_response_date_consult']").data('kendoDatePicker').readonly(true);
+            $("#metricResponse [name='cas_response_date_consult']").attr("style", "background-color:#e9ecef; pointer-events:none;");
+            $("#metricResponse [name='cas_response_date_consult']").bind('keyup keydown keypress', function (evt) { return false; });
+
+            enableReviewTabElements();
+            enableReviewersBox();
+        }
+        @*if (@userMedicalStaff.ToString().ToLower()) {
+
+            MedicalStaffReadOnly();
+        }*@
+
+       //code for billing code rules when case type changes ticket 503
+       BindBillingCodeDropdown(@Model.mcas_ctp_key)
+        function BindBillingCodeDropdown(caseType)
+        {
+        var billingCodeToRemove = 0;
+            var mainDDl = getUclDataByType(uclData, @(UclTypes.BillingCode.ToInt()));
+            if (parseInt(caseType) == @CaseType.StrokeAlert.ToInt()) {
+              billingCodeToRemove=@CaseBillingCode.CC1_STAT.ToInt();
+            }
+            else if (parseInt(caseType) == @CaseType.StatConsult.ToInt())
+            {
+                billingCodeToRemove =@CaseBillingCode.CC1_StrokeAlert.ToInt();
+            }
+            else if (parseInt(caseType) == @CaseType.TransferAlert.ToInt())
+            {
+                 billingCodeToRemove =@CaseBillingCode.CC1_StrokeAlert.ToInt();
+            }
+             result = mainDDl.filter(function (el) {
+            return el.ucd_key != billingCodeToRemove
+             });
+         $("#cas_billing_bic_key").fillStaticKendoDropDown(result, "ucd_title", "ucd_key", "-- Select --");
+        }
+
+        $("#cas_ctp_key").off("change").change(function () {
+
+         BindBillingCodeDropdown($(this).val());
+     });
+          @*var show = @Model.mcas_metric_symptom_onset_during_ed_stay.ToString().ToLower();
+
+        SymptomsOnSet(show);*@
+
+        var existingText = $("#cas_billing_comments").val();
+
+        if (existingText != undefined) {
+            var charactersTyped = existingText.replace(/\s/g, '').length;
+            $(".commentsCount").html(charactersTyped);
+
+
+            $(".commentsCount").html(charactersTyped);
+            $("#cas_billing_comments").keyup(function () {
+
+
+                var text = $(this).val();
+
+                var charactersTyped = text.replace(/\s/g, '').length;
+
+                $(".commentsCount").html(charactersTyped)
+
+            });
+        }
+        var hpiexistingText = $("#cas_metric_hpi").val();
+
+        if (hpiexistingText != undefined) {
+            var hpicharactersTyped = hpiexistingText.replace(/\s/g, '').length;
+            $(".hpiCount").html(hpicharactersTyped);
+
+
+            $(".hpiCount").html(hpicharactersTyped);
+            $("#cas_metric_hpi").keyup(function () {
+
+
+                var text = $(this).val();
+
+                var hpicharactersTyped = text.replace(/\s/g, '').length;
+
+                $(".hpiCount").html(hpicharactersTyped)
+
+            });
+        }
+        adjustCaseHeaderColWidth();
+
+    });
+
+    // Moving metric tab functionality here . Because some components such as datetime pickter did not render at _caseMetricForm.
+
+    function SymptomsOnSet(show) {
+        if (show) {
+            $(".symptoms_onset_during_ed_stay").show();
+        }
+        else {
+            $(".symptoms_onset_during_ed_stay").hide();
+        }
+    }
+
+    $("#cas_metric_symptom_onset_during_ed_stay").off('change').change(function () {
+
+        var show = $(this).prop("checked");
+
+        if (show) {
+             var currentDateTime = moment().utcOffset(@Functions.GetTimeZoneOffset(facilityTimeZone)).format("MM/DD/YYYY HH:mm:ss");
+            $("#symptoms_onset_during_ed_stay_timestamp").val(currentDateTime);
+        }
+
+        SymptomsOnSet(show);
+    });
+
+    $(".callLink").off("click").click(function () {
+
+        var number = $.trim($(this).data("number"));
+        var formattedNumber = $.trim($(this).data("formatted-number"));
+        var type = $.trim($(this).data("type"));
+
+
+        if (number != "" && formattedNumber != "" && type != "") {
+            callToNumber(number, formattedNumber,type);
+        }
+    });
+
+    $(".edMainLinkClick").off("click").click(function () {
+        var fac_key = $("#mcas_fac_key").val();
+        var url = "@Url.Action("GetFacilityEDMainContacts")";
+        var type = $(this).data("type");
+        $.post(url, { Id: fac_key, type: type }, function (response) {
+
+            var contacts = response.contacts;
+            if (contacts.length > 1) {
+                $("#edMainCallModel").find(".modal-title").html(type);
+                var body = $("#edMainCallModel").find("#tableBody");
+                body.html("");
+
+                $(contacts).each(function (i, item) {
+
+                    var newitem = $("#edMainCallModel").find("#template").clone()
+                        .find("td:eq(0)").html(item.phone_number_formatted).end();
+                    newitem.find("td:eq(1) a").attr("onclick", "callToNumber('" + item.phone_number + "','" + item.phone_number_formatted + "','" + type + "')").end();
+
+                    body.prepend(newitem.html());
+                });
+
+                $("#edMainCallModel").modal("show");
+
+
+            }
+            else if (contacts.length == 1) {
+                callToNumber(contacts[0].phone_number, contacts[0].phone_number_formatted, type);
+            }
+            else {
+                $("#divModelPopUp").empty().showAlertPopUp("Contacts", "No  " + type + " contacts available", type);
+            }
+        })
+    });
+
+    function callToNumber(number, formattedNum, title) {
+        $("#divModelPopUp").empty().showConfirmPopUpWithYesNo(title, "Do you want to dial " + formattedNum + "?", function () {
+            $("#divModelPopUp").modal("hide");
+            ClickToDial(number, "@(loggedInUser.EnableFive9.ToString())");
+        });
+    }
+
+      function saveFormData() {
+        //savetypeofcorrespondense();
+
+        // Make all fields readonly by calling readOnlyAllFields
+        $this = $("#createForm");
+        var url = $this.attr("action").addParamToUrl("ShowSuccessOnly","1");
+        var data = $this.serialize();
+
+
+
+        $("#divContentArea").find("input:button, input:submit").disable();
+        $.ajax({
+            type: "POST",
+            url: url,
+            dataType: 'json',
+            data: data,
+            error: function (xhr, error) {
+                $("#divContentArea").find("input:button, input:submit").enable();
+                $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", "Oops, Something went wrong.<br/>Please retry or contact us if the problem still persist.");
+                //console.debug(xhr); console.debug(error);
+            },
+            success: function (response) {
+
+                if (response.success) {
+                    if (response.message !== "" && response.message !== null) {
+                        $("#mainContentArea").find("#validationSummary").empty().showBSSuccessAlert("", response.message);
+                        $("#divContentArea").find("input:button, input:submit").enable();
+                    }
+                }
+                else {
+                    $("#divContentArea").find("input:button, input:submit").enable();
+                    $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", response.message);
+                    $("#divModelPopUp").modal("hide");
+                }
+            }
+
+        });
+                //Now make all fields disabled by calling disableallcontrol
+        // now make fields enable in case review tab by calling  enableReviewTabElements
+    }
+    ///changes for tele
+    var responsestring = '';
+    var showeditorresponse = false;
+   
+
+     // Generate Microsoft Word Document
+
+    function exportHTML(innerdocbody) {
+
+        innerdocbody = innerdocbody.replace('/Content/case/pdf/logo-header.png', 'https://dev-telecare.condadocloud.net/Content/images/logo-header.png')
+        var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+            "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+            "xmlns='http://www.w3.org/TR/REC-html40'>" +
+            "<head><meta charset='utf-8'><title>Case Review</title><style>@@Page Section1{margin:0.70in 1in 0.70in 1in;} div.Section1 {page: Section1}</style></head><body>";
+        var footer = "</body></html>";
+        var sourceHTML = header + innerdocbody + footer;
+        var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+        var fileDownload = document.createElement("a");
+        document.body.appendChild(fileDownload);
+        fileDownload.href = source;
+        fileDownload.download = 'CaseReviewTemplate.doc';
+        fileDownload.click();
+        document.body.removeChild(fileDownload);
+    }
+
+    $("#btnPdfExport").click(function () {
+        generatePDF();
+    });
+    $("#btnWordDocumentExport").click(function () {
+        const element = CKEDITOR.instances["cas_review_template_html"].getData()
+        exportHTML(element);
+    });
+
+
+            $("#btnExportWord").off("click").click(function () {
+
+
+        if (@isReadOnlyCase.ToString().ToLower()) {
+            readOnlyAllFields();
+        }
+        if ($(this).val() == 'Generate Review Template') {
+
+            GetCaseReviewers();
+
+            if (!@userMedicalStaff.ToString().ToLower()) {
+                saveFormData();
+            }
+            generateimage();
+            var url = "@Url.Action("GenerateCaseReviewTemplate", "Case")";
+            var id = $.trim($("#createForm").find("#cas_key").val()).toInt(); @*@Model.cas_key.ToString();*@
+
+            $.post(url, { id: id }, function (response) {
+                if (response.success) {
+                    responsestring = response.data;
+                    showeditorresponse = response.showEditor;
+                }
+            });
+
+        }
+        else if ($(this).val() == 'Load Review Template') {
+            var caseKey = $.trim($("#createForm").find("#cas_key").val()).toInt();
+            var url = '/Case/LoadCaseReviewTemplate?caseKey=' + caseKey;
+            $.post(url, null, function (response) {
+                if (response.success) {
+                    if (response.showEditor) {
+                        // code for wsiwyg popup
+                        $("#cas_review_template_html").val(response.data);
+                        showCKEditor("cas_review_template_html");
+                        $("#casereviewtemplatemodal").modal("show");
+                    }
+                    else {
+                        $("#btnCancelReviewTemplatePreview").show();
+                        $("#btnOKReviewTemplatePreview").val("Copy");
+                        $("#caseReviewTemplateReviewData").html(response.data);
+                        $("#casereviewremplatepreviewmodal").modal("show");
+                    }
+                }
+            });
+        }
+
+        if (@isReadOnlyCase.ToString().ToLower()) {
+            disableAllControls();
+            if (!@userMedicalStaff.ToString().ToLower()) {
+                enableReviewTabElements();
+            }
+        }
+
+        $("#btnSaveReviewTemplate,#btnSaveAndCloseReviewTemplate").off("click").click(function () {
+            var isSaveAndClose = $(this).attr("id") == "btnSaveAndCloseReviewTemplate" ? true : false;
+            saveReviewTemplateData(false).done(function (response) {
+                window.setTimeout(function () {
+
+                    if (response.success) {
+                        $("#btnExportWord").val('Load Review Template');
+                        if (browserName != "Edge" || browserName != "FireFox") {
+                            copyHtmlToClipboard(CKEDITOR.instances["cas_review_template_html"].getData());
+                        }
+
+                        if (!isSaveAndClose) {
+                            $("#cas_review_template_html").val(CKEDITOR.instances["cas_review_template_html"].getData());
+                            showCKEditor("cas_review_template_html");
+                            $("#casereviewtemplatemodal").find("#Reviewvalidation").empty().showBSSuccessAlert("", "Template changes saved successfully");
+                        }
+                        else {
+                            $("#casereviewtemplatemodal").modal("hide");
+                        }
+                    }
+                    else {
+                        $("#casereviewtemplatemodal").find("#Reviewvalidation").empty().showBSDangerAlert("", response.data);
+                    }
+                }, 100);
+            })
+        });
+        $("#btnCancelReviewTemplatePopup").off("click").click(function () {
+            var isDirty = CKEDITOR.instances["cas_review_template_html"].checkDirty();
+            if (isDirty) {
+                $("#divModelPopUp").empty().showConfirmPopUp("Confirm",
+                    "Are you sure you want to close this template without saving?",
+                    function () {
+                        $("#casereviewtemplatemodal").modal("hide");
+                        $("#divModelPopUp").modal("hide");
+                    });
+            }
+            else {
+                $("#casereviewtemplatemodal").modal("hide");
+                $("#divModelPopUp").modal("hide");
+            }
+        });
+        $(".btnCloseReviewTemplatePreview").off("click").click(function () {
+            $("#casereviewtemplatemodal").modal("hide");
+            $("#divModelPopUp").modal("hide");
+            $("#casereviewremplatepreviewmodal").modal("hide");
+        });
+        $("#btnOKReviewTemplatePreview").off("click").click(function () {
+            if ($("#btnOKReviewTemplatePreview").val().toLowerCase() == "copy") {
+                if (browserName == "Edge") {
+                    copyTemplateAlt("#btnCopyReviewTemplatePreview", true);
+                }
+                else {
+                    copyHtmlToClipboard($("#caseReviewTemplateReviewData").html());
+                }
+                alert('Template has been copied to clipboard.');
+            }
+            else {
+                $("#casereviewtemplatemodal").modal("hide");
+                $("#divModelPopUp").modal("hide");
+                $("#casereviewremplatepreviewmodal").modal("hide");
+            }
+        });
+    });
+    function saveReviewTemplateData(bIsFinal) {
+        var deffer = $.Deferred();
+        var url = "@Url.Action("SaveReviewTemplate")";
+        var postData = {
+            cas_key: $("#createForm").find("#cas_key").val(),
+            is_finalized: bIsFinal,
+            ptemplateData: btoa(CKEDITOR.instances["cas_review_template_html"].getData())
+        };
+
+        $.post(url, postData, function (data) {
+             return deffer.resolve(data);
+        });
+        return deffer.promise();
+    }
+
+     function isSignOffFollowUpRequired() {
+
+        var required = false;
+        if (@isTeleNeuroFacility.ToString().ToLower()) {
+            var billingCode = $("#cas_billing_bic_key").data("kendoDropDownList").value();
+
+             var result  = billingCode == @CaseBillingCode.New.ToInt()
+                        || billingCode == @CaseBillingCode.FU.ToInt()
+                        || billingCode == @CaseBillingCode.CC1_STAT.ToInt()
+                        || billingCode == @CaseBillingCode.TC.ToInt()
+                        || billingCode == @CaseBillingCode.CC1_StrokeAlert.ToInt() ;
+
+            if (result) {
+                required = true;
+                $("#billing_facility_visit_type").find("label").addClass("text-danger");
+            }
+            else {
+                $("#billing_facility_visit_type").find("label").removeClass("text-danger");
+            }
+        }
+
+        return required;
+    }
+
+
+     function hideFieldsForEEGCases() {
+
+    }
+
+    //TCARE 559 Start
+    function onCriticalOptionsChanged() {
+        $("#divcriticalCare").find("input[type=radio]").off("change").change(function () {
+
+
+            var value = $(this).val();
+            if (value == "true") {
+
+                $("#criticalcareTimeDiv").show();
+                //$("#criticalcareTimeDiv").find("input").val();
+
+            }
+            else {
+                $("#criticalcareTimeDiv").hide();
+
+            }
+        });
+    }
+
+    function setCriticalCareDefaults() {
+        var criticalCar = $("#divcriticalCare").find("input[type=radio]:checked").val();
+
+        if (criticalCar == undefined || criticalCar == null) {
+            $("#divcriticalCare").find("input[type=radio]").first().attr("checked", true);
+            $("#criticalcareTimeDiv").show();
+            //$("#criticalcareTimeDiv").find("input").val();
+
+        }
+    }
+    $(document).ready(function () {
+        setCriticalCareDefaults();
+    })
+        //TCARE 559 End
+    $('#cas_billing_bic_key3').change(function () {
+        $("#cas_billing_bic_key").removeAttr('disabled');
+        var oldBillingkey = $("#cas_billing_bic_key").val();
+        console.log('biiling key is ' + oldBillingkey);
+        $('#key_revised').val(oldBillingkey);
+        var billingCode = $(this).val();
+        if (billingCode !== "") {
+            $('#cas_billing_bic_key').val(billingCode);//.change();
+            $('#cas_billing_bic_key').change();
+        }
+            $('#lblRevised').html('Revised Billing Code Will Update the Billing Code!');
+        });
+    function openProtocolpopup() {
+        ShowLoading();
+        var fac_key = '@Model.mcas_fac_key';
+        $.ajax({
+            type: "POST",
+            url: "/Case/GetProtocol",
+            dataType: 'json',
+            data: { fac_key: fac_key},
+            error: function (xhr, error) {
+
+            },
+            success: function (response) {
+                $(".hospitalprotocoldata").append(response.data);
+                $("#graphmodal").modal('show');
+                HideLoading();
+            }
+
+        });
+    }
+
+    function openOnboardedpopup() {
+        ShowLoading();
+        var fac_key = '@Model.mcas_fac_key';
+        $.ajax({
+            type: "POST",
+            url: "/Case/GetOnboard",
+            dataType: 'json',
+            data: { fac_key: fac_key},
+            error: function (xhr, error) {
+
+            },
+            success: function (response) {
+                $(".onboardingdata").append(response.data);
+                $("#onboadedgraphmodal").modal('show');
+                HideLoading();
+            }
+
+        });
+
+    }
+</script>
+
+@if (ShowPopup)
+{
+    <script>
+            var caseKey = $.trim($("#createForm").find("#mcas_key").val()).toInt();
+           //LoadNotes(caseKey); 
+    </script>
+}
+
+
+
+
+
+
+
+

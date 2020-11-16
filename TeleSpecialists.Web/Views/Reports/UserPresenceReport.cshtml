@@ -14,17 +14,7 @@
         <div class="form-row">
             <div class="form-group col-xl-3 col-4" id="divfacility">
                 <label for="Physicians">Physician</label>
-                @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control" })
-
-                @*<select class="form-control" id="ddlstatus" multiple>
-                    <option value="Available">Available</option>
-                    <option value="TPA">TPA</option>
-                    <option value="Stroke Alert">Stroke Alert</option>
-                    <option value="Rounding">Rounding</option>
-                    <option value="STAT Consult">STAT Consult</option>
-                    <option value="Break">Break</option>
-                </select>*@
-
+                @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
             </div>
             <div class="form-group col-xl-3 col-4">
                 <label for="ddlTimeFrame">Time Frame</label>
@@ -33,8 +23,8 @@
                     <option value="PreviousMonth">Previous Month</option>
                     @*<option value="ThisYear">This Year</option>
                     <option value="PreviousYear">Previous Year</option>*@
-                    <option value="CustomMonth">Custom Month</option>
-                    @*<option value="CustomRange">Custom Range</option>*@
+                    <option value="CustomRange">Custom Range</option>
+                    @*<option value="CustomMonth">Custom Month</option>*@
                 </select>
             </div>
             <div class="form-group col-xl-3 col-4" style="display:none">
@@ -42,34 +32,31 @@
                 <select class="form-control" id="ddlreportType">
                     <option value="daily" selected="selected">Daily</option>
                     @*<option value="monthly">Monthly</option>*@
-                    @*<option value="ThisYear">This Year</option>
-                    <option value="PreviousYear">Previous Year</option>
-                    <option value="CustomRange">Custom Range</option>*@
                 </select>
             </div>
 
         </div>
 
-        @*<div class="form-row">
-            <div class="form-group row col-xl-6 col-12" id="divCustomDate" style="display:none;">
-                <div class="col-6 pr-0">
-                    <label for="FromDate">From</label>
-                    <input type="text" id="FromDate" name="FromDate" required class="form-control datepicker" />
+        <div class="form-row">
+                <div class="form-group row col-xl-6 col-12" id="divCustomDate" style="display:none;">
+                    <div class="col-6 pr-0">
+                        <label for="FromDate">From</label>
+                        <input type="text" id="FromDate" name="FromDate" required class="form-control datepicker" />
+                    </div>
+
+                    <div class="col-6">
+                        <label for="ToDate">To</label>
+                        <input type="text" id="ToDate" name="ToDate" required class="form-control datepicker" />
+                    </div>
                 </div>
 
-                <div class="col-6">
-                    <label for="ToDate">To</label>
-                    <input type="text" id="ToDate" name="ToDate" required class="form-control datepicker" />
-                </div>
             </div>
-
-        </div>*@
-        <div class="form-group row col-xl-6 col-12" id="divCustomDate" style="display:none;">
+        @*<div class="form-group row col-xl-6 col-12" id="divCustomDate" style="display:none;">
             <div class="col-6 pr-0">
                 <label for="FromDate">Month</label>
                 <input type="text" id="FromDate" name="FromDate" required class="form-control datepicker" />
             </div>
-        </div>
+        </div>*@
 
         <div class="form-row">
             <div class="form-group col-1">
@@ -79,7 +66,22 @@
 
     </div>
 </div>
-
+<div class="modal" id="graphmodal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" style=" max-width: 1000px; width: 1000px; ">
+        <div class="modal-content">
+            <div class="modal-header">
+                @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
+                <button type="button" class="export-pdf k-button">Save as PDF</button>
+            </div>
+            <div class="modal-body">
+                <div id="chart"></div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
 
     $(document).ready(function () {
@@ -89,16 +91,17 @@
                 onDatePickerOpen(e);
             }
         });
-        $("#FromDate").kendoDatePicker({
-            start: "year",
-            depth: "year",
-            format: "MMMM yyyy",
-            open: function (e) {
-                onDatePickerOpen(e);
-            }
-        });
+        //$("#FromDate").kendoDatePicker({
+        //    start: "year",
+        //    depth: "year",
+        //    format: "MMMM yyyy",
+        //    open: function (e) {
+        //        onDatePickerOpen(e);
+        //    }
+        //});
+
         $("#ddlTimeFrame").off("change").change(function () {
-            if ($(this).val() == "CustomMonth") {
+            if ($(this).val() == "CustomRange") {
                 $("#divCustomDate").show();
             }
             else {
@@ -106,25 +109,16 @@
             }
         });
 
-        //$("#ddlTimeFrame").off("change").change(function () {
-        //    if ($(this).val() == "CustomRange") {
-        //        $("#divCustomDate").show();
-        //    }
-        //    else {
-        //        $("#divCustomDate").hide();
-        //    }
-        //});
-
         $('#divLocalFilters').appendTo('#divFilters');
 
         $('#divLocalFilters').appendTo('#divFilters');
 
         $("#btnSearch").click(function () {
             var errorMessage = "";
-            if($("#ddlTimeFrame").val() == "CustomMonth") {
-                if ($("#FromDate").val() == "")
-                    errorMessage = "Enter From Date<br/>";
-            }
+            //if($("#ddlTimeFrame").val() == "CustomMonth") {
+            //    if ($("#FromDate").val() == "")
+            //        errorMessage = "Enter From Date<br/>";
+            //}
             if ($("#ddlTimeFrame").val() == "CustomRange") {
                 if ($("#FromDate").val() == "")
                     errorMessage = "Enter From Date<br/>";
@@ -185,8 +179,13 @@
                     type: "POST",
                     data: function () {
                         var filterModel = { startDate: null, endDate: null, Physicians: "",ReportType:""};
-
-                        filterModel.Physicians = $("#Physicians").val();
+                        //var Getphysician = $("#Physicians").val();
+                        //if (Getphysician == "") {
+                        //    $('#Physicians option:not(:selected)').each(function (key, value) {
+                        //        Getphysician.push(value.value);
+                        //    });
+                        //}
+                        filterModel.Physicians = $("#Physicians").val();//Getphysician;
                         filterModel.ReportType = $("#ddlreportType").val();
                         switch ($("#ddlTimeFrame").val()) {
                             case "ThisMonth":
@@ -205,25 +204,24 @@
                             case "PreviousYear":
                                 filterModel.startDate = "@(new DateTime(currentDate.AddYears(-1).Year, 1,1).ToString())";
                                 filterModel.endDate = "@(new DateTime(currentDate.AddYears(-1).Year, 12,31).ToString())";
-                                break;
+                                break;*@
                             case "CustomRange":
                                 filterModel.startDate = $("#FromDate").val();
                                 filterModel.endDate = $("#ToDate").val();
-                                break;*@
-                            case "CustomMonth":
-                                var newdate = $("#FromDate").val();
-                                if (newdate) {
-                                    var timeframe = newdate.split(" ");
-                                    var year = timeframe[1];
-                                    var month = new Date(Date.parse(timeframe[0] + '1,', year)).getMonth() + 1;
-                                    if (!isNaN(month)) {
-                                        var days = new Date(year, month, 0).getDate();
-                                    }
-                                    if (days) {
-                                        filterModel.startDate = month + '/1/' + year;
-                                        filterModel.endDate = month + '/' + days + '/' + year;
-                                    }
-                                }
+                            //case "CustomMonth":
+                            //    var newdate = $("#FromDate").val();
+                            //    if (newdate) {
+                            //        var timeframe = newdate.split(" ");
+                            //        var year = timeframe[1];
+                            //        var month = new Date(Date.parse(timeframe[0] + '1,', year)).getMonth() + 1;
+                            //        if (!isNaN(month)) {
+                            //            var days = new Date(year, month, 0).getDate();
+                            //        }
+                            //        if (days) {
+                            //            filterModel.startDate = month + '/1/' + year;
+                            //            filterModel.endDate = month + '/' + days + '/' + year;
+                            //        }
+                            //    }
                                 break;
                         }
                         return filterModel;
@@ -261,6 +259,12 @@
                 field: "Id", hidden: true
             },
             {
+                field: "date", hidden: true            },
+            {
+                title: "<b>Action</b>", width: '50px',
+                template: "<input type='button' class='btn btn-dark btn-sm datetime Navigator' data-datetime='#= date #' data-navigator='#= Id #' onclick='showgraph.call(this)' value='View' />"
+            },
+            {
                 field: "CreatedDate", title: "Date", width: '150px'
                 //template: "#= kendo.toString(kendo.parseDate(CreatedDate, 'yyyy-MM-dd'), 'MM/dd/yyyy') #"
             },
@@ -296,18 +300,155 @@
         resizable: true,
         });
     }
+    function SecondstoTimestamp(seconds) {
+        var measuredTime = new Date(null);
+        measuredTime.setSeconds(seconds); // specify value of SECONDS
+        var MHSTime = measuredTime.toISOString().substr(11, 8);
+        return MHSTime;
+    }
+    var showgraph = function () {
+        var datetime = $(this).data("datetime");
+            var NavigatorID = $(this).data("navigator");
+            $.ajax({
+                cache: false,
+                async: true,
+                type: "POST",
+                url: '/Reports/GetUserPresenceGraphReport',
+                data: { Physicians: NavigatorID, startDate: datetime, endDate: datetime },
+                success: function (data) {
+                    var CsvFormat = [];
+                    var finalData = [];
+                    var category = [];
+                    var i;
+                    for (i = 0; i < data.Data.length; i++) {
 
+                        category.push(data.Data[i].StatusName);
+
+                        if (data.Data[i].StatusName == 'Available')
+                        {
+                            finalData.push({ value: data.Data[i].diff, valueColor: "#3f5f29"/*, valueName:"Available"*/ });
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime ,SecondstoTimestamp(data.Data[i].diff), "Available", data.Data[i].diff, "#3f5f29"]);
+                        }
+                        if (data.Data[i].StatusName == 'TPA')
+                        {
+                            finalData.push({ value: data.Data[i].diff, valueColor: "#ff0505"/*, valueName: "TPA"*/ });
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "TPA", data.Data[i].diff, "#ff0505"]);
+                        }
+                        if (data.Data[i].StatusName == 'Stroke Alert')
+                        {
+                            finalData.push({ value: data.Data[i].diff, valueColor: "#d26317"/*, valueName: "Stroke Alert"*/});
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Stroke Alert", data.Data[i].diff, "#d26317"]);
+                        }
+                        if (data.Data[i].StatusName == 'Rounding')
+                        {
+                            finalData.push({ value: data.Data[i].diff, valueColor: "#ffc105"/*, valueName: "Rounding"*/});
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Rounding", data.Data[i].diff, "#ffc105"]);
+                        }
+                        if (data.Data[i].StatusName == 'STAT Consult')
+                        {
+                            finalData.push({ value: data.Data[i].diff, valueColor: "#8e4311"/*, valueName: "STAT Consult"*/ });
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "STAT Consult", data.Data[i].diff, "#8e4311"]);
+                        }
+                        if (data.Data[i].StatusName == 'Break')
+                        {
+                            finalData.push({ value: data.Data[i].diff, valueColor: "#88d5e1"/*, valueName: "Break"*/ });
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Break", data.Data[i].diff, "#88d5e1"]);
+                        }
+                    }
+                    debugger
+                    CsvFormat.splice(0,0,["Shift Date","Start Time","Duration", "Status", "Total Seconds","Color"]);
+                    var CsvString = "";
+                    CsvFormat.forEach(function (RowItem, RowIndex) {
+                        RowItem.forEach(function (ColItem, ColIndex) {
+                            CsvString += ColItem + ',';
+                        });
+                        CsvString += "\r\n";
+                    });
+
+                    CsvString = "data:application/csv," + encodeURIComponent(CsvString);
+                    var link = document.createElement("a");
+                    link.setAttribute("href", CsvString);
+                    link.setAttribute("download", "UserPresenceReportDaily.csv");
+                    document.body.appendChild(link);
+                    link.click();
+
+                    //createChart(category, finalData);
+                    //$(document).bind("kendo:skinChange", createChart);
+                    //$("#graphmodal").modal('show');
+                },
+                error: function () {
+
+                }
+            });
+        }
+        function createChart(category,finalData) {
+            var chartHeight = 600;
+            $("#chart").css("height", chartHeight);
+            $("#chart").kendoChart({
+                title: {
+                    text: "User Presence Report",
+                    color: "black",
+                    margin: { top: 20, bottom: 50 }
+                },
+                legend: {
+                    position: "bottom"
+                },
+                chartArea: {
+                    background: "",
+                    width: 966
+                },
+                seriesDefaults: {
+                    type: "waterfall"
+                },
+
+                series: [{
+                    colorField: "valueColor",
+                    data: finalData
+                }],
+                 valueAxis: {
+                    max: 43200,
+                    line: {
+                        visible: false
+                    },
+                    minorGridLines: {
+                        visible: false
+                     }
+                    //labels: {
+                    //     template: "#= kendo.format('{0:HH:mm:ss}', new Date(value)) #"
+                    // }
+                    // min: new Date(mindate).getTime(),
+                },
+                categoryAxis: {
+                    categories: category,
+                    labels: {
+                        rotation: "auto"
+                    }
+                },
+                axisDefaults: {
+                    majorGridLines: {
+                        visible: false
+                    }
+                },
+                tooltip: {
+                    visible: true,
+                    template: "#= value #"
+                }
+            });
+        }
+        $(".export-pdf").click(function () {
+            $("#chart").getKendoChart().saveAsPDF();
+        })
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
-        //$('#Physicians').multiselect({
-        //    columns: 1,
-        //    placeholder: 'Select Physician',
-        //    search: true,
-        //    searchOptions: {
-        //        'default': 'Select Physician'
-        //    },
-        //    selectAll: true
-        //});
+        $('#Physicians').multiselect({
+            columns: 1,
+            placeholder: 'Select Physician',
+            search: true,
+            searchOptions: {
+                'default': 'Select Physician'
+            },
+            selectAll: true
+        });
     });
 </script>

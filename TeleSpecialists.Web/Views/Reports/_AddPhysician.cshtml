@@ -1,0 +1,89 @@
+﻿@model TeleSpecialists.BLL.Helpers.DailyVolematricReport
+@using TeleSpecialists.BLL.Helpers;
+
+@{
+    ViewBag.Title = "_AddPhysician";
+    List<DailyVolematricReport> On_Body_list = ViewBag.body;
+}
+<div class="container">
+      <div class="table-responsive " style="width: 1158px;height:650px;">
+        <table id="RLanguagedatatable" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr style="text-align: center;">
+                    @if (ViewBag.Header != null)
+                    {
+                        foreach (var item in ViewBag.Header)
+                        {
+                            <td style="background-color:#d3d3d3!important ; color:black" ><b> @item</b></td>
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.body != null)
+                {
+                    foreach (var item in On_Body_list)
+                    {
+                        <tr>
+                            @{
+                                var val_trim_end = item.Dates.TrimEnd(',');
+                                foreach (var val in val_trim_end.Split(','))
+                                {
+                                    <td>@val</td>
+                                }
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+          </div>
+    </div>
+<pre>
+<code id="preview"></code>
+        </pre>
+
+        <script src="~/Scripts/table2csv.js"></script>
+        <script>
+            $(function () {
+                $(".exportToExcel").click(function (e) {
+                    let options = {
+                        "separator": ",",
+                        "newline": "\n",
+                        "quoteFields": true,
+                        "excludeColumns": "",
+                        "excludeRows": "",
+                        "trimContent": true,
+                        "filename": "table.csv",
+                        "appendTo": "#output"
+                    }
+                    debugger;
+                    $('#RLanguagedatatable').table2csv('download', options)
+                });
+            });
+        </script>
+
+        @*<script>
+                $(function () {
+                    $(".exportToExcel").click(function (e) {
+                        var table = $(this).prev('.table2excel');
+                        debugger
+                        if (table && table.length) {
+                            var preserveColors = (table.hasClass('table2excel_with_colors') ? true : false);
+                            $(table).table2excel({
+                                exclude: ".noExl",
+                                name: "Excel Document Name",
+                                filename: "Forecasting Report" + new Date().toISOString().replace(/[\-\:\.]/g, "") + ".xls",
+                                fileext: ".xls",
+                                exclude_img: true,
+                                exclude_links: true,
+                                exclude_inputs: true,
+                                preserveColors: preserveColors
+                            });
+                        }
+                    });
+
+                });
+
+
+            </script>*@

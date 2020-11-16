@@ -359,6 +359,15 @@ namespace TeleSpecialists.BLL.Service
                                         .OrderBy(m => m.FirstName);
             return physicians;
         }
+
+        public IQueryable<AspNetUser> GetAllMockPhysicians()
+        {
+            var physicians = GetMockPhysicians()
+                                        .Where(m => m.IsActive)
+                                        .Where(m => m.IsDeleted == false)
+                                        .OrderBy(m => m.FirstName);
+            return physicians;
+        }
         public facility_physician GetDetails(int id)
         {
             var model = _unitOfWork.FacilityPhysicianRepository.Query().AsNoTracking()
@@ -404,11 +413,12 @@ namespace TeleSpecialists.BLL.Service
             {
                 facilityPhsycian.fap_UserName = entity.fap_UserName;
                 facilityPhsycian.fap_is_on_boarded = entity.fap_is_on_boarded;
-                facilityPhsycian.fap_hide = entity.fap_hide;
                 facilityPhsycian.fap_onboarded_by = entity.fap_onboarded_by;
                 facilityPhsycian.fap_onboarded_date = DateTime.Now.ToEST();
                 facilityPhsycian.fap_onboarded_by_name = entity.fap_onboarded_by_name;
                 facilityPhsycian.fap_onboarded_date = DateTime.Now;
+                facilityPhsycian.fap_hide = entity.fap_hide;
+
                 _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
                 if (commitChange)
                 {
@@ -458,11 +468,12 @@ namespace TeleSpecialists.BLL.Service
             var caseTypelist = from m in _unitOfWork.FacilityPhysicianRepository.Query()
                                join n in GetUclData(UclTypes.State) on m.facility.fac_stt_key equals n.ucd_key into FacilityStates
                                from state in FacilityStates.DefaultIfEmpty()
-                               where
-                                m.fap_is_on_boarded == true
-                               && m.fap_is_active == true
+                               where 
+                               //(m.fap_is_on_boarded == true || m.facility.fac_go_live == true)
+                               //&& 
+                               m.fap_is_active == true
                                && m.fap_start_date != null
-                               && m.fap_end_date != null && m.fap_hide == false && m.facility.fac_go_live
+                               && m.fap_end_date != null && m.fap_hide == false 
                                orderby m.facility.fac_name
                                select new
                                {
@@ -616,19 +627,34 @@ namespace TeleSpecialists.BLL.Service
 
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
-        public void updatePhysicianPassword(PhysicianViewModel model, bool commitChange = true)
+        public void updatePhysicianPassword(List<PhysicianViewModel> model, bool commitChange = true)
         {
-            var facilityPhsycian = _unitOfWork.FacilityPhysicianRepository.Query().Where(x => x.fap_key == model.id).FirstOrDefault();
-            if (facilityPhsycian != null)
+            foreach (var item in model)
             {
-                facilityPhsycian.fap_UserName = model.userpassword;
-                _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
+               
+               var facilityPhsycian = _unitOfWork.FacilityPhysicianRepository.Query().Where(x => x.fap_key == item.rowid).FirstOrDefault();
+               if (facilityPhsycian != null)
+               {
+                   facilityPhsycian.fap_UserName = item.Password;
+                   _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
+               }
             }
             if (commitChange)
             {
                 _unitOfWork.Save();
                 _unitOfWork.Commit();
             }
+            //var facilityPhsycian = _unitOfWork.FacilityPhysicianRepository.Query().Where(x => x.fap_key == model.id).FirstOrDefault();
+            //if (facilityPhsycian != null)
+            //{
+            //    facilityPhsycian.fap_UserName = model.userpassword;
+            //    _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
+            //}
+            //if (commitChange)
+            //{
+            //    _unitOfWork.Save();
+            //    _unitOfWork.Commit();
+            //}
 
         }
     }

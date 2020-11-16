@@ -138,9 +138,12 @@ namespace TeleSpecialists.BLL.Repository
         private IFacilityQuestionnaireContactRespository _facilityQuestionnaireContactRespository;
         private IFacilityRateRepository _facilityRateRepository;
         private IFacilityAvailabilityRateRepository _facilityAvailabilityRateRepository;
+
         private IMenuData _menuRepository;
         private IMenuAccessData _menuAccessRepository;
-        
+        private IMockCaseRepository _mockCaseRepository;
+        private IUserAccessData _userAccessRightsRepository;
+
         public IQueryable<AspNetUser> ApplicationUsers
         {
             get
@@ -260,6 +263,17 @@ namespace TeleSpecialists.BLL.Repository
                     this._menuAccessRepository = new MenuAccessRepository(context);
                 }
                 return _menuAccessRepository;
+            }
+        } 
+        public IUserAccessData UserAccessRepository
+        {
+            get
+            {
+                if (this._userAccessRightsRepository == null)
+                {
+                    this._userAccessRightsRepository = new UserAccessRepository(context);
+                }
+                return _userAccessRightsRepository;
             }
         }
         public IFacilityRepository FacilityRepository
@@ -786,6 +800,18 @@ namespace TeleSpecialists.BLL.Repository
             }
         }
 
+        public IMockCaseRepository MockCaseRepository
+        {
+            get
+            {
+                if (this._mockCaseRepository == null)
+                {
+                    this._mockCaseRepository = new MockCaseRepository(context);
+                }
+                return _mockCaseRepository;
+            }
+        }
+
         public IFacilityQuestionnaireContactRespository FacilityQuestionnaireContactRespository
         {
             get
@@ -797,7 +823,6 @@ namespace TeleSpecialists.BLL.Repository
                 return _facilityQuestionnaireContactRespository;
             }
         }
-
 
         //_physician_Case_TempRepository
 

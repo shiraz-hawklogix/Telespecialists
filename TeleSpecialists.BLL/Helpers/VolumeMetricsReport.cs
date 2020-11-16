@@ -27,6 +27,8 @@ namespace TeleSpecialists.BLL.Helpers
         public string TriagePercent { get; set; }
         public int Inpatient { get; set; }
         public string InpatientPercent { get; set; }
+        public int EDOnset { get; set; }
+        public string EDOnsetPercent { get; set; }
         public int TotalCases { get; set; }
     }
 }

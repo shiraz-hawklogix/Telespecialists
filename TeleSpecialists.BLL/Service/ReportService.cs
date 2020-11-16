@@ -11,6 +11,8 @@ using TeleSpecialists.BLL.Helpers;
 using TeleSpecialists.BLL.ViewModels.Reports;
 using TeleSpecialists.BLL.ViewModels;
 using TeleSpecialists.BLL.ModelEx;
+using System.IO;
+using TeleSpecialists.BLL.Model;
 
 namespace TeleSpecialists.BLL.Service
 {
@@ -1037,8 +1039,6 @@ namespace TeleSpecialists.BLL.Service
                             from accepted in _unitOfWork.CaseAssignHistoryRepository.Query().Where(x => x.cah_action == "Accepted" && ca.cas_key == x.cah_cas_key).OrderByDescending(x => x.cah_created_date).Take(1).DefaultIfEmpty()
                             */
 
-
-
                         from waitingToAccept in _unitOfWork.CaseAssignHistoryRepository.Query()
 
                             //from waitingToAccept in _unitOfWork.CaseAssignHistoryRepository.Query().Where(x => x.cah_cas_key == ca.cas_key).Take(1)
@@ -1119,7 +1119,6 @@ namespace TeleSpecialists.BLL.Service
             }
 
             #endregion
-
 
             #region ----- Calculations -----
 
@@ -1209,7 +1208,6 @@ namespace TeleSpecialists.BLL.Service
             });
 
             #endregion
-
 
             #region ----- Advanced Search -----
 
@@ -1337,13 +1335,10 @@ namespace TeleSpecialists.BLL.Service
             return query.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
 
-
-
         public DataSourceResult GetQualityMetrics(DataSourceRequest request, QualityMetricsViewModel model, string facilityAdminId)
         {
             using (var context = new Model.TeleSpecialistsContext())
             {
-
                 context.Configuration.AutoDetectChangesEnabled = false;
                 context.Configuration.ProxyCreationEnabled = false;
                 context.Configuration.LazyLoadingEnabled = false;
@@ -1440,10 +1435,9 @@ namespace TeleSpecialists.BLL.Service
 
                 #endregion
 
-
                 #region ----- Calculations -----
                 var patientType = PatientType.Inpatient.ToInt();
-                var EDStay = PatientType.Inpatient.ToInt();
+                var EDStay = PatientType.SymptomOnsetDuringEDStay.ToInt();
                 var canceledCASE = CaseStatus.Cancelled.ToInt();
                 var statentitytype = EntityTypes.StateAlertTemplate.ToInt();
                 var case_template_stroke_neuro_tpa = EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt();
@@ -1518,14 +1512,14 @@ namespace TeleSpecialists.BLL.Service
                     medical_descision_making_time = x.ca.cas_metric_tpa_verbal_order_time < x.ca.cas_metric_video_start_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_tpa_verbal_order_time, x.ca.cas_metric_video_start_time),
                     medical_descision_making_time_cmp = x.ca.cas_metric_tpa_verbal_order_time < x.ca.cas_metric_video_start_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_tpa_verbal_order_time, x.ca.cas_metric_video_start_time),
 
-                    arrival_needle_time = x.ca.cas_metric_symptom_onset_during_ed_stay == true || x.ca.cas_patient_type == EDStay && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ?
+                    arrival_needle_time = x.ca.cas_patient_type == EDStay && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ?
                     x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) :
                     x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time),
 
-                    arrival_needle_time_cmp = x.ca.cas_metric_symptom_onset_during_ed_stay == true || x.ca.cas_patient_type == EDStay && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ? x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) :
+                    arrival_needle_time_cmp = x.ca.cas_patient_type == EDStay && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ? x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) :
                       x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time),
 
-                    symptom_needle_time = x.ca.cas_metric_symptom_onset_during_ed_stay == true || x.ca.cas_patient_type == EDStay && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ?
+                    symptom_needle_time = x.ca.cas_patient_type == EDStay && x.ca.cas_metric_symptom_onset_during_ed_stay_time.HasValue && x.ca.cas_metric_needle_time.HasValue ?
                     x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) :
                     "",
 
@@ -1577,7 +1571,6 @@ namespace TeleSpecialists.BLL.Service
                 });
 
                 #endregion
-
 
                 #region ----- Advanced Search -----
 
@@ -1763,7 +1756,7 @@ namespace TeleSpecialists.BLL.Service
             return fac_list.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
         #endregion
-
+        
         #region User Presence Report by Axim
         public DataSourceResult GetUserPresence(DataSourceRequest request, List<string> UserStatus, DateTime startTime, DateTime endTime, string ReportType)
         {
@@ -1771,49 +1764,46 @@ namespace TeleSpecialists.BLL.Service
             List<UserPresenceListings> UsersList = new List<UserPresenceListings>();
             UserPresenceListings obj;
             //var status = String.Join(",", UserStatus);
-            var status = UserStatus[0].ToString();
-            while (startTime <= endTime)
+            if (UserStatus != null)
             {
-                var SpStartTime = startTime;
-                var SpEndTime = startTime.AddDays(1);
-
-                //for (int i = 0; i < UserStatus.Count; i++)
-                //{
-                UsersList = _unitOfWork.SqlQuery<UserPresenceListings>(string.Format("Exec usp_UserPresence_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}',@reportType='{3}'", SpStartTime, SpEndTime, status, ReportType)).ToList();
-                foreach (var item in UsersList)
+                while (startTime <= endTime)
                 {
-                    obj = new UserPresenceListings();
-                    obj.Id = item.Id;
-                    obj.CreatedDate = item.CreatedDate;
-                    obj.Physician = item.Physician;
-                    obj.Available = item.Available;
-                    //obj.AvailableS = string.Format("{0:00}:{1:00}", obj.Available / 60, obj.Available % 60);
-                    obj.AvailableS = string.Format("{0:D2}:{1:D2}:{2:D2}", (item.Available / 3600), ((item.Available % 3600) / 60), item.Available % 60);
-                    obj.TPA = item.TPA;
-                    //obj.TPAS = string.Format("{0:00}:{1:00}", item.TPA / 3600, (item.TPA % 3600) / 60);
-                    obj.TPAS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.TPA / 3600, (item.TPA % 3600) / 60, item.TPA % 60);
-                    obj.StrokeAlert = item.StrokeAlert;
-                    //obj.StrokeAlertS = string.Format("{0:00}:{1:00}", item.StrokeAlert / 60, item.StrokeAlert % 60);
-                    obj.StrokeAlertS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.StrokeAlert / 3600, (item.StrokeAlert % 3600) / 60, item.StrokeAlert % 60);
-                    obj.Rounding = item.Rounding;
-                    //obj.RoundingS = string.Format("{0:00}:{1:00}", item.Rounding / 60, item.Rounding % 60);
-                    obj.RoundingS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.Rounding / 3600, (item.Rounding % 3600) / 60, item.Rounding % 60);
-                    obj.STATConsult = item.STATConsult;
-                    //obj.STATConsultS = string.Format("{0:00}:{1:00}", item.STATConsult / 60, item.STATConsult % 60);
-                    obj.STATConsultS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.STATConsult / 3600, (item.STATConsult % 3600) / 60, item.STATConsult % 60);
-                    obj.Break = item.Break;
-                    //obj.BreakS = string.Format("{0:00}:{1:00}", item.Break / 60, item.Break % 60);
-                    obj.BreakS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.Break / 3600, (item.Break % 3600) / 60, item.Break % 60);
-                    _list.Add(obj);
+                    var SpStartTime = startTime;
+                    var SpEndTime = startTime.AddDays(1);
+                    for (int i = 0; i < UserStatus.Count; i++)
+                    {
+                        var status = UserStatus[i].ToString();
+                        UsersList = _unitOfWork.SqlQuery<UserPresenceListings>(string.Format("Exec usp_UserPresence_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}',@reportType='{3}'", SpStartTime, SpEndTime, status, ReportType)).ToList();
+                        foreach (var item in UsersList)
+                        {
+                            obj = new UserPresenceListings();
+                            obj.Id = item.Id;
+                            obj.date = item.date;
+                            obj.CreatedDate = item.CreatedDate;
+                            obj.Physician = item.Physician;
+                            obj.Available = item.Available;
+                            obj.AvailableS = string.Format("{0:D2}:{1:D2}:{2:D2}", (item.Available / 3600), ((item.Available % 3600) / 60), item.Available % 60);
+                            obj.TPA = item.TPA;
+                            obj.TPAS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.TPA / 3600, (item.TPA % 3600) / 60, item.TPA % 60);
+                            obj.StrokeAlert = item.StrokeAlert;
+                            obj.StrokeAlertS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.StrokeAlert / 3600, (item.StrokeAlert % 3600) / 60, item.StrokeAlert % 60);
+                            obj.Rounding = item.Rounding;
+                            obj.RoundingS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.Rounding / 3600, (item.Rounding % 3600) / 60, item.Rounding % 60);
+                            obj.STATConsult = item.STATConsult;
+                            obj.STATConsultS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.STATConsult / 3600, (item.STATConsult % 3600) / 60, item.STATConsult % 60);
+                            obj.Break = item.Break;
+                            obj.BreakS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.Break / 3600, (item.Break % 3600) / 60, item.Break % 60);
+                            _list.Add(obj);
+                        }
+                    }
+
+                    startTime = startTime.AddDays(1);
                 }
-                // }
-
-                startTime = startTime.AddDays(1);
             }
-
             var Final_list = _list.Select(x => new
             {
                 x.Id,
+                x.date,
                 x.CreatedDate,
                 x.Physician,
                 x.AvailableS,
@@ -1827,10 +1817,10 @@ namespace TeleSpecialists.BLL.Service
             return Final_list.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
 
-        public DataSourceResult GetUserPresenceGraph(DataSourceRequest request, List<string> UserStatus, DateTime startTime, DateTime endTime)
+        public DataSourceResult GetUserPresenceGraph(DataSourceRequest request, string UserStatus, DateTime startTime)
         {
            
-               var UsersList = _unitOfWork.SqlQuery<UserPresenceListings>(string.Format("Exec usp_UserPresence_Graph_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}'", startTime, endTime, UserStatus[0])).ToList();
+            var UsersList = _unitOfWork.SqlQuery<UserPresenceGraph>(string.Format("Exec usp_UserPresence_Graph_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}'", startTime,startTime, UserStatus)).ToList();
 
             var final_list = UsersList.AsQueryable();
 
@@ -1838,7 +1828,7 @@ namespace TeleSpecialists.BLL.Service
         }
 
         #endregion
-
+        
         #region Quality Report by Ahmad junaid
         public DataSourceResult GetVolumeMetricsReport(DataSourceRequest request, QualityMetricsViewModel model, string facilityAdminId, string Status)
         {
@@ -3003,13 +2993,13 @@ namespace TeleSpecialists.BLL.Service
 
                     bedside_response_time = x.ca.cas_response_first_atempt < x.ca.cas_metric_stamp_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_stamp_time, x.ca.cas_response_first_atempt),
                     bedside_response_time_cmp = x.ca.cas_response_first_atempt < x.ca.cas_metric_stamp_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_stamp_time, x.ca.cas_response_first_atempt),
-                    arrival_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != patientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "" : "",
+                    arrival_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != patientType && x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "",
                     arrival_needle_time_cmp = x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time),
                     verbal_order_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_needle_time < x.ca.cas_metric_tpa_verbal_order_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_tpa_verbal_order_time) : "",
                     on_screen_time = x.ca.cas_metric_video_end_time < x.ca.cas_metric_video_start_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_video_end_time, x.ca.cas_metric_video_start_time),
                     on_screen_time_cmp = x.ca.cas_metric_video_end_time < x.ca.cas_metric_video_start_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_video_end_time, x.ca.cas_metric_video_start_time),
-                    activation_time = x.ca.cas_patient_type != patientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == false || x.ca.cas_patient_type != EDStay ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "" : "",
-                    symptoms_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != patientType ? x.ca.cas_metric_symptom_onset_during_ed_stay == true || x.ca.cas_patient_type == EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) : "" : "" : "",
+                    activation_time = x.ca.cas_patient_type != patientType && x.ca.cas_patient_type != EDStay ? x.ca.cas_response_ts_notification < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_response_ts_notification, x.ca.cas_metric_door_time) : "",
+                    symptoms_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != patientType ? x.ca.cas_patient_type == EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time) : "" : "" : "",
                     symptoms_to_needle_time_cmp = x.ca.cas_metric_needle_time < x.ca.cas_metric_symptom_onset_during_ed_stay_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_symptom_onset_during_ed_stay_time),
                 });
 
@@ -3609,7 +3599,7 @@ namespace TeleSpecialists.BLL.Service
                     cases = cases.Where(c => model.eAlert.Contains(c.ca.cas_is_ealert));
                 }
                 #endregion
-                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false && c.ca.cas_patient_type != 4);
+                cases = cases.Where(c => c.ca.cas_patient_type != 4);
                 #endregion
 
                 #region ----- Calculations -----
@@ -4128,8 +4118,8 @@ namespace TeleSpecialists.BLL.Service
                             from accepted in context.case_assign_history.Where(x => x.cah_action == "Accepted" && ca.cas_key == x.cah_cas_key).OrderByDescending(x => x.cah_created_date).Take(1).DefaultIfEmpty()
                             from waitingToAccept in context.case_assign_history.Where(x => x.cah_action == "Waiting to Accept" && ca.cas_key == x.cah_cas_key).OrderByDescending(x => x.cah_created_date).Take(1).DefaultIfEmpty()
 
-                            where ca.cas_is_active == true
-
+                            where ca.cas_is_active == true && DbFunctions.TruncateTime(ca.cas_created_date) >= DbFunctions.TruncateTime(model.StartDate) &&
+                                                         DbFunctions.TruncateTime(ca.cas_created_date) <= DbFunctions.TruncateTime(model.EndDate)
                             select (new
                             {
                                 ca,
@@ -4143,30 +4133,32 @@ namespace TeleSpecialists.BLL.Service
                                 callerSource = (ca.cas_caller_source_text == "" ? (caller_source != null ? caller_source.ucd_description : "") : ca.cas_caller_source_text)
                             });
 
+               // var test = cases.ToList();
+
                 #region ----- Filters -----
 
-                if (model.IncludeTime)
-                {
-                    cases = cases.Where(x => x.ca.cas_created_date >= model.StartDate && x.ca.cas_created_date <= model.EndDate);
-                }
-                else
-                {
-                    cases = cases.Where(x => DbFunctions.TruncateTime(x.ca.cas_created_date) >= DbFunctions.TruncateTime(model.StartDate) &&
-                                             DbFunctions.TruncateTime(x.ca.cas_created_date) <= DbFunctions.TruncateTime(model.EndDate));
-                }
+                //if (model.IncludeTime)
+                //{
+                //    cases = cases.Where(x => x.ca.cas_created_date >= model.StartDate && x.ca.cas_created_date <= model.EndDate);
+                //}
+                //else
+                //{
+                //    cases = cases.Where(x => DbFunctions.TruncateTime(x.ca.cas_created_date) >= DbFunctions.TruncateTime(model.StartDate) &&
+                //                             DbFunctions.TruncateTime(x.ca.cas_created_date) <= DbFunctions.TruncateTime(model.EndDate));
+                //}
 
+                //var test = cases.ToList();
 
+                //if (model.WorkFlowType != null)
+                //    cases = cases.Where(m => model.WorkFlowType.Contains((m.ca.cas_patient_type.HasValue ? m.ca.cas_patient_type.Value : -1)) && m.ca.cas_ctp_key == (int)CaseType.StrokeAlert);
 
-                if (model.WorkFlowType != null)
-                    cases = cases.Where(m => model.WorkFlowType.Contains((m.ca.cas_patient_type.HasValue ? m.ca.cas_patient_type.Value : -1)) && m.ca.cas_ctp_key == (int)CaseType.StrokeAlert);
+                //if (model.CallType != null)
+                //    cases = cases.Where(m => model.CallType.Contains((m.ca.cas_call_type.HasValue ? m.ca.cas_call_type.Value : -1)) && m.ca.cas_ctp_key == ((int)CaseType.StrokeAlert));
 
-                if (model.CallType != null)
-                    cases = cases.Where(m => model.CallType.Contains((m.ca.cas_call_type.HasValue ? m.ca.cas_call_type.Value : -1)) && m.ca.cas_ctp_key == ((int)CaseType.StrokeAlert));
-
-                if (model.CallerSource != null)
-                {
-                    cases = cases.Where(m => model.CallerSource.Contains((m.ca.cas_caller_source_key.HasValue ? m.ca.cas_caller_source_key.Value : -1)));
-                }
+                //if (model.CallerSource != null)
+                //{
+                //    cases = cases.Where(m => model.CallerSource.Contains((m.ca.cas_caller_source_key.HasValue ? m.ca.cas_caller_source_key.Value : -1)));
+                //}
 
                 if (model.CaseStatus != null)
                     cases = cases.Where(m => model.CaseStatus.Contains(m.ca.cas_cst_key));
@@ -4200,16 +4192,16 @@ namespace TeleSpecialists.BLL.Service
                 }
 
 
-                if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
-                {
-                    cases = cases.Where(c => model.QPSNumbers.Contains(c.ca.facility.qps_number));//cases = cases.Where(c => c.ca.facility.qps_number.HasValue && model.QPSNumbers.Contains(c.ca.facility.qps_number.Value));
-                }
+                //if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
+                //{
+                //    cases = cases.Where(c => model.QPSNumbers.Contains(c.ca.facility.qps_number));//cases = cases.Where(c => c.ca.facility.qps_number.HasValue && model.QPSNumbers.Contains(c.ca.facility.qps_number.Value));
+                //}
 
 
-                if (model.tPA != null && model.tPA.Count > 0)
-                {
-                    cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
-                }
+                //if (model.tPA != null && model.tPA.Count > 0)
+                //{
+                //    cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
+                //}
 
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
@@ -4242,7 +4234,7 @@ namespace TeleSpecialists.BLL.Service
 
                 query = query.OrderBy(m => m.handle_time);
 
-                var test = query.ToList();
+                var queryList = query.ToList();
 
                 List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
                 string guids = "";
@@ -4253,7 +4245,8 @@ namespace TeleSpecialists.BLL.Service
                         QualityMetricsReportCls cls = new QualityMetricsReportCls();
                         List<double> _meanlist = new List<double>();
                         List<double> _medianlist = new List<double>();
-                        List<string> handletime = test.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
+                        List<string> handletime = queryList.Where(x => 
+                        x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
                         int count = 0;
                         if (handletime.Count > 0)
                         {
@@ -4294,7 +4287,7 @@ namespace TeleSpecialists.BLL.Service
                         cls.hospitals = count;
                         cls._meantime = _meantime;
                         cls._mediantime = _mediantime;
-                        cls.Navigator = test.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.navigator).ToList().FirstOrDefault();
+                        cls.Navigator = queryList.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.navigator).ToList().FirstOrDefault();
                         cls.NavigatorID = model.Physicians[i];
                         if (model.Facilities != null)
                         {
@@ -4307,7 +4300,7 @@ namespace TeleSpecialists.BLL.Service
                         guids = guids.TrimEnd(',');
                         cls.timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
                         result.Add(cls);
-                    }
+                     }
                 }
                 var finalresult = result.Select(x => new
                 {
@@ -4333,7 +4326,6 @@ namespace TeleSpecialists.BLL.Service
                 context.Configuration.LazyLoadingEnabled = false;
 
                 var cases = from ca in context.cases
-
 
                             where ca.cas_is_active == true
 
@@ -4429,7 +4421,7 @@ namespace TeleSpecialists.BLL.Service
                 }
 
                 #endregion
-                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false && c.ca.cas_patient_type != 4);
+                cases = cases.Where(c => c.ca.cas_patient_type != 4);
                 
                 #endregion
                 #region ----- Calculations -----
@@ -4633,7 +4625,7 @@ namespace TeleSpecialists.BLL.Service
                     cases = cases.Where(c => model.eAlert.Contains(c.ca.cas_is_ealert));
                 }
                 #endregion
-                cases = cases.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == true || c.ca.cas_patient_type == 4);
+                cases = cases.Where(c => c.ca.cas_patient_type == 4);
                 
                 #endregion
                 #region ----- Calculations -----
@@ -6596,7 +6588,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                     #endregion
                     //cases1 = cases1.Where(m => m.ca.cas_fac_key == Id);
-                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false && c.ca.cas_patient_type != 4);
+                    cases1 = cases1.Where(c => c.ca.cas_patient_type != 4);
                     #endregion
 
                     #region ----- Calculations -----
@@ -7445,7 +7437,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                     #endregion
                     //cases1 = cases1.Where(m => m.ca.cas_fac_key == Id);
-                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == false && c.ca.cas_patient_type != 4);
+                    cases1 = cases1.Where(c => c.ca.cas_patient_type != 4);
                     #endregion
 
                     #region ----- Calculations -----
@@ -7649,7 +7641,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                     #endregion
                     //cases1 = cases1.Where(m => m.ca.cas_fac_key == Id);
-                    cases1 = cases1.Where(c => c.ca.cas_metric_symptom_onset_during_ed_stay == true || c.ca.cas_patient_type == 4);
+                    cases1 = cases1.Where(c => c.ca.cas_patient_type == 4);
                     #endregion
                     #region ----- Calculations -----
                     //var patientType = PatientType.Inpatient.ToInt();
@@ -9480,6 +9472,284 @@ namespace TeleSpecialists.BLL.Service
             }
         }
         #endregion
+
+        public DataSourceResult GetFacilityVolumetricReports(DataSourceRequest request, List<Guid> facilities, DateTime FromMonth, DateTime ToMonth)
+        {
+
+            List<CaseModel> cases = new List<CaseModel>();
+            List<CWHReport> volumelist = new List<CWHReport>();
+            cases = _unitOfWork.SqlQuery<CaseModel>(string.Format("Exec UspGetCWHData2 @StartDate = '{0}',@edate = '{1}'", FromMonth, ToMonth.AddMonths(1).AddDays(-1))).ToList();
+
+            foreach (var item in facilities)
+            {
+                CWHReport report = new CWHReport();
+                DateTime StartDate = Convert.ToDateTime(FromMonth);
+                DateTime EndDate = Convert.ToDateTime(ToMonth).AddMonths(1).AddDays(-1);
+                report.fac_name = _FacilityService.GetFacilityNameForreport(item);
+                report.fac_Id = item.ToString();
+                for (var i = StartDate; StartDate < EndDate;)
+                {
+                    DateTime edate = StartDate.AddMonths(1).AddDays(-1);
+                    var result = cases.Where(x => x.cas_response_ts_notification >= StartDate && x.cas_response_ts_notification <= edate && x.cas_fac_key == item).Count();
+                    int month_in_digit = StartDate.Month;
+                    switch (month_in_digit)
+                    {
+                        case 1:
+                            report.January = result;
+                            break;
+                        case 2:
+                            report.February = result;
+                            break;
+                        case 3:
+                            report.March = result;
+                            break;
+                        case 4:
+                            report.April = result;
+                            break;
+                        case 5:
+                            report.May = result;
+                            break;
+                        case 6:
+                            report.June = result;
+                            break;
+                        case 7:
+                            report.July = result;
+                            break;
+                        case 8:
+                            report.August = result;
+                            break;
+                        case 9:
+                            report.September = result;
+                            break;
+                        case 10:
+                            report.October = result;
+                            break;
+                        case 11:
+                            report.November = result;
+                            break;
+                        case 12:
+                            report.December = result;
+                            break;
+                        default:
+                            break;
+                    }
+                    StartDate = StartDate.AddMonths(1);
+                }
+                volumelist.Add(report);
+            }
+
+
+            var finalresult = volumelist.Select(x => new
+            {
+                fac_name = x.fac_name,
+                January = x.January,
+                February = x.February,
+                March = x.March,
+                April = x.April,
+                May = x.May,
+                June = x.June,
+                July = x.July,
+                August = x.August,
+                September = x.September,
+                October = x.October,
+                November = x.November,
+                December = x.December,
+                fac_Id = x.fac_Id
+
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+        
+        public List<DailyVolematricReport> GetDailyFacilityVolumetricReports(string cas_fac_key_arrays, DateTime FromMonth, DateTime ToMonth, string cas_fac_Name_array)
+        {
+
+            List<DailyVolimatricModel> cases = new List<DailyVolimatricModel>();
+            List<DailyVolematricReport> volumelist = new List<DailyVolematricReport>();
+            cases = _unitOfWork.SqlQuery<DailyVolimatricModel>(string.Format("Exec UspGetDailyVolimetircdata @StartDate = '{0}',@edate = '{1}'", FromMonth, ToMonth)).ToList();
+            string Imagepath = "";
+            DateTime StartDate = Convert.ToDateTime(FromMonth);
+            for (var i = StartDate; StartDate < ToMonth;)
+            {
+                DailyVolematricReport report = new DailyVolematricReport();
+                foreach (var item in cas_fac_key_arrays.Split(','))
+                {
+                    var result = cases.Where(x => x.cas_response_ts_notification.Date == StartDate && x.cas_fac_key == new Guid(item)).Count();
+                    Imagepath += result + ",";
+                }
+                report.fac_name = "Date" + "*" + cas_fac_Name_array;
+                report.Dates = StartDate.ToShortDateString() + "," + Imagepath;
+                volumelist.Add(report);
+                Imagepath = "";
+                StartDate = StartDate.AddDays(1);
+            }
+            return volumelist;
+        }
+        public void PrepareCastingExport(string path, List<DailyVolematricReport> response)
+        {
+            string filePath = path + ".csv";
+            var facname = response.Select(x => x.fac_name).FirstOrDefault();
+            string facname_list = "";
+            foreach (var item in facname.Split('*'))
+            {
+                facname_list += item.Replace(",", "-") + ",";
+            }
+            var dateslist = response.Select(x => x.Dates).ToList();
+
+            using (var file = new StreamWriter(filePath))
+            {
+                var fac_trim_list = facname_list.Trim(',');
+                file.WriteLine(fac_trim_list);
+                foreach (var item in dateslist)
+                {
+                    var trim_value = item.TrimEnd(',');
+                    file.WriteLine(trim_value);
+                }
+            }
+
+        }
+
+public DataSourceResult GetBCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        {
+            List<BCI_ReportData> Finallist = new List<BCI_ReportData>();
+            Finallist = _unitOfWork.SqlQuery<BCI_ReportData>(string.Format("Exec UspGetAllPhyDataForBCI")).ToList();
+            if (facilities != null && facilities.Count > 0)
+            {
+                if (facilities[0] != Guid.Empty)
+                    Finallist = Finallist.Where(m => Physicians.Contains(new Guid(m.Phy_Id))).ToList();
+            }
+            var finalresult = Finallist.Select(x => new
+            {
+                    Phy_Name = x.Phy_Name,
+                    Phy_Bci_Value = x.Phy_Bci_Value
+
+            }).OrderBy(x=>x.Phy_Name).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+
+    public DataSourceResult GetCCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        {
+
+            List<CCIReport_Data> Finallist = new List<CCIReport_Data>();
+            Finallist = _unitOfWork.SqlQuery<CCIReport_Data>(string.Format("Exec UspGetAllPhyDataForCCI")).ToList();
+
+            if (facilities != null && facilities.Count > 0)
+            {
+                if (facilities[0] != Guid.Empty)
+                    Finallist = Finallist.Where(m => Physicians.Contains(new Guid(m.Physician_Id))).ToList();
+            }
+            //Convert List To Queryable
+            var finalresult = Finallist.Select(x => new
+            {
+                Physician_Name = x.Physician_Name,
+                Physician_CCI = x.Physician_CCI
+
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+
+        public DataSourceResult GetDailyForecastBydb(DataSourceRequest request, string facilitiess)
+        {
+            List<Monthly_Forecast> volumelist = new List<Monthly_Forecast>();
+            Monthly_Forecast monthly_Forecast;
+            var db_list = _unitOfWork.SqlQuery<Forcast_Data>(string.Format("Exec UspGetForecastDataFOorMOnthly")).ToList();
+            var _val_fac = db_list.Select(x => x.Fac_Id).ToList();
+            string fac_ids = "";
+            string final_val = "";
+            foreach (var item in db_list)
+            {
+                if (item.Fac_Id != final_val)
+                {
+                    monthly_Forecast = new Monthly_Forecast();
+                    var zx = db_list.Where(x => x.Fac_Id == item.Fac_Id).Select(p => p.Month_Prediction).ToList();
+                    foreach (var fac_value in zx)
+                    {
+                        if (fac_ids == item.Fac_Id)
+                        {
+                            monthly_Forecast.Second_Month = Math.Round(Convert.ToDouble(fac_value), 2).ToString();
+                            volumelist.Add(monthly_Forecast);
+                            fac_ids = "";
+                            final_val = item.Fac_Id;
+                        }
+                        else
+                        {
+                            monthly_Forecast.Facility_Name = item.Fac_Name;
+                            monthly_Forecast.One_Month = Math.Round(Convert.ToDouble(fac_value), 2).ToString();
+                            fac_ids = item.Fac_Id;
+                        }
+                    }
+                }
+
+            }
+            var finalresult = volumelist.Select(x => new
+            {
+                Facility_Name = x.Facility_Name,
+                One_Month = x.One_Month,
+                Second_Month = x.Second_Month
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+        public DataSourceResult GetMontlyForecastBydb(DataSourceRequest request, string facilitiess)
+        {
+
+
+            List<Monthly_Forecast> volumelist = new List<Monthly_Forecast>();
+
+            Monthly_Forecast monthly_Forecast;
+
+
+            var db_list = _unitOfWork.SqlQuery<Forcast_Data>(string.Format("Exec UspGetForecastDataFOorMOnthly")).ToList();
+            var _val_fac = db_list.Select(x => x.Fac_Id).ToList();
+            string fac_ids = "";
+            string final_val = "";
+            foreach (var item in db_list)
+            {
+                if (item.Fac_Id != final_val)
+                {
+                    monthly_Forecast = new Monthly_Forecast();
+                    var zx = db_list.Where(x => x.Fac_Id == item.Fac_Id).Select(p => p.Month_Prediction).ToList();
+                    foreach (var fac_value in zx)
+                    {
+                        if (fac_ids == item.Fac_Id)
+                        {
+                            monthly_Forecast.Second_Month = Math.Round(Convert.ToDouble(fac_value), 2).ToString();
+                            volumelist.Add(monthly_Forecast);
+                            fac_ids = "";
+                            final_val = item.Fac_Id;
+                        }
+                        else
+                        {
+                            monthly_Forecast.Facility_Name = item.Fac_Name;
+                            monthly_Forecast.One_Month = Math.Round(Convert.ToDouble(fac_value), 2).ToString();
+                            fac_ids = item.Fac_Id;
+                        }
+                    }
+                }
+
+            }
+
+
+
+            //Convert List To Queryable
+            var finalresult = volumelist.Select(x => new
+            {
+                Facility_Name = x.Facility_Name,
+                One_Month = x.One_Month,
+                Second_Month = x.Second_Month
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+      
+
 
     }
 }

@@ -75,7 +75,7 @@ namespace TeleSpecialists.BLL.Helpers
     {
         
         BillingCode = 10,
-        CaseType,
+        CaseType,        
         CaseStatus,
         EMR,
         ContractType,
@@ -137,8 +137,8 @@ namespace TeleSpecialists.BLL.Helpers
         [Description("Past Medical History ")]
         PMH = 44,
         SleepCodes = 45,
-        FacilityAI = 46
-
+        FacilityAI = 46,
+        MockCaseType = 47
 
     }
 
@@ -288,7 +288,9 @@ namespace TeleSpecialists.BLL.Helpers
         QualityDirector,
         
         [Description("Medical Staff")]
-        MedicalStaff
+        MedicalStaff,
+        [Description("Mock Physician")]
+        MockPhysician,
 
     }
 

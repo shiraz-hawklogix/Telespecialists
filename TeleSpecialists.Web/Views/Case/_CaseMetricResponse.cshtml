@@ -1277,7 +1277,7 @@ new SelectListItem {Text = "20", Value = "20"},
         });
     });
     $(document).ready(function () {
-        if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.MedicalStaff.ToDescription()))' == 'True') {
+        if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.MedicalStaff.ToDescription()))' == 'True' || '@(User.IsInRole(UserRoles.CapacityResearcher.ToDescription()))' == 'True') {
             $('.readonly').prop('disabled', true);
             $('.inpatient').find('input').prop('disabled', true)
             $('.triage').find('input').prop('disabled', true)

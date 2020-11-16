@@ -57,6 +57,7 @@ namespace TeleSpecialists.Controllers
         private readonly TokenService _tokenservice;
         private readonly user_fcm_notification _user_Fcm_Notification;
         private readonly FireBaseUserMailService _fireBaseUserMailService;
+        private readonly MockCaseService _mockCaseService;
 
         private const int _min_dob_year = 1753;
         private static bool isCalculateBill { get; set; }
@@ -97,6 +98,7 @@ namespace TeleSpecialists.Controllers
             _user_Fcm_Notification = new user_fcm_notification();
             _fireBaseUserMailService = new FireBaseUserMailService();
             _OnBoardedServices = new OnBoardedServices();
+            _mockCaseService = new MockCaseService();
         }
 
         public ActionResult Index()
@@ -157,7 +159,7 @@ namespace TeleSpecialists.Controllers
             }
         }
 
-        [AccessRoles(Roles = "Administrator,Super Admin,Quality Team,Regional Medical Director,Navigator,QPS,RRC Manager,RRC Director,VP Quality, Quality Director,AOC")]
+        [AccessRoles(Roles = "Administrator,Super Admin,Quality Team,Regional Medical Director,Navigator,QPS,RRC Manager,RRC Director,VP Quality, Quality Director,AOC,Capacity Researcher")]
         public ActionResult Dashboard()
         {
             if (TempData.ContainsKey("Message"))
@@ -4746,6 +4748,48 @@ namespace TeleSpecialists.Controllers
                 return Json(new { success = false, message = "An error has been occurred while processing your request, please try later." });
             }
         }
+
+
+        public ActionResult _mockcases()
+        {
+            return PartialView();
+        }
+
+        [HttpPost]
+        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director,Navigator")]
+        public ActionResult GetAllMockCases(Kendo.DynamicLinq.DataSourceRequest request)
+        {
+            try
+            {
+                string userId = "";
+
+                List<Guid> facilities = null;
+                if (User.IsInRole(UserRoles.Physician.ToDescription()))
+                {
+                    userId = User.Identity.GetUserId();
+                }
+                else if (User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))
+                {
+                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
+                                             .Select(x => x.Facility).ToList();
+                }
+                else if (User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))
+                {
+                    facilities = _ealertFacilitiesService.GetAllAssignedFacilities(User.Identity.GetUserId())
+                                             .Select(x => x.Facility).ToList();
+                }
+                var res = _mockCaseService.GetAll(request, userId, facilities);
+                return Json(res, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { success = false, message = "An error has been occurred while processing your request, please try later." });
+            }
+        }
+
+
 
         private int SaveNumber(@case model)
         {

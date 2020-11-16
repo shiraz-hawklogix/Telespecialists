@@ -16,7 +16,8 @@ namespace TeleSpecialists.Controllers
         private readonly PhysicianStatusService _physicianStatusService;
         private readonly UCLService _uCLService;
         private readonly CasCancelledTypeService _casCancelledTypeService;
-       
+        private readonly AdminService _adminService;
+
 
 
         public LookupController()
@@ -26,6 +27,7 @@ namespace TeleSpecialists.Controllers
             _physicianStatusService = new PhysicianStatusService();
             _uCLService = new UCLService();
             _casCancelledTypeService = new CasCancelledTypeService();
+            _adminService = new AdminService();
         }
 
         [OutputCache(Duration = 300, VaryByParam = "type")]
@@ -167,6 +169,31 @@ namespace TeleSpecialists.Controllers
                 return Json(new { success = false, data = "", error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+        [HttpGet]
+        public JsonResult GetAllMockFacilities()
+        {
+            var phyFacList = _physicianService.GetAllFacilities().Where(f => f.fac_is_active && f.fac_go_live == false)
+                                 .Select(m =>
+                                                     new
+                                                     {
+                                                         fac_key = m.fac_key,
+                                                         fac_name = m.fac_name
+                                                     }).ToList();
+            return Json(phyFacList, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetAllMockPhyscians()
+        {
+            var phyList = _physicianService.GetAllMockPhysicians()
+                                 .Select(m =>
+                                                     new
+                                                     {
+                                                         phy_key = m.Id,
+                                                         phy_name = m.FirstName + " " + m.LastName
+                                                     }).ToList();
+            return Json(phyList, JsonRequestBehavior.AllowGet);
+        }
 
         public JsonResult GetStrokeFacilities(string phoneNumber)
         {
@@ -205,8 +232,7 @@ namespace TeleSpecialists.Controllers
                 Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
                 return Json(new { success = false, data = "", error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
-        }
-        public JsonResult GetStrokeFacilitiesForOthercasetypes(string phoneNumber)
+        } public JsonResult GetStrokeFacilitiesAll(string phoneNumber)
         {
             try
             {
@@ -226,8 +252,44 @@ namespace TeleSpecialists.Controllers
                 else
                 {
 
-                    var list = _lookupService.GetStrokeFacilitiesForOthercasetypes(phoneNumber)
+                    var list = _lookupService.GetFacilityAll(phoneNumber)
                                              .Select(m =>
+                                                        new
+                                                        {
+                                                            fac_key = m.fac_key,
+                                                            // Will be used in future
+                                                            //fac_name = !string.IsNullOrEmpty(m.fac_city) && !string.IsNullOrEmpty(m.state.stt_code) ? m.fac_name+" ("+m.fac_city+", "+m.state.stt_code+")" : m.fac_name
+                                                            fac_name = m.fac_name
+                                                        });
+                    return Json(list, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { success = false, data = "", error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public JsonResult GetStrokeFacilitiesForOthercasetypes(string phoneNumber)
+
+        {
+            try
+            {
+                if (User.IsInRole(UserRoles.Physician.ToDescription()))
+                {
+                    var phyFacList = _physicianService.GetPhsicianFacilities(loggedInUser.Id, phoneNumber).Where(f => f.fac_go_live)
+                                     .Select(m =>
+                                                         new
+                                                         {
+                                                             fac_key = m.fac_key,
+                                                             fac_name = m.fac_name
+                                                         });
+                    return Json(phyFacList, JsonRequestBehavior.AllowGet);
+
+                }
+                else
+                {
+                    var list = _lookupService.GetStrokeFacilitiesForOthercasetypes(phoneNumber).Select(m =>
                                                         new
                                                         {
                                                             fac_key = m.fac_key,

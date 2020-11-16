@@ -95,6 +95,7 @@
           <Property Name="aps_session_timeout_in_minutes" Type="bigint" />
           <Property Name="aps_two_factor_code_expiry_timeout_in_minutes" Type="bigint" />
           <Property Name="aps_enable_logout_from_other_devices" Type="bit" Nullable="false" />
+          <Property Name="aps_enable_pending_cases_notifications" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
@@ -248,6 +249,15 @@
           <Property Name="aud_ip_address" Type="nvarchar" MaxLength="100" />
           <Property Name="aud_host_name" Type="nvarchar" MaxLength="100" />
           <Property Name="aud_others" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="BCI_ReportData">
+          <Key>
+            <PropertyRef Name="BCI_ID" />
+          </Key>
+          <Property Name="BCI_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Phy_Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="Phy_Bci_Value" Type="nvarchar" MaxLength="100" />
+          <Property Name="Phy_Id" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="call_history">
           <Key>
@@ -883,6 +893,17 @@
           <Property Name="cts_modified_by" Type="varchar" MaxLength="128" />
           <Property Name="cts_callback_to_tsnotification" Type="bigint" />
         </EntityType>
+        <EntityType Name="CCIReport_Data">
+          <Key>
+            <PropertyRef Name="CCI_ID" />
+          </Key>
+          <Property Name="CCI_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Physician_Id" Type="nvarchar" MaxLength="100" />
+          <Property Name="Physician_CCI" Type="nvarchar" MaxLength="50" />
+          <Property Name="Month" Type="datetime" />
+          <Property Name="Date" Type="datetime" />
+          <Property Name="Physician_Name" Type="nvarchar" MaxLength="100" />
+        </EntityType>
         <EntityType Name="component_access">
           <Key>
             <PropertyRef Name="cac_key" />
@@ -1281,6 +1302,17 @@
           <Property Name="fre_firebase_uid" Type="nvarchar" MaxLength="200" />
           <Property Name="fre_profileimg" Type="nvarchar(max)" />
         </EntityType>
+        <EntityType Name="Forcast_Data">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Fac_Id" Type="nvarchar" MaxLength="100" />
+          <Property Name="Fac_Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="Month_Name" Type="datetime" />
+          <Property Name="Month_Prediction" Type="nvarchar" MaxLength="100" />
+          <Property Name="Created_Date" Type="datetime" />
+        </EntityType>
         <EntityType Name="goals_data">
           <Key>
             <PropertyRef Name="gd_key" />
@@ -1359,6 +1391,118 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="IsNew" Type="bit" />
           <Property Name="IsLoaded" Type="bit" />
           <Property Name="ImportDateUTC" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="mock_case">
+          <Key>
+            <PropertyRef Name="mcas_key" />
+          </Key>
+          <Property Name="mcas_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="mcas_ctp_key" Type="int" Nullable="false" />
+          <Property Name="mcas_associate_id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="mcas_fac_key" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="mcas_callback" Type="varchar" MaxLength="50" />
+          <Property Name="mcas_cart" Type="nvarchar(max)" />
+          <Property Name="mcas_phy_key" Type="nvarchar" MaxLength="128" />
+          <Property Name="mcas_cst_key" Type="int" Nullable="false" />
+          <Property Name="mcas_notes" Type="varchar(max)" />
+          <Property Name="mcas_patient" Type="varchar" MaxLength="300" />
+          <Property Name="mcas_case_number" Type="bigint" />
+          <Property Name="mcas_response_date_consult" Type="datetime" />
+          <Property Name="mcas_response_reviewer" Type="varchar" MaxLength="300" />
+          <Property Name="mcas_response_phy_key" Type="nvarchar" MaxLength="128" />
+          <Property Name="mcas_response_response_time" Type="datetime" />
+          <Property Name="mcas_response_ts_notification" Type="datetime" />
+          <Property Name="mcas_response_time_physician" Type="datetime" />
+          <Property Name="mcas_response_first_atempt" Type="datetime" />
+          <Property Name="mcas_response_case_research" Type="nvarchar(max)" />
+          <Property Name="mcas_response_technical_issues" Type="int" Nullable="false" />
+          <Property Name="mcas_physician_concurrent_alerts" Type="int" Nullable="false" />
+          <Property Name="mcas_response_nav_to_ts" Type="int" Nullable="false" />
+          <Property Name="mcas_response_miscommunication" Type="int" Nullable="false" />
+          <Property Name="mcas_response_pulled_rounding" Type="int" Nullable="false" />
+          <Property Name="mcas_response_inaccurate_eta" Type="int" Nullable="false" />
+          <Property Name="mcas_response_physician_blast" Type="int" Nullable="false" />
+          <Property Name="mcas_response_rca_tracker" Type="int" Nullable="false" />
+          <Property Name="mcas_response_review_initiated" Type="int" Nullable="false" />
+          <Property Name="mcas_response_case_number" Type="varchar" MaxLength="50" />
+          <Property Name="mcas_response_tpa_to_minute" Type="int" Nullable="false" />
+          <Property Name="mcas_response_door_to_needle" Type="int" Nullable="false" />
+          <Property Name="mcas_patient_type" Type="int" />
+          <Property Name="mcas_eta" Type="varchar" MaxLength="250" />
+          <Property Name="mcas_status_assign_date" Type="datetime" />
+          <Property Name="mcas_ani" Type="varchar" MaxLength="250" />
+          <Property Name="mcas_dnis" Type="varchar" MaxLength="250" />
+          <Property Name="mcas_time_stamp" Type="datetime" />
+          <Property Name="mcas_call_id" Type="varchar" MaxLength="250" />
+          <Property Name="mcas_callback_extension" Type="varchar" MaxLength="50" />
+          <Property Name="mcas_caller" Type="varchar" MaxLength="50" />
+          <Property Name="mcas_is_active" Type="bit" Nullable="false" />
+          <Property Name="mcas_created_by" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="mcas_created_by_name" Type="varchar" MaxLength="300" />
+          <Property Name="mcas_created_date" Type="datetime" Nullable="false" />
+          <Property Name="mcas_modified_by" Type="nvarchar" MaxLength="128" />
+          <Property Name="mcas_modified_by_name" Type="varchar" MaxLength="300" />
+          <Property Name="mcas_modified_date" Type="datetime" />
+          <Property Name="mcas_identification_type" Type="int" />
+          <Property Name="mcas_identification_number" Type="varchar" MaxLength="50" />
+          <Property Name="mcas_pulled_from_rounding" Type="bit" Nullable="false" />
+          <Property Name="mcas_last_4_of_ssn" Type="varchar" MaxLength="50" />
+          <Property Name="mcas_referring_physician" Type="varchar" MaxLength="500" />
+          <Property Name="mcas_follow_up_date" Type="date" />
+          <Property Name="mcas_billing_dob" Type="datetime" />
+          <Property Name="mcas_physician_assign_date" Type="datetime" />
+          <Property Name="mcas_followup_case_key" Type="int" />
+          <Property Name="mcas_batch_id" Type="varchar" MaxLength="128" />
+          <Property Name="mcas_is_flagged" Type="bit" Nullable="false" />
+          <Property Name="mcas_phy_technical_issue_date_est" Type="datetime" />
+          <Property Name="mcas_phy_technical_issue_date" Type="datetime" />
+          <Property Name="mcas_phy_has_technical_issue" Type="bit" Nullable="false" />
+          <Property Name="mcas_triage_notes" Type="varchar(max)" />
+          <Property Name="mcas_call_type" Type="int" />
+          <Property Name="mcas_callback_response_time_est" Type="datetime" />
+          <Property Name="mcas_callback_response_time" Type="datetime" />
+          <Property Name="mcas_caller_source_key" Type="int" />
+          <Property Name="mcas_caller_source_text" Type="nvarchar(max)" />
+          <Property Name="mcas_is_partial_update" Type="bit" Nullable="false" />
+          <Property Name="mcas_is_flagged_dashboard" Type="bit" Nullable="false" />
+          <Property Name="mcas_cart_location_key" Type="int" />
+          <Property Name="mcas_cart_location_text" Type="nvarchar(max)" />
+          <Property Name="mcas_work_flow_ids" Type="nvarchar" MaxLength="150" />
+          <Property Name="mcas_qps_assigned" Type="nvarchar" MaxLength="150" />
+          <Property Name="mcas_cancelled_type" Type="nvarchar" MaxLength="128" />
+          <Property Name="mcas_cancelled_text" Type="nvarchar(max)" />
+          <Property Name="mcas_datetime_of_contact" Type="nvarchar" MaxLength="250" />
+          <Property Name="mcas_typeof_correspondence" Type="nvarchar" MaxLength="250" />
+          <Property Name="mcas_contact_comments" Type="nvarchar(max)" />
+          <Property Name="mcas_callback_response_by" Type="nvarchar" MaxLength="250" />
+          <Property Name="mcas_callback_notes" Type="nvarchar(max)" />
+          <Property Name="mcas_navigator_notes" Type="varchar(max)" />
+          <Property Name="mcas_rejection_type" Type="varchar" MaxLength="128" />
+          <Property Name="mcas_rejection_text" Type="varchar(max)" />
+          <Property Name="mcas_is_flagged_physician" Type="bit" Nullable="false" />
+          <Property Name="mcas_nurse_identify_members_in_room" Type="bit" />
+          <Property Name="mcas_nursing_verbalize_pre_CT_process" Type="bit" />
+          <Property Name="mcas_nursing_verbalize_post_CT_process" Type="bit" />
+          <Property Name="mcas_nursing_demonstrate_positioninig_cart" Type="bit" />
+          <Property Name="mcas_NIHSS_assessment_booklet_at_bedside" Type="bit" />
+          <Property Name="mcas_nurse_assisst_completion_NIHSS_exam" Type="bit" />
+          <Property Name="mcas_LOC_following_commands" Type="bit" />
+          <Property Name="mcas_visual_field_patient_looking_examiner_periphery" Type="bit" />
+          <Property Name="mcas_EOM_slow_motion" Type="bit" />
+          <Property Name="mcas_facial_symmetry" Type="bit" />
+          <Property Name="mcas_motor_drift_extensor_drift" Type="bit" />
+          <Property Name="mcas_coordination_stretch_finger" Type="bit" />
+          <Property Name="mcas_sensory_broken_Q_tip" Type="bit" />
+          <Property Name="mcas_sensory_taps_bare_skin" Type="bit" />
+          <Property Name="mcas_neglect_unilaterly_then_bilaterally" Type="bit" />
+          <Property Name="mcas_neglect_primary_sensation_visual_neglect" Type="bit" />
+          <Property Name="mcas_neglect_visual_neglect_exam" Type="bit" />
+          <Property Name="mcas_speech_exam_stroke_assessment_booklet" Type="bit" />
+          <Property Name="mcas_language_exam_repetition_words" Type="bit" />
+          <Property Name="mcas_nursing_verbalize_transfer_patient" Type="bit" />
+          <Property Name="mcas_connectivity_issue" Type="bit" />
+          <Property Name="mcas_is_nav_blast" Type="bit" />
+          <Property Name="mcas_mock_drill_comments" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="nih_stroke_scale">
           <Key>
@@ -1726,6 +1870,24 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="pac_billing_identification_type" Type="int" />
           <Property Name="pac_primary_discharge_diagnosis" Type="varchar(max)" />
         </EntityType>
+        <EntityType Name="premorbid_correspondnce">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="pmc_cas_key" Type="int" />
+          <Property Name="pmc_cas_premorbid_patient_phone" Type="varchar" MaxLength="50" />
+          <Property Name="pmc_cas_premorbid_datetime_of_contact" Type="datetime" />
+          <Property Name="pmc_cas_premorbid_spokewith" Type="int" />
+          <Property Name="pmc_cas_premorbid_comments" Type="nvarchar(max)" />
+          <Property Name="pmc_cas_premorbid_successful_or_unsuccessful" Type="int" />
+          <Property Name="pmc_cas_premorbid_completedby" Type="nvarchar" MaxLength="150" />
+          <Property Name="pmc_cas_patient_satisfaction_video_experience" Type="int" />
+          <Property Name="pmc_cas_patient_satisfaction_communication" Type="int" />
+          <Property Name="pmc_cas_willing_todo_interview" Type="int" />
+          <Property Name="pmc_cas_consent_sent" Type="int" />
+          <Property Name="pmc_cas_consent_received" Type="int" />
+        </EntityType>
         <EntityType Name="quality_goals">
           <Key>
             <PropertyRef Name="qag_key" />
@@ -1765,6 +1927,14 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="rca_rootcause_id" Type="int" />
           <Property Name="rca_completed_date" Type="datetime" />
         </EntityType>
+        <EntityType Name="telecare_counters">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="counter_text" Type="varchar" MaxLength="100" />
+          <Property Name="counter_value" Type="bigint" />
+        </EntityType>
         <EntityType Name="token">
           <Key>
             <PropertyRef Name="tok_key" />
@@ -1800,6 +1970,20 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="ucd_created_by" Type="nvarchar" MaxLength="128" />
           <Property Name="ucd_modified_date" Type="datetime" />
           <Property Name="ucd_modified_by" Type="nvarchar" MaxLength="128" />
+        </EntityType>
+        <EntityType Name="user_access">
+          <Key>
+            <PropertyRef Name="user_key" />
+          </Key>
+          <Property Name="user_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_role_key" Type="nvarchar" MaxLength="128" />
+          <Property Name="user_id" Type="nvarchar" MaxLength="128" />
+          <Property Name="user_com_key" Type="int" />
+          <Property Name="user_isAllowed" Type="bit" Nullable="false" />
+          <Property Name="user_createddate" Type="datetime" />
+          <Property Name="user_createdBy" Type="nvarchar" MaxLength="128" />
+          <Property Name="user_updateddate" Type="datetime" />
+          <Property Name="user_updatedBy" Type="nvarchar" MaxLength="128" />
         </EntityType>
         <EntityType Name="user_login_verify">
           <Key>
@@ -1905,6 +2089,43 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="wcl_error_mail_date" Type="datetime" />
           <Property Name="wcl_re_processed_date" Type="datetime" />
           <Property Name="wcl_request_retry_count" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_facility_physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="view_facility_physician">
+          <Key>
+            <PropertyRef Name="fap_key" />
+            <PropertyRef Name="fap_fac_key" />
+            <PropertyRef Name="fap_user_key" />
+            <PropertyRef Name="fap_is_active" />
+            <PropertyRef Name="fac_name" />
+            <PropertyRef Name="fac_is_active" />
+            <PropertyRef Name="fap_is_on_boarded" />
+            <PropertyRef Name="fac_go_live" />
+          </Key>
+          <Property Name="fap_key" Type="int" Nullable="false" />
+          <Property Name="fap_fac_key" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="fap_user_key" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="fap_is_active" Type="bit" Nullable="false" />
+          <Property Name="fac_name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="fac_is_active" Type="bit" Nullable="false" />
+          <Property Name="fap_is_on_boarded" Type="bit" Nullable="false" />
+          <Property Name="fac_go_live" Type="bit" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="view_user_schedule">
+          <Key>
+            <PropertyRef Name="uss_key" />
+            <PropertyRef Name="uss_user_id" />
+            <PropertyRef Name="IsStrokeAlert" />
+          </Key>
+          <Property Name="uss_key" Type="bigint" Nullable="false" />
+          <Property Name="uss_user_id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="IsStrokeAlert" Type="bit" Nullable="false" />
+          <Property Name="DayNumber" Type="bigint" />
+          <Property Name="TIMEFROM" Type="bigint" />
+          <Property Name="TIMETO" Type="bigint" />
         </EntityType>
         <Association Name="FK_AspNetUsers_Log_AspNetUsers">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
@@ -2352,6 +2573,58 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_mock_case_AspNetUsers">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
+          <End Role="mock_case" Type="Self.mock_case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="mock_case">
+              <PropertyRef Name="mcas_response_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_mock_case_AspNetUsers_Navigator">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
+          <End Role="mock_case" Type="Self.mock_case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="mock_case">
+              <PropertyRef Name="mcas_associate_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_mock_case_AspNetUsers1">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="mock_case" Type="Self.mock_case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="mock_case">
+              <PropertyRef Name="mcas_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_mock_case_facility">
+          <End Role="facility" Type="Self.facility" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="mock_case" Type="Self.mock_case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
+            </Principal>
+            <Dependent Role="mock_case">
+              <PropertyRef Name="mcas_fac_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_nih_stroke_scale_answer_case">
           <End Role="case" Type="Self.case" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -2542,6 +2815,18 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_premorbid_correspondnce_case">
+          <End Role="case" Type="Self.case" Multiplicity="0..1" />
+          <End Role="premorbid_correspondnce" Type="Self.premorbid_correspondnce" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="case">
+              <PropertyRef Name="cas_key" />
+            </Principal>
+            <Dependent Role="premorbid_correspondnce">
+              <PropertyRef Name="pmc_cas_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_quality_goals_facility">
           <End Role="facility" Type="Self.facility" Multiplicity="0..1" />
           <End Role="quality_goals" Type="Self.quality_goals" Multiplicity="*" />
@@ -2698,6 +2983,15 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Parameter Name="isTimeBetween7and12" Type="int" Mode="In" />
           <Parameter Name="SoftSaveGuid" Type="uniqueidentifier" Mode="In" />
         </Function>
+        <Function Name="UspGetAllCaseDataForCCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UspGetAllOnBoarededList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UspGetAllPhyDataForBCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UspGetAllPhyDataForCCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UspGetAllPhysicion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UspGetCaseDataForBCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StartDate" Type="datetime" Mode="In" />
+          <Parameter Name="edate" Type="datetime" Mode="In" />
+        </Function>
         <Function Name="UspGetCWHData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
@@ -2710,6 +3004,15 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
         </Function>
+        <Function Name="UspGetDailyVolimetircdata" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StartDate" Type="datetime" Mode="In" />
+          <Parameter Name="edate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="UspGetForecastData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="StartDate" Type="datetime" Mode="In" />
+          <Parameter Name="edate" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="UspGetForecastDataFOorMOnthly" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="UspGetRCIData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
@@ -2727,6 +3030,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="AspNetUsers_Log" EntityType="Self.AspNetUsers_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers_PasswordReset" EntityType="Self.AspNetUsers_PasswordReset" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="audit_records" EntityType="Self.audit_records" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BCI_ReportData" EntityType="Self.BCI_ReportData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="call_history" EntityType="Self.call_history" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case" EntityType="Self.case" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_assign_history" EntityType="Self.case_assign_history" Schema="dbo" store:Type="Tables" />
@@ -2740,6 +3044,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="case_template_stroke_tpa" EntityType="Self.case_template_stroke_tpa" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_template_telestroke_notpa" EntityType="Self.case_template_telestroke_notpa" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_timestamp" EntityType="Self.case_timestamp" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CCIReport_Data" EntityType="Self.CCIReport_Data" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="component_access" EntityType="Self.component_access" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="components" EntityType="Self.components" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="contact" EntityType="Self.contact" Schema="dbo" store:Type="Tables" />
@@ -2761,8 +3066,10 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="facility_questionnaire_pre_live" EntityType="Self.facility_questionnaire_pre_live" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="facility_rate" EntityType="Self.facility_rate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="firebase_usersemail" EntityType="Self.firebase_usersemail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Forcast_Data" EntityType="Self.Forcast_Data" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="goals_data" EntityType="Self.goals_data" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Hospital_Protocols" EntityType="Self.Hospital_Protocols" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="mock_case" EntityType="Self.mock_case" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="nih_stroke_scale" EntityType="Self.nih_stroke_scale" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="nih_stroke_scale_answer" EntityType="Self.nih_stroke_scale_answer" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="nih_stroke_scale_question" EntityType="Self.nih_stroke_scale_question" Schema="dbo" store:Type="Tables" />
@@ -2780,12 +3087,15 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="physician_status_snooze" EntityType="Self.physician_status_snooze" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="physician_status_snooze_option" EntityType="Self.physician_status_snooze_option" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="post_acute_care" EntityType="Self.post_acute_care" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="premorbid_correspondnce" EntityType="Self.premorbid_correspondnce" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="quality_goals" EntityType="Self.quality_goals" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="rapids_mailbox" EntityType="Self.rapids_mailbox" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="rca_counter_measure" EntityType="Self.rca_counter_measure" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="telecare_counters" EntityType="Self.telecare_counters" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="token" EntityType="Self.token" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ucl" EntityType="Self.ucl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ucl_data" EntityType="Self.ucl_data" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="user_access" EntityType="Self.user_access" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_login_verify" EntityType="Self.user_login_verify" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_schedule" EntityType="Self.user_schedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_schedule_nhalert" EntityType="Self.user_schedule_nhalert" Schema="dbo" store:Type="Tables" />
@@ -2825,6 +3135,28 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
     [MDStaffFacility].[IsLoaded] AS [IsLoaded], 
     [MDStaffFacility].[ImportDateUTC] AS [ImportDateUTC]
     FROM [dbo].[MDStaffFacility] AS [MDStaffFacility]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="view_facility_physician" EntityType="Self.view_facility_physician" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [view_facility_physician].[fap_key] AS [fap_key], 
+    [view_facility_physician].[fap_fac_key] AS [fap_fac_key], 
+    [view_facility_physician].[fap_user_key] AS [fap_user_key], 
+    [view_facility_physician].[fap_is_active] AS [fap_is_active], 
+    [view_facility_physician].[fac_name] AS [fac_name], 
+    [view_facility_physician].[fac_is_active] AS [fac_is_active], 
+    [view_facility_physician].[fap_is_on_boarded] AS [fap_is_on_boarded], 
+    [view_facility_physician].[fac_go_live] AS [fac_go_live]
+    FROM [dbo].[view_facility_physician] AS [view_facility_physician]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="view_user_schedule" EntityType="Self.view_user_schedule" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [view_user_schedule].[uss_key] AS [uss_key], 
+    [view_user_schedule].[uss_user_id] AS [uss_user_id], 
+    [view_user_schedule].[IsStrokeAlert] AS [IsStrokeAlert], 
+    [view_user_schedule].[DayNumber] AS [DayNumber], 
+    [view_user_schedule].[TIMEFROM] AS [TIMEFROM], 
+    [view_user_schedule].[TIMETO] AS [TIMETO]
+    FROM [dbo].[view_user_schedule] AS [view_user_schedule]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_AspNetUsers_Log_AspNetUsers" Association="Self.FK_AspNetUsers_Log_AspNetUsers">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -2966,6 +3298,22 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <End Role="quality_goals" EntitySet="quality_goals" />
             <End Role="goals_data" EntitySet="goals_data" />
           </AssociationSet>
+          <AssociationSet Name="FK_mock_case_AspNetUsers" Association="Self.FK_mock_case_AspNetUsers">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_AspNetUsers_Navigator" Association="Self.FK_mock_case_AspNetUsers_Navigator">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_AspNetUsers1" Association="Self.FK_mock_case_AspNetUsers1">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_facility" Association="Self.FK_mock_case_facility">
+            <End Role="facility" EntitySet="facility" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
           <AssociationSet Name="FK_nih_stroke_scale_answer_case" Association="Self.FK_nih_stroke_scale_answer_case">
             <End Role="case" EntitySet="case" />
             <End Role="nih_stroke_scale_answer" EntitySet="nih_stroke_scale_answer" />
@@ -3025,6 +3373,10 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <AssociationSet Name="FK_post_acute_care_users_AspNetUsers" Association="Self.FK_post_acute_care_users_AspNetUsers">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="post_acute_care" EntitySet="post_acute_care" />
+          </AssociationSet>
+          <AssociationSet Name="FK_premorbid_correspondnce_case" Association="Self.FK_premorbid_correspondnce_case">
+            <End Role="case" EntitySet="case" />
+            <End Role="premorbid_correspondnce" EntitySet="premorbid_correspondnce" />
           </AssociationSet>
           <AssociationSet Name="FK_quality_goals_facility" Association="Self.FK_quality_goals_facility">
             <End Role="facility" EntitySet="facility" />
@@ -3400,6 +3752,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="Hospital_Protocols" EntityType="DataModel.Hospital_Protocols" />
           <EntitySet Name="Onboardeds" EntityType="DataModel.Onboarded" />
           <EntitySet Name="web2campaign_log" EntityType="DataModel.web2campaign_log" />
+
           <EntitySet Name="component_access" EntityType="DataModel.component_access" />
           <EntitySet Name="components" EntityType="DataModel.component" />
           <AssociationSet Name="FK_ComponentAccess_Component_Id" Association="DataModel.FK_ComponentAccess_Component_Id">
@@ -3414,6 +3767,54 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="token" EntitySet="tokens" />
           </AssociationSet>
+          <EntitySet Name="premorbid_correspondnce" EntityType="DataModel.premorbid_correspondnce" />
+          <AssociationSet Name="FK_premorbid_correspondnce_case" Association="DataModel.FK_premorbid_correspondnce_case">
+            <End Role="case" EntitySet="cases" />
+            <End Role="premorbid_correspondnce" EntitySet="premorbid_correspondnce" />
+          </AssociationSet>
+          <EntitySet Name="Forcast_Data" EntityType="DataModel.Forcast_Data" />
+          <FunctionImport Name="UspGetAllPhysicion" ReturnType="Collection(DataModel.UspGetAllPhysicion_Result)" />
+          <FunctionImport Name="UspGetCaseDataForBCI" ReturnType="Collection(DataModel.UspGetCaseDataForBCI_Result)">
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="edate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="UspGetDailyVolimetircdata" ReturnType="Collection(DataModel.UspGetDailyVolimetircdata_Result)">
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="edate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="UspGetForecastData" ReturnType="Collection(DataModel.UspGetForecastData_Result)">
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="edate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="mock_case" EntityType="DataModel.mock_case" />
+          <AssociationSet Name="FK_mock_case_AspNetUsers" Association="DataModel.FK_mock_case_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_AspNetUsers_Navigator" Association="DataModel.FK_mock_case_AspNetUsers_Navigator">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_AspNetUsers1" Association="DataModel.FK_mock_case_AspNetUsers1">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_facility" Association="DataModel.FK_mock_case_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <EntitySet Name="telecare_counters" EntityType="DataModel.telecare_counters" />
+          <EntitySet Name="BCI_ReportData" EntityType="DataModel.BCI_ReportData" />
+          <EntitySet Name="CCIReport_Data" EntityType="DataModel.CCIReport_Data" />
+          <FunctionImport Name="UspGetAllCaseDataForCCI" ReturnType="Collection(DataModel.UspGetAllCaseDataForCCI_Result)" />
+          <FunctionImport Name="UspGetAllOnBoarededList" ReturnType="Collection(DataModel.UspGetAllOnBoarededList_Result)" />
+          <FunctionImport Name="UspGetAllPhyDataForBCI" ReturnType="Collection(DataModel.UspGetAllPhyDataForBCI_Result)" />
+          <FunctionImport Name="UspGetAllPhyDataForCCI" ReturnType="Collection(DataModel.UspGetAllPhyDataForCCI_Result)" />
+          <FunctionImport Name="UspGetForecastDataFOorMOnthly" ReturnType="Collection(DataModel.UspGetForecastDataFOorMOnthly_Result)" />
+          <EntitySet Name="user_access" EntityType="DataModel.user_access" />
+          <EntitySet Name="view_facility_physician" EntityType="DataModel.view_facility_physician" />
+          <EntitySet Name="view_user_schedule" EntityType="DataModel.view_user_schedule" />
+
           </EntityContainer>
         <EntityType Name="alarm_setting">
           <Key>
@@ -5234,6 +5635,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="cas_premorbid_symptoms_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="cas_premorbid_completed_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
           <Property Name="cas_premorbid_completed_date" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="premorbid_correspondnce" Relationship="DataModel.FK_premorbid_correspondnce_case" FromRole="case" ToRole="premorbid_correspondnce" />
         </EntityType>
         <EntityType Name="facility">
           <Key>
@@ -5289,6 +5691,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="fac_system" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="facility_physician" Relationship="DataModel.FK_facility_physician_facility" FromRole="facility" ToRole="facility_physician" />
           <Property Name="fac_ai_software_ddl" Type="Int32" />
+          <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_facility" FromRole="facility" ToRole="mock_case" />
         </EntityType>
         <Association Name="FK_case_assign_history_case">
           <End Type="DataModel.case" Role="case" Multiplicity="1" />
@@ -5708,6 +6111,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="aps_session_timeout_in_minutes" Type="Int64" />
           <Property Name="aps_two_factor_code_expiry_timeout_in_minutes" Type="Int64" />
           <Property Name="aps_enable_logout_from_other_devices" Type="Boolean" Nullable="false" />
+          <Property Name="aps_enable_pending_cases_notifications" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="user_login_verify">
           <Key>
@@ -5816,8 +6220,13 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <NavigationProperty Name="user_login_verify" Relationship="DataModel.FK_user_login_verify_User_Id" FromRole="AspNetUser" ToRole="user_login_verify" />
           <NavigationProperty Name="user_schedule_nhalert" Relationship="DataModel.FK_user_schedule_nhalert_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_nhalert" />
           <NavigationProperty Name="user_schedule_sleep" Relationship="DataModel.FK_user_schedule_sleep_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_sleep" />
+
           <NavigationProperty Name="tokens" Relationship="DataModel.FK_token_AspNetUsers" FromRole="AspNetUser" ToRole="token" />
-        </EntityType>
+          <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="AspNetUser" ToRole="mock_case" />
+          <NavigationProperty Name="mock_case1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="AspNetUser" ToRole="mock_case" />
+          <NavigationProperty Name="mock_case2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="AspNetUser" ToRole="mock_case" />
+          </EntityType>
+
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -6160,6 +6569,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="wcl_re_processed_date" Type="DateTime" Precision="3" />
           <Property Name="wcl_request_retry_count" Type="Int32" />
         </EntityType>
+
         <EntityType Name="component_access">
           <Key>
             <PropertyRef Name="cac_key" />
@@ -6238,6 +6648,350 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="premorbid_correspondnce">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="pmc_cas_key" Type="Int32" />
+          <Property Name="pmc_cas_premorbid_patient_phone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="pmc_cas_premorbid_datetime_of_contact" Type="DateTime" Precision="3" />
+          <Property Name="pmc_cas_premorbid_spokewith" Type="Int32" />
+          <Property Name="pmc_cas_premorbid_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="pmc_cas_premorbid_successful_or_unsuccessful" Type="Int32" />
+          <Property Name="pmc_cas_premorbid_completedby" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="pmc_cas_patient_satisfaction_video_experience" Type="Int32" />
+          <Property Name="pmc_cas_patient_satisfaction_communication" Type="Int32" />
+          <Property Name="pmc_cas_willing_todo_interview" Type="Int32" />
+          <Property Name="pmc_cas_consent_sent" Type="Int32" />
+          <Property Name="pmc_cas_consent_received" Type="Int32" />
+          <NavigationProperty Name="case" Relationship="DataModel.FK_premorbid_correspondnce_case" FromRole="premorbid_correspondnce" ToRole="case" />
+        </EntityType>
+        <Association Name="FK_premorbid_correspondnce_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="0..1" />
+          <End Type="DataModel.premorbid_correspondnce" Role="premorbid_correspondnce" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="case">
+              <PropertyRef Name="cas_key" />
+            </Principal>
+            <Dependent Role="premorbid_correspondnce">
+              <PropertyRef Name="pmc_cas_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Forcast_Data">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Fac_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Fac_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Month_Name" Type="DateTime" Precision="3" />
+          <Property Name="Month_Prediction" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Created_Date" Type="DateTime" Precision="3" />
+        </EntityType>
+        <ComplexType Name="UspGetAllPhysicion_Result">
+          <Property Type="Int32" Name="fap_key" Nullable="false" />
+          <Property Type="Guid" Name="fap_fac_key" Nullable="false" />
+          <Property Type="String" Name="fap_user_key" Nullable="false" MaxLength="128" />
+          <Property Type="Boolean" Name="fap_is_on_boarded" Nullable="false" />
+          <Property Type="String" Name="Physician_Name" Nullable="false" MaxLength="513" />
+        </ComplexType>
+        <ComplexType Name="UspGetCaseDataForBCI_Result">
+          <Property Type="Guid" Name="cas_fac_key" Nullable="false" />
+          <Property Type="DateTime" Name="cas_metric_video_start_time" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="cas_metric_video_end_time" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="UspGetDailyVolimetircdata_Result">
+          <Property Type="Guid" Name="cas_fac_key" Nullable="false" />
+          <Property Type="DateTime" Name="cas_response_ts_notification" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="UspGetForecastData_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="Fac_Id" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="Fac_Name" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Month_Name" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Month_Prediction" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Created_Date" Nullable="true" Precision="23" />
+        </ComplexType>
+        <EntityType Name="mock_case">
+          <Key>
+            <PropertyRef Name="mcas_key" />
+          </Key>
+          <Property Name="mcas_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="mcas_ctp_key" Type="Int32" Nullable="false" />
+          <Property Name="mcas_associate_id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_fac_key" Type="Guid" Nullable="false" />
+          <Property Name="mcas_callback" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_cart" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_cst_key" Type="Int32" Nullable="false" />
+          <Property Name="mcas_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_patient" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_case_number" Type="Int64" />
+          <Property Name="mcas_response_date_consult" Type="DateTime" Precision="3" />
+          <Property Name="mcas_response_reviewer" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_response_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_response_response_time" Type="DateTime" Precision="3" />
+          <Property Name="mcas_response_ts_notification" Type="DateTime" Precision="3" />
+          <Property Name="mcas_response_time_physician" Type="DateTime" Precision="3" />
+          <Property Name="mcas_response_first_atempt" Type="DateTime" Precision="3" />
+          <Property Name="mcas_response_case_research" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_response_technical_issues" Type="Int32" Nullable="false" />
+          <Property Name="mcas_physician_concurrent_alerts" Type="Int32" Nullable="false" />
+          <Property Name="mcas_response_nav_to_ts" Type="Int32" Nullable="false" />
+          <Property Name="mcas_response_miscommunication" Type="Int32" Nullable="false" />
+          <Property Name="mcas_response_pulled_rounding" Type="Int32" Nullable="false" />
+          <Property Name="mcas_response_inaccurate_eta" Type="Int32" Nullable="false" />
+          <Property Name="mcas_response_physician_blast" Type="Int32" Nullable="false" />
+          <Property Name="mcas_response_rca_tracker" Type="Int32" Nullable="false" />
+          <Property Name="mcas_response_review_initiated" Type="Int32" Nullable="false" />
+          <Property Name="mcas_response_case_number" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_response_tpa_to_minute" Type="Int32" Nullable="false" />
+          <Property Name="mcas_response_door_to_needle" Type="Int32" Nullable="false" />
+          <Property Name="mcas_patient_type" Type="Int32" />
+          <Property Name="mcas_eta" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_status_assign_date" Type="DateTime" Precision="3" />
+          <Property Name="mcas_ani" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_dnis" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_time_stamp" Type="DateTime" Precision="3" />
+          <Property Name="mcas_call_id" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_callback_extension" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_caller" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_is_active" Type="Boolean" Nullable="false" />
+          <Property Name="mcas_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_created_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_created_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="mcas_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_modified_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_modified_date" Type="DateTime" Precision="3" />
+          <Property Name="mcas_identification_type" Type="Int32" />
+          <Property Name="mcas_identification_number" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_pulled_from_rounding" Type="Boolean" Nullable="false" />
+          <Property Name="mcas_last_4_of_ssn" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_referring_physician" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_follow_up_date" Type="DateTime" Precision="0" />
+          <Property Name="mcas_billing_dob" Type="DateTime" Precision="3" />
+          <Property Name="mcas_physician_assign_date" Type="DateTime" Precision="3" />
+          <Property Name="mcas_followup_case_key" Type="Int32" />
+          <Property Name="mcas_batch_id" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_is_flagged" Type="Boolean" Nullable="false" />
+          <Property Name="mcas_phy_technical_issue_date_est" Type="DateTime" Precision="3" />
+          <Property Name="mcas_phy_technical_issue_date" Type="DateTime" Precision="3" />
+          <Property Name="mcas_phy_has_technical_issue" Type="Boolean" Nullable="false" />
+          <Property Name="mcas_triage_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_call_type" Type="Int32" />
+          <Property Name="mcas_callback_response_time_est" Type="DateTime" Precision="3" />
+          <Property Name="mcas_callback_response_time" Type="DateTime" Precision="3" />
+          <Property Name="mcas_caller_source_key" Type="Int32" />
+          <Property Name="mcas_caller_source_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_is_partial_update" Type="Boolean" Nullable="false" />
+          <Property Name="mcas_is_flagged_dashboard" Type="Boolean" Nullable="false" />
+          <Property Name="mcas_cart_location_key" Type="Int32" />
+          <Property Name="mcas_cart_location_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_work_flow_ids" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_qps_assigned" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_cancelled_type" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_cancelled_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_datetime_of_contact" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_typeof_correspondence" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_contact_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_callback_response_by" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_callback_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="mcas_navigator_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_rejection_type" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_rejection_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_is_flagged_physician" Type="Boolean" Nullable="false" />
+          <Property Name="mcas_nurse_identify_members_in_room" Type="Boolean" />
+          <Property Name="mcas_nursing_verbalize_pre_CT_process" Type="Boolean" />
+          <Property Name="mcas_nursing_verbalize_post_CT_process" Type="Boolean" />
+          <Property Name="mcas_nursing_demonstrate_positioninig_cart" Type="Boolean" />
+          <Property Name="mcas_NIHSS_assessment_booklet_at_bedside" Type="Boolean" />
+          <Property Name="mcas_nurse_assisst_completion_NIHSS_exam" Type="Boolean" />
+          <Property Name="mcas_LOC_following_commands" Type="Boolean" />
+          <Property Name="mcas_visual_field_patient_looking_examiner_periphery" Type="Boolean" />
+          <Property Name="mcas_EOM_slow_motion" Type="Boolean" />
+          <Property Name="mcas_facial_symmetry" Type="Boolean" />
+          <Property Name="mcas_motor_drift_extensor_drift" Type="Boolean" />
+          <Property Name="mcas_coordination_stretch_finger" Type="Boolean" />
+          <Property Name="mcas_sensory_broken_Q_tip" Type="Boolean" />
+          <Property Name="mcas_sensory_taps_bare_skin" Type="Boolean" />
+          <Property Name="mcas_neglect_unilaterly_then_bilaterally" Type="Boolean" />
+          <Property Name="mcas_neglect_primary_sensation_visual_neglect" Type="Boolean" />
+          <Property Name="mcas_neglect_visual_neglect_exam" Type="Boolean" />
+          <Property Name="mcas_speech_exam_stroke_assessment_booklet" Type="Boolean" />
+          <Property Name="mcas_language_exam_repetition_words" Type="Boolean" />
+          <Property Name="mcas_nursing_verbalize_transfer_patient" Type="Boolean" />
+          <Property Name="mcas_connectivity_issue" Type="Boolean" />
+          <Property Name="mcas_is_nav_blast" Type="Boolean" />
+          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="mock_case" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="mock_case" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="mock_case" ToRole="AspNetUser" />
+          <NavigationProperty Name="facility" Relationship="DataModel.FK_mock_case_facility" FromRole="mock_case" ToRole="facility" />
+          <Property Name="mcas_mock_drill_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK_mock_case_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="DataModel.mock_case" Role="mock_case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="mock_case">
+              <PropertyRef Name="mcas_response_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_mock_case_AspNetUsers_Navigator">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="DataModel.mock_case" Role="mock_case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="mock_case">
+              <PropertyRef Name="mcas_associate_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_mock_case_AspNetUsers1">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.mock_case" Role="mock_case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="mock_case">
+              <PropertyRef Name="mcas_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_mock_case_facility">
+          <End Type="DataModel.facility" Role="facility" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.mock_case" Role="mock_case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
+            </Principal>
+            <Dependent Role="mock_case">
+              <PropertyRef Name="mcas_fac_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="telecare_counters">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="counter_text" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="counter_value" Type="Int64" />
+        </EntityType>
+        <EntityType Name="BCI_ReportData">
+          <Key>
+            <PropertyRef Name="BCI_ID" />
+          </Key>
+          <Property Name="BCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Phy_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Phy_Bci_Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Phy_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="CCIReport_Data">
+          <Key>
+            <PropertyRef Name="CCI_ID" />
+          </Key>
+          <Property Name="CCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Physician_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Physician_CCI" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Month" Type="DateTime" Precision="3" />
+          <Property Name="Date" Type="DateTime" Precision="3" />
+          <Property Name="Physician_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <ComplexType Name="UspGetAllCaseDataForCCI_Result">
+          <Property Type="String" Name="cas_phy_key" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="cas_fac_key" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="cas_metric_video_start_time" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="cas_metric_video_end_time" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="UspGetAllOnBoarededList_Result">
+          <Property Type="Int32" Name="fap_key" Nullable="false" />
+          <Property Type="Guid" Name="fap_fac_key" Nullable="false" />
+          <Property Type="String" Name="fap_user_key" Nullable="false" MaxLength="128" />
+          <Property Type="Boolean" Name="fap_is_on_boarded" Nullable="false" />
+          <Property Type="String" Name="Physician_Name" Nullable="false" MaxLength="513" />
+        </ComplexType>
+        <ComplexType Name="UspGetAllPhyDataForBCI_Result">
+          <Property Type="Int32" Name="BCI_ID" Nullable="false" />
+          <Property Type="String" Name="Phy_Name" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="Phy_Bci_Value" Nullable="true" MaxLength="100" />
+        </ComplexType>
+        <ComplexType Name="UspGetAllPhyDataForCCI_Result">
+          <Property Type="Int32" Name="CCI_ID" Nullable="false" />
+          <Property Type="String" Name="Physician_Id" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="Physician_CCI" Nullable="true" MaxLength="50" />
+          <Property Type="DateTime" Name="Month" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="Date" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Physician_Name" Nullable="true" MaxLength="100" />
+        </ComplexType>
+        <ComplexType Name="UspGetForecastDataFOorMOnthly_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="Fac_Id" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="Fac_Name" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Month_Name" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Month_Prediction" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Created_Date" Nullable="true" Precision="23" />
+        </ComplexType>
+        <EntityType Name="user_access">
+          <Key>
+            <PropertyRef Name="user_key" />
+          </Key>
+          <Property Name="user_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_role_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="user_id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="user_com_key" Type="Int32" />
+          <Property Name="user_isAllowed" Type="Boolean" Nullable="false" />
+          <Property Name="user_createddate" Type="DateTime" Precision="3" />
+          <Property Name="user_createdBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="user_updateddate" Type="DateTime" Precision="3" />
+          <Property Name="user_updatedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="view_facility_physician">
+          <Key>
+            <PropertyRef Name="fap_key" />
+            <PropertyRef Name="fap_fac_key" />
+            <PropertyRef Name="fap_user_key" />
+            <PropertyRef Name="fap_is_active" />
+            <PropertyRef Name="fac_name" />
+            <PropertyRef Name="fac_is_active" />
+            <PropertyRef Name="fap_is_on_boarded" />
+            <PropertyRef Name="fac_go_live" />
+          </Key>
+          <Property Name="fap_key" Type="Int32" Nullable="false" />
+          <Property Name="fap_fac_key" Type="Guid" Nullable="false" />
+          <Property Name="fap_user_key" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="fap_is_active" Type="Boolean" Nullable="false" />
+          <Property Name="fac_name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="fac_is_active" Type="Boolean" Nullable="false" />
+          <Property Name="fap_is_on_boarded" Type="Boolean" Nullable="false" />
+          <Property Name="fac_go_live" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="view_user_schedule">
+          <Key>
+            <PropertyRef Name="uss_key" />
+            <PropertyRef Name="uss_user_id" />
+            <PropertyRef Name="IsStrokeAlert" />
+          </Key>
+          <Property Name="uss_key" Type="Int64" Nullable="false" />
+          <Property Name="uss_user_id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsStrokeAlert" Type="Boolean" Nullable="false" />
+          <Property Name="DayNumber" Type="Int64" />
+          <Property Name="TIMEFROM" Type="Int64" />
+          <Property Name="TIMETO" Type="Int64" />
+        </EntityType>
+
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -8022,6 +8776,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="application_setting">
             <EntityTypeMapping TypeName="DataModel.application_setting">
               <MappingFragment StoreEntitySet="application_setting">
+                <ScalarProperty Name="aps_enable_pending_cases_notifications" ColumnName="aps_enable_pending_cases_notifications" />
                 <ScalarProperty Name="aps_enable_logout_from_other_devices" ColumnName="aps_enable_logout_from_other_devices" />
                 <ScalarProperty Name="aps_two_factor_code_expiry_timeout_in_minutes" ColumnName="aps_two_factor_code_expiry_timeout_in_minutes" />
                 <ScalarProperty Name="aps_session_timeout_in_minutes" ColumnName="aps_session_timeout_in_minutes" />
@@ -8231,6 +8986,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           <EntitySetMapping Name="component_access">
             <EntityTypeMapping TypeName="DataModel.component_access">
               <MappingFragment StoreEntitySet="component_access">
@@ -8289,6 +9045,318 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
+          <EntitySetMapping Name="premorbid_correspondnce">
+            <EntityTypeMapping TypeName="DataModel.premorbid_correspondnce">
+              <MappingFragment StoreEntitySet="premorbid_correspondnce">
+                <ScalarProperty Name="pmc_cas_consent_received" ColumnName="pmc_cas_consent_received" />
+                <ScalarProperty Name="pmc_cas_consent_sent" ColumnName="pmc_cas_consent_sent" />
+                <ScalarProperty Name="pmc_cas_willing_todo_interview" ColumnName="pmc_cas_willing_todo_interview" />
+                <ScalarProperty Name="pmc_cas_patient_satisfaction_communication" ColumnName="pmc_cas_patient_satisfaction_communication" />
+                <ScalarProperty Name="pmc_cas_patient_satisfaction_video_experience" ColumnName="pmc_cas_patient_satisfaction_video_experience" />
+                <ScalarProperty Name="pmc_cas_premorbid_completedby" ColumnName="pmc_cas_premorbid_completedby" />
+                <ScalarProperty Name="pmc_cas_premorbid_successful_or_unsuccessful" ColumnName="pmc_cas_premorbid_successful_or_unsuccessful" />
+                <ScalarProperty Name="pmc_cas_premorbid_comments" ColumnName="pmc_cas_premorbid_comments" />
+                <ScalarProperty Name="pmc_cas_premorbid_spokewith" ColumnName="pmc_cas_premorbid_spokewith" />
+                <ScalarProperty Name="pmc_cas_premorbid_datetime_of_contact" ColumnName="pmc_cas_premorbid_datetime_of_contact" />
+                <ScalarProperty Name="pmc_cas_premorbid_patient_phone" ColumnName="pmc_cas_premorbid_patient_phone" />
+                <ScalarProperty Name="pmc_cas_key" ColumnName="pmc_cas_key" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Forcast_Data">
+            <EntityTypeMapping TypeName="DataModel.Forcast_Data">
+              <MappingFragment StoreEntitySet="Forcast_Data">
+                <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
+                <ScalarProperty Name="Month_Prediction" ColumnName="Month_Prediction" />
+                <ScalarProperty Name="Month_Name" ColumnName="Month_Name" />
+                <ScalarProperty Name="Fac_Name" ColumnName="Fac_Name" />
+                <ScalarProperty Name="Fac_Id" ColumnName="Fac_Id" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllPhysicion" FunctionName="DataModel.Store.UspGetAllPhysicion">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllPhysicion_Result">
+                <ScalarProperty Name="fap_key" ColumnName="fap_key" />
+                <ScalarProperty Name="fap_fac_key" ColumnName="fap_fac_key" />
+                <ScalarProperty Name="fap_user_key" ColumnName="fap_user_key" />
+                <ScalarProperty Name="fap_is_on_boarded" ColumnName="fap_is_on_boarded" />
+                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetCaseDataForBCI" FunctionName="DataModel.Store.UspGetCaseDataForBCI">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetCaseDataForBCI_Result">
+                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
+                <ScalarProperty Name="cas_metric_video_start_time" ColumnName="cas_metric_video_start_time" />
+                <ScalarProperty Name="cas_metric_video_end_time" ColumnName="cas_metric_video_end_time" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetDailyVolimetircdata" FunctionName="DataModel.Store.UspGetDailyVolimetircdata">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetDailyVolimetircdata_Result">
+                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
+                <ScalarProperty Name="cas_response_ts_notification" ColumnName="cas_response_ts_notification" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetForecastData" FunctionName="DataModel.Store.UspGetForecastData">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetForecastData_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Fac_Id" ColumnName="Fac_Id" />
+                <ScalarProperty Name="Fac_Name" ColumnName="Fac_Name" />
+                <ScalarProperty Name="Month_Name" ColumnName="Month_Name" />
+                <ScalarProperty Name="Month_Prediction" ColumnName="Month_Prediction" />
+                <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="mock_case">
+            <EntityTypeMapping TypeName="DataModel.mock_case">
+              <MappingFragment StoreEntitySet="mock_case">
+                <ScalarProperty Name="mcas_mock_drill_comments" ColumnName="mcas_mock_drill_comments" />
+                <ScalarProperty Name="mcas_is_nav_blast" ColumnName="mcas_is_nav_blast" />
+                <ScalarProperty Name="mcas_connectivity_issue" ColumnName="mcas_connectivity_issue" />
+                <ScalarProperty Name="mcas_nursing_verbalize_transfer_patient" ColumnName="mcas_nursing_verbalize_transfer_patient" />
+                <ScalarProperty Name="mcas_language_exam_repetition_words" ColumnName="mcas_language_exam_repetition_words" />
+                <ScalarProperty Name="mcas_speech_exam_stroke_assessment_booklet" ColumnName="mcas_speech_exam_stroke_assessment_booklet" />
+                <ScalarProperty Name="mcas_neglect_visual_neglect_exam" ColumnName="mcas_neglect_visual_neglect_exam" />
+                <ScalarProperty Name="mcas_neglect_primary_sensation_visual_neglect" ColumnName="mcas_neglect_primary_sensation_visual_neglect" />
+                <ScalarProperty Name="mcas_neglect_unilaterly_then_bilaterally" ColumnName="mcas_neglect_unilaterly_then_bilaterally" />
+                <ScalarProperty Name="mcas_sensory_taps_bare_skin" ColumnName="mcas_sensory_taps_bare_skin" />
+                <ScalarProperty Name="mcas_sensory_broken_Q_tip" ColumnName="mcas_sensory_broken_Q_tip" />
+                <ScalarProperty Name="mcas_coordination_stretch_finger" ColumnName="mcas_coordination_stretch_finger" />
+                <ScalarProperty Name="mcas_motor_drift_extensor_drift" ColumnName="mcas_motor_drift_extensor_drift" />
+                <ScalarProperty Name="mcas_facial_symmetry" ColumnName="mcas_facial_symmetry" />
+                <ScalarProperty Name="mcas_EOM_slow_motion" ColumnName="mcas_EOM_slow_motion" />
+                <ScalarProperty Name="mcas_visual_field_patient_looking_examiner_periphery" ColumnName="mcas_visual_field_patient_looking_examiner_periphery" />
+                <ScalarProperty Name="mcas_LOC_following_commands" ColumnName="mcas_LOC_following_commands" />
+                <ScalarProperty Name="mcas_nurse_assisst_completion_NIHSS_exam" ColumnName="mcas_nurse_assisst_completion_NIHSS_exam" />
+                <ScalarProperty Name="mcas_NIHSS_assessment_booklet_at_bedside" ColumnName="mcas_NIHSS_assessment_booklet_at_bedside" />
+                <ScalarProperty Name="mcas_nursing_demonstrate_positioninig_cart" ColumnName="mcas_nursing_demonstrate_positioninig_cart" />
+                <ScalarProperty Name="mcas_nursing_verbalize_post_CT_process" ColumnName="mcas_nursing_verbalize_post_CT_process" />
+                <ScalarProperty Name="mcas_nursing_verbalize_pre_CT_process" ColumnName="mcas_nursing_verbalize_pre_CT_process" />
+                <ScalarProperty Name="mcas_nurse_identify_members_in_room" ColumnName="mcas_nurse_identify_members_in_room" />
+                <ScalarProperty Name="mcas_is_flagged_physician" ColumnName="mcas_is_flagged_physician" />
+                <ScalarProperty Name="mcas_rejection_text" ColumnName="mcas_rejection_text" />
+                <ScalarProperty Name="mcas_rejection_type" ColumnName="mcas_rejection_type" />
+                <ScalarProperty Name="mcas_navigator_notes" ColumnName="mcas_navigator_notes" />
+                <ScalarProperty Name="mcas_callback_notes" ColumnName="mcas_callback_notes" />
+                <ScalarProperty Name="mcas_callback_response_by" ColumnName="mcas_callback_response_by" />
+                <ScalarProperty Name="mcas_contact_comments" ColumnName="mcas_contact_comments" />
+                <ScalarProperty Name="mcas_typeof_correspondence" ColumnName="mcas_typeof_correspondence" />
+                <ScalarProperty Name="mcas_datetime_of_contact" ColumnName="mcas_datetime_of_contact" />
+                <ScalarProperty Name="mcas_cancelled_text" ColumnName="mcas_cancelled_text" />
+                <ScalarProperty Name="mcas_cancelled_type" ColumnName="mcas_cancelled_type" />
+                <ScalarProperty Name="mcas_qps_assigned" ColumnName="mcas_qps_assigned" />
+                <ScalarProperty Name="mcas_work_flow_ids" ColumnName="mcas_work_flow_ids" />
+                <ScalarProperty Name="mcas_cart_location_text" ColumnName="mcas_cart_location_text" />
+                <ScalarProperty Name="mcas_cart_location_key" ColumnName="mcas_cart_location_key" />
+                <ScalarProperty Name="mcas_is_flagged_dashboard" ColumnName="mcas_is_flagged_dashboard" />
+                <ScalarProperty Name="mcas_is_partial_update" ColumnName="mcas_is_partial_update" />
+                <ScalarProperty Name="mcas_caller_source_text" ColumnName="mcas_caller_source_text" />
+                <ScalarProperty Name="mcas_caller_source_key" ColumnName="mcas_caller_source_key" />
+                <ScalarProperty Name="mcas_callback_response_time" ColumnName="mcas_callback_response_time" />
+                <ScalarProperty Name="mcas_callback_response_time_est" ColumnName="mcas_callback_response_time_est" />
+                <ScalarProperty Name="mcas_call_type" ColumnName="mcas_call_type" />
+                <ScalarProperty Name="mcas_triage_notes" ColumnName="mcas_triage_notes" />
+                <ScalarProperty Name="mcas_phy_has_technical_issue" ColumnName="mcas_phy_has_technical_issue" />
+                <ScalarProperty Name="mcas_phy_technical_issue_date" ColumnName="mcas_phy_technical_issue_date" />
+                <ScalarProperty Name="mcas_phy_technical_issue_date_est" ColumnName="mcas_phy_technical_issue_date_est" />
+                <ScalarProperty Name="mcas_is_flagged" ColumnName="mcas_is_flagged" />
+                <ScalarProperty Name="mcas_batch_id" ColumnName="mcas_batch_id" />
+                <ScalarProperty Name="mcas_followup_case_key" ColumnName="mcas_followup_case_key" />
+                <ScalarProperty Name="mcas_physician_assign_date" ColumnName="mcas_physician_assign_date" />
+                <ScalarProperty Name="mcas_billing_dob" ColumnName="mcas_billing_dob" />
+                <ScalarProperty Name="mcas_follow_up_date" ColumnName="mcas_follow_up_date" />
+                <ScalarProperty Name="mcas_referring_physician" ColumnName="mcas_referring_physician" />
+                <ScalarProperty Name="mcas_last_4_of_ssn" ColumnName="mcas_last_4_of_ssn" />
+                <ScalarProperty Name="mcas_pulled_from_rounding" ColumnName="mcas_pulled_from_rounding" />
+                <ScalarProperty Name="mcas_identification_number" ColumnName="mcas_identification_number" />
+                <ScalarProperty Name="mcas_identification_type" ColumnName="mcas_identification_type" />
+                <ScalarProperty Name="mcas_modified_date" ColumnName="mcas_modified_date" />
+                <ScalarProperty Name="mcas_modified_by_name" ColumnName="mcas_modified_by_name" />
+                <ScalarProperty Name="mcas_modified_by" ColumnName="mcas_modified_by" />
+                <ScalarProperty Name="mcas_created_date" ColumnName="mcas_created_date" />
+                <ScalarProperty Name="mcas_created_by_name" ColumnName="mcas_created_by_name" />
+                <ScalarProperty Name="mcas_created_by" ColumnName="mcas_created_by" />
+                <ScalarProperty Name="mcas_is_active" ColumnName="mcas_is_active" />
+                <ScalarProperty Name="mcas_caller" ColumnName="mcas_caller" />
+                <ScalarProperty Name="mcas_callback_extension" ColumnName="mcas_callback_extension" />
+                <ScalarProperty Name="mcas_call_id" ColumnName="mcas_call_id" />
+                <ScalarProperty Name="mcas_time_stamp" ColumnName="mcas_time_stamp" />
+                <ScalarProperty Name="mcas_dnis" ColumnName="mcas_dnis" />
+                <ScalarProperty Name="mcas_ani" ColumnName="mcas_ani" />
+                <ScalarProperty Name="mcas_status_assign_date" ColumnName="mcas_status_assign_date" />
+                <ScalarProperty Name="mcas_eta" ColumnName="mcas_eta" />
+                <ScalarProperty Name="mcas_patient_type" ColumnName="mcas_patient_type" />
+                <ScalarProperty Name="mcas_response_door_to_needle" ColumnName="mcas_response_door_to_needle" />
+                <ScalarProperty Name="mcas_response_tpa_to_minute" ColumnName="mcas_response_tpa_to_minute" />
+                <ScalarProperty Name="mcas_response_case_number" ColumnName="mcas_response_case_number" />
+                <ScalarProperty Name="mcas_response_review_initiated" ColumnName="mcas_response_review_initiated" />
+                <ScalarProperty Name="mcas_response_rca_tracker" ColumnName="mcas_response_rca_tracker" />
+                <ScalarProperty Name="mcas_response_physician_blast" ColumnName="mcas_response_physician_blast" />
+                <ScalarProperty Name="mcas_response_inaccurate_eta" ColumnName="mcas_response_inaccurate_eta" />
+                <ScalarProperty Name="mcas_response_pulled_rounding" ColumnName="mcas_response_pulled_rounding" />
+                <ScalarProperty Name="mcas_response_miscommunication" ColumnName="mcas_response_miscommunication" />
+                <ScalarProperty Name="mcas_response_nav_to_ts" ColumnName="mcas_response_nav_to_ts" />
+                <ScalarProperty Name="mcas_physician_concurrent_alerts" ColumnName="mcas_physician_concurrent_alerts" />
+                <ScalarProperty Name="mcas_response_technical_issues" ColumnName="mcas_response_technical_issues" />
+                <ScalarProperty Name="mcas_response_case_research" ColumnName="mcas_response_case_research" />
+                <ScalarProperty Name="mcas_response_first_atempt" ColumnName="mcas_response_first_atempt" />
+                <ScalarProperty Name="mcas_response_time_physician" ColumnName="mcas_response_time_physician" />
+                <ScalarProperty Name="mcas_response_ts_notification" ColumnName="mcas_response_ts_notification" />
+                <ScalarProperty Name="mcas_response_response_time" ColumnName="mcas_response_response_time" />
+                <ScalarProperty Name="mcas_response_phy_key" ColumnName="mcas_response_phy_key" />
+                <ScalarProperty Name="mcas_response_reviewer" ColumnName="mcas_response_reviewer" />
+                <ScalarProperty Name="mcas_response_date_consult" ColumnName="mcas_response_date_consult" />
+                <ScalarProperty Name="mcas_case_number" ColumnName="mcas_case_number" />
+                <ScalarProperty Name="mcas_patient" ColumnName="mcas_patient" />
+                <ScalarProperty Name="mcas_notes" ColumnName="mcas_notes" />
+                <ScalarProperty Name="mcas_cst_key" ColumnName="mcas_cst_key" />
+                <ScalarProperty Name="mcas_phy_key" ColumnName="mcas_phy_key" />
+                <ScalarProperty Name="mcas_cart" ColumnName="mcas_cart" />
+                <ScalarProperty Name="mcas_callback" ColumnName="mcas_callback" />
+                <ScalarProperty Name="mcas_fac_key" ColumnName="mcas_fac_key" />
+                <ScalarProperty Name="mcas_associate_id" ColumnName="mcas_associate_id" />
+                <ScalarProperty Name="mcas_ctp_key" ColumnName="mcas_ctp_key" />
+                <ScalarProperty Name="mcas_key" ColumnName="mcas_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="telecare_counters">
+            <EntityTypeMapping TypeName="DataModel.telecare_counters">
+              <MappingFragment StoreEntitySet="telecare_counters">
+                <ScalarProperty Name="counter_value" ColumnName="counter_value" />
+                <ScalarProperty Name="counter_text" ColumnName="counter_text" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BCI_ReportData">
+            <EntityTypeMapping TypeName="DataModel.BCI_ReportData">
+              <MappingFragment StoreEntitySet="BCI_ReportData">
+                <ScalarProperty Name="Phy_Id" ColumnName="Phy_Id" />
+                <ScalarProperty Name="Phy_Bci_Value" ColumnName="Phy_Bci_Value" />
+                <ScalarProperty Name="Phy_Name" ColumnName="Phy_Name" />
+                <ScalarProperty Name="BCI_ID" ColumnName="BCI_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CCIReport_Data">
+            <EntityTypeMapping TypeName="DataModel.CCIReport_Data">
+              <MappingFragment StoreEntitySet="CCIReport_Data">
+                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="Physician_CCI" ColumnName="Physician_CCI" />
+                <ScalarProperty Name="Physician_Id" ColumnName="Physician_Id" />
+                <ScalarProperty Name="CCI_ID" ColumnName="CCI_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllCaseDataForCCI" FunctionName="DataModel.Store.UspGetAllCaseDataForCCI">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllCaseDataForCCI_Result">
+                <ScalarProperty Name="cas_phy_key" ColumnName="cas_phy_key" />
+                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
+                <ScalarProperty Name="cas_metric_video_start_time" ColumnName="cas_metric_video_start_time" />
+                <ScalarProperty Name="cas_metric_video_end_time" ColumnName="cas_metric_video_end_time" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllOnBoarededList" FunctionName="DataModel.Store.UspGetAllOnBoarededList">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllOnBoarededList_Result">
+                <ScalarProperty Name="fap_key" ColumnName="fap_key" />
+                <ScalarProperty Name="fap_fac_key" ColumnName="fap_fac_key" />
+                <ScalarProperty Name="fap_user_key" ColumnName="fap_user_key" />
+                <ScalarProperty Name="fap_is_on_boarded" ColumnName="fap_is_on_boarded" />
+                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllPhyDataForBCI" FunctionName="DataModel.Store.UspGetAllPhyDataForBCI">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllPhyDataForBCI_Result">
+                <ScalarProperty Name="BCI_ID" ColumnName="BCI_ID" />
+                <ScalarProperty Name="Phy_Name" ColumnName="Phy_Name" />
+                <ScalarProperty Name="Phy_Bci_Value" ColumnName="Phy_Bci_Value" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllPhyDataForCCI" FunctionName="DataModel.Store.UspGetAllPhyDataForCCI">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllPhyDataForCCI_Result">
+                <ScalarProperty Name="CCI_ID" ColumnName="CCI_ID" />
+                <ScalarProperty Name="Physician_Id" ColumnName="Physician_Id" />
+                <ScalarProperty Name="Physician_CCI" ColumnName="Physician_CCI" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetForecastDataFOorMOnthly" FunctionName="DataModel.Store.UspGetForecastDataFOorMOnthly">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetForecastDataFOorMOnthly_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Fac_Id" ColumnName="Fac_Id" />
+                <ScalarProperty Name="Fac_Name" ColumnName="Fac_Name" />
+                <ScalarProperty Name="Month_Name" ColumnName="Month_Name" />
+                <ScalarProperty Name="Month_Prediction" ColumnName="Month_Prediction" />
+                <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="user_access">
+            <EntityTypeMapping TypeName="DataModel.user_access">
+              <MappingFragment StoreEntitySet="user_access">
+                <ScalarProperty Name="user_updatedBy" ColumnName="user_updatedBy" />
+                <ScalarProperty Name="user_updateddate" ColumnName="user_updateddate" />
+                <ScalarProperty Name="user_createdBy" ColumnName="user_createdBy" />
+                <ScalarProperty Name="user_createddate" ColumnName="user_createddate" />
+                <ScalarProperty Name="user_isAllowed" ColumnName="user_isAllowed" />
+                <ScalarProperty Name="user_com_key" ColumnName="user_com_key" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="user_role_key" ColumnName="user_role_key" />
+                <ScalarProperty Name="user_key" ColumnName="user_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="view_facility_physician">
+            <EntityTypeMapping TypeName="DataModel.view_facility_physician">
+              <MappingFragment StoreEntitySet="view_facility_physician">
+                <ScalarProperty Name="fac_go_live" ColumnName="fac_go_live" />
+                <ScalarProperty Name="fap_is_on_boarded" ColumnName="fap_is_on_boarded" />
+                <ScalarProperty Name="fac_is_active" ColumnName="fac_is_active" />
+                <ScalarProperty Name="fac_name" ColumnName="fac_name" />
+                <ScalarProperty Name="fap_is_active" ColumnName="fap_is_active" />
+                <ScalarProperty Name="fap_user_key" ColumnName="fap_user_key" />
+                <ScalarProperty Name="fap_fac_key" ColumnName="fap_fac_key" />
+                <ScalarProperty Name="fap_key" ColumnName="fap_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="view_user_schedule">
+            <EntityTypeMapping TypeName="DataModel.view_user_schedule">
+              <MappingFragment StoreEntitySet="view_user_schedule">
+                <ScalarProperty Name="TIMETO" ColumnName="TIMETO" />
+                <ScalarProperty Name="TIMEFROM" ColumnName="TIMEFROM" />
+                <ScalarProperty Name="DayNumber" ColumnName="DayNumber" />
+                <ScalarProperty Name="IsStrokeAlert" ColumnName="IsStrokeAlert" />
+                <ScalarProperty Name="uss_user_id" ColumnName="uss_user_id" />
+                <ScalarProperty Name="uss_key" ColumnName="uss_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

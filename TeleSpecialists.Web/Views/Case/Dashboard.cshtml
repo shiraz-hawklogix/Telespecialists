@@ -801,7 +801,8 @@
                     }
                     var html = data.substring(0, data.length - 1);
                     html += "</div>";
-                    row.find('.dash-case-grid-physician .physicianstatusdiv').empty();
+                    //row.find('.dash-case-grid-physician .physicianstatusdiv').empty();
+                    row.find('.dash-case-grid-physician').empty();
                     row.children('.dash-case-grid-physician').append(html);
                 }
                 

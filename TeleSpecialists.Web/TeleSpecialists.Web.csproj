@@ -264,6 +264,7 @@
     <Compile Include="Controllers\MDStaffController.cs" />
     <Compile Include="Controllers\MenuAccessController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\MockCaseController.cs" />
     <Compile Include="Controllers\PACPhysicianController.cs" />
     <Compile Include="Controllers\PhonebarController.cs" />
     <Compile Include="Controllers\PhysicianCaseTempController.cs" />
@@ -300,6 +301,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AjaxResult.cs" />
     <Compile Include="Models\AutoSaveViewModel.cs" />
+    <Compile Include="Models\header.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\CallHistoryViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -308,6 +310,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Views\Reports\Helper\BCIPhysicion.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
@@ -826,6 +829,11 @@
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\TeleCareQA.pubxml" />
     <None Include="Properties\PublishProfiles\VM - Web Deploy.pubxml" />
+    <Content Include="R-Scripting\Foracst_BCI.R" />
+    <Content Include="R-Scripting\ForecastingExport.csv" />
+    <Content Include="R-Scripting\forecast_testF.R" />
+    <Content Include="R-Scripting\forecast_testF_daily.R" />
+    <Content Include="R-Scripting\Monthly_Forcasting.csv" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\Chart.js" />
     <Content Include="Scripts\Chart.min.js" />
@@ -3508,14 +3516,14 @@
     <Content Include="Views\Case\ViewProtocols.cshtml" />
     <Content Include="Views\FacilityPhysician\PhysicianPassword.cshtml" />
     <Content Include="Views\Home\_operationsoutliers.cshtml" />
-	 <Content Include="Views\Home\_CasesCompletedReviewList.cshtml" />
+    <Content Include="Views\Home\_CasesCompletedReviewList.cshtml" />
     <Content Include="Views\HospitalProtocols\Create.cshtml" />
     <Content Include="Views\HospitalProtocols\Edit.cshtml" />
     <Content Include="Views\HospitalProtocols\EditProtocols.cshtml" />
     <Content Include="Views\HospitalProtocols\Index.cshtml" />
     <Content Include="Views\Reports\UserPresenceReport.cshtml" />
     <Content Include="Views\Case\ViewOnBoarding.cshtml" />
-	 <Content Include="Views\Case\_CasePreMorbid.cshtml" />
+    <Content Include="Views\Case\_CasePreMorbid.cshtml" />
     <Content Include="Views\MenuAccess\Create.cshtml" />
     <Content Include="Views\MenuAccess\Index.cshtml" />
     <Content Include="Views\MenuAccess\_Index.cshtml" />
@@ -3523,6 +3531,22 @@
     <Content Include="Views\Menu\Edit.cshtml" />
     <Content Include="Views\Menu\Index.cshtml" />
     <Content Include="Views\Menu\_Form.cshtml" />
+    <Content Include="Views\Case\_mockcases.cshtml" />
+    <Content Include="Views\MockCase\Create.cshtml" />
+    <Content Include="Views\MockCase\Edit.cshtml" />
+    <Content Include="Views\MockCase\_CaseCancellationReason.cshtml" />
+    <Content Include="Views\MockCase\_CaseCopyPopup.cshtml" />
+    <Content Include="Views\MockCase\_facilityInfoPopover.cshtml" />
+    <Content Include="Views\MockCase\_mockCase.cshtml" />
+    <Content Include="Views\MockCase\_mockcasecompitencydrill.cshtml" />
+    <Content Include="Views\MockCase\_mockcases.cshtml" />
+    <Content Include="Views\Reports\_AddPhysician.cshtml" />
+    <Content Include="Views\Reports\BCIReport.cshtml" />
+    <Content Include="Views\Reports\R_Index.cshtml" />
+    <Content Include="Views\Reports\DailyFacilityVolumetricReport.cshtml" />
+    <Content Include="Views\Reports\Daily_forecast.cshtml" />
+    <Content Include="Views\Reports\MOnth_forecast.cshtml" />
+    <Content Include="Views\Reports\CCIReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
