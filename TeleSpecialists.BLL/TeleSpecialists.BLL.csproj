@@ -136,6 +136,7 @@
     <Compile Include="Helpers\QualityMetricsReportCls.cs" />
     <Compile Include="Helpers\RCIGraphReport.cs" />
     <Compile Include="Helpers\RCIReport.cs" />
+    <Compile Include="Helpers\StatusSnapshotcls.cs" />
     <Compile Include="Helpers\tPACaseAnalysis.cs" />
     <Compile Include="Helpers\VolumeMetricsReport.cs" />
     <Compile Include="Helpers\WebScrapper.cs" />
