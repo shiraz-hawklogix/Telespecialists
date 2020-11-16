@@ -1,0 +1,188 @@
+﻿
+
+@model List<TeleSpecialists.BLL.Model.sp_getMenuAccess_Result>
+@{
+
+}
+
+<style>
+    .collapsible {
+        background-color: #c1c1c1;
+        color: white;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+    }
+
+        .active, .collapsible:hover {
+            background-color: #555;
+        }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #f1f1f1;
+    }
+
+    .mg-bottom {
+        margin-bottom: 3px;
+    }
+
+    .card-body {
+        -ms-flex: 1 1 auto;
+        /* flex: 1 1 auto; */
+        padding: 0px 0px 0px 35px !important;
+    }
+</style>
+
+<div class="container">
+    <div id="accordion">
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                if (item.com_parentcomponentid == null)
+                {
+                    <div class="card">
+                        <div class="card-header" id="headingOne" style="background-color:#989595">
+                            <h5 class="mb-0 d-inline">
+                                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne_@item.com_key" aria-expanded="true" aria-controls="collapseOne">
+                                    <span class="fa fa-minus"></span>
+                                    <input type="checkbox" data-action="@item.com_key" class="icheck" checked="@item.cac_isAllowed" onchange="AllowAccessViewChanged(this);">
+                                    @item.com_page_title
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="collapseOne_@item.com_key" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                            <div class="card-body" id="child1">
+                                @{
+                                    var result = Model.Where(x => x.com_parentcomponentid == item.com_key).ToList();
+                                }
+                                @foreach (var submenu in result)
+                                {
+                                    <div class="card">
+                                        <div class="card-header" style=" background-color: #d3d3d3;">
+                                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne_@submenu.com_key" aria-expanded="true" aria-controls="collapseOne1">
+                                                <input type="checkbox" data-action="@submenu.com_key" class="icheck" checked="@submenu.cac_isAllowed" onchange="AllowAccessViewChanged(this);">
+                                                @submenu.com_page_title
+                                            </button>
+                                            @*<a href="#" data-toggle="collapse" data-target="#collapseOneA">Child A</a>*@
+                                        </div>
+                                        <div id="collapseOne_@submenu.com_key" class="collapse show" aria-labelledby="headingOne">
+                                            <div class="card-body" id="child2">
+                                                @{
+                                                    var result2 = Model.Where(x => x.com_parentcomponentid == submenu.com_key).ToList();
+                                                }
+                                                @if (result2.Count > 0)
+                                                {
+                                                    foreach (var secondsubmenu in result2)
+                                                    {
+                                                        <div class="card">
+                                                            <div class="card-header" style="background-color: #f5f5f5;">
+                                                                <button class="btn btn-link" data-target="#collapseOne_@secondsubmenu.com_key" aria-expanded="true" aria-controls="collapseOne2">
+
+                                                                    <input type="checkbox" data-action="@secondsubmenu.com_key" class="icheck" checked="@secondsubmenu.cac_isAllowed" onchange="AllowAccessViewChanged(this);">
+                                                                    @secondsubmenu.com_page_title
+                                                                </button>
+                                                            </div>
+
+                                                            <div id="collapseOne_@secondsubmenu.com_key" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                                                                <div class="card-body" id="child3">
+                                                                    @{
+                                                                        var result3 = Model.Where(x => x.com_parentcomponentid == secondsubmenu.com_key).ToList();
+                                                                    }
+                                                                    @if (result3.Count > 0)
+                                                                    {
+                                                                        foreach (var thirdsubmenu in result3)
+                                                                        {
+                                                                            <div class="card-header" style="background-color:white;">
+                                                                                <button class="btn btn-link" data-target="#collapseOne_@thirdsubmenu.com_key" aria-expanded="true" aria-controls="collapseOne3">
+
+                                                                                    <input type="checkbox" data-action="@thirdsubmenu.com_key" class="icheck" checked="@thirdsubmenu.cac_isAllowed" onchange="AllowAccessViewChanged(this);">
+                                                                                    @thirdsubmenu.com_page_title
+                                                                                </button>
+                                                                            </div>
+
+
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>
+
+<input type="hidden" value="@ViewBag.roleId" id="roleId" />
+<div class="" style="margin-bottom:100px;"></div>
+
+
+
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+</script>
+
+<script>
+    var toggler = document.getElementsByClassName("caret");
+    var i;
+
+    for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function () {
+            this.parentElement.querySelector(".nested").classList.toggle("active");
+            this.classList.toggle("caret-down");
+        });
+    }
+</script>
+<script type="text/javascript">
+    function AllowAccessViewChanged(thisCTRL) {
+        var _menuId = $(thisCTRL).attr("data-action");
+
+        var _checkboxStatus = $(thisCTRL).prop("checked")
+        var roleid = $("#roleId").val();
+        var userId = $("#UserId").val();
+
+        var DataObjectForAjaxCall = { MenuId: _menuId, CheckboxStatus: _checkboxStatus, RoleId: roleid, userId: userId};
+        $.ajax({
+            url: '/MenuAccess/CreateUserbasedAccess',
+            type: "POST",
+            //async: false,
+            data: DataObjectForAjaxCall,
+            success: function (Result) {
+                loadData(roleid);
+
+            },
+            error: function (Result) {
+
+            }
+        });
+    }
+</script>

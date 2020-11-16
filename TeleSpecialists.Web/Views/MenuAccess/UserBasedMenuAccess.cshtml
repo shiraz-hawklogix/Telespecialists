@@ -1,0 +1,83 @@
+﻿@model TeleSpecialists.Web.Models.ProfileAccessViewModel
+@{
+    ViewBag.Title = "UserBasedMenuAccess";
+}
+<div class="col-sm-12 col-md-12 col-lg-12">
+    <div class="row">
+        <div class="col-sm-5 col-md-2 col-lg-2">
+            <label class="pull-right"><b>Select Role</b></label>
+        </div>
+
+        <div class="col-sm-7 col-md-3 col-lg-3">
+            @Html.DropDownListFor(model => model.roleId, new SelectList(ViewBag.roles, "Value", "Text"), "Please select", new { @class = "form-control", @onchange = "OnRoleChanged(this);" })
+
+            @Html.ValidationMessageFor(model => model.roleId, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-sm-5 col-md-2 col-lg-2">
+            <label class="pull-right"><b>Select User</b></label>
+        </div>
+        <div class="col-sm-7 col-md-3 col-lg-3">
+            @Html.DropDownListFor(model => model.UserId, new SelectList(ViewBag.vbusers, "Value", "Text"), "Please select", new { @class = "form-control" })
+
+            @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-12 pull-right">
+            <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+        </div>
+    </div>
+    <hr />
+    <div class="content2">
+
+        <div id="lstOfItemPlaceHoder">
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function OnRoleChanged(thisCTRL) {
+        if ($(thisCTRL).val() == '') {
+            return;
+        }
+        setTimeout(function () {
+            var DataObjectForAjaxCall = { RoleId: $(thisCTRL).val() };
+            $.ajax({
+                url: '/MenuAccess/GetUsers',
+                method: "POST",
+                async: false,
+                data: DataObjectForAjaxCall,
+                success: function (Result) {
+                    var InnerHTML_DropDown = "<option value=''>Select One</option>";
+                    $.each(Result, function (Index, data) {
+                        InnerHTML_DropDown = InnerHTML_DropDown + "<option value='" + data.Value + "'>" + data.Text + "</option>";
+                    });
+
+                    $("#UserId").html(InnerHTML_DropDown);
+                }
+            });
+        }, 500);
+    }
+</script>
+<script type="text/javascript">
+
+    $("#btnSearch").on('click', function () {
+      
+        setTimeout(function () {
+         
+            loadData($('#roleId').val(), $('#UserId').val());
+        })
+        function loadData(roleId, userid) {
+            debugger
+            $.ajax({
+                type: "POST",
+                data: { "roleId": roleId, "userId": userid },
+                url: '/MenuAccess/_GetUserBasedAccess',
+                asyc: false,
+                success: function (response) {
+
+                    $("#lstOfItemPlaceHoder").html('');
+                    $("#lstOfItemPlaceHoder").html(response);
+                }
+            });
+        }
+    })
+</script>

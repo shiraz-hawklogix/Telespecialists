@@ -108,6 +108,8 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<Forcast_Data> Forcast_Data { get; set; }
         public virtual DbSet<mock_case> mock_case { get; set; }
         public virtual DbSet<telecare_counters> telecare_counters { get; set; }
+        public virtual DbSet<user_access> user_access { get; set; }
+
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {
