@@ -1,0 +1,64 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.Model;
+@using TeleSpecialists.BLL;
+@model TeleSpecialists.BLL.Model.@case
+@{
+    TeleSpecialists.Models.ApplicationUser loggedInUser = ViewBag.loggedInUser;
+    string strokeStamp = ViewBag.strokeStamp;
+    strokeStamp = strokeStamp.Replace("##NewLine##", "<br/>");
+}
+
+<div class="modal-dialog modal-lg blink_border" id="newcasePopupAlertBlast">
+    <div class="modal-content">
+        <input type="hidden" name="cas_key" id="cas_key" value="@Model.cas_key" />
+        <input type="hidden" name="cas_key" id="cas_number" value="@Model.cas_case_number" />
+        <input type="hidden" id="cas_phy" value="@loggedInUser.Id" />
+        <input type="hidden" id="cas_fac_name" value="@Model.facility.fac_name" />
+        <span id="blastStamp" style="display:none">@ViewBag.strokeStamp</span>
+        @{
+            string name = loggedInUser.FirstName + " " + loggedInUser.LastName; //Model.AspNetUser2.FirstName + " " + Model.AspNetUser2.LastName;
+        }
+        <input type="hidden" id="cas_phy_name" value="@name" />
+        <!-- Modal Header -->
+        <div class="modal-header">
+            <h4 class="modal-title">
+                @ViewBag.CaseType
+            </h4>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body" style="min-height:200px;">
+            @Html.Raw(strokeStamp)
+            @*<div>
+                    @Model.facility.fac_name
+                </div>
+                <div>
+                    @ViewBag.CaseType
+                </div>
+                <div>
+                    Case #@Model.cas_case_number
+                </div>*@
+
+
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer" style="justify-content:flex-start">
+            <div class="row" style="width:100%;">
+
+                <div class="col-8">
+                    Would you like to accept this case?
+                </div>
+                <div class="col-4 text-right">
+                    <a class="btn btn-dark" data-dismiss="modal" style="color:white">Close</a>
+                    <input type="button" class="btn btn-dark" id="btnAcceptBlast" value="Accept" />
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+
+</div>

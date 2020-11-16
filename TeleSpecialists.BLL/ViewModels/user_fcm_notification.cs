@@ -28,6 +28,7 @@ namespace TeleSpecialists.BLL.ViewModels
         public string msg_body { get; set; }
         public string notify_img { get; set; }
         public List<string> phy_tokens { get; set; }
+        public string deviceType { get; set; }
 
 
         public object SendToken(string phy_key)
@@ -44,6 +45,8 @@ namespace TeleSpecialists.BLL.ViewModels
                 user_Fcm_Notification.msg_body = first.AspNetUser.FirstName + " " + first.AspNetUser.LastName + " You have New Stroke!";
                 user_Fcm_Notification.notify_img = "https://media.graytvinc.com/images/690*387/Stroke+MGN+graphic.JPG";
                 user_Fcm_Notification.phy_tokens = tokens;
+                if (!string.IsNullOrEmpty(first.tok_device_type))
+                    user_Fcm_Notification.deviceType = first.tok_device_type.ToLower();
             }
             return user_Fcm_Notification;
             //(user_Fcm_Notification, JsonRequestBehavior.AllowGet);
@@ -68,6 +71,8 @@ namespace TeleSpecialists.BLL.ViewModels
                 user_Fcm_Notification.msg_body = "Interal Blast Stroke Alert Sent !";
                 user_Fcm_Notification.notify_img = "https://media.graytvinc.com/images/690*387/Stroke+MGN+graphic.JPG";
                 user_Fcm_Notification.phy_tokens = tokens;
+                if (!string.IsNullOrEmpty(first.tok_device_type))
+                    user_Fcm_Notification.deviceType = first.tok_device_type.ToLower();
             }
             return user_Fcm_Notification;
             //(user_Fcm_Notification, JsonRequestBehavior.AllowGet);
@@ -75,7 +80,7 @@ namespace TeleSpecialists.BLL.ViewModels
 
 
 
-        public bool SendNotification(string phy_key = "", int caseId = 0, string jsonData = "", string caseType = "Open", int action = 1, List<object> Data = null, List<string> phy_ids = null)
+        public bool SendNotification(string phy_key = "", int caseId = 0, string jsonData = "", string caseType = "Open", int action = 1, List<object> Data = null, List<string> phy_ids = null, string strokeStamp="", List<string> strokeDetail = null)
         {
             try
             {
@@ -99,21 +104,17 @@ namespace TeleSpecialists.BLL.ViewModels
                 #endregion
 
                 #region Code for telecare  db
-                ////serverKey - Key from Firebase cloud messaging server  
-                //tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA1rwwbPI:APA91bGBQvXGabgDWOHGz8OEu9-yA7w3QhuXQoeAu9TEPGaEemYdoRXp_PRx1IkhYbGqwvb_xSf3LFk_ZErTSZd7HlehYUXeXxnROuL3Y22fspbWUWUwdVRrNtJHZ_dPL1ykSTLnTskS"));
-                ////Sender Id - From firebase project setting  
-                //tRequest.Headers.Add(string.Format("Sender: id={0}", "BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o"));
-                #endregion
-
-                #region for telecare production
-
                 //serverKey - Key from Firebase cloud messaging server  
-                tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA3Bm3IdE:APA91bEXYQXLck9ZHvar0W7_KnCLUrgn8oJoFs2A5pt4rHaOq3cN6RruzyOrNqPxHgH5DKQfnhwNLocPJJS5AmiUjvC4q0Hv2aHKqlzGkprQyg0ozaGCUgMHWpPi_F0ywywku3W3SfMw"));
+                tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA1rwwbPI:APA91bGBQvXGabgDWOHGz8OEu9-yA7w3QhuXQoeAu9TEPGaEemYdoRXp_PRx1IkhYbGqwvb_xSf3LFk_ZErTSZd7HlehYUXeXxnROuL3Y22fspbWUWUwdVRrNtJHZ_dPL1ykSTLnTskS"));
                 //Sender Id - From firebase project setting  
-                tRequest.Headers.Add(string.Format("Sender: id={0}", "BCt_gF974whazZ4CfseUT5psM9SlWrO2uR12PtqEYOBzRWrnOzU00nNNVb9RA0hDFh7NDvA89vGqxeM4GVOHf-w"));
+                tRequest.Headers.Add(string.Format("Sender: id={0}", "BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o"));
                 #endregion
 
                 tRequest.ContentType = "application/json";
+
+                //var iosList = user_Fcm_Notification.
+
+                #region Web Payload
                 var payload = new
                 {
                     //to = "eI-JlOt4adcnJ6ip9gucNn:APA91bHAtuuzGNTaSs3wJjjSARj38pnbTNyyL2XLzIWXMobTh4BKc2mEPniwLGNvKOWiVPpbS_I1tJCqbmRLMvrSikV6ZI6Thrrn7GvxAVxgNhvvUqs3cI47eqrEzgG7lt-XUwONEZkr",
@@ -135,7 +136,8 @@ namespace TeleSpecialists.BLL.ViewModels
                         caseType = caseType,
                         jsonData = jsonData,
                         action = action,
-                        objectData = Data
+                        objectData = Data,
+                        strokeStamp = strokeStamp
                     }
 
                 };
@@ -158,6 +160,78 @@ namespace TeleSpecialists.BLL.ViewModels
                         }
                     }
                 }
+                #endregion
+                #region IOS Payload
+                try
+                {
+                    var ioslist = _tokenservice.GetIOSAll(phy_key);
+                    if (ioslist.Count > 0)
+                    {
+                        WebRequest _tRequest = WebRequest.Create("https://fcm.googleapis.com/fcm/send");
+                        _tRequest.Method = "post";
+
+                        #region Code for telecare  db
+                        //serverKey - Key from Firebase cloud messaging server  
+                        _tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA1rwwbPI:APA91bGBQvXGabgDWOHGz8OEu9-yA7w3QhuXQoeAu9TEPGaEemYdoRXp_PRx1IkhYbGqwvb_xSf3LFk_ZErTSZd7HlehYUXeXxnROuL3Y22fspbWUWUwdVRrNtJHZ_dPL1ykSTLnTskS"));
+                        //Sender Id - From firebase project setting  
+                        _tRequest.Headers.Add(string.Format("Sender: id={0}", "BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o"));
+                        #endregion
+
+                        _tRequest.ContentType = "application/json";
+
+                        var _payload = new
+                        {
+                            registration_ids = ioslist, //user_Fcm_Notification.phy_tokens,
+                            priority = "high",
+                            content_available = false,
+                            notification = new
+                            {
+                                body = user_Fcm_Notification.msg_body,
+                                title = user_Fcm_Notification.msg_title,
+                                click_action = "CASE",
+                                image = user_Fcm_Notification.notify_img,
+                                badge = 1
+                            },
+                            data = new
+                            {
+                                phy_key = phy_key,
+                                caseId = caseId,
+                                caseType = caseType,
+                                jsonData = jsonData,
+                                action = action,
+                                caseNumber = strokeDetail[0],
+                                fac_name = strokeDetail[1],
+                                fac_key = strokeDetail[2],
+                                phy_name = strokeDetail[3],
+                                objectData = Data
+                            }
+
+                        };
+                        string _postbody = JsonConvert.SerializeObject(_payload).ToString();
+                        Byte[] _byteArray = Encoding.UTF8.GetBytes(_postbody);
+                        _tRequest.ContentLength = _byteArray.Length;
+                        using (Stream _dataStream = _tRequest.GetRequestStream())
+                        {
+                            _dataStream.Write(_byteArray, 0, _byteArray.Length);
+                            using (WebResponse _tResponse = _tRequest.GetResponse())
+                            {
+                                using (Stream _dataStreamResponse = _tResponse.GetResponseStream())
+                                {
+                                    if (_dataStreamResponse != null) using (StreamReader _tReader = new StreamReader(_dataStreamResponse))
+                                        {
+                                            String _sResponseFromServer = _tReader.ReadToEnd();
+                                            //result.Response = sResponseFromServer;
+                                        }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+                #endregion
+
                 #endregion
                 return true;
             }

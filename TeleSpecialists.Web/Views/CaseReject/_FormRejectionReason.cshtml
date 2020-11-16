@@ -1,0 +1,146 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@model TeleSpecialists.BLL.Model.case_rejection_reason
+@{
+    var caseStatus = Enum.GetValues(typeof(PacStatus)).Cast<PacStatus>().Select(m => new { key = (int)m, title = m.ToDescription() });
+    SelectList CaseStatuslist = new SelectList(caseStatus, "key", "title");
+    var usersList = ViewBag.dropdownUsers as List<SelectListItem>;
+}
+<link href="~/Content/jquery.multiselect.css" rel="stylesheet" />
+
+
+<div class="ajaxForm">
+    @using (Html.BeginForm(new { role = "form", @id = "rrForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.crr_key)
+        @Html.HiddenFor(m => m.crr_users,new { @id = "crr_users" })
+        @Html.HiddenFor(m => m.crr_created_by)
+        @Html.HiddenFor(m => m.crr_created_on)
+        <div class="form-horizontal">
+            <div class="form-group row">
+                @Html.Label("Rejection Reason:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                <div class="col-lg-8 col-md-12 col-xs-12">
+                    @* @Html.DropDownList("crr_parent_key", CaseStatuslist, new { @class = "case_status_id form-control active", @id = "pacstatusFilter", @multiple = "multiple" })*@
+                    <select id="crr_parent_key" name="crr_parent_key" class="form-control addValidation" data-selectedValue="@(Model != null ? Model.crr_parent_key.ToString() : "0")"></select>
+                    <div class="error_msg" id="crr_parent_key_error" style="display:none">
+                        <label>This field is required</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                @Html.Label("Sub-Reason:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                <div class="col-lg-8 col-md-12 col-xs-12">
+                    @Html.EditorFor(model => model.crr_reason, new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+                    @Html.ValidationMessageFor(model => model.crr_reason, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                @Html.Label("Troubleshoot:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                <div class="col-lg-8 col-md-12 col-xs-12">
+                    @Html.CheckBoxFor(model => model.crr_troubleshoot, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.crr_troubleshoot, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                @Html.Label("Users:", htmlAttributes: new { @class = "control-label col-lg-4 col-md-12 col-xs-12" })
+                <div class="col-lg-8 col-md-12 col-xs-12">
+                    <select id="crr_users_select" name="crr_users_select" class="form-control active" multiple="multiple">
+                        @foreach (var item in usersList)
+                        {
+                            <option value="@item.Value" selected="@item.Selected" >@item.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-6 offset-sm-5 text-right">
+                    <a class="btn btn-link loadLinkAsync-cancel" href="@Url.Action("Index")">Cancel</a>
+                    <input type="submit" id="savebtn" value="Save" class="btn btn-dark" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script src="~/Scripts/jquery.multiselect.js"></script>
+<script type="text/javascript"> 
+
+   
+    $('#savebtn').on('click', function () {
+        debugger
+        var count = $('#crr_users_select option:selected').length;
+       
+        var selectedUsers = [];
+        $.each($('#crr_users_select option:selected'), function () { 
+            // multiple values will be comma separated
+            var tempval = $(this).val();
+            selectedUsers.push(tempval);
+            
+        });
+        var convertedval = selectedUsers.toString();
+        $("#crr_users").val(convertedval);
+
+       // $("#rrForm").find('input, select').val('');
+    });
+
+    function LoadReasonDropdown() {
+
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "GET",
+            url: '/CaseReject/GetReasonsForDropdown',
+            success: function (data) { 
+                $("#crr_parent_key").fillStaticKendoDropDown(data, "crr_reason", "crr_key", "-- Select --", function () {
+                    $('#crr_parent_key').data('kendoDropDownList').value(schedulePhy);
+                });
+            },
+            error: function () {
+            }
+        });
+
+    }
+
+    //function LoadUsersDropdown() {
+
+    //    $.ajax({
+    //        cache: false,
+    //        async: true,
+    //        type: "GET",
+    //        url: '/CaseReject/GetUsersForDropdown',
+    //        success: function (data) {
+    //            debugger
+    //            $("#crr_users_select").fillStaticKendoDropDown(data, "FirstName", "Id", "-- Select --", function () {
+    //                //$('#crr_users_select').data('kendoDropDownList').value(schedulePhy);
+    //            });
+    //        },
+    //        error: function () {
+    //        }
+    //    });
+
+    //}
+
+    function generateUsersDDmultiselect() {
+        $('#crr_users_select').multiselect({
+            columns: 1,
+            placeholder: 'Select Users',
+            search: true,
+            searchOptions: {
+                'default': 'Search Users'
+            },
+            selectAll: true,
+            onOptionClick: function () {
+               // $("#btnSearch").click();
+            },
+            onSelectAll: function () {
+                //performSearchOnCases();
+            }
+        });
+    }
+    LoadReasonDropdown();
+    //LoadUsersDropdown();
+    generateUsersDDmultiselect();
+</script>
