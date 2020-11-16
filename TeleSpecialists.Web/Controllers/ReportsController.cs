@@ -2455,6 +2455,11 @@ namespace TeleSpecialists.Controllers
             ViewBag.AllowListing = allowListing;
             return GetViewResult();
         }
+        public ActionResult StatusSnapshot()
+        {
+            return GetViewResult();
+        }
+
 
         #endregion
 
@@ -2783,19 +2788,28 @@ namespace TeleSpecialists.Controllers
             }
         }
 
-        //public ActionResult PhysicianColors(int cas_key,string physician)
-        //{
-        //    try
-        //    {
-        //        var result = _reportService.PhysicianColors(cas_key, physician);
-        //        return JsonMax(result, JsonRequestBehavior.AllowGet);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-        //        return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
-        //    }
-        //}
+        public ActionResult GetStatusSnapshot(DataSourceRequest request, string datevalue)
+        {
+            try
+            {
+                if (datevalue == "")
+                {
+                    DataSourceResult result = new DataSourceResult();
+                    result.Data = new List<string>();
+                    return JsonMax(result, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var result = _reportService.GetStatusSnapshot(request, datevalue);
+                    return JsonMax(result, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
         #endregion
 
