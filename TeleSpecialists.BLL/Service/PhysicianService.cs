@@ -109,7 +109,7 @@ namespace TeleSpecialists.BLL.Service
             return GetPhysicians()
                                 .Where(m => !scheduledPhysicians.Contains(m.Id))
                                 .Where(m => !updatedPhysicianList.Contains(m.Id))
-                                .Where(m => m.status_key != notAvailable && m.IsStrokeAlert == true);
+                               .Where(m => m.status_key != notAvailable && m.IsStrokeAlert == true);
 
         }
         public IQueryable<PhysicianDashboardViewModel> GetPhysicianStatusDashboard(string SortOrder = "")
@@ -152,7 +152,22 @@ namespace TeleSpecialists.BLL.Service
 
             return query;
         }
+        public AspNetUser GetDetailForDispatch(string Id)
+        {
+            string strPhysician = UserRoles.Physician.ToDescription().ToLower();
+            string strPartnerPhysician = UserRoles.PartnerPhysician.ToDescription().ToLower();
+            string strPacPhysician = UserRoles.AOC.ToDescription().ToLower();
+            var physicianRoleIds = _unitOfWork.ApplicationRoles
+                                            .Where(m => m.Name.ToLower() == strPartnerPhysician || m.Name.ToLower() == strPhysician || m.Name.ToLower() == strPacPhysician)
+                                            .Select(m => m.Id);
 
+            return _unitOfWork.ApplicationUserRoles
+                                     .Include(m => m.AspNetUser.physician_status)
+                                    .Where(m => physicianRoleIds.Contains(m.RoleId))
+                                    .Where(m => m.UserId == Id)
+                                    .Select(m => m.AspNetUser).AsNoTracking()
+                                    .FirstOrDefault();
+        }
         #region Husnain Code Block 
         public IQueryable<PhysicianDashboardViewModel> GetPacPhysicianStatusDashboard(string SortOrder = "")
         {
@@ -236,7 +251,7 @@ namespace TeleSpecialists.BLL.Service
 
             return query;
         }
-       
+
         #endregion
 
         #region Bilal Code Block 

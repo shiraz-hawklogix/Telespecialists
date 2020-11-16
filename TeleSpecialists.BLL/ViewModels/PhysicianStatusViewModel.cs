@@ -39,5 +39,8 @@ namespace TeleSpecialists.BLL.ViewModels
         public string phs_name { get; set; }
         public string ElapsedTime { get; set; }
         public bool FinalSorted { get; set; }
+        public string firebaseId { get; set; }
+        public string firebaseEmail { get; set; }
+        public string img { get; set; }
     }
 }

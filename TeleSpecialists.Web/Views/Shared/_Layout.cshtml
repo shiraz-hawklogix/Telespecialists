@@ -1,7 +1,7 @@
 ﻿@using TeleSpecialists.BLL.Helpers;
 @using TeleSpecialists.BLL.Extensions;
 @using TeleSpecialists.BLL;
-@using TeleSpecialists.Models; 
+@using TeleSpecialists.Models;
 @using Microsoft.AspNet.Identity;
 @using TeleSpecialists.BLL.Model;
 @{
@@ -16,8 +16,9 @@
     {
         checktune = _tune;
     }
-
-  //  var settings = ViewBag.ApplicationSetting as application_setting;
+    var loggedinuserName = loggedInUser.FirstName + " " + loggedInUser.LastName;
+    var loggedinuserEmail = loggedInUser.Email;
+    var showStrokeAlert = "false";
 }
 
 <!DOCTYPE html>
@@ -49,11 +50,17 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/kendo")
     @Scripts.Render("~/bundles/five9")
+
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>*@
+    <script src="~/Scripts/firebase/crypto/aes.js"></script>
+
+
+
     <script src="~/Scripts/ckeditor/ckeditor.js"></script>
     <link href="~/Content/ckeditor-custom.css" rel="stylesheet" />
+    <link href="~/Content/Animation/css/effect_6.css" rel="stylesheet" />
 </head>
 <body class="body_bg">
-    <input type="hidden" id="isMockPhyscian" value="@(User.IsInRole(UserRoles.MockPhysician.ToDescription()) ? 1 : 0)" />
     <input type="hidden" id="is_super_admin" value="@role" />
     <input type="hidden" id="is_five9_enable" value="@(loggedInUser?.EnableFive9.ToString())" />
     <input type="hidden" id="IsOnlyPhysician" value="@(User.IsInRole(UserRoles.Physician.ToDescription()) ? 1 : 0)" />
@@ -66,9 +73,17 @@
     <input type="hidden" id="hdnUser" value="@(loggedInUser?.Id)" />
     <input type="hidden" id="hdnSystemDateTime" value="@DateTime.Now.ToEST().ToString()" />
     <input type="hidden" id="TwoFactorAuthUser" value="" />
+    <input type="hidden" id="lblforfirebase" />
+    <input type="hidden" id="cas_key_blast" />
+    <input type="hidden" id="lbl_show_strokeAlert" value="@showStrokeAlert" />
     @*<input type="hidden" id="IsCredentialingTeamorSuperAdmin" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()) ? 1 : 0)" />
         <input type="hidden" id="IsQPSQualityDirectororVPQuality" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) ? 1 : 0)" />*@
-
+    <audio id="new_msg_notification">
+        <source src="~/Content/sounds/msg_notify.mp3" type="audio/mp3">
+    </audio>
+    <audio id="new_blast_notification">
+        <source src="~/Content/sounds/blast.mp3" type="audio/mp3">
+    </audio>
     <div class="refreshAlarm">
     </div>
     <nav class=" row navbar main-menu navbar-expand-lg navbar-light bg-light mr-1">
@@ -138,16 +153,23 @@
                     || User.IsInRole(UserRoles.Finance.ToDescription())
                     || User.IsInRole(UserRoles.AOC.ToDescription())
                     || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
-                    || User.IsInRole(UserRoles.Administrator.ToDescription())
-                    || User.IsInRole(UserRoles.MockPhysician.ToDescription()))
+                    || User.IsInRole(UserRoles.Administrator.ToDescription()))
                 {
                     <li class="nav-item">
                         <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Case" )">Cases</a>
                     </li>
                 }
+                @if (User.IsInRole(UserRoles.Administrator.ToDescription())
+              || User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+              || User.IsInRole(UserRoles.Navigator.ToDescription()))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "Dispatch" )">Dispatch</a>
+                    </li>
+                }
 
 
-                @if (User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.AOC.ToDescription()) || User.IsInRole(UserRoles.CapacityResearcher.ToDescription()))
+                @if (User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.AOC.ToDescription()))
                 {
                     <li class="nav-item">
                         <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Dashboard", "Case")">Dashboard</a>
@@ -190,9 +212,7 @@
                     && !User.IsInRole(UserRoles.QPS.ToDescription())
                     && !User.IsInRole(UserRoles.VPQuality.ToDescription())
                     && !User.IsInRole(UserRoles.QualityDirector.ToDescription())
-                    && !User.IsInRole(UserRoles.Finance.ToDescription())
-                    && !User.IsInRole(UserRoles.MockPhysician.ToDescription())
-                    && !User.IsInRole(UserRoles.MockPhysician.ToDescription()))
+                    && !User.IsInRole(UserRoles.Finance.ToDescription()))
                 {
                     <li class="nav-item">
                         <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Status", "Physician")">Status</a>
@@ -215,6 +235,7 @@
              || User.IsInRole(UserRoles.QualityTeam.ToDescription())
              || User.IsInRole(UserRoles.VPQuality.ToDescription())
              || User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
+
                     )
                 {
                     <li class="nav-item">
@@ -375,6 +396,9 @@
                                                 <li>
                                                     <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Cancelled", "casetype" )">Case Cancelled Type</a>
                                                 </li>
+                                                <li>
+                                                    <a class="dropdown-item topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "CaseReject" )">Case Rejection Reasons</a>
+                                                </li>
                                             </ul>
                                         <li class="dropdown  dropdown dropright dropdown-submenu ">
                                             <a class="nav-link dropdown-toggle  topbarLinks nav-link loadLinkAsync clearL hideLink cursor" id="general" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sleep</a>
@@ -492,12 +516,15 @@
         </div>
     </nav>
     <div class="navbar navbar-expand-sm header_bottom">
-        <div class="col-lg-7 col-md-4">
-            <div class="nav-item">
+        <div class="col-lg-5 col-md-5">
+            <div class="nav-item" id="divInternalExternal">
                 <!-- breadcrumb here-->
+                @*<a href="javascript:void(0);" id="btnBlast"> <span class="ml6 font_12px"><span class="text-wrapper"> <span class="letters" id="lblBlast"></span></span> </span> </a>*@
+                @*<a href="#" id="hideExpDiv"> <img src='~/Content/images/exp_icon.jpg' style="height:17px;width:17px;"  /></a>*@
             </div>
+
         </div>
-        <div class="col-md-8 col-lg-5 text-right">
+        <div class="col-md-7 col-lg-7 text-right">
             <div class="nav-item nav-item-login">
                 @if ((User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())))
                 {
@@ -511,6 +538,11 @@
 
                 @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription()))
                 {
+
+                    <img src="~/Content/images/firebase1.png" style="height:18px;width:16px" />
+                    <span id="lblFirebase" style="color:white"></span>
+                    <a href="@Url.Action("chat", "firebasechat")" class="btn-sm font_12px" target="_blank" id="firebaseLink"><span class="fa fa-envelope-o rapids-inbox"></span>chat</a>
+                    @*<a href="@Url.Action("hawklogixchat", "firebasechat")" class="btn-sm font_12px" target="_blank"><span class="fa fa-envelope-o rapids-inbox"></span>chat</a>*@
                     <a href="@Url.Action("Index", "Home")" class="btn-sm font_12px loadLinkAsync"><span class="fa fa-envelope-o rapids-inbox"></span>Inbox</a>
                 }
                 <a href="@Url.Action("ChangePassword", "Manage")" class="btn-sm font_11px loadLinkAsync"><span class="change_pp"></span>Change Password</a>
@@ -540,26 +572,6 @@
                     {
                         colWidthClass = "col-sm-12 col-xl-10 col-lg-9 col-md-12";
                         <div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3" id="phycisian-listing-container">
-                        </div>
-                        <div class="modal onboardingmodal d-none" id="onboardingmodal">
-                            <div class="modal-dialog modal-lg" style=" max-width:1532px; ">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h4><b>Onboarding</b></h4>
-                                        <button type="button" id="btnclosemodal" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div id="showonboardingdata">
-
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <a class="btn btn-sm btn-dark text-white closeboardingmodal" data-dismiss="modal">Close</a>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     }
                     @*<div class="col-sm-12 col-xl-2 col-lg-3 col-md-12 p-md-1 mt-3">
@@ -593,6 +605,8 @@
             }
         </div>
     </div>
+
+    <div id="divfirebase" style="display:none"></div>
     <footer class="footer" id="AddNewClass">
         <span class="text-muted">Copyright @DateTime.Now.Year TeleSpecialists, LLC. All rights reserved.</span>
     </footer>
@@ -601,6 +615,7 @@
             <img src="@s" style="height: 100px;width:80px;border: 5px solid #555;" />
 
         }*@
+
 
     <div id="AllowToNavigateId" class="modal fade" tabindex="-1" role="dialog" style="height:500px;">
         <div class="modal-dialog modal-lg">
@@ -657,7 +672,7 @@
     @RenderSection("scripts", required: false)
     <script type="text/javascript">
 
-        var timeoutInMiliseconds;
+           var timeoutInMiliseconds;
         var timeoutId;
 
         function resetTimer() {
@@ -758,29 +773,39 @@
                 error: function (data) {
                 }
             });
+                    }
+
+$(document).ready(function () {
+    $('#btnBlast').hide();
+    var token = $('input[name="__RequestVerificationToken"]').val();
+    $.ajaxSetup({
+        headers: {
+            '__RequestVerificationToken': token
         }
+    });
 
-        $(document).ready(function () {
-
-            var token = $('input[name="__RequestVerificationToken"]').val();
-            $.ajaxSetup({
-                headers: {
-                    '__RequestVerificationToken': token
-                }
-            });
-
-            checkUserLoggedInStatus()
-            getSessionTimeOutValue();
-            $('#hideimagediv').delay(2000).fadeIn();
-            ScheduleCheckLoad();
-            getUserMachineInfo();
+    checkUserLoggedInStatus()
+    getSessionTimeOutValue();
+    $('#hideimagediv').delay(2000).fadeIn();
+    ScheduleCheckLoad();
+    getUserMachineInfo();
             getimageid();
             $('.hideLink').mouseleave(function () {
                 $(this).attr('aria-expanded', 'false');
                 $(this).closest('li').removeClass('show')
                 $(this).siblings('.dropdown-menu').removeClass('show')
-            });
+    });
 
+            //  code for firebase logged in user
+           // CheckFirebaseUser();
+            $('#imgForBlast').hide();
+            //setInterval(function () {
+            //    CheckFirebaseUser();
+            //}, 5000);
+            // end
+            //useridSW = $('#hdnUser').val();
+            localStorage.setItem("loggedInUser", $('#hdnUser').val());
+            //alert(useridSW);
         });
 
            function getimageid()
@@ -1027,55 +1052,55 @@
 
         ///*@
 
-        function OnBoardingData(id, url) {
-            var Id = parseInt(id);
+                    function OnBoardingData(id, url) {
+                        var Id = parseInt(id);
 
-            ShowLoading();
-            $.ajax({
-                type: "POST",
-                url: url,
-                dataType: 'json',
-                data: { Id: Id },
-                error: function (xhr, error) {
+                        ShowLoading();
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            dataType: 'json',
+                            data: { Id: Id },
+                            error: function (xhr, error) {
 
-                },
-                success: function (response) {
-
-
-                    $("#showonboardingdata").empty();
-                    $("#showonboardingdata").html(response.data);
-                    $(".showhideattest").removeClass('d-none');
-                    $(".cancelattest").hide();
-                    $(".onboardingmodal").removeClass('d-none');
-                    $("#onboardingmodal").modal('show');
+                            },
+                            success: function (response) {
 
 
-                    HideLoading();
-                }
+                                $("#showonboardingdata").empty();
+                                $("#showonboardingdata").html(response.data);
+                                $(".showhideattest").removeClass('d-none');
+                                $(".cancelattest").hide();
+                                $(".onboardingmodal").removeClass('d-none');
+                                $("#onboardingmodal").modal('show');
 
-            });
-        }
 
-        $("#btnclosemodal").off('click').click(function () {
+                                HideLoading();
+                            }
 
-            $(".cancelattest").show();
-            $(".showhideattest").addClass('d-none');
-            $("#showonboardingdata").empty();
+                        });
+                    }
 
-        });
-        $(".closeboardingmodal").off('click').click(function () {
+                    $("#btnclosemodal").off('click').click(function () {
 
-            $(".cancelattest").show();
-            $(".showhideattest").addClass('d-none');
-            $("#showonboardingdata").empty();
+                        $(".cancelattest").show();
+                        $(".showhideattest").addClass('d-none');
+                        $("#showonboardingdata").empty();
 
-        });
+                    });
+                    $(".closeboardingmodal").off('click').click(function () {
 
-        $(document).ready(function () {
-            $('#onboardingmodal').modal({ backdrop: 'static', keyboard: false, hide: true });
+                        $(".cancelattest").show();
+                        $(".showhideattest").addClass('d-none');
+                        $("#showonboardingdata").empty();
 
-            $("#onboardingmodal").modal('hide');
-        })
+                    });
+
+                    $(document).ready(function () {
+                        $('#onboardingmodal').modal({ backdrop: 'static', keyboard: false, hide: true });
+
+                        $("#onboardingmodal").modal('hide');
+                    })
 
     </script>
 
@@ -1084,47 +1109,25 @@
         @Scripts.Render("~/bundles/hubs")
     }
     <div id="processing" class="loading" style="display:none"></div>
-   
+
     <script src="https://rawgit.com/nwcell/ics.js/master/ics.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
+    @*<script src="https://www.gstatic.com/firebasejs/3.6.9/firebase.js"></script>*@
+    @* below line are commented to check downloaded files*@
     @*<script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-auth.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-database.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.16.1/firebase-messaging.js"></script>*@
 
-    <script>
-        // const userObject;
-        //const config = {
-        //    apiKey: "AIzaSyDHC8RJ-uUoWIo3tYa9zzhVhvTxv5NuZF0",
-        //    authDomain: "telecare-3724e.firebaseapp.com",
-        //    databaseURL: "https://telecare-3724e.firebaseio.com",
-        //    projectId: "telecare-3724e",
-        //    storageBucket: "telecare-3724e.appspot.com",
-        //    messagingSenderId: "922280291570",
-        //    appId: "1:922280291570:web:6ce723cfaeeed0f7c8b46b",
-        //    measurementId: "G-8TWCZJP852"
-        //};
+    <script src="~/Scripts/firebase/firebasejs/firebase-app.js"></script>
+    <script src="~/Scripts/firebase/firebasejs/firebase-auth.js"></script>
+    <script src="~/Scripts/firebase/firebasejs/firebase-database.js"></script>
+    <script src="~/Scripts/firebase/firebasejs/firebase-messaging.js"></script>
+    <script src="~/Scripts/firebase/js/firebaseConfig.js"></script>
+    <script src="~/Scripts/firebase/js/custome.js"></script>
+    @Scripts.Render("~/bundles/firebase")
+    <script src="~/Content/Animation/js/anime.min.js"></script>
 
-        // firebase config production
-        //const config = {
-        //    apiKey: "AIzaSyD78t_u3xK5eFQZyD95NL3-XGubH6z4XCo",
-        //    authDomain: "telecare-c852b.firebaseapp.com",
-        //    databaseURL: "https://telecare-c852b.firebaseio.com",
-        //    projectId: "telecare-c852b",
-        //    storageBucket: "telecare-c852b.appspot.com",
-        //    messagingSenderId: "945324237265",
-        //    appId: "1:945324237265:web:4ea74b5e9f81f1789f40f0",
-        //    measurementId: "G-5WF4NMKNWZ"
-        //};
-
-
-        //firebase.initializeApp(config);
-        //firebase.analytics();
-
-    </script>
-
-    @*<script src="~/Scripts/firebase/js/custome.js"></script>
-    @Scripts.Render("~/bundles/firebase")*@
 
 </body>
 </html>
@@ -1133,6 +1136,7 @@
     .Un-publish-sch {
         color: red !important;
     }
+
     #checkPassword {
         -webkit-text-security: disc;
     }
@@ -1179,7 +1183,9 @@
         </script>
     }
 }
-
+<script>
+   
+</script>
 
 
 

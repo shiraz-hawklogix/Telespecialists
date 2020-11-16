@@ -1,0 +1,150 @@
+﻿@{ 
+    var navigators = ViewBag.navigators;
+}
+<div class="row">
+    <div class="col-md-12">
+        <h1 id="lbl">User Going To be Saved...</h1>
+        @*<button class="btn btn-dark" id="btnStart"> Start </button>*@
+        <a href="#" class="btn btn-dark" id="btnStart">Start</a>
+    </div>
+</div>
+@*<script src="https://www.gstatic.com/firebasejs/3.6.9/firebase.js"></script>*@
+<script>
+    //if (!firebase.apps.length) {
+    //    firebase.initializeApp(config);
+    //}
+    var navArr = [];
+    var SenderId;
+    var getUSerId;
+</script>
+<script>
+    $(document).ready(function () {
+    @foreach (var item in navigators)
+            {
+                @:navArr.push({ user_id: "@item.user_id", email: "@item.email", name: "@item.name", firbaseuid: "@item.UserName", ImgPath: "@item.ImgPath"});
+            }
+    });
+
+    $("#btnStart").on("click", function () {
+       
+        console.log('array is : ', navArr);
+        for (var i = 0; i < navArr.length; i++) {
+            logout();
+            let userid = navArr[i].user_id;
+            let username = navArr[i].name;
+            let img = navArr[i].ImgPath;
+            let email = navArr[i].email;
+            let tele_id = 1;
+            try {
+                //loginUsername(email, email, tele_id, username, img, userid);
+                GetUserFirebaseId(Get_Firebbase_user_id(email, email, tele_id, username, img, userid));
+            }
+            catch (err) {
+                console.log(err.message);
+            }
+        }
+    });
+    function loginUsername(email, password, tele_id, username, img, phyuserid) {
+        firebase.auth().signInWithEmailAndPassword(email, password).then(function (value) {
+            firebase.auth().onAuthStateChanged(function (user) {
+                if (user) {
+                    var userId = user.uid;
+                    SenderId = userId;
+                    //SaveInDB(userId, phyuserid);
+                    /*
+                    var ref = firebase.database().ref("TeleUsers");
+                    ref.child(userId).once('value', function (snapshot) {
+                        if (snapshot.val() !== null) {
+                            //_senderName = snapshot.val().name;
+                            //_senderPhoto = snapshot.val().image;
+                            //_teleid = snapshot.val().teleid;
+                        }
+                        else {
+                            // alert('record not found');
+                            firebase.database().ref('TeleUsers').child(userId).set({
+                                id: userId,
+                                name: username,
+                                teleid: tele_id,
+                                image: img
+                            });
+                        }
+
+                    });
+                    */
+                    return user.uid;
+                }
+                else {
+
+                }
+            });
+
+        }).catch(function (error) {
+            console.error(error);
+            //toast(error.message, 7000);
+        });
+
+    }
+    function SaveInDB(userid, phyid) {
+        $.ajax({
+            type: 'POST',
+            url: '/firebaseChat/SaveIdAuto',
+            data: { id: userid, userid: phyid },
+            success: function (e) {
+
+            },
+            Error: function (e) {
+            }
+        });
+    }
+    function logout() {
+        //_SignOutStatus();
+        firebase.auth().signOut().then(function () {
+
+        }).catch(function (error) {
+            // console.log("Error signing user out:", error);
+        });
+    }
+    function _SignOutStatus() {
+        var ref = firebase.database().ref("TeleUsers");
+        ref.on("child_added", function (snapshot) {
+            ref.child(snapshot.key).child('Connections').on('child_added', function (data) {
+                //  console.log(data.key);
+                if (data.key === SenderId) {
+                    var _ref = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
+                    _ref.child(SenderId).update({
+                        Online: false,
+                        lastOnline: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
+            });
+        });
+    }
+
+    function GetUserFirebaseId(userid) {
+        console.log(userid);
+        //console.log('Get Value from promise : ' + Promise.resolve(token));
+        //console.log('Get Value from promise : ' + token.then(function (e) { return e.resolve(); }));
+        var promise = new Promise(function (resolve, reject) {
+            resolve(userid);
+        });
+        promise.then(function (e) {
+            getUSerId = e;
+            console.log('Success, firebase user id is : ' + e);
+            //SaveInDB(e, '');
+        }).catch(function (e) {
+            console.error('husnain look this error : ' + e);
+        });
+
+    }
+    async function Get_Firebbase_user_id(email, password, tele_id, username, img, phyuserid) {
+        try {
+            const firebase_userid = await loginUsername(email, password, tele_id, username, img, phyuserid);
+            return firebase_userid;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+
+</script>
