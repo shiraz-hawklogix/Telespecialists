@@ -877,6 +877,7 @@ namespace TeleSpecialists.BLL.Service
                 final_list.AddRange(physicianCountedTotal);
                 #endregion
             }
+            final_list = TotalCasesColoumn(final_list);
             final_list = DateWiseOrder(final_list);
             return final_list;
         }
@@ -893,6 +894,41 @@ namespace TeleSpecialists.BLL.Service
             getListOfDates = getListOfDates.OrderBy(x => x.assign_date).ToList();
             getListOfDates.AddRange(getListWithoutdates);
             return getListOfDates;
+        }
+        private List<PhysicianBillingByShiftViewModel> TotalCasesColoumn(List<PhysicianBillingByShiftViewModel> list)
+        {
+            List<PhysicianBillingByShiftViewModel> _list = new List<PhysicianBillingByShiftViewModel>();
+            PhysicianBillingByShiftViewModel obj;
+            foreach (var item in list)
+            {
+                obj = new PhysicianBillingByShiftViewModel();
+                obj.Accepted = item.Accepted;
+                obj.Amount = item.Amount;
+                obj.AmountDollar = item.AmountDollar;
+                obj.AssignDate = item.AssignDate;
+                obj.assign_date = item.assign_date;
+                obj.Blast = item.Blast;
+                obj.CC1_STAT = item.CC1_STAT;
+                obj.CC1_StrokeAlert = item.CC1_StrokeAlert;
+                obj.Complete = item.Complete;
+                obj.EEG = item.EEG;
+                obj.FU = item.FU;
+                obj.LTM_EEG = item.LTM_EEG;
+                obj.New = item.New;
+                obj.Not_Seen = item.Not_Seen;
+                obj.Open = item.Open;
+                obj.Physician = item.Physician;
+                obj.PhysicianKey = item.PhysicianKey;
+                obj.Schedule = item.Schedule;
+                obj.TC = item.TC;
+                obj.time_from_calc = item.time_to_calc;
+                obj.Total = item.Total;
+                obj.TotalCases = (item.CC1_StrokeAlert + item.CC1_STAT + item.New + item.FU + item.EEG + item.LTM_EEG + item.TC).ToString();
+                obj.WaitingToAccept = item.WaitingToAccept;
+                _list.Add(obj);
+            }
+
+            return _list;
         }
         private List<PhysicianBillingByShiftViewModel> GetAllScheduleBilling(List<PhysicianBillingByShiftViewModel> list, List<user_schedule> listSchedule, string phy_id)
         {
