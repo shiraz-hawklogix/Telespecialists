@@ -11,6 +11,6 @@ namespace TeleSpecialists.BLL.Helpers
         public int psl_key { get; set; }
         public string physician_name { get; set;}
         public string physician_status { get; set; }
-        public DateTime psl_created_date { get; set; }
+        public DateTime psl_created_date { get; set; }  
     }
 }
