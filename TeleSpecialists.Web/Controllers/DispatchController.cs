@@ -278,16 +278,16 @@ namespace TeleSpecialists.Web.Controllers
                                         model.cas_modified_date = DateTime.Now.ToEST();
 
                                         #endregion
-                                        
+
                                         // Internal Blast
-                                        #region Husnain code for firebase
-                                        var physicians = phyList.ToList();
-                                        HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
-                                        var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                        var phyids = firebaseUsers.Select(x => x.user_id).ToList();
-                                        var paramData = new List<object>();
-                                        paramData.Add(JsonConvert.SerializeObject(phyids));
-                                        bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phyids, caseType: "InternalBlast", Data: paramData);
+                                        #region Husnain code for firebase *******TEMPORARY COMMENT*******
+                                        //var physicians = phyList.ToList();
+                                        //HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
+                                        //var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
+                                        //var phyids = firebaseUsers.Select(x => x.user_id).ToList();
+                                        //var paramData = new List<object>();
+                                        //paramData.Add(JsonConvert.SerializeObject(phyids));
+                                        //bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phyids, caseType: "InternalBlast", Data: paramData);
                                         #endregion
                                     }
                                 }
@@ -357,13 +357,13 @@ namespace TeleSpecialists.Web.Controllers
                                     #endregion
 
                                     // External Blast
-                                    #region Husnain code for firebase
-                                    HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
-                                    var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                    var phyids = firebaseUsers.Select(x => x.user_id).ToList();
-                                    var paramData = new List<object>();
-                                    paramData.Add(JsonConvert.SerializeObject(phyids));
-                                    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phyids, caseType: "ExternalBlast", Data: paramData);
+                                    #region Husnain code for firebase *******TEMPORARY COMMENT*******
+                                    //HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
+                                    //var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
+                                    //var phyids = firebaseUsers.Select(x => x.user_id).ToList();
+                                    //var paramData = new List<object>();
+                                    //paramData.Add(JsonConvert.SerializeObject(phyids));
+                                    //bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phyids, caseType: "ExternalBlast", Data: paramData);
                                     #endregion
                                 }
 
@@ -450,14 +450,14 @@ namespace TeleSpecialists.Web.Controllers
                                     #endregion
 
                                     // Internal Blast
-                                    #region Husnain code for firebase
-                                    var physicians = phyList.ToList();
-                                    HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
-                                    var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                    var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                                    var paramData = new List<object>();
-                                    paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                                    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "InternalBlast", Data: paramData);
+                                    #region Husnain code for firebase *******TEMPORARY COMMENT*******
+                                    //var physicians = phyList.ToList();
+                                    //HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
+                                    //var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
+                                    //var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
+                                    //var paramData = new List<object>();
+                                    //paramData.Add(JsonConvert.SerializeObject(phy_ids));
+                                    //bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "InternalBlast", Data: paramData);
                                     #endregion
                                 }
                             }
@@ -526,13 +526,13 @@ namespace TeleSpecialists.Web.Controllers
                                 #endregion
 
                                 // External Blast
-                                #region Husnain code for firebase
-                                HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
-                                var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                                var paramData = new List<object>();
-                                paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                                bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
+                                #region Husnain code for firebase *******TEMPORARY COMMENT*******
+                                //HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
+                                //var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
+                                //var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
+                                //var paramData = new List<object>();
+                                //paramData.Add(JsonConvert.SerializeObject(phy_ids));
+                                //bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
                                 #endregion
                             }
 
@@ -614,36 +614,36 @@ namespace TeleSpecialists.Web.Controllers
 
 
                                 // Internal Blast
-                                #region Husnain code for firebase
-                                var physicians = phyList.ToList();//.Select(x => x.AspNetUser_Id).ToList();
-                                if(physicians.Count > 0)
-                                {
-                                    //These Physcians have not rejected this case yet.
-                                    HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
-                                    var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                    var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                                    var paramData = new List<object>();
-                                    paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                                    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "InternalBlast", Data: paramData);
-                                }
-                                else
-                                {
-                                    var credentialedPhysiciansList = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, model.cas_fac_key, null, model.cas_ctp_key).ToList();
+                                #region Husnain code for firebase *******TEMPORARY COMMENT*******
+                                //var physicians = phyList.ToList();//.Select(x => x.AspNetUser_Id).ToList();
+                                //if(physicians.Count > 0)
+                                //{
+                                //    //These Physcians have not rejected this case yet.
+                                //    HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
+                                //    var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
+                                //    var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
+                                //    var paramData = new List<object>();
+                                //    paramData.Add(JsonConvert.SerializeObject(phy_ids));
+                                //    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "InternalBlast", Data: paramData);
+                                //}
+                                //else
+                                //{
+                                //    var credentialedPhysiciansList = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, model.cas_fac_key, null, model.cas_ctp_key).ToList();
 
-                                    if (credentialedPhysiciansList != null && credentialedPhysiciansList.Count > 0)
-                                    {
-                                        // External Blast
-                                        #region Husnain code for firebase
-                                        HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
-                                        var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                        var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                                        var paramData = new List<object>();
-                                        paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                                        bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
-                                        #endregion
-                                    }
-                                }
-                                
+                                //    if (credentialedPhysiciansList != null && credentialedPhysiciansList.Count > 0)
+                                //    {
+                                //        // External Blast
+                                //        #region Husnain code for firebase
+                                //        HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
+                                //        var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
+                                //        var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
+                                //        var paramData = new List<object>();
+                                //        paramData.Add(JsonConvert.SerializeObject(phy_ids));
+                                //        bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
+                                //        #endregion
+                                //    }
+                                //}
+
                                 #endregion
                             }
                         }
@@ -668,7 +668,7 @@ namespace TeleSpecialists.Web.Controllers
                                 model.cas_modified_by_name = loggedInUser.FullName;
                                 model.cas_modified_date = DateTime.Now.ToEST();
                             }
-                            //else
+                            //else      *******This is NOT Temporary Comment*******
                             //{
                             //    // Internal Blast
                             //    #region Husnain code for firebase
@@ -712,13 +712,13 @@ namespace TeleSpecialists.Web.Controllers
                             #endregion
 
                             // External Blast
-                            #region Husnain code for firebase
-                            HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
-                            var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                            var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                            var paramData = new List<object>();
-                            paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                            bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
+                            #region Husnain code for firebase *******TEMPORARY COMMENT*******
+                            //HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
+                            //var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
+                            //var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
+                            //var paramData = new List<object>();
+                            //paramData.Add(JsonConvert.SerializeObject(phy_ids));
+                            //bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
                             #endregion
                         }
 
@@ -784,9 +784,14 @@ namespace TeleSpecialists.Web.Controllers
 
         [HttpPost]
         public ActionResult Save(int casKey, string physician, string status)
-        { 
+        {
 
             var dbModel = _caseService.GetDetails(casKey);
+            //string physicianKey = physician;
+            //if (!string.IsNullOrEmpty(status)) { status = status.ToLower(); }
+            //if (dbModel.cas_phy_key != physicianKey && physicianKey != "" || status != "waiting to accept") // Physician Changed OR Status Changed
+            //{
+            //} 
 
             #region Check authorized user to save case
             if (User.IsInRole(UserRoles.Physician.ToDescription()))
@@ -862,7 +867,7 @@ namespace TeleSpecialists.Web.Controllers
                 {
                     if (status == "waiting to accept")
                     {
-                        SendCaseToPhysician(dbModel);
+                      //  SendCaseToPhysician(dbModel); //*******TEMPORARY COMMENT******* 
                     }
                 }
                 catch (Exception e) { }

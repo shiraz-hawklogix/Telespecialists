@@ -17,7 +17,7 @@
         border: 1px solid #ccc;
         border-radius: 3px;
         margin: 10px;
-		position: relative; 
+        position: relative;
     }
 
         #styleReasonsDD a:hover {
@@ -73,38 +73,38 @@
     li:hover > ul {
         display: block;
         position: absolute;
-		left: 0;
-		right: 0;
-		top: 100%;
-		z-index: 1;
-		padding-left: 0;
+        left: 0;
+        right: 0;
+        top: 100%;
+        z-index: 1;
+        padding-left: 0;
     }
 
-	    
-	#styleReasonsDD > ul{
+
+    #styleReasonsDD > ul{
         border: 1px solid #a9a9a9;
-		background-color: #fff;
+        background-color: #fff;
     }
 
-	#styleReasonsDD > ul > li{
-        margin: 0;
-		background-color: #c3c3c3;
-		border-radius: 0;
-		border: 0;
-		margin-bottom: 1px;
-    }
+        #styleReasonsDD > ul > li{
+            margin: 0;
+            background-color: #c3c3c3;
+            border-radius: 0;
+            border: 0;
+            margin-bottom: 1px;
+        }
 
-	
+
 
     li:hover > ul > li:hover {
         float: none;
-		background-color: #000000 !important;
-		color: #ffffff;
-		transition: all 0.5s ease-in-out;
+        background-color: #000000 !important;
+        color: #ffffff;
+        transition: all 0.5s ease-in-out;
     }
 
-	#styleReasonsDD > ul > li:hover > a {
-		color: #ffffff;
+    #styleReasonsDD > ul > li:hover > a {
+        color: #ffffff;
     }
 
     /*li:hover a {
@@ -138,6 +138,9 @@
     }
     .modal-backdrop {
         z-index: -1;
+    }
+    .case-grid-crr_reason {
+        overflow: unset !important;
     }
 </style>
 
@@ -191,8 +194,8 @@
                 <div id="dispatchAcceptedGrid" class="col-md-12" style="padding:0px; height:300px; border:0px;">
                 </div>
                 @*<div class="col-md-4" id="firebaseChatDiv" >
-                   {Html.RenderAction("_firebaseChat");}
-                </div>*@
+                       {Html.RenderAction("_firebaseChat");}
+                    </div>*@
             </div>
 
 
@@ -203,16 +206,19 @@
 
 </div>
 
-<div class="sticky">Chat Messages <span class="Stickybadge">0</span></div>
-<div class="stickyFirebase" style="display:none">
-    <span class="Stickybadge">0</span>
-    <div class="headerStickyFirebase">Chat Messages</div>
-    <div class="bodyStickyFirebase">
-        <div class="contentChat">
-            @{Html.RenderAction("_firebaseChat");}
+ @********TEMPORARY COMMENT********@
+@*<div class="sticky">Chat Messages <span class="Stickybadge">0</span></div>
+
+    <div class="stickyFirebase" style="display:none">
+        <span class="Stickybadge">0</span>
+        <div class="headerStickyFirebase">Chat Messages</div>
+        <div class="bodyStickyFirebase">
+            <div class="contentChat">
+                @{Html.RenderAction("_firebaseChat");}
+            </div>
         </div>
-    </div>
-</div>
+    </div>*@
+ @********TEMPORARY COMMENT********@
 
 @Html.Partial("_dispatchCopyPopup")
 
@@ -230,7 +236,7 @@
             {
                 @:navigatorsArr.push({ user_id: "@item.user_id", email: "@item.email", name: "@item.name", firbaseuid: "@item.UserName", ImgPath: "@item.ImgPath"});
             }
-       
+
 
     });
     //if (!firebase.apps.length) {
@@ -340,8 +346,8 @@
                 { hidden: true, field: "cas_fac_key" },
                 { hidden: true, field: "dateTimeElapsed" },
 
-                { command: { template: "<button class='btn btn-warning btn-sm py-1' onclick='internalBlast(event)'>I B</button>" }, title: "", width: "40px !important" },
-                { command: { template: "<button class='btn btn-danger btn-sm py-1' onclick='externalBlast(event)'>E B</button>" }, title: "", width: "40px !important" },
+                { hidden: true, command: { template: "<button class='btn btn-warning btn-sm py-1' onclick='internalBlast(event)'>I B</button>" }, title: "" }, //, width: "40px !important"
+                { hidden: true, command: { template: "<button class='btn btn-danger btn-sm py-1' onclick='externalBlast(event)'>E B</button>" }, title: "" }, //, width: "40px !important"
                 {
                     field: "fac_name", title: "Facility", width: '150px',
                     attributes: { "class": "case-grid-facitlityName" }
@@ -565,7 +571,8 @@
         RefreshMode = true;
         var STFrow = $(e.currentTarget).closest("tr");
 
-        // Set Save Button Green & Disabled on Click 
+        // Set Save Button Green & Disabled on Click
+        /*  *******TEMPORARY COMMENT*******
         var savecolumn = STFrow[0].children[10];
         var btn = $(savecolumn).children().eq(0);
         $(btn).removeClass("btn-dark");
@@ -573,28 +580,33 @@
 
         $(btn).removeAttr("disabled");
         $(btn).attr("disabled", "disabled");
+
+        *******TEMPORARY COMMENT*******
+        */
         //
+
+
         var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(e.currentTarget).closest("tr"));
         var checkPhyKey = STFrow[0].children[13].innerText;
-        var automStampMsg = dataItem.CombinedMessage;
-        console.log('your auto stamp is: ' + automStampMsg);
+        //var automStampMsg = dataItem.CombinedMessage; *******TEMPORARY COMMENT*******
+        //console.log('your auto stamp is: ' + automStampMsg);  *******TEMPORARY COMMENT*******
         var phy_key = "";
         if (checkPhyKey == "00000000-0000-0000-0000-000000000000" || checkPhyKey == "") {
-            phy_key = dataItem.cas_phy_key; 
+            phy_key = dataItem.cas_phy_key;
         }
         else {
             var phy_key = STFrow[0].children[13].innerText;
-        } 
-        console.log('total navigators we found : ', navigatorsArr);
+        }
+        //console.log('total navigators we found : ', navigatorsArr); *******TEMPORARY COMMENT*******
         e.preventDefault();
         var casKey = dataItem.cas_key;
         var status = dataItem.cst_name;
         var physician = STFrow[0].children[14].innerText;
 
 
-        if (status == "Waiting to Accept") { // Important Check To Stop Multiple Alert Popups to Physician
-            GetAutoStamp(casKey, phy_key, physician, automStampMsg);
-        }
+        //if (status == "Waiting to Accept") { // Important Check To Stop Multiple Alert Popups to Physician*******TEMPORARY COMMENT*******
+        //    GetAutoStamp(casKey, phy_key, physician, automStampMsg);*******TEMPORARY COMMENT*******
+        //}*******TEMPORARY COMMENT*******
 
         var baseurl = "@Url.Action("Save")";
         $.ajax({
@@ -604,8 +616,8 @@
                 if (resp == "Updated") {
                     //window.location.href = '../Dispatch/Index';
                     console.log("success");
-                    markAsSent(casKey);
-                    CheckSaveButtonStatus();
+                  //  markAsSent(casKey);  *******TEMPORARY COMMENT*******
+                  //  CheckSaveButtonStatus();  *******TEMPORARY COMMENT*******
                     refreshWaitingToAcceptedGrid();
                     refreshAcceptedGrid();
                 }
@@ -617,7 +629,7 @@
                 console.log("error");
             }
         });
-        
+
       //  markAsDisabled(e);
 
 
@@ -637,14 +649,14 @@
             type: 'POST',
             success: function (resp) {
                 SetColor();
-                
-                //if (resp) { 
-                //    console.log("success"); 
+
+                //if (resp) {
+                //    console.log("success");
                 //}
             },
             data: {
                 format: 'json'
-            } 
+            }
         });
 
     }
@@ -672,9 +684,9 @@
             var btn = $(savecolumn).children().eq(0);
 
             for (var sidx = 0; sidx < sentCases.length; sidx++) {
-                 
+
                 if (sentCases[sidx].cas_key == parseInt(key) && sentCases[sidx].row_status == false) {
-                     
+
                     $(btn).removeClass("btn-dark");
                     $(btn).addClass("btn-success");
 
@@ -765,7 +777,7 @@
 
             $.ajax({
                 url: baseurl + "?fac_key=" + cas_fac_key + "&cas_ctp_key=" + cas_ctp_key,
-                type: 'POST',              
+                type: 'POST',
                 success: function (resp) {
                     console.log("success");
                         $("#tbodyForPhysician").html(resp.htmlData);
@@ -791,7 +803,7 @@
         //        if (xx.Selected == true) {
         //            return xx;
         //        }
-        //    }); 
+        //    });
 
         $('<input required name="' + options.field + '"/>')
             .appendTo(container)
@@ -808,7 +820,7 @@
                             type: "GET"
                         }
                     }
-                }, 
+                },
                 //dataSource: options.model.PhysicianDD,
                 open: function (e) {
                     this.dataSource.read();
@@ -819,7 +831,7 @@
                     }
                     else
                     {
-                  
+
                     if (e.dataItem != undefined) {
                         var phyvalue = e.dataItem.Value;
                         var phytext = e.dataItem.Text;
@@ -839,12 +851,12 @@
 
                         if (e.dataItem != undefined) {
                             e.dataItem.Value = e.dataItem.Text;
-                             
+
                         }
                     }
                 },
                 change: function (e) {
-                     
+
                     if (SetColor.To != undefined) {
                         window.clearTimeout(SetColor.To);
                     }
@@ -854,7 +866,7 @@
                     //if (index > -1) {
                     //    disabledSaveButtons.splice(index, 1);
                     //}
-                    
+
                     var ColumnCell = datarow[0].children[10];
                     $(ColumnCell.children[0]).removeAttr("disabled");
                 }
@@ -864,7 +876,7 @@
         clearInterval(Continued);
         Continued = setInterval(function () { ContinuePausedRefresh(); }, 30000);
     }
-    
+
 
         function caseStatusDropDownEditor(container, options) {
             var datarow = $(container).closest("tr");
@@ -890,7 +902,7 @@
                          var ColumnCell = datarow[0].children[10];
                          $(ColumnCell.children[0]).removeAttr("disabled");
                      }
-                    
+
                 });
 
             RefreshMode = false;
@@ -907,7 +919,7 @@
         console.log('result from controller:', _result);
         return _result;
     }
-    
+
 
 
 </script>
@@ -1016,17 +1028,21 @@
                     refreshWaitingToAcceptedGrid();
                     refreshAcceptedGrid();
                     if (e !== 'true') {
-                        var grpForRejectCase = [];
+                      /*
+                       *******TEMPORARY COMMENT*******
+                       var grpForRejectCase = [];
                         var dataArrray = e.list;
                         for (var i = 0; i < dataArrray.length; i++) {
                             grpForRejectCase.push({ user_id: dataArrray[i].user_id, email: dataArrray[i].email, name: dataArrray[i].name, firbaseuid: dataArrray[i].UserName, ImgPath: dataArrray[i].ImgPath });
                         }
-                        
+
                         console.log('chat going to be initait : ' , grpForRejectCase);
                         let grpName = 'Technical Discussion ' + e.initials;//'Technical Discussion Case# ' + e.caseNumber;
                         let automsg = 'Lets start Discussion on technical issues with reason ' + reasonText + ' of Case# ' + e.caseNumber + ' with ' + e.physicianName;
                         let grpfor = 'TD_' + e.phy_key + '_' + e.initials;
                         _CreateGroupNew(grpName, 'Private', automsg, grpfor, grpForRejectCase);
+                        */
+
                     }
 
 
@@ -1057,13 +1073,15 @@
          });
     }
 
-    function CheckSaveButtonStatus() { 
+   /*
+     *******TEMPORARY COMMENT*******
+    function CheckSaveButtonStatus() {
         $("#hdnDisableLoader").val("1");
         $.ajax({
             type: 'GET',
             url: '/Dispatch/GetBtnStatusList',
             success: function (e) {
-                if (e) { 
+                if (e) {
                     sentCases = [];
                     sentCases = e;
                 }
@@ -1075,6 +1093,8 @@
             }
         });
     }
+     *******TEMPORARY COMMENT*******
+     */
 
 
 
@@ -1103,13 +1123,13 @@
     //    });
     //}
 
-    
+
     //function StopRefresh() {
     //    $.ajax({
     //        type: 'POST',
     //        url: '/Dispatch/SetRefreshCase',
     //        success: function (e) {
-    //            console.log('stop refresh data : ' + e); 
+    //            console.log('stop refresh data : ' + e);
     //        },
     //        Error: function (e) {
     //            console.error(e);
@@ -1125,7 +1145,7 @@
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     var GlobalRefreshTrigger = 0;
-    var GlobalGetSaveButtonListTrigger = 0;
+    //var GlobalGetSaveButtonListTrigger = 0;// ******* TEMPORARY COMMENT *******
     var RefreshMode = true;
     function CheckRefreshCase() {
         $("#hdnDisableLoader").val("1");
@@ -1152,6 +1172,8 @@
         });
     }
 
+    /*
+    *******TEMPORARY COMMENT*******
     function CheckRefreshSaveStatusList() {
         $("#hdnDisableLoader").val("1");
         $.ajax({
@@ -1159,13 +1181,13 @@
             url: '/Dispatch/GetSaveStatusBit',
             success: function (e) {
                 //console.log('Save Button List : ' + e);
-                if (e) { 
+                if (e) {
                     if (GlobalGetSaveButtonListTrigger != e)
-                    { 
+                    {
                         CheckSaveButtonStatus();
                         GlobalGetSaveButtonListTrigger = e;
                     }
-                     
+
                 }
             },
             Error: function (e) {
@@ -1175,7 +1197,8 @@
             }
         });
     }
-
+    *******TEMPORARY COMMENT*******
+    */
 
 
     function ContinuePausedRefresh() {
@@ -1188,17 +1211,20 @@
     var Continued = 0;
 
     $(document).ready(function () {
-        var refreshDispatch =  setInterval(function () { CheckRefreshCase(); }, 3000); 
+        var refreshDispatch =  setInterval(function () { CheckRefreshCase(); }, 3000);
         Continued = setInterval(function () { ContinuePausedRefresh(); }, 30000);
 
-        CheckSaveButtonStatus();
-        //var statuslist = setInterval(function () { CheckSaveButtonStatus(); }, 1000);
-        //sentCases = [];
-        //sentCases = statuslist;
+        //CheckSaveButtonStatus(); *******TEMPORARY COMMENT*******
 
-          var responseint = setInterval(function () { CheckRefreshSaveStatusList(); }, 2000);
 
-        
+
+        //var statuslist = setInterval(function () { CheckSaveButtonStatus(); }, 1000); //This is not temporary comment
+        //sentCases = [];   //This is not temporary comment
+        //sentCases = statuslist;   //This is not temporary comment
+
+         // var responseint = setInterval(function () { CheckRefreshSaveStatusList(); }, 2000); *******TEMPORARY COMMENT*******
+
+
     });
 
 
