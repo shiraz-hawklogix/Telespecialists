@@ -250,6 +250,15 @@
           <Property Name="aud_host_name" Type="nvarchar" MaxLength="100" />
           <Property Name="aud_others" Type="nvarchar(max)" />
         </EntityType>
+        <EntityType Name="BCI_ReportData">
+          <Key>
+            <PropertyRef Name="BCI_ID" />
+          </Key>
+          <Property Name="BCI_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Phy_Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="Phy_Bci_Value" Type="nvarchar" MaxLength="100" />
+          <Property Name="Phy_Id" Type="nvarchar" MaxLength="100" />
+        </EntityType>
         <EntityType Name="call_history">
           <Key>
             <PropertyRef Name="chi_key" />
@@ -883,6 +892,17 @@
           <Property Name="cts_modified_date" Type="datetime" />
           <Property Name="cts_modified_by" Type="varchar" MaxLength="128" />
           <Property Name="cts_callback_to_tsnotification" Type="bigint" />
+        </EntityType>
+        <EntityType Name="CCIReport_Data">
+          <Key>
+            <PropertyRef Name="CCI_ID" />
+          </Key>
+          <Property Name="CCI_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Physician_Id" Type="nvarchar" MaxLength="100" />
+          <Property Name="Physician_CCI" Type="nvarchar" MaxLength="50" />
+          <Property Name="Month" Type="datetime" />
+          <Property Name="Date" Type="datetime" />
+          <Property Name="Physician_Name" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="component_access">
           <Key>
@@ -1951,6 +1971,20 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="ucd_modified_date" Type="datetime" />
           <Property Name="ucd_modified_by" Type="nvarchar" MaxLength="128" />
         </EntityType>
+        <EntityType Name="user_access">
+          <Key>
+            <PropertyRef Name="user_key" />
+          </Key>
+          <Property Name="user_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_role_key" Type="nvarchar" MaxLength="128" />
+          <Property Name="user_id" Type="nvarchar" MaxLength="128" />
+          <Property Name="user_com_key" Type="int" />
+          <Property Name="user_isAllowed" Type="bit" Nullable="false" />
+          <Property Name="user_createddate" Type="datetime" />
+          <Property Name="user_createdBy" Type="nvarchar" MaxLength="128" />
+          <Property Name="user_updateddate" Type="datetime" />
+          <Property Name="user_updatedBy" Type="nvarchar" MaxLength="128" />
+        </EntityType>
         <EntityType Name="user_login_verify">
           <Key>
             <PropertyRef Name="Id" />
@@ -2055,6 +2089,43 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="wcl_error_mail_date" Type="datetime" />
           <Property Name="wcl_re_processed_date" Type="datetime" />
           <Property Name="wcl_request_retry_count" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_facility_physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="view_facility_physician">
+          <Key>
+            <PropertyRef Name="fap_key" />
+            <PropertyRef Name="fap_fac_key" />
+            <PropertyRef Name="fap_user_key" />
+            <PropertyRef Name="fap_is_active" />
+            <PropertyRef Name="fac_name" />
+            <PropertyRef Name="fac_is_active" />
+            <PropertyRef Name="fap_is_on_boarded" />
+            <PropertyRef Name="fac_go_live" />
+          </Key>
+          <Property Name="fap_key" Type="int" Nullable="false" />
+          <Property Name="fap_fac_key" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="fap_user_key" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="fap_is_active" Type="bit" Nullable="false" />
+          <Property Name="fac_name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="fac_is_active" Type="bit" Nullable="false" />
+          <Property Name="fap_is_on_boarded" Type="bit" Nullable="false" />
+          <Property Name="fac_go_live" Type="bit" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="view_user_schedule">
+          <Key>
+            <PropertyRef Name="uss_key" />
+            <PropertyRef Name="uss_user_id" />
+            <PropertyRef Name="IsStrokeAlert" />
+          </Key>
+          <Property Name="uss_key" Type="bigint" Nullable="false" />
+          <Property Name="uss_user_id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="IsStrokeAlert" Type="bit" Nullable="false" />
+          <Property Name="DayNumber" Type="bigint" />
+          <Property Name="TIMEFROM" Type="bigint" />
+          <Property Name="TIMETO" Type="bigint" />
         </EntityType>
         <Association Name="FK_AspNetUsers_Log_AspNetUsers">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
@@ -2912,6 +2983,10 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Parameter Name="isTimeBetween7and12" Type="int" Mode="In" />
           <Parameter Name="SoftSaveGuid" Type="uniqueidentifier" Mode="In" />
         </Function>
+        <Function Name="UspGetAllCaseDataForCCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UspGetAllOnBoarededList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UspGetAllPhyDataForBCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="UspGetAllPhyDataForCCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="UspGetAllPhysicion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="UspGetCaseDataForBCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
@@ -2937,6 +3012,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
         </Function>
+        <Function Name="UspGetForecastDataFOorMOnthly" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="UspGetRCIData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
@@ -2954,6 +3030,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="AspNetUsers_Log" EntityType="Self.AspNetUsers_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers_PasswordReset" EntityType="Self.AspNetUsers_PasswordReset" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="audit_records" EntityType="Self.audit_records" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BCI_ReportData" EntityType="Self.BCI_ReportData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="call_history" EntityType="Self.call_history" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case" EntityType="Self.case" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_assign_history" EntityType="Self.case_assign_history" Schema="dbo" store:Type="Tables" />
@@ -2967,6 +3044,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="case_template_stroke_tpa" EntityType="Self.case_template_stroke_tpa" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_template_telestroke_notpa" EntityType="Self.case_template_telestroke_notpa" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_timestamp" EntityType="Self.case_timestamp" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CCIReport_Data" EntityType="Self.CCIReport_Data" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="component_access" EntityType="Self.component_access" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="components" EntityType="Self.components" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="contact" EntityType="Self.contact" Schema="dbo" store:Type="Tables" />
@@ -3017,6 +3095,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="token" EntityType="Self.token" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ucl" EntityType="Self.ucl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ucl_data" EntityType="Self.ucl_data" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="user_access" EntityType="Self.user_access" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_login_verify" EntityType="Self.user_login_verify" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_schedule" EntityType="Self.user_schedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_schedule_nhalert" EntityType="Self.user_schedule_nhalert" Schema="dbo" store:Type="Tables" />
@@ -3056,6 +3135,28 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
     [MDStaffFacility].[IsLoaded] AS [IsLoaded], 
     [MDStaffFacility].[ImportDateUTC] AS [ImportDateUTC]
     FROM [dbo].[MDStaffFacility] AS [MDStaffFacility]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="view_facility_physician" EntityType="Self.view_facility_physician" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [view_facility_physician].[fap_key] AS [fap_key], 
+    [view_facility_physician].[fap_fac_key] AS [fap_fac_key], 
+    [view_facility_physician].[fap_user_key] AS [fap_user_key], 
+    [view_facility_physician].[fap_is_active] AS [fap_is_active], 
+    [view_facility_physician].[fac_name] AS [fac_name], 
+    [view_facility_physician].[fac_is_active] AS [fac_is_active], 
+    [view_facility_physician].[fap_is_on_boarded] AS [fap_is_on_boarded], 
+    [view_facility_physician].[fac_go_live] AS [fac_go_live]
+    FROM [dbo].[view_facility_physician] AS [view_facility_physician]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="view_user_schedule" EntityType="Self.view_user_schedule" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [view_user_schedule].[uss_key] AS [uss_key], 
+    [view_user_schedule].[uss_user_id] AS [uss_user_id], 
+    [view_user_schedule].[IsStrokeAlert] AS [IsStrokeAlert], 
+    [view_user_schedule].[DayNumber] AS [DayNumber], 
+    [view_user_schedule].[TIMEFROM] AS [TIMEFROM], 
+    [view_user_schedule].[TIMETO] AS [TIMETO]
+    FROM [dbo].[view_user_schedule] AS [view_user_schedule]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_AspNetUsers_Log_AspNetUsers" Association="Self.FK_AspNetUsers_Log_AspNetUsers">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -3703,6 +3804,16 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <End Role="mock_case" EntitySet="mock_case" />
           </AssociationSet>
           <EntitySet Name="telecare_counters" EntityType="DataModel.telecare_counters" />
+          <EntitySet Name="BCI_ReportData" EntityType="DataModel.BCI_ReportData" />
+          <EntitySet Name="CCIReport_Data" EntityType="DataModel.CCIReport_Data" />
+          <FunctionImport Name="UspGetAllCaseDataForCCI" ReturnType="Collection(DataModel.UspGetAllCaseDataForCCI_Result)" />
+          <FunctionImport Name="UspGetAllOnBoarededList" ReturnType="Collection(DataModel.UspGetAllOnBoarededList_Result)" />
+          <FunctionImport Name="UspGetAllPhyDataForBCI" ReturnType="Collection(DataModel.UspGetAllPhyDataForBCI_Result)" />
+          <FunctionImport Name="UspGetAllPhyDataForCCI" ReturnType="Collection(DataModel.UspGetAllPhyDataForCCI_Result)" />
+          <FunctionImport Name="UspGetForecastDataFOorMOnthly" ReturnType="Collection(DataModel.UspGetForecastDataFOorMOnthly_Result)" />
+          <EntitySet Name="user_access" EntityType="DataModel.user_access" />
+          <EntitySet Name="view_facility_physician" EntityType="DataModel.view_facility_physician" />
+          <EntitySet Name="view_user_schedule" EntityType="DataModel.view_user_schedule" />
 
           </EntityContainer>
         <EntityType Name="alarm_setting">
@@ -6779,6 +6890,107 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="counter_text" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="counter_value" Type="Int64" />
         </EntityType>
+        <EntityType Name="BCI_ReportData">
+          <Key>
+            <PropertyRef Name="BCI_ID" />
+          </Key>
+          <Property Name="BCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Phy_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Phy_Bci_Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Phy_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="CCIReport_Data">
+          <Key>
+            <PropertyRef Name="CCI_ID" />
+          </Key>
+          <Property Name="CCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Physician_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Physician_CCI" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Month" Type="DateTime" Precision="3" />
+          <Property Name="Date" Type="DateTime" Precision="3" />
+          <Property Name="Physician_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <ComplexType Name="UspGetAllCaseDataForCCI_Result">
+          <Property Type="String" Name="cas_phy_key" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="cas_fac_key" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="cas_metric_video_start_time" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="cas_metric_video_end_time" Nullable="true" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="UspGetAllOnBoarededList_Result">
+          <Property Type="Int32" Name="fap_key" Nullable="false" />
+          <Property Type="Guid" Name="fap_fac_key" Nullable="false" />
+          <Property Type="String" Name="fap_user_key" Nullable="false" MaxLength="128" />
+          <Property Type="Boolean" Name="fap_is_on_boarded" Nullable="false" />
+          <Property Type="String" Name="Physician_Name" Nullable="false" MaxLength="513" />
+        </ComplexType>
+        <ComplexType Name="UspGetAllPhyDataForBCI_Result">
+          <Property Type="Int32" Name="BCI_ID" Nullable="false" />
+          <Property Type="String" Name="Phy_Name" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="Phy_Bci_Value" Nullable="true" MaxLength="100" />
+        </ComplexType>
+        <ComplexType Name="UspGetAllPhyDataForCCI_Result">
+          <Property Type="Int32" Name="CCI_ID" Nullable="false" />
+          <Property Type="String" Name="Physician_Id" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="Physician_CCI" Nullable="true" MaxLength="50" />
+          <Property Type="DateTime" Name="Month" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="Date" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Physician_Name" Nullable="true" MaxLength="100" />
+        </ComplexType>
+        <ComplexType Name="UspGetForecastDataFOorMOnthly_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="Fac_Id" Nullable="true" MaxLength="100" />
+          <Property Type="String" Name="Fac_Name" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Month_Name" Nullable="true" Precision="23" />
+          <Property Type="String" Name="Month_Prediction" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="Created_Date" Nullable="true" Precision="23" />
+        </ComplexType>
+        <EntityType Name="user_access">
+          <Key>
+            <PropertyRef Name="user_key" />
+          </Key>
+          <Property Name="user_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_role_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="user_id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="user_com_key" Type="Int32" />
+          <Property Name="user_isAllowed" Type="Boolean" Nullable="false" />
+          <Property Name="user_createddate" Type="DateTime" Precision="3" />
+          <Property Name="user_createdBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="user_updateddate" Type="DateTime" Precision="3" />
+          <Property Name="user_updatedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="view_facility_physician">
+          <Key>
+            <PropertyRef Name="fap_key" />
+            <PropertyRef Name="fap_fac_key" />
+            <PropertyRef Name="fap_user_key" />
+            <PropertyRef Name="fap_is_active" />
+            <PropertyRef Name="fac_name" />
+            <PropertyRef Name="fac_is_active" />
+            <PropertyRef Name="fap_is_on_boarded" />
+            <PropertyRef Name="fac_go_live" />
+          </Key>
+          <Property Name="fap_key" Type="Int32" Nullable="false" />
+          <Property Name="fap_fac_key" Type="Guid" Nullable="false" />
+          <Property Name="fap_user_key" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="fap_is_active" Type="Boolean" Nullable="false" />
+          <Property Name="fac_name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="fac_is_active" Type="Boolean" Nullable="false" />
+          <Property Name="fap_is_on_boarded" Type="Boolean" Nullable="false" />
+          <Property Name="fac_go_live" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="view_user_schedule">
+          <Key>
+            <PropertyRef Name="uss_key" />
+            <PropertyRef Name="uss_user_id" />
+            <PropertyRef Name="IsStrokeAlert" />
+          </Key>
+          <Property Name="uss_key" Type="Int64" Nullable="false" />
+          <Property Name="uss_user_id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsStrokeAlert" Type="Boolean" Nullable="false" />
+          <Property Name="DayNumber" Type="Int64" />
+          <Property Name="TIMEFROM" Type="Int64" />
+          <Property Name="TIMETO" Type="Int64" />
+        </EntityType>
 
         </Schema>
     </edmx:ConceptualModels>
@@ -9024,6 +9236,123 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
                 <ScalarProperty Name="counter_value" ColumnName="counter_value" />
                 <ScalarProperty Name="counter_text" ColumnName="counter_text" />
                 <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BCI_ReportData">
+            <EntityTypeMapping TypeName="DataModel.BCI_ReportData">
+              <MappingFragment StoreEntitySet="BCI_ReportData">
+                <ScalarProperty Name="Phy_Id" ColumnName="Phy_Id" />
+                <ScalarProperty Name="Phy_Bci_Value" ColumnName="Phy_Bci_Value" />
+                <ScalarProperty Name="Phy_Name" ColumnName="Phy_Name" />
+                <ScalarProperty Name="BCI_ID" ColumnName="BCI_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CCIReport_Data">
+            <EntityTypeMapping TypeName="DataModel.CCIReport_Data">
+              <MappingFragment StoreEntitySet="CCIReport_Data">
+                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="Physician_CCI" ColumnName="Physician_CCI" />
+                <ScalarProperty Name="Physician_Id" ColumnName="Physician_Id" />
+                <ScalarProperty Name="CCI_ID" ColumnName="CCI_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllCaseDataForCCI" FunctionName="DataModel.Store.UspGetAllCaseDataForCCI">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllCaseDataForCCI_Result">
+                <ScalarProperty Name="cas_phy_key" ColumnName="cas_phy_key" />
+                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
+                <ScalarProperty Name="cas_metric_video_start_time" ColumnName="cas_metric_video_start_time" />
+                <ScalarProperty Name="cas_metric_video_end_time" ColumnName="cas_metric_video_end_time" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllOnBoarededList" FunctionName="DataModel.Store.UspGetAllOnBoarededList">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllOnBoarededList_Result">
+                <ScalarProperty Name="fap_key" ColumnName="fap_key" />
+                <ScalarProperty Name="fap_fac_key" ColumnName="fap_fac_key" />
+                <ScalarProperty Name="fap_user_key" ColumnName="fap_user_key" />
+                <ScalarProperty Name="fap_is_on_boarded" ColumnName="fap_is_on_boarded" />
+                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllPhyDataForBCI" FunctionName="DataModel.Store.UspGetAllPhyDataForBCI">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllPhyDataForBCI_Result">
+                <ScalarProperty Name="BCI_ID" ColumnName="BCI_ID" />
+                <ScalarProperty Name="Phy_Name" ColumnName="Phy_Name" />
+                <ScalarProperty Name="Phy_Bci_Value" ColumnName="Phy_Bci_Value" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetAllPhyDataForCCI" FunctionName="DataModel.Store.UspGetAllPhyDataForCCI">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetAllPhyDataForCCI_Result">
+                <ScalarProperty Name="CCI_ID" ColumnName="CCI_ID" />
+                <ScalarProperty Name="Physician_Id" ColumnName="Physician_Id" />
+                <ScalarProperty Name="Physician_CCI" ColumnName="Physician_CCI" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="UspGetForecastDataFOorMOnthly" FunctionName="DataModel.Store.UspGetForecastDataFOorMOnthly">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="DataModel.UspGetForecastDataFOorMOnthly_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Fac_Id" ColumnName="Fac_Id" />
+                <ScalarProperty Name="Fac_Name" ColumnName="Fac_Name" />
+                <ScalarProperty Name="Month_Name" ColumnName="Month_Name" />
+                <ScalarProperty Name="Month_Prediction" ColumnName="Month_Prediction" />
+                <ScalarProperty Name="Created_Date" ColumnName="Created_Date" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="user_access">
+            <EntityTypeMapping TypeName="DataModel.user_access">
+              <MappingFragment StoreEntitySet="user_access">
+                <ScalarProperty Name="user_updatedBy" ColumnName="user_updatedBy" />
+                <ScalarProperty Name="user_updateddate" ColumnName="user_updateddate" />
+                <ScalarProperty Name="user_createdBy" ColumnName="user_createdBy" />
+                <ScalarProperty Name="user_createddate" ColumnName="user_createddate" />
+                <ScalarProperty Name="user_isAllowed" ColumnName="user_isAllowed" />
+                <ScalarProperty Name="user_com_key" ColumnName="user_com_key" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="user_role_key" ColumnName="user_role_key" />
+                <ScalarProperty Name="user_key" ColumnName="user_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="view_facility_physician">
+            <EntityTypeMapping TypeName="DataModel.view_facility_physician">
+              <MappingFragment StoreEntitySet="view_facility_physician">
+                <ScalarProperty Name="fac_go_live" ColumnName="fac_go_live" />
+                <ScalarProperty Name="fap_is_on_boarded" ColumnName="fap_is_on_boarded" />
+                <ScalarProperty Name="fac_is_active" ColumnName="fac_is_active" />
+                <ScalarProperty Name="fac_name" ColumnName="fac_name" />
+                <ScalarProperty Name="fap_is_active" ColumnName="fap_is_active" />
+                <ScalarProperty Name="fap_user_key" ColumnName="fap_user_key" />
+                <ScalarProperty Name="fap_fac_key" ColumnName="fap_fac_key" />
+                <ScalarProperty Name="fap_key" ColumnName="fap_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="view_user_schedule">
+            <EntityTypeMapping TypeName="DataModel.view_user_schedule">
+              <MappingFragment StoreEntitySet="view_user_schedule">
+                <ScalarProperty Name="TIMETO" ColumnName="TIMETO" />
+                <ScalarProperty Name="TIMEFROM" ColumnName="TIMEFROM" />
+                <ScalarProperty Name="DayNumber" ColumnName="DayNumber" />
+                <ScalarProperty Name="IsStrokeAlert" ColumnName="IsStrokeAlert" />
+                <ScalarProperty Name="uss_user_id" ColumnName="uss_user_id" />
+                <ScalarProperty Name="uss_key" ColumnName="uss_key" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

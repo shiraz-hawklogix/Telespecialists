@@ -1,13 +1,14 @@
 ﻿
 @{
-    ViewBag.Title = "BCI Report";
+    ViewBag.Title = "CCIReport";
 }
+
 
 @Html.Partial("_ReportLayout")
 
 
 <div class="form-row align-items-center" id="divLocalFilters" style="padding-bottom:20px!important">
-   
+
     <div style="display:none!important">
         <span>Facility</span>
         <div class="col-auto  col-4">
@@ -104,7 +105,7 @@
             dataSource: {
                 transport: {
                     read: {
-                        url: '@Url.Action("GetBCI")',
+                        url: '@Url.Action("GetCCI")',
                         contentType: "application/json",
                         type: "POST",
                         data: function () {
@@ -171,10 +172,10 @@
             },
             columns: [
                 {
-                    field: "Phy_Name", width: 180, title: "Physician Name"
+                    field: "Physician_Name", width: 180, title: "Physician Name"
                 },
                 {
-                    field: "Phy_Bci_Value", width: 200, title: "Base Credential Index", format: "{0:n2}"
+                    field: "Physician_CCI", width: 200, title: "Composite Credential Index", format: "{0:n2}"
                 },
             ]
         });
@@ -210,4 +211,5 @@
 
     }
 </script>
+
 

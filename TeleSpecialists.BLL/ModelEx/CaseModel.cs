@@ -31,7 +31,8 @@ namespace TeleSpecialists.BLL.ModelEx
     {
         public Nullable<System.DateTime> cas_metric_video_start_time { get; set; }
         public Nullable<System.DateTime> cas_metric_video_end_time { get; set; }
-        public System.Guid cas_fac_key { get; set; }
+        public string cas_fac_key { get; set; }
+        public string cas_phy_key  { get; set; }
 
     }
 

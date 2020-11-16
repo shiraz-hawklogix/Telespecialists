@@ -418,6 +418,7 @@ namespace TeleSpecialists.BLL.Service
                 facilityPhsycian.fap_onboarded_by_name = entity.fap_onboarded_by_name;
                 facilityPhsycian.fap_onboarded_date = DateTime.Now;
                 facilityPhsycian.fap_hide = entity.fap_hide;
+
                 _unitOfWork.FacilityPhysicianRepository.Update(facilityPhsycian);
                 if (commitChange)
                 {

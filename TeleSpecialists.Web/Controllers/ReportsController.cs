@@ -2455,6 +2455,11 @@ namespace TeleSpecialists.Controllers
             ViewBag.AllowListing = allowListing;
             return GetViewResult();
         }
+        public ActionResult StatusSnapshot()
+        {
+            return GetViewResult();
+        }
+
 
         #endregion
 
@@ -2783,19 +2788,28 @@ namespace TeleSpecialists.Controllers
             }
         }
 
-        //public ActionResult PhysicianColors(int cas_key,string physician)
-        //{
-        //    try
-        //    {
-        //        var result = _reportService.PhysicianColors(cas_key, physician);
-        //        return JsonMax(result, JsonRequestBehavior.AllowGet);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-        //        return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
-        //    }
-        //}
+        public ActionResult GetStatusSnapshot(DataSourceRequest request, string datevalue)
+        {
+            try
+            {
+                if (datevalue == "")
+                {
+                    DataSourceResult result = new DataSourceResult();
+                    result.Data = new List<string>();
+                    return JsonMax(result, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var result = _reportService.GetStatusSnapshot(request, datevalue);
+                    return JsonMax(result, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
         #endregion
 
@@ -3576,6 +3590,36 @@ namespace TeleSpecialists.Controllers
             try
             {
                 var result = _reportService.GetMontlyForecastBydb(request, facilities);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+        public ActionResult CCIReport()
+        {
+            ViewBag.Facilities = _lookUpService.GetAllFacility(null)
+                        .Select(m => new { Value = m.fac_key, Text = m.fac_name })
+                        .ToList()
+                        .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+
+            ViewBag.Physicians = _lookUpService.GetPhysicians().Where(m => m.IsActive == true && m.IsStrokeAlert == true)
+                                  .OrderBy(m => m.LastName)
+                                  .Select(m => new { Value = m.Id, Text = m.LastName + " " + m.FirstName })
+                                  .ToList()
+                                  .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
+            return GetViewResult();
+        }
+
+        public JsonResult GetCCI(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        {
+            try
+            {
+                var result = _reportService.GetCCIData(request, facilities, Physicians);
                 return JsonMax(result, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)

@@ -1179,6 +1179,7 @@ namespace TeleSpecialists.Controllers
         private List<ScheduleRecordViewModel> CallForindexCount(List<ScheduleRecordViewModel> list)
         {
             ScheduleRecordViewModel createdObj;
+            List<FacilityListDayTime> _listTime = new List<FacilityListDayTime>();
             bool isSuperAdmin = User.IsInRole(UserRoles.SuperAdmin.ToDescription());
             var PhySchList = list.OrderBy(x => x.Start).ThenBy(x => x.End);
             foreach (var item in PhySchList)
@@ -1189,7 +1190,7 @@ namespace TeleSpecialists.Controllers
                 for(int i = 1; i <= hours; i ++)
                 {
                     createdObj = new ScheduleRecordViewModel();
-                    createdObj = Createobject(item, dateTime,  i, list, isSuperAdmin);
+                    createdObj = Createobject(item, dateTime,  i, list, isSuperAdmin, _listTime);
                     list.Add(createdObj);
                     dateTime = dateTime.AddHours(1);
                 }
@@ -1250,7 +1251,7 @@ namespace TeleSpecialists.Controllers
         //    obj.PhyIndexRate = totalIndexCount;
         //    return obj;
         //}
-        private ScheduleRecordViewModel Createobject(ScheduleRecordViewModel record, DateTime startTime, int i, List<ScheduleRecordViewModel> indexList,bool isSuperAdmin)
+        private ScheduleRecordViewModel Createobject(ScheduleRecordViewModel record, DateTime startTime, int i, List<ScheduleRecordViewModel> indexList,bool isSuperAdmin, List<FacilityListDayTime> _listTime)
         {
             bool isChangeCredIndex = false;
             DateTime endTime = startTime.AddHours(1);
@@ -1274,13 +1275,26 @@ namespace TeleSpecialists.Controllers
             if (isChangeCredIndex)
             {
                 obj.TitleBig = "CI (" + totalIndexCount + ") ";
-                if(isSuperAdmin)
+                var resultTime = _listTime.Where(x => x.start_date == startTime.ToString().Trim()).FirstOrDefault();
+                if (isSuperAdmin && resultTime == null)
                 {
+                    FacilityListDayTime objTime = new FacilityListDayTime();
+                    objTime.start_date = startTime.ToString().Trim();
                     var result = _schedulerService.getAllPhyscianList(startTime.ToString(), endTime.ToString());
                     if (result.Count > 0)
                     {
+                        objTime.isFlagged = true;
                         obj.TitleBig += "<span class='fewer-facility-list fa fa-flag ml-1' style='color:red;' onclick='getfacilities(\"" + startTime + "\",\"" + endTime + "\")' onmouseover='showTooltip()'></span>";        //string.Format("{0} - {1} to {2}{3}", "CI(" + totalIndexCount + ")", startTime.ToString("HH:mm"), endTime.ToString("HH:mm"),  "#div#(" + totalIndexCount + ")#/div#");
+                    } else
+                    {
+                        objTime.isFlagged = false;
                     }
+
+                    _listTime.Add(objTime);
+                }
+                else if (isSuperAdmin && resultTime.isFlagged)
+                {
+                    obj.TitleBig += "<span class='fewer-facility-list fa fa-flag ml-1' style='color:red;' onclick='getfacilities(\"" + startTime + "\",\"" + endTime + "\")' onmouseover='showTooltip()'></span>";        //string.Format("{0} - {1} to {2}{3}", "CI(" + totalIndexCount + ")", startTime.ToString("HH:mm"), endTime.ToString("HH:mm"),  "#div#(" + totalIndexCount + ")#/div#");
                 }
             }
             else
