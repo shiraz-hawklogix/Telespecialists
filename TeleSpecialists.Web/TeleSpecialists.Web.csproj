@@ -264,7 +264,6 @@
     <Compile Include="Controllers\MDStaffController.cs" />
     <Compile Include="Controllers\MenuAccessController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
-    <Compile Include="Controllers\MockCaseController.cs" />
     <Compile Include="Controllers\PACPhysicianController.cs" />
     <Compile Include="Controllers\PhonebarController.cs" />
     <Compile Include="Controllers\PhysicianCaseTempController.cs" />
@@ -2243,7 +2242,6 @@
     <Content Include="Scripts\spin.js" />
     <Content Include="Scripts\spin.min.js" />
     <Content Include="Templates\StrokeAlertTPATemplate.html" />
-    <Content Include="Views\MockCase\_mockCase.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -3511,14 +3509,14 @@
     <Content Include="Views\Case\ViewProtocols.cshtml" />
     <Content Include="Views\FacilityPhysician\PhysicianPassword.cshtml" />
     <Content Include="Views\Home\_operationsoutliers.cshtml" />
-	 <Content Include="Views\Home\_CasesCompletedReviewList.cshtml" />
+    <Content Include="Views\Home\_CasesCompletedReviewList.cshtml" />
     <Content Include="Views\HospitalProtocols\Create.cshtml" />
     <Content Include="Views\HospitalProtocols\Edit.cshtml" />
     <Content Include="Views\HospitalProtocols\EditProtocols.cshtml" />
     <Content Include="Views\HospitalProtocols\Index.cshtml" />
     <Content Include="Views\Reports\UserPresenceReport.cshtml" />
     <Content Include="Views\Case\ViewOnBoarding.cshtml" />
-	 <Content Include="Views\Case\_CasePreMorbid.cshtml" />
+    <Content Include="Views\Case\_CasePreMorbid.cshtml" />
     <Content Include="Views\MenuAccess\Create.cshtml" />
     <Content Include="Views\MenuAccess\Index.cshtml" />
     <Content Include="Views\MenuAccess\_Index.cshtml" />
@@ -3526,7 +3524,6 @@
     <Content Include="Views\Menu\Edit.cshtml" />
     <Content Include="Views\Menu\Index.cshtml" />
     <Content Include="Views\Menu\_Form.cshtml" />
-    <Content Include="Views\MockCase\Create.cshtml" />
     <Content Include="Views\MenuAccess\UserBasedMenuAccess.cshtml" />
     <Content Include="Views\MenuAccess\_GetUserBasedAccess.cshtml" />
   </ItemGroup>
