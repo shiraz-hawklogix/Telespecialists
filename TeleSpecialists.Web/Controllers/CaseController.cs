@@ -4756,7 +4756,7 @@ namespace TeleSpecialists.Controllers
         }
 
         [HttpPost]
-        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director")]
+        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director,Navigator")]
         public ActionResult GetAllMockCases(Kendo.DynamicLinq.DataSourceRequest request)
         {
             try

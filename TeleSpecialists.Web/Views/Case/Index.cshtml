@@ -311,7 +311,7 @@
             <li class="nav-item">
             </li>
         }
-        @if (User.IsInRole(UserRoles.MockPhysician.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()))
+        @if (User.IsInRole(UserRoles.MockPhysician.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()))
         {
             <li class="nav-item">
                 <a class="nav-link bold font-md" onclick="hideOtherTabs('mockcasetab')" id="mockCaseTabLink" data-toggle="tab" href="#mockcaseTab" role="tab" aria-controls="mockCaseTab" aria-selected="false">Mock Drill</a>

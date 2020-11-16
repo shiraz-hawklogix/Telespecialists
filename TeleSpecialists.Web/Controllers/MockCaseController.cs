@@ -46,7 +46,7 @@ namespace TeleSpecialists.Web.Controllers
         {
             return View();
         }
-        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director")]
+        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director,Navigator")]
         public ActionResult Create()
         {
             try
@@ -143,7 +143,7 @@ namespace TeleSpecialists.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director")]
+        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director,Navigator")]
         public ActionResult Create(mock_case model)
         {
             try
@@ -438,7 +438,7 @@ namespace TeleSpecialists.Web.Controllers
         }
 
         [HttpGet]
-        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director")]
+        [AccessRoles(Roles = "Mock Physician,RRC Manager,Super Admin,RRC Director,Navigator")]
         public ActionResult Edit(int id, bool isReadOnly = false)
         {
             isCalculateBill = false;

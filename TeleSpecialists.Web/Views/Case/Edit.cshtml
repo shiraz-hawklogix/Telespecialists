@@ -419,7 +419,7 @@ EntityTypes.StateAlertTemplate.ToInt()
     {
         <li class="nav-item"><a data-toggle="tab" class="nav-link" href="#metricResponse" onclick="showHideTabElements('metricResponse');">Case Review</a></li>
     }
-    @if ((User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription())))
+    @if ((User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.QPS.ToDescription()) || User.IsInRole(UserRoles.QualityDirector.ToDescription()) || User.IsInRole(UserRoles.VPQuality.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())))
     {
         if (Model.cas_ctp_key == CaseType.StrokeAlert.ToInt() || Model.cas_ctp_key == CaseType.StatConsult.ToInt())
         {
@@ -1023,8 +1023,17 @@ EntityTypes.StateAlertTemplate.ToInt()
     var facilityDropdown = null;
     function loadFacilityDropdown(caseType) {
         debugger
+        if (@Model.cas_cst_key == @CaseStatus.Complete.ToInt()) {
 
-        if (caseType == @CaseType.RoutineConsultNew.ToInt()
+             facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilitiesAll?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
+                if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
+
+                    onLoadCompleteCode();
+                }
+            });
+
+        } else {
+            if (caseType == @CaseType.RoutineConsultNew.ToInt()
                 || caseType == @CaseType.RoutineConsultFollowUp.ToInt()
                 || caseType == @CaseType.StatEEG.ToInt()
                 || caseType == @CaseType.RoutineEEG.ToInt()
@@ -1057,6 +1066,8 @@ EntityTypes.StateAlertTemplate.ToInt()
                 }
             });
         }
+        }
+        
     }
 
     $(document).ready(function () {
@@ -1107,9 +1118,11 @@ EntityTypes.StateAlertTemplate.ToInt()
         }
         // mask phone number field
         maskPhoneNumber();
+        var casetype = '@Model.cas_ctp_key';
+        loadFacilityDropdown(casetype);
         // case general info
 
-        if (@Model.cas_cst_key != @CaseStatus.Complete.ToInt()) {
+        @*if (@Model.cas_cst_key != @CaseStatus.Complete.ToInt()) {
             var facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilities?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
                 if (@(User.IsInRole(UserRoles.Physician.ToDescription()).ToString().ToLower()) || @(User.IsInRole(UserRoles.PartnerPhysician.ToDescription()).ToString().ToLower())) {
 
@@ -1124,7 +1137,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                     onLoadCompleteCode();
                 }
             });
-        }
+        }*@
         var cas_phy_key_val = '@Model.cas_phy_key';
         var caseStatusDropDown = null;
         if(@Model.cas_cst_key != @CaseStatus.Complete.ToInt() && '@(User.IsInRole(UserRoles.Navigator.ToDescription()))' == 'True') {

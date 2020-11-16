@@ -36,8 +36,9 @@
            Value = m.ToDescription()
        }).ToDictionary(m => m.Key, m => m.Value);
     string LoggedInName = ViewBag.LoggedInName;
-}
 
+}
+<input type="hidden" value="@LoggedInName" id="loggedinName" />
 <div class="row case-premorbid-tab" id="premorbidfilds">
     <div class="col-xl-5 col-lg-5 col-md-12 col-sm-12">
         <div id="MorbidModule">
@@ -400,7 +401,7 @@
     }
     $(".firstattempt").off('change').change(function () {
         debugger
-        $("#pmc_cas_premorbid_completedby_1").val('@LoggedInName');
+        $("#pmc_cas_premorbid_completedby_1").val($('#loggedinName').val());
         var value = parseInt($(this).val());
         if (value == 2) {
            
@@ -425,7 +426,7 @@
     });
     $(".secondattempt").off('change').change(function () {
         debugger
-         $("#pmc_cas_premorbid_completedby_2").val('@LoggedInName');
+        $("#pmc_cas_premorbid_completedby_2").val($('#loggedinName').val());
         var value = parseInt($(this).val());
         if (value == 2) {
             $("#attempt3").show();
@@ -440,7 +441,7 @@
         }
     });
     $(".thirdattempt").off('change').change(function () {
-         $("#pmc_cas_premorbid_completedby_3").val('@LoggedInName');
+        $("#pmc_cas_premorbid_completedby_3").val($('#loggedinName').val());
     })
     $(".willingtodointerview").off('change').change(function () {
         debugger
