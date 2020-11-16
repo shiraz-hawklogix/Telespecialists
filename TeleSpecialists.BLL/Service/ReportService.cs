@@ -61,6 +61,7 @@ namespace TeleSpecialists.BLL.Service
                         {
                             state = stt.ucd_title,
                             phyId = p.Id,
+                            PhysicianId = p.PhysicianId,
                             fac_id = f.fac_key.ToString(),
                             FullName = p.LastName + " " + p.FirstName,
                             f.fac_name,
@@ -140,6 +141,7 @@ namespace TeleSpecialists.BLL.Service
                         select new
                         {
                             phyId = p.Id,
+                            PhysicianId = p.PhysicianId,
                             FullName = p.LastName + " " + p.FirstName,
                             ucd_key = s.ucd_key.ToString(),
                             s.ucd_title,
@@ -240,6 +242,7 @@ namespace TeleSpecialists.BLL.Service
                 billing_code = m.billingCode != null ? m.billingCode.ucd_title : "",
                 case_type = m.caseType != null ? m.caseType.ucd_title : "",
                 Physician = m.ca.AspNetUser2 != null ? m.ca.AspNetUser2.LastName + " " + m.ca.AspNetUser2.FirstName : "",
+                PhysicianId = m.ca.AspNetUser2.PhysicianId,
                 cas_metric_firstlogin_date_est = m.ca.cas_response_first_atempt != null ? DBHelper.FormatDateTime(m.ca.cas_response_first_atempt.Value, true) : "",
                 //stampt_to_login_time = DBHelper.FormatSeconds(DbFunctions.DiffSeconds(m.ca.cas_metric_stamp_time_est, m.ca.cas_response_first_atempt)),
                 stampt_to_login_time = DBHelper.FormatSeconds(m.ca.cas_metric_stamp_time_est, m.ca.cas_response_first_atempt),
@@ -721,6 +724,7 @@ namespace TeleSpecialists.BLL.Service
                 case_type = x.caseType != null ? x.caseType.ucd_title : "",
                 caseStatus = x.caseStatus != null ? x.caseStatus.ucd_title : "",
                 Physician = x.ca.AspNetUser2 != null ? x.ca.AspNetUser2.LastName + " " + x.ca.AspNetUser2.FirstName : "",
+                PhysicianId = x.ca.AspNetUser2.PhysicianId,
                 // husnain code end
                 cas_billing_date_of_consult = x.ca.cas_billing_date_of_consult.HasValue
                                     ? DBHelper.FormatDateTime(x.ca.cas_billing_date_of_consult.Value, false)

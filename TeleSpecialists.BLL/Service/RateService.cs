@@ -508,6 +508,7 @@ namespace TeleSpecialists.BLL.Service
                                         {
                                             AssignDate = DBHelper.FormatDateTime(DbFunctions.TruncateTime(onShiftModel.c.cas_billing_date_of_consult).Value, false),
                                             Physician = onShiftModel.u.LastName + " " + onShiftModel.u.FirstName,
+                                            PhysicianId = onShiftModel.u.PhysicianId,
                                             PhysicianKey = onShiftModel.c.cas_phy_key,
                                         } into g
                                 select new PhysicianBillingByShiftViewModel
@@ -515,6 +516,7 @@ namespace TeleSpecialists.BLL.Service
                                     AssignDate = g.Key.AssignDate,
                                     Schedule = "",//g.Key.Schedule,
                                     Physician = g.Key.Physician,
+                                    
                                     PhysicianKey = g.Key.PhysicianKey,
                                     Open = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.Open ? 1 : 0),
                                     WaitingToAccept = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.WaitingToAccept ? 1 : 0),

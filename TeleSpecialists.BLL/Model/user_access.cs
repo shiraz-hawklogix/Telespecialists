@@ -18,7 +18,7 @@ namespace TeleSpecialists.BLL.Model
         public string user_role_key { get; set; }
         public string user_id { get; set; }
         public Nullable<int> user_com_key { get; set; }
-        public Nullable<bool> user_isAllowed { get; set; }
+        public bool user_isAllowed { get; set; }
         public Nullable<System.DateTime> user_createddate { get; set; }
         public string user_createdBy { get; set; }
         public Nullable<System.DateTime> user_updateddate { get; set; }
