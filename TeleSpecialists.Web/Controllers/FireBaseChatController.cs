@@ -357,9 +357,21 @@ namespace TeleSpecialists.Controllers
         }
 
         #endregion
-        
-        #region User's in firebase database
 
+        #region User's in firebase database
+        [HttpPost]
+        public JsonResult SaveMuteDuration(string muteDuration, string firebaseuid)
+        {
+            try
+            {
+                var result = _fireBaseUserMailService.SaveUpdateMuteDuration(muteDuration, loggedInUser.Id, firebaseuid);
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                return Json(e, JsonRequestBehavior.AllowGet);
+            }
+        }
         #endregion
 
 

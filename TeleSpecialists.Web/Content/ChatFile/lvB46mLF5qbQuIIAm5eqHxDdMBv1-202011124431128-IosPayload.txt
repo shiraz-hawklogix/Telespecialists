@@ -1,0 +1,70 @@
+ #region IOS Payload
+                try
+                {
+                    var ioslist = _tokenservice.GetIOSAll(phy_key);
+                    if(ioslist.Count > 0)
+                    {
+                        WebRequest _tRequest = WebRequest.Create("https://fcm.googleapis.com/fcm/send");
+                        _tRequest.Method = "post";
+
+                        #region Code for telecare  db
+                        //serverKey - Key from Firebase cloud messaging server  
+                        _tRequest.Headers.Add(string.Format("Authorization: key={0}", "AAAA1rwwbPI:APA91bGBQvXGabgDWOHGz8OEu9-yA7w3QhuXQoeAu9TEPGaEemYdoRXp_PRx1IkhYbGqwvb_xSf3LFk_ZErTSZd7HlehYUXeXxnROuL3Y22fspbWUWUwdVRrNtJHZ_dPL1ykSTLnTskS"));
+                        //Sender Id - From firebase project setting  
+                        _tRequest.Headers.Add(string.Format("Sender: id={0}", "BK9GsbmLr2ohFs7VaIZbzvy67i-3FRtaBeKeAVwEiiuOvk5cRsZOoNKoxUMAQTf_wSSLAumO9c5cb9-KFYj_U4o"));
+                        #endregion
+
+                        _tRequest.ContentType = "application/json";
+
+                        var _payload = new
+                        {                            
+                            registration_ids = ioslist, //user_Fcm_Notification.phy_tokens,
+                            priority = "high",
+                            content_available = false,
+                            notification = new
+                            {
+                                body = user_Fcm_Notification.msg_body,
+                                title = user_Fcm_Notification.msg_title,
+                                click_action = "CASE",
+                                image = user_Fcm_Notification.notify_img,
+                                badge = 1
+                            },
+                            data = new
+                            {
+                                phy_key = phy_key,
+                                caseId = caseId,
+                                caseType = caseType,
+                                jsonData = jsonData,
+                                action = action,
+                                caseNumber = strokeDetail[0],
+                                fac_name = strokeDetail[1],
+                                fac_key = strokeDetail[2],
+                                phy_name = strokeDetail[3],
+                                objectData = Data
+                            }
+
+                        };
+                        string _postbody = JsonConvert.SerializeObject(_payload).ToString();
+                        Byte[] _byteArray = Encoding.UTF8.GetBytes(_postbody);
+                        _tRequest.ContentLength = _byteArray.Length;
+                        using (Stream _dataStream = _tRequest.GetRequestStream())
+                        {
+                            _dataStream.Write(_byteArray, 0, _byteArray.Length);
+                            using (WebResponse _tResponse = _tRequest.GetResponse())
+                            {
+                                using (Stream _dataStreamResponse = _tResponse.GetResponseStream())
+                                {
+                                    if (_dataStreamResponse != null) using (StreamReader _tReader = new StreamReader(_dataStreamResponse))
+                                        {
+                                            String _sResponseFromServer = _tReader.ReadToEnd();
+                                            //result.Response = sResponseFromServer;
+                                        }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {                   
+                }
+                #endregion
