@@ -293,6 +293,7 @@ else
             contentType: false,
             processData: false,
             success: function (response) {
+                debugger
                 $('.removestyle').removeAttr('style');
                 $('.removestyle').delay(2000).hide(1000);
                 $(".Facilities").multiselect('reset');
@@ -355,6 +356,7 @@ else
 </script>
 <script>
     function ShowHidePasswordFunction() {
+        debugger
         if ($('.show-hide-password-div').is(":visible")) {
             $('.show-hide-password-div').hide();
         } else {

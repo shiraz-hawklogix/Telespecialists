@@ -12,7 +12,7 @@ namespace TeleSpecialists.BLL.Service
 
         public IQueryable<facility> GetAllFacilityByState(string phoneNumber,IQueryable<int?> state)
         {
-            return GetFacilities(phoneNumber).Where(f => state.Contains(f.fac_stt_key));
+            return GetFacilities(phoneNumber).Where(f => f.fac_is_active && state.Contains(f.fac_stt_key));
         }
         public IQueryable<facility> GetAllFacilityBySystem(string phoneNumber, IQueryable<int?> system)
         {
@@ -33,12 +33,10 @@ namespace TeleSpecialists.BLL.Service
         {
             return GetFacilities(phoneNumber).Where(f=>f.fac_is_active);
         }
-
-        public IQueryable<facility> GetAllActnNonActFacility(string phoneNumber)
+ public IQueryable<facility> GetAllActnNonActFacility(string phoneNumber)
         {
             return GetFacilities(phoneNumber);
         }
-
         public IQueryable<facility> GetAllLiveFacility(string phoneNumber)
         {
             return GetFacilities(phoneNumber).Where(f => f.fac_go_live);
@@ -46,6 +44,10 @@ namespace TeleSpecialists.BLL.Service
         public IQueryable<facility> GetAllLiveTeleStrokeFacility(string phoneNumber)
         {
             return GetFacilities(phoneNumber).Where(f => f.fac_go_live && f.facility_contract.fct_service_calc.Contains(ContractServiceTypes.TeleStroke.ToString()));
+        }
+        public IQueryable<facility> GetStrokeFacilitiesForOthercasetypes(string phoneNumber)
+        {
+            return GetFacilities(phoneNumber).Where(f => f.fac_go_live);
         }
         public IQueryable<facility> GetAllLiveTeleNeuroFacility(string phoneNumber)
         {
