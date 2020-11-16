@@ -311,10 +311,10 @@ namespace TeleSpecialists.BLL.Model
         public virtual ICollection<nih_stroke_scale_answer> nih_stroke_scale_answer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<rca_counter_measure> rca_counter_measure { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<premorbid_correspondnce> premorbid_correspondnce { get; set; }
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual AspNetUser AspNetUser1 { get; set; }
         public virtual AspNetUser AspNetUser2 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<premorbid_correspondnce> premorbid_correspondnce { get; set; }
     }
 }

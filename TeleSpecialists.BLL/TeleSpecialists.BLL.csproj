@@ -277,9 +277,6 @@
     <Compile Include="Model\sp_getMenuAccess_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\telecare_counters.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Model\token.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -292,12 +289,6 @@
     <Compile Include="Model\user_schedule_sleep.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\UspGetAllPhysicion_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\UspGetCaseDataForBCI_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Model\UspGetCWHData2_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -305,12 +296,6 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\UspGetCWHData_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\UspGetDailyVolimetircdata_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\UspGetForecastData_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\UspGetRCIData_Result.cs">

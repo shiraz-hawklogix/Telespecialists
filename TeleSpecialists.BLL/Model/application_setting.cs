@@ -66,6 +66,5 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<long> aps_session_timeout_in_minutes { get; set; }
         public Nullable<long> aps_two_factor_code_expiry_timeout_in_minutes { get; set; }
         public bool aps_enable_logout_from_other_devices { get; set; }
-        public bool aps_enable_pending_cases_notifications { get; set; }
     }
 }
