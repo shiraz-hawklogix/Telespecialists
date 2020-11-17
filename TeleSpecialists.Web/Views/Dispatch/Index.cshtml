@@ -422,6 +422,61 @@
             grid.dataSource.read();
     }
 
+    function blink_IB(element) {
+        debugger
+        if (sent_I_Blast.length > 0) { 
+            var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(element).closest("tr"));
+            if (dataItem != undefined) {
+                var yesno = sent_I_Blast.filter(function (sb) { if (sb == dataItem.cas_key) { return sb; } });
+                debugger
+                if (yesno.length == 0) {
+                    debugger
+                    $(element).fadeOut(100).fadeIn(100, blink_IB);
+                }
+                else {
+                    $(element.children("td")).removeClass("text-warning");
+                    $(element.children("td")).addClass("text-success");
+                }
+            }
+        }
+        else {
+            $(element).fadeOut(100).fadeIn(100, blink_IB);
+        }
+
+    }
+    function blink_EB(element) {
+        debugger
+        if (sent_E_Blast.length > 0) {
+            var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(element).closest("tr"));
+            if (dataItem != undefined) {
+                var yesno = sent_E_Blast.filter(function (sb) { if (sb == dataItem.cas_key) { return sb; } });
+                debugger
+                if (yesno.length == 0) {
+                    debugger
+                    $(element).fadeOut(100).fadeIn(100, blink_EB);
+                }
+                else {
+                    $(element.children("td")).removeClass("text-danger");
+                    $(element.children("td")).addClass("text-success");
+
+                }
+            }
+        }
+        else {
+            $(element).fadeOut(100).fadeIn(100, blink_EB);
+        }
+
+    }
+    var sent_I_Blast = [];
+    var sent_E_Blast = [];
+
+    function InternalBlastSent(key) { 
+        sent_I_Blast.push(key);
+    }
+    function ExternalBlastSent(key) {
+        sent_E_Blast.push(key);
+    }  
+
 
     function applyColors() {
          $("#dispatchWaitingToAcceptGrid tr").each(function (index, element) {
@@ -435,14 +490,18 @@
              if (result != false) {
 
                 var duration = moment.duration(currentDateTime.diff(cas_status_assign_date.format("YYYY-MM-DD HH:mm:ss")));
-                if (duration.asMinutes() >= 3 && duration.asMinutes() <= 6) {
-                    row.children("td").addClass("text-yellow font-weight-bold");
+                 if (duration.asMinutes() >= 3 && duration.asMinutes() <= 6) {
+                     row.children("td").addClass("text-yellow font-weight-bold");
+                     blink_IB(row.find("td:eq(3)")); 
                 }
                else  if (duration.asMinutes() >= 6 && duration.asMinutes() <= 8) {
-                    row.children("td").addClass("text-orange font-weight-bold");
+                     row.children("td").addClass("text-orange font-weight-bold");
+                     blink_EB(row.find("td:eq(4)")); 
+
                 }
                 else if (duration.asMinutes() >= 8) {
-                    row.children("td").addClass("text-danger font-weight-bold");
+                     row.children("td").addClass("text-danger font-weight-bold");
+                     //blink_EB(row.find("td:eq(4)")); 
                 }
             }
         });
@@ -450,7 +509,7 @@
         if (applyColors.To != undefined)
             window.clearTimeout(applyColors.To);
 
-        applyColors.To = window.setTimeout(applyColors, 2000);
+        applyColors.To = window.setTimeout(applyColors, 500);
     }
 
 
@@ -475,6 +534,7 @@
          console.log('automsg: ' + automsg);
          //CreateMsg(dataItem);
 
+         InternalBlastSent(cas_key);
         var baseurl = "@Url.Action("GetPhysiciansForInternalBlast")";
         $.ajax({
             url: baseurl + "?fac_key=" + facKey + "&cas_ctp_key=" + case_type + "&softSaveGuid=" + "" + "&cas_key=" + cas_key + "&strokeStamp=" + automsg,
@@ -507,6 +567,8 @@
         var facKey = dataItem.cas_fac_key;
         var case_type = dataItem.cas_ctp_key;
         var cas_key = dataItem.cas_key;
+
+        ExternalBlastSent(cas_key);
         var baseurl = "@Url.Action("GetPhysiciansForExternalBlast")";
         $.ajax({
             url: baseurl + "?fac_key=" + facKey + "&cas_ctp_key=" + case_type + "&softSaveGuid=" + "" + "&cas_key=" + cas_key,
@@ -1196,7 +1258,7 @@
         //sentCases = [];
         //sentCases = statuslist;
 
-          var responseint = setInterval(function () { CheckRefreshSaveStatusList(); }, 2000);
+        var responseint = setInterval(function () { CheckRefreshSaveStatusList(); }, 2000);
 
         
     });
