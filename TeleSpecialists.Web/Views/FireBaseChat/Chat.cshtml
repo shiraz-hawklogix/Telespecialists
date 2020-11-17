@@ -11,6 +11,20 @@
                 <ol class="breadcrumb" style="display:none">
                     <li> <div id="userInfo">  </div>  </li>
                 </ol>
+                &nbsp;
+                <a href="javascript:void(0);" onclick="SendAutoMsgToTeam();" class="grp-create-link" title="Send auto message to the Team"><i class="fa fa-heartbeat"></i></a>
+                &nbsp;
+                <div class="dropdown-notify">
+                    <a href="javascript:void(0);" class="grp-create-link dropbtn" title="Mute Notification" style="float:right"> <i class="fa fa-bell" id="fa_bell"></i></a>
+                    <div class="dropdown-notify-content">
+                        <a href="javascript:void(0);" class="muteValue">Mute 1 hour</a>
+                        <a href="javascript:void(0);" class="muteValue">Mute 8 hour</a>
+                        <a href="javascript:void(0);" class="muteValue">Mute 1 week</a>
+                        <a href="javascript:void(0);" class="muteValue">Mute forever</a>
+                        <a href="javascript:void(0);" class="muteValue">UnMute</a>
+                    </div>
+                </div>
+                <span id="lbl_mute" style="float:right; font-size:smaller"></span>
             </div>
             <div class="messaging h-100">
                 <div class="inbox_msg h-100">
@@ -25,13 +39,13 @@
                                 </div>
                             </div>
                             @*<div class="srch_bar">
-                                <div class="stylish-input-group">
-                                    <input type="text" class="search-bar" placeholder="Search" id="txtSearch">
-                                    <span class="input-group-addon">
-                                        <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
-                                    </span>
-                                </div>
-                            </div>*@
+                                    <div class="stylish-input-group">
+                                        <input type="text" class="search-bar" placeholder="Search" id="txtSearch">
+                                        <span class="input-group-addon">
+                                            <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
+                                        </span>
+                                    </div>
+                                </div>*@
                         </div>
                         <div class="inbox_chat">
                             <div id="binduser"></div>
@@ -40,11 +54,8 @@
                     <div class="mesgs h-100">
                         <div class="row" style="margin-top:-20px">
                             <h6 class="box-title">Chat Message</h6>
-                            <div id="person" style="width:95%">
-                            </div>
-                            <div style="float:left;width:4%">
-                                <a href="javacript:void(0)" style="float:right" id="file" class="cst-icon" data-toggle="tooltip" title="File Attachment"><i class="fa fa-paperclip"></i></a>
-                            </div>
+                            <div id="person"></div>
+                            <div id="AttachmentDiv"></div>
                         </div>
                         <div class="msg_history" id="msgDetail">
                             <div id="msgDetail"></div>
@@ -55,11 +66,11 @@
                                 <button class="msg_send_btn" type="button" id="SendMsg"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
                             </div>
                             @*<div class="input_msg_write">
-                                <div class="row">
-                                    <input type="text" class="write_msg" placeholder="Type a message" id="txtMsg" />
-                                </div>
-                                <button class="msg_send_btn" type="button" id="SendMsg"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
-                            </div>*@
+                                    <div class="row">
+                                        <input type="text" class="write_msg" placeholder="Type a message" id="txtMsg" />
+                                    </div>
+                                    <button class="msg_send_btn" type="button" id="SendMsg"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+                                </div>*@
                         </div>
                     </div>
                 </div>
@@ -405,7 +416,7 @@
             //console.log('UserUnreadMsgsChanged called !');
             AfterModify();
             // code commented to verify the sorted list
-            /* 
+            /*
             if (friends.val().Online) {
                 onlineTag = "<span class='text-success'>online</span>";
                 onlineStatus = "online_icon";
@@ -450,7 +461,7 @@
             // $("#binduser").append(liTag);
             */
         });
-       
+
     }
     function GetAllGroups() {
         try {
@@ -501,7 +512,7 @@
         if (type)
             UpdateReadStatus(type);
 
-       
+
         GetPerson(type);
         var count = unreadMsg.length;
         if (type === 'Public') {
@@ -518,7 +529,7 @@
 
         }
 
-        
+
     });
     $(document).on('click', "#SendMsg", function () {
         var msg = $("#txtMsg").val();
@@ -770,7 +781,15 @@
         liTag = "<div class='chat_img_prf_div'><img src='" + _receiverPhoto + "' alt='user-img' class= 'user_img_prf rounded-circle'><span class='" + onlineStatus + "'></span></div > <div style='float:left'> <span class='grp-title-name'> " + _receiverName + "<small class='text-success'>&nbsp; " + onlineTag + "</small></span> " + addTag + "</div>";
         $(".box-title").hide();
         $("#person").html(liTag);
-
+        $("#person").addClass('person-div');
+        let _attch = "<a href='javacript:void(0)' style='float:right' id='file' class='cst-icon' data-toggle='tooltip' title='File Attachment'><i class='fa fa-paperclip'></i></a>";
+        $("#AttachmentDiv").html(_attch);
+        if (type !== 'Private') {
+            let _leave = "<a href='javacript:void(0)' class='leave-group' id='leaveGrp' data-userid='" + SenderId + "' data-grpid='" + _receiverId + "' >Leave Group</a>";
+            $("#AttachmentDiv").append(_leave);
+        }
+        $("#AttachmentDiv").addClass('attachment-div');
+        GetAttachmentEvent();
     }
     function UpdateGroupChat(grpid) {
         //debugger;
@@ -795,7 +814,7 @@
 
             var ref = firebase.database().ref("userMessages/" + grpid);
             ref.on("child_added", function (snapshot) {
-                
+
                 var msgArr = [];
                 for (var i = 0; i < _grpArr.length; i++) {
                     //console.log(' id is undefiend _grpArr is : ', _grpArr[i]);
@@ -965,7 +984,7 @@
 
                     $("." + snapshot.key).remove();
                     $("#msgDetail").append(liTag);
-                    
+
                     var users = '';
                     ref.child(snapshot.key).child('read').on('child_added', function (seenUser) {
                         users += seenUser.val().name + ', ';
@@ -1535,14 +1554,50 @@
         firebase.database().ref('TeleUsers/' + nodeid + '/Connections').child(grpid).remove();
         firebase.database().ref('TeleUsers/' + nodeid + '/ConnectionRules').child(grpid).remove();
     }
-
+    function SendAutoMsgToTeam() {
+        let newArray = [];
+        newArray.push({ user_id: '9256e0b0-7fb2-4b27-ad0d-b3c359eb547a', email: 'hmauceri@tstelemed.com', name: 'Heather Mauceri', firbaseuid: 'K2m19pqahoTP6g24BDw8waubC9p1', ImgPath: '/Content/Images/M.png' });
+        newArray.push({ user_id: 'df79577f-3d6c-40f2-a752-85dc1ce21ca1', email: 'mmasud@tstelemed.com', name: 'Muhammad Masud', firbaseuid: 'thusmIlApVOyx9M8zrGe9CgsKTC3', ImgPath: '/Content/Images/M.png' });
+        console.log('chat going to be initait : ', newArray);
+        let grpName = 'Telespecialists Team';// + e.initials;//'Technical Discussion Case# ' + e.caseNumber;
+        let automsg = 'This is auto message to Telespecialists  team';
+        let grpfor = 'Telespecialists_Team';
+        GrpCreate(grpName, 'Private', automsg, grpfor, newArray);
+    }
+    $('.muteValue').click(function (e) {
+        let muteDuration = $(this).html();
+        console.log(muteDuration);
+        SaveMuteDuration(muteDuration);
+    });
+    function SaveMuteDuration(muteDuration) {
+        $.ajax({
+            type: 'POST',
+            url: '/firebaseChat/SaveMuteDuration',
+            data: { muteDuration: muteDuration, firebaseuid: SenderId },
+            success: function (e) {
+                if (muteDuration.toLowerCase() === 'unmute') {
+                    $('#lbl_mute').html('');
+                    $('#fa_bell').removeClass('fa-bell-slash');
+                    $('#fa_bell').addClass('fa-bell');
+                }
+                else {
+                    $('#lbl_mute').html(muteDuration);
+                    $('#lbl_mute').css("color", "red");
+                    $('#fa_bell').removeClass('fa-bell');
+                    $('#fa_bell').addClass('fa-bell-slash');
+                }
+            },
+            Error: function (e) {
+            }
+        });
+    }
    // <<<<<<<<<<<<<<<<<*************  Currently Used Functions In Firebase End ***************************** >>>>>>>>>>>>>>>>>>>>>>>>
 
-   
+
 
 </script>
 <script>
-     // <<<<<<<<<<<<<<<<<*************  Currently Not Used Functions In Firebase  Or Can be used in future  Start***************************** >>>>>>>>>>>>>>>>>>>>>>>>
+    // <<<<<<<<<<<<<<<<<*************  Currently Not Used Functions In Firebase  Or Can be used in future  Start***************************** >>>>>>>>>>>>>>>>>>>>>>>>
 
     var _ab;
     function PassValues(myArr) {
@@ -2150,76 +2205,86 @@
 
 </script>
 <script>
-    var form;
-    var _files;
 
-    $("#file").click(function () {
+    function GetAttachmentEvent() {
+        var form;
+        var _files;
+        $("#file").click(function () {
 
-        var inputTag = "<input type='file' name='Attachement' id='fileUpload'/>";
-        var tagId = $(inputTag);
+            var inputTag = "<input type='file' name='Attachement' id='fileUpload'/>";
+            var tagId = $(inputTag);
 
-        tagId.change(function () {
-            // console.log("selected file:" + $(this).val());
-            var file = $(this).val();
-            var arr = file.split('\\');
-            //debugger;
-            // console.log(arr[2]);
-            _files = tagId[0].files;
+            tagId.change(function () {
+                // console.log("selected file:" + $(this).val());
+                var file = $(this).val();
+                var arr = file.split('\\');
+                //debugger;
+                // console.log(arr[2]);
+                _files = tagId[0].files;
 
-            var formId = $(form);
-            var _fdata = new FormData();
-            for (var i = 0; i < _files.length; i++) {
-                _fdata.append("Attachement", _files[i]);
-            }
-            _fdata.append("senderId", SenderId);
-            var frmUrl = '/FirebaseChat/SaveAttachement';
-            // console.log('button  click');
-
-            var fileName = arr[2];
-
-            var arrType = fileName.split('.');
-            var lastIndex = arrType.length - 1;
-            var fileType = arrType[lastIndex];
-
-            var date = new Date();
-            var _hour = date.getHours();
-            var _min = date.getMinutes();
-            var _month = date.getDay();
-            var _sec = date.getSeconds();
-            var _mil = date.getMilliseconds();
-            var _day = date.getDay();
-            var _year = date.getFullYear();
-
-            var timeStamp = _year + '' + _month + '' + _day + '' + _hour + '' + _min + '' + _sec + '' + _mil;
-
-            fileName = '/Content/ChatFile/' + SenderId + '-' + timeStamp + '-' + fileName;
-
-            var id = SenderId + '-' + _receiverId;
-            var _id = _receiverId + '-' + SenderId;
-
-            _fdata.append("timeStamp", timeStamp);
-
-            $.ajax({
-                type: 'POST',
-                url: frmUrl,
-                data: _fdata,
-                processData: false,
-                contentType: false,
-                success: function (e) {
-                    // console.log('Success is :' + e);
-                    if (isGroup)
-                        _GroupMessages(_receiverId, fileName, fileType);
-                    else
-                        SendMessageNew(id, _id, fileName, fileType);
-                },
-                Error: function (e) {
-                    // console.log('Error is :' + e);
+                var formId = $(form);
+                var _fdata = new FormData();
+                for (var i = 0; i < _files.length; i++) {
+                    _fdata.append("Attachement", _files[i]);
                 }
-            });
+                _fdata.append("senderId", SenderId);
+                var frmUrl = '/FirebaseChat/SaveAttachement';
+                // console.log('button  click');
 
+                var fileName = arr[2];
+
+                var arrType = fileName.split('.');
+                var lastIndex = arrType.length - 1;
+                var fileType = arrType[lastIndex];
+
+                var date = new Date();
+                var _hour = date.getHours();
+                var _min = date.getMinutes();
+                var _month = date.getDay();
+                var _sec = date.getSeconds();
+                var _mil = date.getMilliseconds();
+                var _day = date.getDay();
+                var _year = date.getFullYear();
+
+                var timeStamp = _year + '' + _month + '' + _day + '' + _hour + '' + _min + '' + _sec + '' + _mil;
+
+                fileName = '/Content/ChatFile/' + SenderId + '-' + timeStamp + '-' + fileName;
+
+                var id = SenderId + '-' + _receiverId;
+                var _id = _receiverId + '-' + SenderId;
+
+                _fdata.append("timeStamp", timeStamp);
+
+                $.ajax({
+                    type: 'POST',
+                    url: frmUrl,
+                    data: _fdata,
+                    processData: false,
+                    contentType: false,
+                    success: function (e) {
+                        // console.log('Success is :' + e);
+                        if (isGroup)
+                            _GroupMessages(_receiverId, fileName, fileType);
+                        else
+                            SendMessageNew(id, _id, fileName, fileType);
+                    },
+                    Error: function (e) {
+                        // console.log('Error is :' + e);
+                    }
+                });
+
+            });
+            tagId.trigger('click');
         });
-        tagId.trigger('click');
-    });
+        $('#leaveGrp').click(function () {
+            let userid = $(this).attr('data-userid');
+            let grpid = $(this).attr('data-grpid');
+            console.log('userid:' + userid + ', grpid:' + grpid);
+            DeleteUserFromGroup(grpid, userid);
+            AfterModify();
+        });
+
+    }
 
 
 </script>

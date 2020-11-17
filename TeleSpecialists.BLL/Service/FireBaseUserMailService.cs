@@ -1,6 +1,7 @@
 ﻿using Kendo.DynamicLinq;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -149,6 +150,61 @@ namespace TeleSpecialists.BLL.Service
             _unitOfWork.Save();
             _unitOfWork.Commit();
             return entity;
+        }
+        public bool SaveUpdateMuteDuration(string muteDuration, string userid, string firebaseuid)
+        {
+            try
+            {
+                int key = CheckMuteDuration(muteDuration, userid);
+                var sqlParameters = new List<SqlParameter>();
+                sqlParameters.Add(new SqlParameter("@key", key));
+                sqlParameters.Add(new SqlParameter("@userid", userid));
+                sqlParameters.Add(new SqlParameter("@firebaseuid", firebaseuid));
+                sqlParameters.Add(new SqlParameter("@createOn", DateTime.Now.ToEST()));
+                if(muteDuration.ToLower() == "unmute")
+                {
+                    sqlParameters.Add(new SqlParameter("@startFrom", ""));
+                    sqlParameters.Add(new SqlParameter("@toEnd", ""));
+                }
+                else
+                {
+                    sqlParameters.Add(new SqlParameter("@startFrom", DateTime.Now.ToEST()));
+                    DateTime toDate = DateTime.Now.ToEST();
+                    if (muteDuration.ToLower() == "mute 1 hour")
+                        toDate = toDate.AddHours(1);
+                    if (muteDuration.ToLower() == "mute 8 hour")
+                        toDate = toDate.AddHours(8);
+                    if (muteDuration.ToLower() == "mute 1 week")
+                        toDate = toDate.AddDays(7);
+                    if (muteDuration.ToLower() == "mute forever")
+                        toDate = toDate.AddYears(1);
+
+                    sqlParameters.Add(new SqlParameter("@toEnd", toDate));
+                }
+                
+                Helpers.DBHelper.ExecuteNonQuery("insert_update_Mute_FB_notification", sqlParameters.ToArray());
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+        public int CheckMuteDuration(string muteDuration, string userid)
+        {
+            try
+            {
+                var record = _unitOfWork.SqlQuery<int>("Exec usp_read_mute_duration @userid='" + userid + "'");
+                if (record.Count > 0)
+                    return record.First();
+                else
+                    return 0;
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
     }
 }
