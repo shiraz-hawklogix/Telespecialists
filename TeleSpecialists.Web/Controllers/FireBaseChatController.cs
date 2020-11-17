@@ -372,6 +372,20 @@ namespace TeleSpecialists.Controllers
                 return Json(e, JsonRequestBehavior.AllowGet);
             }
         }
+        [HttpPost]
+        public JsonResult GetMuteStatus()
+        {
+            bool status = false;
+            try
+            {
+                status = _fireBaseUserMailService.CheckUserMuteStatus(loggedInUser.Id);
+                return Json(status, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                return Json(status, JsonRequestBehavior.AllowGet);
+            }
+        }
         #endregion
 
 

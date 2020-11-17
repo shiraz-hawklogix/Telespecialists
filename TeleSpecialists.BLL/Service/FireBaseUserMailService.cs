@@ -195,9 +195,9 @@ namespace TeleSpecialists.BLL.Service
         {
             try
             {
-                var record = _unitOfWork.SqlQuery<int>("Exec usp_read_mute_duration @userid='" + userid + "'");
+                var record = _unitOfWork.SqlQuery<MuteNotifiy>("Exec usp_read_mute_duration @userid='" + userid + "'");
                 if (record.Count > 0)
-                    return record.First();
+                    return record.First().mfn_key;
                 else
                     return 0;
             }
@@ -206,5 +206,40 @@ namespace TeleSpecialists.BLL.Service
                 return 0;
             }
         }
+        public bool CheckUserMuteStatus(string userid)
+        {
+            try
+            {
+                var record = _unitOfWork.SqlQuery<MuteNotifiy>("Exec usp_read_mute_duration @userid='" + userid + "'");
+                if (record.Count > 0)
+                {
+                    if(record.First().mfn_start_from != null && record.First().mfn_to_end != null)
+                    {
+                        DateTime currentDate = DateTime.Now.ToEST();
+                        DateTime toDate = Convert.ToDateTime(record.First().mfn_to_end);
+                        if (toDate > currentDate)
+                            return true;
+                        else
+                            return false;
+                    }
+                    return false;
+                }
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+    }
+    public class MuteNotifiy
+    {
+        public int mfn_key { get; set; }
+        public string mfn_user_key { get; set; }
+        public string mfn_firebase_uid { get; set; }
+        public DateTime mfn_created_on { get; set; }
+        public DateTime? mfn_start_from { get; set; }
+        public DateTime? mfn_to_end { get; set; }
     }
 }

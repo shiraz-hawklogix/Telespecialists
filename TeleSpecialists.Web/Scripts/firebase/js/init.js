@@ -165,7 +165,12 @@ function startBlastInterval(id, blastType, strokeStamp) {
         $('#divInternalExternal').append(divBlast);
         if (!animated)
             AnimateJS();
-        playBlastNotification();
+        let muteStatus = localStorage.getItem('muteStatus');
+        if (muteStatus === 'false')
+            playBlastNotification();
+        else
+            console.log('tune muted');
+        
         localStorage.setItem("activeBlastIds", checkBlastArr);
         localStorage.setItem("activeBlasts", $('#divInternalExternal').html());
     }

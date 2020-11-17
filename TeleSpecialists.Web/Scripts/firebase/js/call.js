@@ -37,6 +37,7 @@ $(document).ready(function () {
     if (blastDiv)
         $('#divInternalExternal').html(blastDiv);
     PrintToken(Get_Token());
+    GetMuteStatus();
 });
 async function Get_Token() {
     try {
@@ -694,7 +695,11 @@ function UserUnreadMsgsChanged() {
         if (friends.val().unread !== 0 && friends.val().unread) {
             unreadmsg = friends.val().unread;
             document.getElementById("firebaseLink").style.color = "#FCFC00";
-            playMsgNotification();
+            let muteStatus = localStorage.getItem('muteStatus');
+            if (muteStatus === 'false')
+                playMsgNotification();
+            else
+                console.log('tune muted');
         }
         else {
             document.getElementById("firebaseLink").style.color = "#FFFFFF";
@@ -713,7 +718,11 @@ function UserUnreadMsgsModify() {
         if (friends.val().unread !== 0 && friends.val().unread) {
             unreadmsg = friends.val().unread;
             document.getElementById("firebaseLink").style.color = "#FCFC00";
-            playMsgNotification();
+            let muteStatus = localStorage.getItem('muteStatus');
+            if (muteStatus === 'false')
+                playMsgNotification();
+            else
+                console.log('tune muted');
         }
         else {
             document.getElementById("firebaseLink").style.color = "#FFFFFF";
@@ -816,3 +825,19 @@ function log_out() {
     });
 }
 // logout function end
+
+function GetMuteStatus() {
+    $.ajax({
+        type: 'POST',
+        url: '/firebaseChat/GetMuteStatus',
+        success: function (e) {
+            localStorage.setItem('muteStatus', e);
+            if (e) {
+                $('#fa_bell').removeClass('fa-bell');
+                $('#fa_bell').addClass('fa-bell-slash');
+            }
+        },
+        Error: function (e) {
+        }
+    });
+}
