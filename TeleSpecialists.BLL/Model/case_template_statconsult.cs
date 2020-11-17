@@ -55,6 +55,8 @@ namespace TeleSpecialists.BLL.Model
         public string ctt_nihss_or_neuro { get; set; }
         public string ctt_cheif_complaints { get; set; }
         public string ctt_exam_free_text { get; set; }
+        public Nullable<int> ctt_NIHSS_comatose { get; set; }
+        public string ctt_NIHSS_comatose_text { get; set; }
     
         public virtual @case @case { get; set; }
     }

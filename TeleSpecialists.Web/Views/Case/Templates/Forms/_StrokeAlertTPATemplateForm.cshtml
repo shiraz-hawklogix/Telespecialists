@@ -73,6 +73,8 @@
         examtext = "true";
         classdanger = "text-danger";
     }
+    var NIHSSComatose = Enum.GetValues(typeof(NIHSSPatientsComatose)).Cast<NIHSSPatientsComatose>().Select(m => new { Value = (int)m, Text = m.ToDescription() });
+    SelectList NIHSSComatoseList = new SelectList(NIHSSComatose, "Value", "Text");
 }
 
 @Html.HiddenFor(m => m.case_template_stroke_tpa.cts_nihss_totalscore)
@@ -299,14 +301,14 @@
                 @*@Html.CheckBoxFor(m => m.case_template_stroke_tpa.cts_ignore_nihss)*@
                 @Html.CheckBoxFor(m => m.cas_nihss_cannot_completed)
                 <label class="checkbox-inline">
-                    <b>NIHSS Cannot be Completed Due to Patient Status</b>
+                    <b>NIHSS may not be reliable due to</b>
                 </label>
             </div>
         </div>
         @* Added BY axim 10-09-2020 *@
         <div class="form-group row" id="divexamTextFree" style="display:none">
             <label class="control-label col-12 @classdanger">Exam Free Text: </label>
-            <div class="col-12" id="divexamFree">
+            <div class="col-6" id="divexamFree">
                 @Html.TextAreaFor(m => m.cas_exam_free_text, new { @class = "form-control" })
                 <div class="text-danger">
                     <label class="error">50 characters minimum (<span class="Counter">0</span>)</label>
@@ -315,8 +317,25 @@
                     <label>This field is required</label>
                 </div>
             </div>
+            <div class="col-6">
+                @Html.DropDownListFor(m => m.case_template_stroke_tpa.cts_NIHSS_comatose, NIHSSComatoseList, new { @id = "ddlNIHSS", @class = "form-control" })
+            </div>
         </div>
         @* Ended by Axim 10-09-2020 *@
+        @* Added BY axim 17-11-2020 *@
+        <div class="form-group row" id="divNIHSScomatose" style="display:none">
+            @*<label class="control-label col-12 @classdanger">Exam Free Text: </label>*@
+            <div class="col-12">
+                @Html.TextAreaFor(m => m.case_template_stroke_tpa.cts_NIHSS_comatose_text, new { @class = "form-control" })
+                @*<div class="text-danger">
+                        <label class="error">50 characters minimum (<span class="Counter">0</span>)</label>
+                    </div>*@
+                <div class="error_msg" id="case_template_stroke_tpa_cts_NIHSS_comatose_text-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        @* Ended by Axim 17-11-2020 *@
         <div class="form-group row">
             <label id="stATPALabel" class="control-label col-12">NIH Stroke Scale/Score: </label>
             <div class="col-12" id="divTotalScore">
@@ -392,6 +411,22 @@
                 //nihssScoreValidatoin("#case_template_stroke_tpa_cts_ignore_nihss");
     });
     // Added By Axim 10-09-2020
+    //Added By Axim 17-11-2020
+    if ('@Model.case_template_stroke_tpa.cts_NIHSS_comatose' == "3") {
+        $("#divNIHSScomatose").show();
+    } else {
+        $("#divNIHSScomatose").hide();
+    }
+    $("#ddlNIHSS").off("change").change(function () {
+        var currentval = $(this).val();
+        if (currentval == "3") {
+            $("#divNIHSScomatose").show();
+        }
+        else {
+            $("#divNIHSScomatose").hide();
+        }
+    });
+    //Ended BY Axim 17-11-2020
     var existingText = $("#cas_exam_free_text").val();
     if (existingText != undefined) {
         var charactersTyped = existingText.replace(/\s/g, '').length;

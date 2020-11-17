@@ -3532,7 +3532,19 @@ namespace TeleSpecialists.Controllers
                  = template.cts_antiplatelet_use_text;
 
                     //ended By Axim
+                    //Added By Axim 17-11-2020
+                    _case_template_stroke_notpa.ctn_NIHSS_comatose
+                 = _case_template_stroke_neuro_tpa.csn_NIHSS_comatose
+                 = _case_template_telestroke_notpa.ctt_NIHSS_comatose
+                 = _case_template_stroke_tpa.cts_NIHSS_comatose
+                 = template.cts_NIHSS_comatose;
 
+                    _case_template_stroke_notpa.ctn_NIHSS_comatose_text
+                 = _case_template_stroke_neuro_tpa.csn_NIHSS_comatose_text
+                 = _case_template_telestroke_notpa.ctt_NIHSS_comatose_text
+                 = _case_template_stroke_tpa.cts_NIHSS_comatose_text
+                 = template.cts_NIHSS_comatose_text;
+                    //ended By Axim 17-11-2020
                     _case_template_stroke_notpa.ctn_impression_text
                    = _case_template_stroke_neuro_tpa.csn_impression
                     = _case_template_telestroke_notpa.ctt_impression_text
@@ -3666,6 +3678,20 @@ namespace TeleSpecialists.Controllers
 
                     //Ended By AXIM
 
+                    //Added By Axim 17-11-2020
+                    _case_template_stroke_notpa.ctn_NIHSS_comatose
+                    = _case_template_stroke_neuro_tpa.csn_NIHSS_comatose
+                    = _case_template_telestroke_notpa.ctt_NIHSS_comatose
+                    = _case_template_stroke_tpa.cts_NIHSS_comatose
+                    = template.csn_NIHSS_comatose;
+
+                    _case_template_stroke_notpa.ctn_NIHSS_comatose_text
+                    = _case_template_stroke_neuro_tpa.csn_NIHSS_comatose_text
+                    = _case_template_telestroke_notpa.ctt_NIHSS_comatose_text
+                    = _case_template_stroke_tpa.cts_NIHSS_comatose_text
+                    = template.csn_NIHSS_comatose_text;
+
+                    //Ended by axim 17-11-2020
                     _case_template_stroke_notpa.ctn_impression_text
                     = _case_template_stroke_neuro_tpa.csn_impression
                     = _case_template_telestroke_notpa.ctt_impression_text
@@ -3816,6 +3842,21 @@ namespace TeleSpecialists.Controllers
                         = template.ctn_anticoagulant_use_text;
 
                     //ended By Axim
+
+                    // Added By Axim 17-11-2020
+                    _case_template_stroke_notpa.ctn_NIHSS_comatose
+                       = _case_template_stroke_neuro_tpa.csn_NIHSS_comatose
+                       = _case_template_stroke_tpa.cts_NIHSS_comatose
+                       = _case_template_telestroke_notpa.ctt_NIHSS_comatose
+                       = template.ctn_NIHSS_comatose;
+
+                    _case_template_stroke_notpa.ctn_NIHSS_comatose_text
+                       = _case_template_stroke_neuro_tpa.csn_NIHSS_comatose_text
+                       = _case_template_stroke_tpa.cts_NIHSS_comatose_text
+                       = _case_template_telestroke_notpa.ctt_NIHSS_comatose_text
+                       = template.ctn_NIHSS_comatose_text;
+
+                    // Ended By Axim 17-11-2020
                     _case_template_stroke_notpa.ctn_impression
                                     = _case_template_stroke_neuro_tpa.csn_impression
                                     = _case_template_telestroke_notpa.ctt_impression
@@ -3952,6 +3993,21 @@ namespace TeleSpecialists.Controllers
                       = template.ctt_antiplatelet_use_text;
 
                     //Ended By Axim
+
+                    // Added By Axim 17-11-2020
+                    _case_template_stroke_notpa.ctn_NIHSS_comatose
+                     = _case_template_stroke_neuro_tpa.csn_NIHSS_comatose
+                     = _case_template_telestroke_notpa.ctt_NIHSS_comatose
+                     = _case_template_stroke_tpa.cts_NIHSS_comatose
+                      = template.ctt_NIHSS_comatose;
+
+                    _case_template_stroke_notpa.ctn_NIHSS_comatose_text
+                     = _case_template_stroke_neuro_tpa.csn_NIHSS_comatose_text
+                     = _case_template_telestroke_notpa.ctt_NIHSS_comatose_text
+                     = _case_template_stroke_tpa.cts_NIHSS_comatose_text
+                      = template.ctt_NIHSS_comatose_text;
+
+                    // Ended By AXim 17-11-2020
                     _case_template_stroke_notpa.ctn_impression
                                     = _case_template_stroke_neuro_tpa.csn_impression
                                     = _case_template_stroke_tpa.cts_acute_stroke
@@ -4108,6 +4164,21 @@ namespace TeleSpecialists.Controllers
                      = _case_Template_Statconsult.ctt_patient_family_cosulted
                      = _case_template_stroke_tpa.cts_patient_family_cosulted
                       = template.ctt_patient_family_cosulted;
+
+                    // Added By Axim 17-11-2020
+                    _case_template_stroke_notpa.ctn_NIHSS_comatose
+                     = _case_template_stroke_neuro_tpa.csn_NIHSS_comatose
+                     = _case_Template_Statconsult.ctt_NIHSS_comatose
+                     = _case_template_stroke_tpa.cts_NIHSS_comatose
+                      = template.ctt_NIHSS_comatose;
+
+                    _case_template_stroke_notpa.ctn_NIHSS_comatose_text
+                     = _case_template_stroke_neuro_tpa.csn_NIHSS_comatose_text
+                     = _case_Template_Statconsult.ctt_NIHSS_comatose_text
+                     = _case_template_stroke_tpa.cts_NIHSS_comatose_text
+                      = template.ctt_NIHSS_comatose_text;
+
+                    // Ended By Axim 17-11-2020
 
                     //TCARE-550
                     _case_template_stroke_notpa.ctn_critical_care_was_provided

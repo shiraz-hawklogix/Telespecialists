@@ -24,10 +24,10 @@
     //var morbid_order =  "false";
     //var morbid_Danger =  "";
     //if ( Model.cas_created_date > morbidDatetime)
-    //{ 
+    //{
     //    morbid_order =  "true";
     //    morbid_Danger =  "text-danger";
-    //} 
+    //}
 
     //Ended by Axim 21-10-2020
 
@@ -698,19 +698,19 @@
                 {
                     <div class="form-group row" id="tpaVerbalTime" style="display:none;">
                         @*<label class="control-label col-xl-4 col-sm-4 col-lg-12">
-                    Alteplase Early Mix Decision:
-                </label>
-                <div class="col-xl-8 col-sm-8 col-lg-12">
-                    <div class="timer-container">
-                        @Html.FormattedDateTextBoxFor(m => m.cas_metric_tpa_verbal_order_time_est, new { @class = "form-control timepicker" })
-                        <div class="est-container">
-                            <span>@timeZone</span>
-                        </div>
-                    </div>
-                    <div id="cas_metric_tpa_verbal_order_time_est-error" class="error_msg" style="display:none;">
-                        <label for="cas_metric_tpa_verbal_order_time_est">This field is required</label>
-                    </div>
-                </div>*@
+                                Alteplase Early Mix Decision:
+                            </label>
+                            <div class="col-xl-8 col-sm-8 col-lg-12">
+                                <div class="timer-container">
+                                    @Html.FormattedDateTextBoxFor(m => m.cas_metric_tpa_verbal_order_time_est, new { @class = "form-control timepicker" })
+                                    <div class="est-container">
+                                        <span>@timeZone</span>
+                                    </div>
+                                </div>
+                                <div id="cas_metric_tpa_verbal_order_time_est-error" class="error_msg" style="display:none;">
+                                    <label for="cas_metric_tpa_verbal_order_time_est">This field is required</label>
+                                </div>
+                            </div>*@
                     </div>
                 }
                 else
@@ -1713,9 +1713,9 @@
             $("#cpoeOrder_Time").addClass("text-danger");
         }
         $("#divtPAorderedPersonally_Main").show();
-        if ($('#ddltPAordered').val() == "3") {
-            $("#divtPAorderedPersonally").show();
-        }
+        //if ($('#ddltPAordered').val() == "3") {
+        //    $("#divtPAorderedPersonally").show();
+        //}
     }
     else {
         $("#btn_collapse").removeClass("text-danger");

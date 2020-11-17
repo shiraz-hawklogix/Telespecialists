@@ -691,6 +691,8 @@
           <Property Name="ctt_nihss_or_neuro" Type="varchar" MaxLength="50" />
           <Property Name="ctt_cheif_complaints" Type="nvarchar(max)" />
           <Property Name="ctt_exam_free_text" Type="nvarchar(max)" />
+          <Property Name="ctt_NIHSS_comatose" Type="int" />
+          <Property Name="ctt_NIHSS_comatose_text" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="case_template_stroke_neuro_tpa">
           <Key>
@@ -725,6 +727,8 @@
           <Property Name="csn_anticoagulant_use_text" Type="varchar(max)" />
           <Property Name="csn_antiplatelet_use" Type="bit" />
           <Property Name="csn_antiplatelet_use_text" Type="varchar(max)" />
+          <Property Name="csn_NIHSS_comatose" Type="int" />
+          <Property Name="csn_NIHSS_comatose_text" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="case_template_stroke_notpa">
           <Key>
@@ -766,6 +770,8 @@
           <Property Name="ctn_anticoagulant_use_text" Type="varchar(max)" />
           <Property Name="ctn_antiplatelet_use" Type="bit" />
           <Property Name="ctn_antiplatelet_use_text" Type="varchar(max)" />
+          <Property Name="ctn_NIHSS_comatose" Type="int" />
+          <Property Name="ctn_NIHSS_comatose_text" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="case_template_stroke_tpa">
           <Key>
@@ -799,6 +805,8 @@
           <Property Name="cts_anticoagulant_use_text" Type="varchar(max)" />
           <Property Name="cts_antiplatelet_use" Type="bit" />
           <Property Name="cts_antiplatelet_use_text" Type="varchar(max)" />
+          <Property Name="cts_NIHSS_comatose" Type="int" />
+          <Property Name="cts_NIHSS_comatose_text" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="case_template_telestroke_notpa">
           <Key>
@@ -851,6 +859,8 @@
           <Property Name="ctt_anticoagulant_use_text" Type="varchar(max)" />
           <Property Name="ctt_antiplatelet_use" Type="bit" />
           <Property Name="ctt_antiplatelet_use_text" Type="varchar(max)" />
+          <Property Name="ctt_NIHSS_comatose" Type="int" />
+          <Property Name="ctt_NIHSS_comatose_text" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="case_timestamp">
           <Key>
@@ -3614,6 +3624,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="csn_antiplatelet_use" Type="Boolean" />
           <Property Name="csn_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_stroke_neuro_tpa_case" FromRole="case_template_stroke_neuro_tpa" ToRole="case" />
+          <Property Name="csn_NIHSS_comatose" Type="Int32" />
+          <Property Name="csn_NIHSS_comatose_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="case_template_stroke_notpa">
           <Key>
@@ -3656,6 +3668,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="ctn_antiplatelet_use" Type="Boolean" />
           <Property Name="ctn_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_stroke_notpa_case" FromRole="case_template_stroke_notpa" ToRole="case" />
+          <Property Name="ctn_NIHSS_comatose" Type="Int32" />
+          <Property Name="ctn_NIHSS_comatose_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="case_template_stroke_tpa">
           <Key>
@@ -3690,6 +3704,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="cts_antiplatelet_use" Type="Boolean" />
           <Property Name="cts_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_stroke_tpa_case" FromRole="case_template_stroke_tpa" ToRole="case" />
+          <Property Name="cts_NIHSS_comatose" Type="Int32" />
+          <Property Name="cts_NIHSS_comatose_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="case_timestamp">
           <Key>
@@ -4548,6 +4564,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="ctt_antiplatelet_use" Type="Boolean" />
           <Property Name="ctt_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_telestroke_notpa_case" FromRole="case_template_telestroke_notpa" ToRole="case" />
+          <Property Name="ctt_NIHSS_comatose" Type="Int32" />
+          <Property Name="ctt_NIHSS_comatose_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="physician_holiday_rate">
           <Key>
@@ -4708,6 +4726,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="ctt_cheif_complaints" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ctt_exam_free_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_statconsult_case" FromRole="case_template_statconsult" ToRole="case" />
+          <Property Name="ctt_NIHSS_comatose" Type="Int32" />
+          <Property Name="ctt_NIHSS_comatose_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="case_cancelled_type">
           <Key>
@@ -6357,6 +6377,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="case_template_stroke_neuro_tpa">
             <EntityTypeMapping TypeName="DataModel.case_template_stroke_neuro_tpa">
               <MappingFragment StoreEntitySet="case_template_stroke_neuro_tpa">
+                <ScalarProperty Name="csn_NIHSS_comatose_text" ColumnName="csn_NIHSS_comatose_text" />
+                <ScalarProperty Name="csn_NIHSS_comatose" ColumnName="csn_NIHSS_comatose" />
                 <ScalarProperty Name="csn_antiplatelet_use_text" ColumnName="csn_antiplatelet_use_text" />
                 <ScalarProperty Name="csn_antiplatelet_use" ColumnName="csn_antiplatelet_use" />
                 <ScalarProperty Name="csn_anticoagulant_use_text" ColumnName="csn_anticoagulant_use_text" />
@@ -6392,6 +6414,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="case_template_stroke_notpa">
             <EntityTypeMapping TypeName="DataModel.case_template_stroke_notpa">
               <MappingFragment StoreEntitySet="case_template_stroke_notpa">
+                <ScalarProperty Name="ctn_NIHSS_comatose_text" ColumnName="ctn_NIHSS_comatose_text" />
+                <ScalarProperty Name="ctn_NIHSS_comatose" ColumnName="ctn_NIHSS_comatose" />
                 <ScalarProperty Name="ctn_antiplatelet_use_text" ColumnName="ctn_antiplatelet_use_text" />
                 <ScalarProperty Name="ctn_antiplatelet_use" ColumnName="ctn_antiplatelet_use" />
                 <ScalarProperty Name="ctn_anticoagulant_use_text" ColumnName="ctn_anticoagulant_use_text" />
@@ -6434,6 +6458,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="case_template_stroke_tpa">
             <EntityTypeMapping TypeName="DataModel.case_template_stroke_tpa">
               <MappingFragment StoreEntitySet="case_template_stroke_tpa">
+                <ScalarProperty Name="cts_NIHSS_comatose_text" ColumnName="cts_NIHSS_comatose_text" />
+                <ScalarProperty Name="cts_NIHSS_comatose" ColumnName="cts_NIHSS_comatose" />
                 <ScalarProperty Name="cts_antiplatelet_use_text" ColumnName="cts_antiplatelet_use_text" />
                 <ScalarProperty Name="cts_antiplatelet_use" ColumnName="cts_antiplatelet_use" />
                 <ScalarProperty Name="cts_anticoagulant_use_text" ColumnName="cts_anticoagulant_use_text" />
@@ -7083,6 +7109,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="case_template_telestroke_notpa">
             <EntityTypeMapping TypeName="DataModel.case_template_telestroke_notpa">
               <MappingFragment StoreEntitySet="case_template_telestroke_notpa">
+                <ScalarProperty Name="ctt_NIHSS_comatose_text" ColumnName="ctt_NIHSS_comatose_text" />
+                <ScalarProperty Name="ctt_NIHSS_comatose" ColumnName="ctt_NIHSS_comatose" />
                 <ScalarProperty Name="ctt_antiplatelet_use_text" ColumnName="ctt_antiplatelet_use_text" />
                 <ScalarProperty Name="ctt_antiplatelet_use" ColumnName="ctt_antiplatelet_use" />
                 <ScalarProperty Name="ctt_anticoagulant_use_text" ColumnName="ctt_anticoagulant_use_text" />
@@ -7236,6 +7264,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="case_template_statconsult">
             <EntityTypeMapping TypeName="DataModel.case_template_statconsult">
               <MappingFragment StoreEntitySet="case_template_statconsult">
+                <ScalarProperty Name="ctt_NIHSS_comatose_text" ColumnName="ctt_NIHSS_comatose_text" />
+                <ScalarProperty Name="ctt_NIHSS_comatose" ColumnName="ctt_NIHSS_comatose" />
                 <ScalarProperty Name="ctt_exam_free_text" ColumnName="ctt_exam_free_text" />
                 <ScalarProperty Name="ctt_cheif_complaints" ColumnName="ctt_cheif_complaints" />
                 <ScalarProperty Name="ctt_nihss_or_neuro" ColumnName="ctt_nihss_or_neuro" />

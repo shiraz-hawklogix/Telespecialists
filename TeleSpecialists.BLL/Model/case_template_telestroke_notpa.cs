@@ -61,6 +61,8 @@ namespace TeleSpecialists.BLL.Model
         public string ctt_anticoagulant_use_text { get; set; }
         public Nullable<bool> ctt_antiplatelet_use { get; set; }
         public string ctt_antiplatelet_use_text { get; set; }
+        public Nullable<int> ctt_NIHSS_comatose { get; set; }
+        public string ctt_NIHSS_comatose_text { get; set; }
     
         public virtual @case @case { get; set; }
     }
