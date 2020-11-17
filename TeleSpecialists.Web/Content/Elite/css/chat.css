@@ -372,9 +372,10 @@ img {
     width: 20px;
     background-color: #08cfef;
     border-radius: 50%;
-    display: inline-block;
+    display: flex;
     color: black;
-    text-align: center;
+    align-items: center;
+    justify-content: center;
 }
 
 

@@ -238,7 +238,7 @@ img {
 }
 
 .msg_history {
-    height: 460px;
+    height: 440px;
     overflow-y: auto;
 }
 
@@ -372,13 +372,14 @@ img {
     font-family: Calibri;
     font-size: medium;
 }
-.dot {
+.dot { 
     float: right;
     height: 20px;
     width: 20px;
     background-color: #08cfef;
     border-radius: 50%;
-    display: inline-block;
+    display: flex;
     color: black;
-    text-align: center;
+    align-items: center;
+    justify-content: center; 
 }
