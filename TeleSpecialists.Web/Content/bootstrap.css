@@ -5342,12 +5342,11 @@ button.close {
   overflow: hidden;
 }
 
-    .modal-open .modal {
+ .modal-open .modal {
         overflow-x: hidden;
         overflow-y: auto;
         background-color: rgba(0, 0, 0, 0.5);
     }
-
 .modal {
   position: fixed;
   top: 0;
