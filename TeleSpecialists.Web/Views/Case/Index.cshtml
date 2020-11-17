@@ -37,11 +37,11 @@
     { Html.RenderAction("_AdvanceSearch", new { @source = PageSource.CaseListing }); }
 
     <div class="row mb-4">
-        <div class="col-lg-3 col-xl-3 col-sm-3 col-md-3">
+        <div class="col-3">
             @{
                 var hideToolTip = User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) ? "d-none" : "";
             }
-            <div class="border @hideToolTip" id="divToolTip">
+            <div class="border p3 @hideToolTip" id="divToolTip">
                 <div class="text-danger"><strong>*Tool Tip</strong></div>
                 <div>
                     <div>3 Minutes - Yellow (Assignment overdue)</div>

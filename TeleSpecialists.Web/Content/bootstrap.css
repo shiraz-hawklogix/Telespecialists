@@ -5342,10 +5342,11 @@ button.close {
   overflow: hidden;
 }
 
-.modal-open .modal {
-  overflow-x: hidden;
-  overflow-y: auto;
-}
+    .modal-open .modal {
+        overflow-x: hidden;
+        overflow-y: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
 
 .modal {
   position: fixed;
@@ -5429,7 +5430,7 @@ button.close {
 }
 
 .modal-backdrop.show {
-  opacity: 0.5;
+  opacity: 0;
 }
 
 .modal-header {

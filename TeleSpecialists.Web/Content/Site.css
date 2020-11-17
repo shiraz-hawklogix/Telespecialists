@@ -1544,14 +1544,12 @@ div.sticky {
     }
 
 div.stickyFirebase {
-    position: -webkit-sticky;
-    position: sticky;
+    position: fixed;
     bottom: 0;
-    -webkit-border-top-right-radius: 10px;
-    -webkit-border-top-left-radius: 10px;
     width: 800px;
-    float: right;
-    border:thin;
+    border: thin;
+    right: 0px;
+    z-index: 2;
 }
 div.stickyFirebase .Stickybadge {
     position: absolute;
