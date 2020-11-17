@@ -775,7 +775,9 @@ ul.navbar-nav {
     /*height: 98vh;*/
     height: 98%;
 }
-
+.physician-tbl-ui {
+    padding-right: 30px !important;
+}
 .five-9-phoneBar, #phycisian-listing-container, #phycisian-listing-container table {
     width: 100%;
 }
@@ -1577,4 +1579,4 @@ div.bodyStickyFirebase {
 div.contentChat {
     margin-left:15px;
     margin-right:15px;
-}
+} 

@@ -1,6 +1,4 @@
-﻿body {
-}
-.container {
+﻿.container {
     max-width: 1170px;
     margin: auto;
 }
@@ -15,10 +13,7 @@ img {
     overflow: hidden;
     width: 22%;
     border-right: 1px solid #c4c4c4;
-    /*min-height: 615px;*/
-    max-height: 715px;
-    height: 100vh;
-    min-height: 701px;
+    height: 100%;
 }
 
 .inbox_msg {
@@ -125,9 +120,8 @@ img {
 }
 
 .inbox_chat {
-    /*height: 550px;*/
     overflow-y: scroll;
-    height: 100%;
+    height: calc(100% - 52px);
 }
 
 .active_chat {
@@ -246,10 +240,7 @@ img {
 
 .msg_history {
     overflow-y: auto;
-    /*height: 516px;*/
-    max-height: 521px;
-    min-height: 605px;
-    height: 100vh;
+    height: calc(100% - 80px);
 }
 .grpTextClr {
     color: #05728f;
@@ -390,63 +381,8 @@ img {
 #async-content-container > br {
     display:none;
 }
-
 .message-wrapper {
+    height: calc(100vh - 232px);
     margin: 0 -30px;
 }
-.leave-group {
-    text-decoration: none;
-    float: right;
-    color: black;
-    font-size: small;
-    margin-right: 10px;
-}
-.person-div {
-    width: 80%
-}
-.attachment-div {
-    float: left;
-    width: 19%
-}
-.dropbtn {
-    /*background-color: #4CAF50;
-        color: white;
-        padding: 16px;
-        font-size: 16px;
-        border: none;
-        cursor: pointer;*/
-}
-
-.dropdown-notify {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-notify-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-}
-
-    .dropdown-notify-content a {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-    }
-
-        .dropdown-notify-content a:hover {
-            background-color: #f1f1f1;
-        }
-
-.dropdown-notify:hover .dropdown-notify-content {
-    display: block;
-    margin-top:22px;
-}
-
-.dropdown-notify:hover .dropbtn {
-    /*background-color: #3e8e41;*/
-}
+ 
