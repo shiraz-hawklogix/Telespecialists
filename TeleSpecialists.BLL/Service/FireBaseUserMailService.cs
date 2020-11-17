@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TeleSpecialists.BLL.Extensions;
 using TeleSpecialists.BLL.Helpers;
 using TeleSpecialists.BLL.Model;
@@ -12,7 +10,7 @@ using TeleSpecialists.BLL.ViewModels;
 
 namespace TeleSpecialists.BLL.Service
 {
-   public class FireBaseUserMailService : BaseService
+    public class FireBaseUserMailService : BaseService
     {
         public List<FireBaseData> GetAllUser()
         {
@@ -41,7 +39,7 @@ namespace TeleSpecialists.BLL.Service
                             u.IsEEG,
                             u.IsStrokeAlert
                         };
-           var user = users.ToList();
+            var user = users.ToList();
             List<FireBaseData> list = new List<FireBaseData>();
             FireBaseData obj;
             foreach (var item in user)
@@ -94,7 +92,7 @@ namespace TeleSpecialists.BLL.Service
                               UserName = m.fre_firebase_uid,
                               ImgPath = m.fre_profileimg
 
-                         }).ToList();
+                          }).ToList();
             return record;
         }
         public List<FireBaseData> GetAllSpecificUserForAuto(HashSet<string> list)
@@ -161,7 +159,7 @@ namespace TeleSpecialists.BLL.Service
                 sqlParameters.Add(new SqlParameter("@userid", userid));
                 sqlParameters.Add(new SqlParameter("@firebaseuid", firebaseuid));
                 sqlParameters.Add(new SqlParameter("@createOn", DateTime.Now.ToEST()));
-                if(muteDuration.ToLower() == "unmute")
+                if (muteDuration.ToLower() == "unmute")
                 {
                     sqlParameters.Add(new SqlParameter("@startFrom", ""));
                     sqlParameters.Add(new SqlParameter("@toEnd", ""));
@@ -181,7 +179,7 @@ namespace TeleSpecialists.BLL.Service
 
                     sqlParameters.Add(new SqlParameter("@toEnd", toDate));
                 }
-                
+
                 Helpers.DBHelper.ExecuteNonQuery("insert_update_Mute_FB_notification", sqlParameters.ToArray());
 
                 return true;
@@ -213,7 +211,7 @@ namespace TeleSpecialists.BLL.Service
                 var record = _unitOfWork.SqlQuery<MuteNotifiy>("Exec usp_read_mute_duration @userid='" + userid + "'");
                 if (record.Count > 0)
                 {
-                    if(record.First().mfn_start_from != null && record.First().mfn_to_end != null)
+                    if (record.First().mfn_start_from != null && record.First().mfn_to_end != null)
                     {
                         DateTime currentDate = DateTime.Now.ToEST();
                         DateTime toDate = Convert.ToDateTime(record.First().mfn_to_end);

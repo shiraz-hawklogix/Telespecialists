@@ -1,24 +1,12 @@
-﻿using Microsoft.AspNet.Identity;
-using Newtonsoft.Json;
+﻿using Kendo.DynamicLinq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using TeleSpecialists.BLL;
-using TeleSpecialists.BLL.Extensions;
-using TeleSpecialists.BLL.Helpers;
 using TeleSpecialists.BLL.Model;
 using TeleSpecialists.BLL.Service;
 using TeleSpecialists.BLL.ViewModels;
-using TeleSpecialists.BLL.ViewModels.FacilityUser;
-using TeleSpecialists.Models;
-using TeleSpecialists.Web.Hubs;
-using TeleSpecialists.Web.Models;
-using TeleSpecialists.BLL.Service.CaseServices;
-using Kendo.DynamicLinq;
-using System.Drawing;
 
 namespace TeleSpecialists.Controllers
 {
@@ -82,7 +70,7 @@ namespace TeleSpecialists.Controllers
             */
             #endregion 
             var result = _fireBaseUserMailService.GetDetails(loggedInUser.Id);
-            if(result != null)
+            if (result != null)
             {
                 _fireBaseData.user_id = loggedInUser.Id;
                 _fireBaseData.teleid = 1;
@@ -161,7 +149,7 @@ namespace TeleSpecialists.Controllers
                 return false;
             }
         }
-         
+
         //public ActionResult RenderImage(string id)
         //{
         //    id = "df79577f-3d6c-40f2-a752-85dc1ce21ca1";
@@ -227,7 +215,7 @@ namespace TeleSpecialists.Controllers
 
             return Json(0);
         }
-      
+
         public bool SavePic(FileContentResult img, string senderId, string timeStamp)
         {
             try
@@ -253,7 +241,7 @@ namespace TeleSpecialists.Controllers
             {
                 return false;
             }
-           
+
         }
         [HttpPost]
         public JsonResult SaveId(string id)
@@ -268,13 +256,13 @@ namespace TeleSpecialists.Controllers
                 }
                 return Json(true, JsonRequestBehavior.AllowGet);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
             }
         }
         [HttpPost]
-        public JsonResult SaveCustomUserId(string firebaseId, string  sqlid)
+        public JsonResult SaveCustomUserId(string firebaseId, string sqlid)
         {
             try
             {

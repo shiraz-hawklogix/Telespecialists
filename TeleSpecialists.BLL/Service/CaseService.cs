@@ -1,19 +1,19 @@
 ﻿using Kendo.DynamicLinq;
-using System.Linq;
-using TeleSpecialists.BLL.Model;
-using System.Data.Entity;
 using System;
-using System.Data;
-using TeleSpecialists.BLL.Extensions;
-using TeleSpecialists.BLL.Helpers;
-using System.Reflection;
-using TeleSpecialists.BLL.ViewModels;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Globalization;
 using System.Web;
-using System.Data.SqlClient;
+using TeleSpecialists.BLL.Extensions;
+using TeleSpecialists.BLL.Helpers;
+using TeleSpecialists.BLL.Model;
+using TeleSpecialists.BLL.ViewModels;
 
 namespace TeleSpecialists.BLL.Service
 {
@@ -85,7 +85,7 @@ namespace TeleSpecialists.BLL.Service
         private readonly AdminService _adminService;
         private readonly UCLService _uclService;
         private readonly PhysicianStatusService _physicianStatusService;
-         static object _caseLocker = new object();
+        static object _caseLocker = new object();
 
         public CaseService() : base()
         {
@@ -886,7 +886,7 @@ namespace TeleSpecialists.BLL.Service
                            .OrderByDescending(m => m.cas_key)
                     .Take(10);
         }
-        public void Create(@case entity, bool commit = true )
+        public void Create(@case entity, bool commit = true)
         {
             lock (_caseLocker)
             {
@@ -925,7 +925,7 @@ namespace TeleSpecialists.BLL.Service
             }
             Helpers.DBHelper.ExecuteNonQuery("usp_refresh_case");
         }
-        public void UpdateBlast (int cas_key, string response_key, string associated_key, string phy_key, int ctp_key, string modifiedby, DateTime modifiedon, int cst_key, DateTime status_assign, DateTime responseTime, DateTime phy_assignDate, string initials)
+        public void UpdateBlast(int cas_key, string response_key, string associated_key, string phy_key, int ctp_key, string modifiedby, DateTime modifiedon, int cst_key, DateTime status_assign, DateTime responseTime, DateTime phy_assignDate, string initials)
         {
             //_unitOfWork.SqlQuery<int>("Exec usp_Update_caseForBlast @cas_key='" + cas_keys + "'");
             var sqlParameters = new List<SqlParameter>();
