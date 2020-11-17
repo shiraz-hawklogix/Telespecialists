@@ -6137,7 +6137,13 @@ namespace TeleSpecialists.BLL.Service
             DateTime Date = Convert.ToDateTime(datevalue);
             DateTime Time = Convert.ToDateTime(datevalue);
             List<StatusSnapshotcls> Physician_StatusList = _unitOfWork.SqlQuery<StatusSnapshotcls>(string.Format("Exec sp_get_status_snapshot @Date = '{0}',@Time = '{1}'", Date,Time)).ToList();
-            var finalresult = Physician_StatusList.AsQueryable();
+            var finalresult = Physician_StatusList.Select(x => new
+            {
+                x.psl_key,
+                x.physician_name,
+                x.physician_status,
+                psl_created_date = datevalue
+            }).AsQueryable();
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
 
