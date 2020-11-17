@@ -1064,7 +1064,7 @@
                                 isCheck = "<i class='fa fa-check'></i>";
 
                             var myfileTag;
-
+							 
                             // Decrypt
                             var bytes = CryptoJS.AES.decrypt(snapshot.val().message, '123');
                             var decryptMsg = bytes.toString(CryptoJS.enc.Utf8);
