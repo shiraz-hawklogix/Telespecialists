@@ -501,15 +501,22 @@
 
         $("#currentCount").val(totalCases);
     }
-    function strokeAlertChart(data) {
-        if (data != undefined && data != null) {
+    function strokeAlertChart(Strokedata) {
+        if (Strokedata != undefined && Strokedata != null) {
             var hours = [];
             var counts = [];
-            var maxCount = Math.max.apply(Math, data.map(function (i) { return parseInt(i.Count); }));
-            for (var i = 0; i < data.length; i++) {
-                hours.push(data[i].Hour);
-                counts.push(data[i].Count);
+            var statcounts = [];
+            var physiciancounts = [];
+            var navigatorcounts = [];
+            var maxCount = Math.max.apply(Math, Strokedata.map(function (i) { return parseInt(i.Count); }));
+            for (var i = 0; i < Strokedata.length; i++) {
+                hours.push(Strokedata[i].Hour);
+                counts.push(Strokedata[i].Count);
+                statcounts.push(Strokedata[i].STATCount);
+                physiciancounts.push(Strokedata[i].PhysicianBlastCount);
+                navigatorcounts.push(Strokedata[i].NavigatorBlastCount);
             }
+
             $("#StrokeAlertchart").kendoChart({
                 title: {
                     text: "Total Cases",
@@ -525,11 +532,25 @@
                         background: "transparent"
                     }
                 },
-                series: [{
-                    name: "Stroke Alerts",
-                    data: counts,
-                    color: "#1391b9"
-                }],
+                series: [
+                    {
+                        name: "Stroke Alerts",
+                        data: counts,
+                        color: "#1391b9"
+                    }, {
+                        name: "Physician Blast",
+                        data: physiciancounts,
+                        color: "#6f18e2"
+                    }, {
+                        name: "Navigator Blast",
+                        data: navigatorcounts,
+                        color: "#f17ee6"
+                    }, {
+                        name: "STAT Consults",
+                        data: statcounts,
+                        color: "#8a8aa3"
+                    }
+                ],
                 categoryAxis: {
                     categories: hours,
                     line: {
