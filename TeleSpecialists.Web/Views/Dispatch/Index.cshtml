@@ -423,14 +423,11 @@
     }
 
     function blink_IB(element) {
-        debugger
         if (sent_I_Blast.length > 0) { 
             var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(element).closest("tr"));
             if (dataItem != undefined) {
                 var yesno = sent_I_Blast.filter(function (sb) { if (sb == dataItem.cas_key) { return sb; } });
-                debugger
                 if (yesno.length == 0) {
-                    debugger
                     $(element).fadeOut(100).fadeIn(100, blink_IB);
                 }
                 else {
@@ -445,14 +442,11 @@
 
     }
     function blink_EB(element) {
-        debugger
         if (sent_E_Blast.length > 0) {
             var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(element).closest("tr"));
             if (dataItem != undefined) {
                 var yesno = sent_E_Blast.filter(function (sb) { if (sb == dataItem.cas_key) { return sb; } });
-                debugger
                 if (yesno.length == 0) {
-                    debugger
                     $(element).fadeOut(100).fadeIn(100, blink_EB);
                 }
                 else {

@@ -1548,7 +1548,7 @@ div.stickyFirebase {
     bottom: 0;
     width: 800px;
     border: thin;
-    right: 0px;
+    right: 24px;
     z-index: 2;
 }
 div.stickyFirebase .Stickybadge {
