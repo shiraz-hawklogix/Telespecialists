@@ -112,6 +112,9 @@
                 <li class="nav-item active ">
                     <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("UserBasedMenuAccess", "MenuAccess")">Profile Access <span class="sr-only"></span></a>
                 </li>
+                <li class="nav-item active ">
+                    <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "MenuAccess")">Role Access <span class="sr-only"></span></a>
+                </li>
                 @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
                 {
                     <li class="nav-item active ">
