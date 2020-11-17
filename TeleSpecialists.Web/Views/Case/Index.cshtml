@@ -36,7 +36,7 @@
     ///IF Listing for cases is allowed.
     { Html.RenderAction("_AdvanceSearch", new { @source = PageSource.CaseListing }); }
 
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-lg-3 col-xl-3 col-sm-3 col-md-3">
             @{
                 var hideToolTip = User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) ? "d-none" : "";
