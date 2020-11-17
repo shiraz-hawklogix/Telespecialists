@@ -3547,6 +3547,7 @@
     <Content Include="Views\Reports\Daily_forecast.cshtml" />
     <Content Include="Views\Reports\MOnth_forecast.cshtml" />
     <Content Include="Views\Reports\CCIReport.cshtml" />
+    <Content Include="Views\Reports\StatusSnapshot.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
