@@ -6,25 +6,25 @@
     <div class="h-100">
         <div class="h-100">
             @*<h3 class=" text-center">Messaging</h3>*@
-            <div class="row col-md-12">
-                <a href="#" target="_blank" data-toggle="modal" data-target=".bs-example-modal-lg" class="grp-create-link" title="Add New Group"><i class="fa fa-audio-description"></i></a>
-                <ol class="breadcrumb" style="display:none">
-                    <li> <div id="userInfo">  </div>  </li>
-                </ol>
-                &nbsp;
-                <a href="javascript:void(0);" onclick="SendAutoMsgToTeam();" class="grp-create-link" title="Send auto message to the Team"><i class="fa fa-heartbeat"></i></a>
-                &nbsp;
-                <div class="dropdown-notify">
-                    <a href="javascript:void(0);" class="grp-create-link dropbtn" title="Mute Notification" style="float:right"> <i class="fa fa-bell" id="fa_bell"></i></a>
-                    <div class="dropdown-notify-content">
-                        <a href="javascript:void(0);" class="muteValue">Mute 1 hour</a>
-                        <a href="javascript:void(0);" class="muteValue">Mute 8 hour</a>
-                        <a href="javascript:void(0);" class="muteValue">Mute 1 week</a>
-                        <a href="javascript:void(0);" class="muteValue">Mute forever</a>
-                        <a href="javascript:void(0);" class="muteValue">UnMute</a>
-                    </div>
-                </div>
-                <span id="lbl_mute" style="float:right; font-size:smaller"></span>
+            <div class="row">
+				<div class="col-md-12 d-flex px-4">
+					<a href="#" target="_blank" data-toggle="modal" data-target=".bs-example-modal-lg" class="grp-create-link mx-2" title="Add New Group"><i class="fa fa-audio-description"></i></a>
+					<ol class="breadcrumb" style="display:none">
+						<li> <div id="userInfo">  </div>  </li>
+					</ol>
+					<a href="javascript:void(0);" onclick="SendAutoMsgToTeam();" class="grp-create-link" title="Send auto message to the Team"><i class="fa fa-heartbeat"></i></a>
+					<div class="dropdown-notify">
+						<a href="javascript:void(0);" class="grp-create-link dropbtn" title="Mute Notification"> <i class="fa fa-bell" id="fa_bell"></i></a>
+						<div class="dropdown-notify-content">
+							<a href="javascript:void(0);" class="muteValue">Mute 1 hour</a>
+							<a href="javascript:void(0);" class="muteValue">Mute 8 hour</a>
+							<a href="javascript:void(0);" class="muteValue">Mute 1 week</a>
+							<a href="javascript:void(0);" class="muteValue">Mute forever</a>
+							<a href="javascript:void(0);" class="muteValue">UnMute</a>
+						</div>
+					</div>
+					<span id="lbl_mute" style="float:right; font-size:smaller"></span>
+				</div>
             </div>
             <div class="messaging h-100">
                 <div class="inbox_msg h-100">
@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div class="mesgs h-100">
-                        <div class="row" style="margin-top:-20px">
+                        <div class="row chat-header">
                             <h6 class="box-title">Chat Message</h6>
                             <div id="person"></div>
                             <div id="AttachmentDiv"></div>

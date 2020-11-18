@@ -4,11 +4,13 @@
 <div>
     <div class="row">
         @*<h3 class=" text-center">Messaging</h3>*@
-        <div class="row col-md-12">
-            <a href="#" target="_blank" data-toggle="modal" data-target=".bs-example-modal-lg" class="grp-create-link" title="Add New Group"><i class="fa fa-audio-description"></i></a>
-            <ol class="breadcrumb" style="display:none">
-                <li> <div id="userInfo">  </div>  </li>
-            </ol>
+        <div class="row">
+            <div class="col-md-12">
+				<a href="#" target="_blank" data-toggle="modal" data-target=".bs-example-modal-lg" class="grp-create-link ml-3" title="Add New Group"><i class="fa fa-audio-description"></i></a>
+				<ol class="breadcrumb" style="display:none">
+					<li> <div id="userInfo">  </div>  </li>
+				</ol>
+			</div>
         </div>
         <div class="messaging">
             <div class="inbox_msg">
@@ -36,13 +38,17 @@
                     </div>
                 </div>
                 <div class="mesgs">
-                    <div class="row" style="margin-top:-20px">
-                        <h6 class="box-title">Chat Message</h6>
-                        <div id="person" style="width:95%">
-                        </div>
-                        <div style="float:left;width:4%">
-                            <a href="javacript:void(0)" style="float:right" id="file" class="cst-icon" data-toggle="tooltip" title="File Attachment"><i class="fa fa-paperclip"></i></a>
-                        </div>
+                    <div class="row">
+						<div class="col-md-12">
+							<div class="chat-header-wrapper">
+								<h6 class="box-title">Chat Message</h6>
+								<div class="person-wrapper" id="person">
+								</div>
+								<div class="file-insert">
+									<a href="javacript:void(0)" style="float:right" id="file" class="cst-icon" data-toggle="tooltip" title="File Attachment"><i class="fa fa-paperclip"></i></a>
+								</div>
+							</div>
+						</div>
                     </div>
                     <div class="msg_history" id="msgDetail">
                         <div id="msgDetail"></div>
@@ -744,7 +750,7 @@
             onlineStatus = "online_icon";
         }
 
-        liTag = "<div class='chat_img_prf_div'><img src='" + _receiverPhoto + "' alt='user-img' class= 'user_img_prf rounded-circle'><span class='" + onlineStatus + "'></span></div > <div style='float:left'> <span class='grp-title-name'> " + _receiverName + "<small class='text-success'>&nbsp; " + onlineTag + "</small></span> " + addTag + "</div>";
+        liTag = "<div class='chat_img_prf_div'><img src='" + _receiverPhoto + "' alt='user-img' class= 'user_img_prf rounded-circle'><span class='" + onlineStatus + "'></span></div > <div> <span class='grp-title-name'> " + _receiverName + "<small class='text-success'>&nbsp; " + onlineTag + "</small></span> " + addTag + "</div>";
         $(".box-title").hide();
         $("#person").html(liTag);
 

@@ -110,9 +110,7 @@ img {
 
 .chat_img_prf_div {
     position: relative;
-    float: left;
-    width: 37px;
-    height: 37px;
+    width: 33px;
 }
 
 .chat_people {
@@ -176,7 +174,6 @@ img {
 
 .mesgs {
     float: left;
-    padding: 30px 15px 0 25px;
     width: 60%;
     height:510px;
 }
@@ -213,10 +210,14 @@ img {
     outline: none;
 }
 
-
+.person-wrapper {
+    display: flex;
+    align-items: center;
+}
 .type_msg {
     border-top: 1px solid #c4c4c4;
     position: relative;
+    padding: 0 15px;
 }
 
 .msg_send_btn {
@@ -228,7 +229,7 @@ img {
     font-size: 17px;
     height: 33px;
     position: absolute;
-    right: 0;
+    right: 15px;
     top: 11px;
     width: 33px;
 }
@@ -240,6 +241,7 @@ img {
 .msg_history {
     height: 440px;
     overflow-y: auto;
+    border-top: 1px solid #c4c4c4;
 }
 
 .grpTextClr {
@@ -326,8 +328,7 @@ img {
 }
 
 .user_img_prf {
-    height: 35px;
-    width: 35px;
+    width: 100%;
     border: 1.5px solid #f5f6fa;
 }
 
@@ -382,4 +383,12 @@ img {
     color: black;
     align-items: center;
     justify-content: center; 
+}
+
+
+.chat-header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background-color: #f8f8f8;
 }
