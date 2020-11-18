@@ -5324,11 +5324,11 @@ namespace TeleSpecialists.BLL.Service
                     expiringCase.FacilityName = item.FacilityName;
                     if (item.EndDate.HasValue)
                     {
-                        expiringCase.EndDate = item.EndDate.Value.ToString("MM-dd-yyyy");
+                        expiringCase.EndDate = item.EndDate;
                     }
                     else
                     {
-                        expiringCase.EndDate = "";
+                        expiringCase.EndDate = null;
                     }
 
                     result.CredentialsCases.Add(expiringCase);
