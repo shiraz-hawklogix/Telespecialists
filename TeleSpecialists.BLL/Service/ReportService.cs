@@ -1425,7 +1425,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -1849,6 +1856,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_fac_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -1880,6 +1888,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 cases = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
 
@@ -2383,6 +2401,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_fac_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -2411,6 +2430,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 cases = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
 
@@ -2562,6 +2591,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_fac_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -2590,6 +2620,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 cases = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
 
@@ -2965,7 +3005,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -3384,6 +3431,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -3593,6 +3648,15 @@ namespace TeleSpecialists.BLL.Service
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
 
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
+
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -3794,7 +3858,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -3996,7 +4067,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -4190,7 +4268,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
 
                 //if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
                 //{
@@ -4475,7 +4560,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -4680,7 +4772,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -5743,6 +5842,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_phy_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
 
@@ -5774,6 +5874,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 //cases = cases.Where(x => x.datetime >= querysdate &&
                 //                             x.datetime <= queryedate);
                 #endregion
@@ -6231,6 +6341,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_fac_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -6261,6 +6372,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 var casesforstrokestat = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
                 var casesforothers = cases.Where(x => DbFunctions.TruncateTime(x.datetime) >= DbFunctions.TruncateTime(model.StartDate) &&
@@ -6393,7 +6514,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
 
                 foreach (var month in last12Months)
                 {
@@ -6596,6 +6724,15 @@ namespace TeleSpecialists.BLL.Service
                     var facilities = _ealertFacilitiesService.GetAllAssignedFacilities(facilityAdminId)
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
+                }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
                 }
 
                 foreach (var month in last12Months)
@@ -6802,7 +6939,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
 
                 foreach (var month in last12Months)
                 {
@@ -7006,6 +7150,14 @@ namespace TeleSpecialists.BLL.Service
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
 
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
 
                 foreach (var month in last12Months)
                 {
@@ -7211,7 +7363,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 foreach (var month in last12Months)
                 {
                     DateTime date = Convert.ToDateTime(month);
@@ -7436,7 +7595,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 foreach (var month in last12Months)
                 {
                     DateTime date = Convert.ToDateTime(month);
@@ -7648,7 +7814,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 foreach (var month in last12Months)
                 {
                     DateTime date = Convert.ToDateTime(month);
@@ -8013,6 +8186,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_phy_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -8053,6 +8227,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 cases = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
 
@@ -8521,6 +8705,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_phy_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -8557,6 +8742,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 var casesforstrokestat = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
                 var casesforothers = cases.Where(x => DbFunctions.TruncateTime(x.datetime) >= DbFunctions.TruncateTime(model.StartDate) &&

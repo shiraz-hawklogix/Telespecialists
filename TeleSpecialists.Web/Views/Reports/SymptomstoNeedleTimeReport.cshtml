@@ -96,6 +96,12 @@
                     </div>
                 </div>
                 <div class="form-group col-xl-2 col-6">
+                    <label>Wake Up Stroke</label>
+                    <div id="divCaseWakeUpStroke">
+                        @Html.DropDownList("WakeUpStroke", ViewBag.WakeUpStroke as List<SelectListItem>, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group col-xl-2 col-6">
                     <label>QPS</label>
                     <div id="divQPSNumbersList">
                         @Html.DropDownList("QPS_Numbers_List", QPS_Numbers_List, new { @class = "form-control", @multiple = "multiple" })
@@ -710,7 +716,8 @@
                                         tPA: "",
                                         eAlert: "",
                                         TimeFrame: "",
-                                        states: ""
+                                        states: "",
+                                        WakeUpStroke: false
                                 };
                                 model.states = $("#fac_stt_key").val();
                                     model.Physicians = $("#Physicians").val();
@@ -726,7 +733,11 @@
                                     model.CallType = $("#CallType").val();
                                     model.CallerSource = $("#CallerSource").val();
 
-
+                                if ($("#WakeUpStroke").val() == "1") {
+                                    model.WakeUpStroke = true;
+                                } else {
+                                    model.WakeUpStroke = false;
+                                }
                                     model.CaseStatus = 20;//$("#CaseStatus").val();
                                     model.TimeFrame = $("#ddlTimeFrame").val();
                                     switch (model.TimeFrame) {
@@ -895,7 +906,8 @@
                 tPA: "",
                 eAlert: "",
                 TimeFrame: "",
-                states: ""
+                states: "",
+                WakeUpStroke: false
             };
             model.states = $("#fac_stt_key").val();
             model.Physicians = $("#Physicians").val();
@@ -910,7 +922,11 @@
             model.CallerSource = $("#CallerSource").val();
             model.CaseStatus = 20;//$("#CaseStatus").val();
             model.TimeFrame = $("#ddlTimeFrame").val();
-
+            if ($("#WakeUpStroke").val() == "1") {
+                model.WakeUpStroke = true;
+            } else {
+                model.WakeUpStroke = false;
+            }
             $.ajax({
                 cache: false,
                 async: true,

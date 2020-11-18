@@ -417,6 +417,17 @@ namespace TeleSpecialists.Controllers
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
 
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
+
             bool allowListing = true;
             if (isFacilityAdmin)
             {
@@ -579,7 +590,16 @@ namespace TeleSpecialists.Controllers
                     ViewBag.FacilityAdminMessage = "No Facility assigned to the user. Please contact your system administrator.";
                 }
             }
-
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
 
             //var QPS_Numbers_List = Enumerable.Range(1, 20).Select(n => new SelectListItem()
             //{
@@ -717,6 +737,17 @@ namespace TeleSpecialists.Controllers
                                         Key = Convert.ToInt32(m).ToString(),
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
+
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
 
             bool allowListing = true;
             if (isFacilityAdmin)
@@ -866,6 +897,17 @@ namespace TeleSpecialists.Controllers
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
 
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
+
             bool allowListing = true;
             if (isFacilityAdmin)
             {
@@ -1013,6 +1055,17 @@ namespace TeleSpecialists.Controllers
                                         Key = Convert.ToInt32(m).ToString(),
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
+
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
 
             bool allowListing = true;
             if (isFacilityAdmin)
@@ -1167,6 +1220,17 @@ namespace TeleSpecialists.Controllers
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
 
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
+
             bool allowListing = true;
             if (isFacilityAdmin)
             {
@@ -1319,6 +1383,17 @@ namespace TeleSpecialists.Controllers
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
 
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
+
             bool allowListing = true;
             if (isFacilityAdmin)
             {
@@ -1467,6 +1542,17 @@ namespace TeleSpecialists.Controllers
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
 
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
+
             bool allowListing = true;
             if (isFacilityAdmin)
             {
@@ -1599,6 +1685,17 @@ namespace TeleSpecialists.Controllers
                                         Key = Convert.ToInt32(m).ToString(),
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
+
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
 
             bool allowListing = true;
             if (isFacilityAdmin)
@@ -1786,6 +1883,17 @@ namespace TeleSpecialists.Controllers
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
 
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
+
             bool allowListing = true;
             if (isFacilityAdmin)
             {
@@ -1920,6 +2028,17 @@ namespace TeleSpecialists.Controllers
                                         Key = Convert.ToInt32(m).ToString(),
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
+
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
 
             bool allowListing = true;
             if (isFacilityAdmin)
@@ -2076,7 +2195,7 @@ namespace TeleSpecialists.Controllers
                                         Key = Convert.ToInt32(m).ToString(),
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
-
+            
             bool allowListing = true;
             if (isFacilityAdmin)
             {
@@ -2232,7 +2351,7 @@ namespace TeleSpecialists.Controllers
                                         Key = Convert.ToInt32(m).ToString(),
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
-
+            
             bool allowListing = true;
             if (isFacilityAdmin)
             {
@@ -2405,7 +2524,16 @@ namespace TeleSpecialists.Controllers
                                         Key = Convert.ToInt32(m).ToString(),
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
-
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
             bool allowListing = true;
             if (isFacilityAdmin)
             {
@@ -3137,7 +3265,16 @@ namespace TeleSpecialists.Controllers
                                         Key = Convert.ToInt32(m).ToString(),
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).ToList();
-
+            ViewBag.WakeUpStroke = Enum.GetValues(typeof(StatusOptions)).Cast<StatusOptions>()
+                                    .Select(m => new
+                                    {
+                                        Key = Convert.ToInt32(m).ToString(),
+                                        Value = m.ToDescription()
+                                    }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
+                                    {
+                                        Text = "--Select--",
+                                        Value = ""
+                                    }).ToList();
             bool allowListing = true;
             if (isFacilityAdmin)
             {

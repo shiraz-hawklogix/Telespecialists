@@ -29,6 +29,12 @@
                     <label for="Physicians">Physician</label>
                     @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
                 </div>
+                <div class="form-group col-xl-4 col-6">
+                    <label>Wake Up Stroke</label>
+                    <div id="divCaseWakeUpStroke">
+                        @Html.DropDownList("WakeUpStroke", ViewBag.WakeUpStroke as List<SelectListItem>, new { @class = "form-control" })
+                    </div>
+                </div>
                 <div class="form-group col-xl-4 col-8">
                     <label for="ddlTimeFrame">Time Frame</label>
                     <select class="form-control" id="ddlTimeFrame">
@@ -435,7 +441,8 @@
                                     EndDate: null,
                                     DefaultType: null,
                                     Blast: null,
-                                    states:""
+                                    states: "",
+                                    WakeUpStroke: false
                                 };
                                 model.Facilities = $(".Facilities").val();
                                 var Getphysician = $("#Physicians").val();
@@ -444,7 +451,11 @@
                                         Getphysician.push(value.value);
                                     });
                                 }
-                                
+                                if ($("#WakeUpStroke").val() == "1") {
+                                    model.WakeUpStroke = true;
+                                } else {
+                                    model.WakeUpStroke = false;
+                                }
                                 model.Physicians = Getphysician;
                                 model.states = $("#fac_stt_key").val();
                                 model.CaseStatus = 20;
@@ -633,8 +644,14 @@
                 EndDate: null,
                 DefaultType: null,
                 Blast: null,
-                states: ""
+                states: "",
+                WakeUpStroke: false
             };
+            if ($("#WakeUpStroke").val() == "1") {
+                model.WakeUpStroke = true;
+            } else {
+                model.WakeUpStroke = false;
+            }
             model.Facilities = $(".Facilities").val();
             model.Physicians = $("#Physicians").val();
             model.states = $("#fac_stt_key").val();
@@ -762,8 +779,14 @@
                 EndDate: null,
                 DefaultType: null,
                 Blast: null,
-                states: ""
+                states: "",
+                WakeUpStroke: false
             };
+            if ($("#WakeUpStroke").val() == "1") {
+                model.WakeUpStroke = true;
+            } else {
+                model.WakeUpStroke = false;
+            }
             model.Facilities = $(".Facilities").val();
             model.Physicians = $("#Physicians").val();
             model.states = $("#fac_stt_key").val();
