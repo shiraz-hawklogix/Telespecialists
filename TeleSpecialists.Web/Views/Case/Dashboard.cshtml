@@ -731,7 +731,7 @@
                 }
                 
                 var CaseType = row.find("td:nth-child(11)").text();
-                if (CaseType == "Stroke Alert") {
+                if (CaseType.trim() == "Stroke Alert") {
                     var respTime = row.find(".case-grid-response-time").text();
                     if (respTime != undefined && respTime != '') {
                         var respTimeArray = respTime.split(':');
