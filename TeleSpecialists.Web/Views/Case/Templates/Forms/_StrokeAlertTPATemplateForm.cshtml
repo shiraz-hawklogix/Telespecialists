@@ -53,6 +53,7 @@
     dynamicHtmlAttributesForComment.Add("style", "width:100%; height:100px;");
 
     var status = "false";
+    var NIHSSstatus = "false";
     if (Model.case_template_stroke_tpa != null)
     {
         if (Model.case_template_stroke_tpa.cts_patient_family_cosulted == null)
@@ -62,6 +63,10 @@
         if (Model.case_template_stroke_tpa.cts_patient_family_cosulted != null && Model.case_template_stroke_tpa.cts_patient_family_cosulted == false)
         {
             status = "true";
+        }
+        if (Model.case_template_stroke_tpa.cts_NIHSS_comatose != null && Model.case_template_stroke_tpa.cts_NIHSS_comatose == 3)
+        {
+            NIHSSstatus = "true";
         }
     }
 
@@ -412,7 +417,8 @@
     });
     // Added By Axim 10-09-2020
     //Added By Axim 17-11-2020
-    if ('@Model.case_template_stroke_tpa.cts_NIHSS_comatose' == "3") {
+    debugger
+    if (@NIHSSstatus) {
         $("#divNIHSScomatose").show();
     } else {
         $("#divNIHSScomatose").hide();

@@ -237,6 +237,15 @@
     }
     var NIHSSComatose = Enum.GetValues(typeof(NIHSSPatientsComatose)).Cast<NIHSSPatientsComatose>().Select(m => new { Value = (int)m, Text = m.ToDescription() });
     SelectList NIHSSComatoseList = new SelectList(NIHSSComatose, "Value", "Text");
+
+    var NIHSSstatus = "false";
+    if (Model.case_template_statconsult != null)
+    {
+        if (Model.case_template_statconsult.ctt_NIHSS_comatose != null && Model.case_template_statconsult.ctt_NIHSS_comatose == 3)
+        {
+            NIHSSstatus = "true";
+        }
+    }
 }
 
 
@@ -875,7 +884,7 @@
         else {
             $('#divNIHSS').hide();
         }
-        
+
         // Added By Axim 10-09-2020
         var existingText = $("#cas_exam_free_text").val();
         if (existingText != undefined) {
@@ -916,7 +925,8 @@
         calculateScore("#case_template_statconsult_ctt_nihss_totalscore");
     });
     //Added By Axim 17-11-2020
-    if ('@Model.case_template_statconsult.ctt_NIHSS_comatose' == "3") {
+   debugger
+    if (@NIHSSstatus) {
         $("#divNIHSScomatose").show();
     } else {
         $("#divNIHSScomatose").hide();

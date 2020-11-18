@@ -1815,8 +1815,8 @@ namespace TeleSpecialists.BLL.Service
 
         public DataSourceResult GetUserPresenceGraph(DataSourceRequest request, string UserStatus, DateTime startTime)
         {
-           
-            var UsersList = _unitOfWork.SqlQuery<UserPresenceGraph>(string.Format("Exec usp_UserPresence_Graph_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}'", startTime,startTime, UserStatus)).ToList();
+
+            var UsersList = _unitOfWork.SqlQuery<UserPresenceGraph>(string.Format("Exec usp_UserPresence_Graph_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}'", startTime, startTime, UserStatus)).ToList();
 
             var final_list = UsersList.AsQueryable();
 
@@ -4128,7 +4128,7 @@ namespace TeleSpecialists.BLL.Service
                                 callerSource = (ca.cas_caller_source_text == "" ? (caller_source != null ? caller_source.ucd_description : "") : ca.cas_caller_source_text)
                             });
 
-               // var test = cases.ToList();
+                // var test = cases.ToList();
 
                 #region ----- Filters -----
 
@@ -4233,69 +4233,131 @@ namespace TeleSpecialists.BLL.Service
 
                 List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
                 string guids = "";
-                if (model.Physicians != null)
+                if (model.TimeCycle == "individual")
                 {
-                    for (int i = 0; i < model.Physicians.Count; i++)
+                    if (model.Physicians != null)
                     {
-                        QualityMetricsReportCls cls = new QualityMetricsReportCls();
-                        List<double> _meanlist = new List<double>();
-                        List<double> _medianlist = new List<double>();
-                        List<string> handletime = queryList.Where(x => 
-                        x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
-                        int count = 0;
-                        if (handletime.Count > 0)
+                        for (int i = 0; i < model.Physicians.Count; i++)
                         {
-                            foreach (var item in handletime)
+                            QualityMetricsReportCls cls = new QualityMetricsReportCls();
+                            List<double> _meanlist = new List<double>();
+                            List<double> _medianlist = new List<double>();
+                            List<string> handletime = queryList.Where(x =>
+                            x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
+                            int count = 0;
+                            if (handletime.Count > 0)
                             {
-                                if (item != "")
+                                foreach (var item in handletime)
                                 {
-                                    var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
-                                    _meanlist.Add(time);
-                                    _medianlist.Add(time);
-                                    count++;
+                                    if (item != "")
+                                    {
+                                        var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
+                                        _meanlist.Add(time);
+                                        _medianlist.Add(time);
+                                        count++;
+                                    }
                                 }
                             }
-                        }
-                        TimeSpan _meantime = new TimeSpan();
-                        TimeSpan _mediantime = new TimeSpan();
-                        if (_meanlist.Count > 0)
-                        {
-                            double mean = _meanlist.Average();
-                            _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
-                        }
-                        if (_medianlist.Count > 0)
-                        {
-                            int numbercount = _medianlist.Count();
-                            int halfindex = _medianlist.Count() / 2;
-                            var sortednumbers = _medianlist.OrderBy(x => x);
-                            double median;
-                            if ((numbercount % 2) == 0)
+                            TimeSpan _meantime = new TimeSpan();
+                            TimeSpan _mediantime = new TimeSpan();
+                            if (_meanlist.Count > 0)
                             {
-                                median = ((sortednumbers.ElementAt(halfindex) + sortednumbers.ElementAt(halfindex - 1))) / 2;
+                                double mean = _meanlist.Average();
+                                _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
                             }
-                            else
+                            if (_medianlist.Count > 0)
                             {
-                                median = sortednumbers.ElementAt(halfindex);
+                                int numbercount = _medianlist.Count();
+                                int halfindex = _medianlist.Count() / 2;
+                                var sortednumbers = _medianlist.OrderBy(x => x);
+                                double median;
+                                if ((numbercount % 2) == 0)
+                                {
+                                    median = ((sortednumbers.ElementAt(halfindex) + sortednumbers.ElementAt(halfindex - 1))) / 2;
+                                }
+                                else
+                                {
+                                    median = sortednumbers.ElementAt(halfindex);
+                                }
+                                _mediantime = TimeSpan.FromSeconds(Convert.ToDouble(median));
                             }
-                            _mediantime = TimeSpan.FromSeconds(Convert.ToDouble(median));
-                        }
-                        cls.hospitals = count;
-                        cls._meantime = _meantime;
-                        cls._mediantime = _mediantime;
-                        cls.Navigator = queryList.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.navigator).ToList().FirstOrDefault();
-                        cls.NavigatorID = model.Physicians[i];
-                        if (model.Facilities != null)
-                        {
-                            foreach (var guid in model.Facilities)
+                            cls.hospitals = count;
+                            cls._meantime = _meantime;
+                            cls._mediantime = _mediantime;
+                            cls.Navigator = queryList.Where(x => x.navigatorID == model.Physicians[i]).Select(x => x.navigator).ToList().FirstOrDefault();
+                            cls.NavigatorID = model.Physicians[i];
+                            if (model.Facilities != null)
                             {
-                                guids += guid + ",";
+                                foreach (var guid in model.Facilities)
+                                {
+                                    guids += guid + ",";
+                                }
                             }
-                        }
 
-                        guids = guids.TrimEnd(',');
-                        cls.timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
-                        result.Add(cls);
-                     }
+                            guids = guids.TrimEnd(',');
+                            cls.timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
+                            result.Add(cls);
+                        }
+                    }
+                }
+                else if (model.TimeCycle == "cumulative")
+                {
+                    QualityMetricsReportCls cls = new QualityMetricsReportCls();
+                    List<double> _meanlist = new List<double>();
+                    List<double> _medianlist = new List<double>();
+                    List<string> handletime = query.Select(x => x.handle_time).ToList();
+                    int count = 0;
+                    if (handletime.Count > 0)
+                    {
+                        foreach (var item in handletime)
+                        {
+                            if (item != "")
+                            {
+                                var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
+                                _meanlist.Add(time);
+                                _medianlist.Add(time);
+                                count++;
+                            }
+                        }
+                    }
+                    TimeSpan _meantime = new TimeSpan();
+                    TimeSpan _mediantime = new TimeSpan();
+                    if (_meanlist.Count > 0)
+                    {
+                        double mean = _meanlist.Average();
+                        _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
+                    }
+                    if (_medianlist.Count > 0)
+                    {
+                        int numbercount = _medianlist.Count();
+                        int halfindex = _medianlist.Count() / 2;
+                        var sortednumbers = _medianlist.OrderBy(x => x);
+                        double median;
+                        if ((numbercount % 2) == 0)
+                        {
+                            median = ((sortednumbers.ElementAt(halfindex) + sortednumbers.ElementAt(halfindex - 1))) / 2;
+                        }
+                        else
+                        {
+                            median = sortednumbers.ElementAt(halfindex);
+                        }
+                        _mediantime = TimeSpan.FromSeconds(Convert.ToDouble(median));
+                    }
+                    cls.hospitals = count;
+                    cls._meantime = _meantime;
+                    cls._mediantime = _mediantime;
+                    result.Add(cls);
+                    if (model.Facilities != null)
+                    {
+                        foreach (var guid in model.Facilities)
+                        {
+                            guids += guid + ",";
+                        }
+                    }
+
+                    guids = guids.TrimEnd(',');
+
+                    cls.timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
                 }
                 var finalresult = result.Select(x => new
                 {
@@ -6933,16 +6995,16 @@ namespace TeleSpecialists.BLL.Service
                     var cases1 = cases.Where(x => DbFunctions.TruncateTime(x.ca.cas_created_date) >= DbFunctions.TruncateTime(sdate) &&
                                          DbFunctions.TruncateTime(x.ca.cas_created_date) <= DbFunctions.TruncateTime(edate));
 
-                    if (model.WorkFlowType != null)
-                        cases1 = cases1.Where(m => model.WorkFlowType.Contains((m.ca.cas_patient_type.HasValue ? m.ca.cas_patient_type.Value : -1)) && m.ca.cas_ctp_key == (int)CaseType.StrokeAlert);
+                    //if (model.WorkFlowType != null)
+                    //    cases1 = cases1.Where(m => model.WorkFlowType.Contains((m.ca.cas_patient_type.HasValue ? m.ca.cas_patient_type.Value : -1)) && m.ca.cas_ctp_key == (int)CaseType.StrokeAlert);
 
-                    if (model.CallType != null)
-                        cases1 = cases1.Where(m => model.CallType.Contains((m.ca.cas_call_type.HasValue ? m.ca.cas_call_type.Value : -1)) && m.ca.cas_ctp_key == ((int)CaseType.StrokeAlert));
+                    //if (model.CallType != null)
+                    //    cases1 = cases1.Where(m => model.CallType.Contains((m.ca.cas_call_type.HasValue ? m.ca.cas_call_type.Value : -1)) && m.ca.cas_ctp_key == ((int)CaseType.StrokeAlert));
 
-                    if (model.CallerSource != null)
-                    {
-                        cases1 = cases1.Where(m => model.CallerSource.Contains((m.ca.cas_caller_source_key.HasValue ? m.ca.cas_caller_source_key.Value : -1)));
-                    }
+                    //if (model.CallerSource != null)
+                    //{
+                    //    cases1 = cases1.Where(m => model.CallerSource.Contains((m.ca.cas_caller_source_key.HasValue ? m.ca.cas_caller_source_key.Value : -1)));
+                    //}
 
                     if (model.CaseStatus != null)
                         cases1 = cases1.Where(m => model.CaseStatus.Contains(m.ca.cas_cst_key));
@@ -6953,16 +7015,16 @@ namespace TeleSpecialists.BLL.Service
                     if (model.Physicians != null)
                         cases1 = cases1.Where(m => model.Physicians.Contains(m.ca.cas_created_by));
 
-                    if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
-                    {
-                        cases1 = cases1.Where(c => model.QPSNumbers.Contains(c.ca.facility.qps_number));//cases = cases.Where(c => c.ca.facility.qps_number.HasValue && model.QPSNumbers.Contains(c.ca.facility.qps_number.Value));
-                    }
+                    //if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
+                    //{
+                    //    cases1 = cases1.Where(c => model.QPSNumbers.Contains(c.ca.facility.qps_number));//cases = cases.Where(c => c.ca.facility.qps_number.HasValue && model.QPSNumbers.Contains(c.ca.facility.qps_number.Value));
+                    //}
 
 
-                    if (model.tPA != null && model.tPA.Count > 0)
-                    {
-                        cases1 = cases1.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
-                    }
+                    //if (model.tPA != null && model.tPA.Count > 0)
+                    //{
+                    //    cases1 = cases1.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
+                    //}
 
                     #region TCARE-479
                     if (model.eAlert != null && model.eAlert.Count > 0)
