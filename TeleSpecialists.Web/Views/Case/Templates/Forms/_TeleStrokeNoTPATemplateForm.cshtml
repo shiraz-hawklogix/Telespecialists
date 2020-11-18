@@ -44,7 +44,7 @@
     dynamicHtmlAttributesForComment.Add("style", "width:100%; height:100px;");
 
     var status = "false";
-
+    var NIHSSstatus = "false";
     if (Model.case_template_telestroke_notpa != null)
     {
         if (Model.case_template_telestroke_notpa.ctt_patient_family_cosulted == null)
@@ -54,6 +54,9 @@
         if (Model.case_template_telestroke_notpa.ctt_patient_family_cosulted != null && Model.case_template_telestroke_notpa.ctt_patient_family_cosulted == false)
         {
             status = "true";
+        }
+        if (Model.case_template_telestroke_notpa.ctt_NIHSS_comatose!= null && Model.case_template_telestroke_notpa.ctt_NIHSS_comatose == 3) {
+            NIHSSstatus = "true";
         }
     }
     var yesNoOptions = new Dictionary<string, string>();
@@ -70,6 +73,10 @@
     }
     var NIHSSComatose = Enum.GetValues(typeof(NIHSSPatientsComatose)).Cast<NIHSSPatientsComatose>().Select(m => new { Value = (int)m, Text = m.ToDescription() });
     SelectList NIHSSComatoseList = new SelectList(NIHSSComatose, "Value", "Text");
+
+
+
+
 }
 
 @Html.HiddenFor(m => m.case_template_telestroke_notpa.ctt_nihss_totalscore)
@@ -397,7 +404,8 @@
     });
     // Added By Axim
     //Added By Axim 17-11-2020
-    if ('@Model.case_template_telestroke_notpa.ctt_NIHSS_comatose' == "3") {
+    debugger
+    if (@NIHSSstatus) {
         $("#divNIHSScomatose").show();
     } else {
         $("#divNIHSScomatose").hide();

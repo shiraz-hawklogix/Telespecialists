@@ -46,7 +46,7 @@
     <div class="row" id="divLocalFilters">
         <div class="col-12">
             <div class="form-row">
-                <div class="form-group col-xl-4 col-6">
+                <div class="form-group col-xl-2 col-6">
                     <label for="State">State</label>
                     @Html.DropDownList("fac_stt_key", ViewBag.States as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
                 </div>
@@ -57,6 +57,13 @@
                 <div class="form-group col-xl-3 col-6">
                     <label for="Physicians">Navigator</label>
                     @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+                </div>
+                <div class="form-group col-xl-2 col-6">
+                    <label>eAlert</label>
+                    <div id="diveAlert">
+                        @Html.DropDownList("eAlert_List", eAlert_List, new { @class = "form-control", @multiple = "multiple" })
+
+                    </div>
                 </div>
 
                 <div class="form-group col-xl-3 col-6">
@@ -84,12 +91,13 @@
                         <input type="text" id="ToDate" name="ToDate" class="form-control datepicker" />
                     </div>
                 </div>
-                <div class="form-group col-xl-2 col-6">
-                    <label>eAlert</label>
-                    <div id="diveAlert">
-                        @Html.DropDownList("eAlert_List", eAlert_List, new { @class = "form-control", @multiple = "multiple" })
 
-                    </div>
+                <div class="form-group col-xl-2 col-6">
+                    <label for="ddlTimeFrame">Report Type</label>
+                    <select class="form-control" id="ddlreportType">
+                        <option value="individual">Individual</option>
+                        <option value="cumulative">Cumulative</option>
+                    </select>
                 </div>
 
                 <div class="form-group col-12 mt-xl-12 pt-xl-12">
@@ -293,7 +301,7 @@
                 if (selectedValue == "CustomRange")
                     $("#divDateRange").show();
             });
-            
+
             $('#Physicians').multiselect({
                 columns: 1,
                 placeholder: 'Select Navigator',
@@ -690,7 +698,8 @@
                                     tPA: "",
                                     eAlert: "",
                                     TimeFrame: "",
-                                    states: ""
+                                    states: "",
+                                    TimeCycle:""
                                 };
                                 model.states = $("#fac_stt_key").val();
                                 var Getphysician = $("#Physicians").val();
@@ -705,7 +714,7 @@
 
                                 model.CaseType = 9;//$("#CaseTypes").val();
                                 model.QPSNumbers = $("#QPS_Numbers_List").val();
-                                model.tPA = $("#tPA_List").val();
+                                model.TimeCycle = $("#ddlreportType").val();
                                 model.eAlert = $("#eAlert_List").val();
                                 model.WorkFlowType = $("#WorkflowType").val();
 
@@ -864,10 +873,12 @@
             });
         }
         var showgraph = function () {
+            debugger
             var hospitalid = $(this).data("hopitalid");
             var NavigatorID = $(this).data("navigator");
-            var array = hospitalid.split(',');
-            var Navigator = NavigatorID.split(',');
+            var reporttype = $("#ddlreportType").val();
+            //var array = hospitalid.split(',');
+            //var Navigator = NavigatorID.split(',');
             var model = {
                 Facilities: "",
                 Physicians: "",
@@ -884,8 +895,18 @@
                 states: ""
             };
             model.states = $("#fac_stt_key").val();
-            model.Physicians = Navigator; //$("#Physicians").val();
-            model.Facilities = array;//$(this).data("hopitalid");  //$(".Facilities").val();
+            model.Facilities = $("#Facilities").val();
+            if (reporttype == "individal") {
+                model.Physicians = NavigatorID; //$("#Physicians").val();
+            } else {
+                var Getphysician = $("#Physicians").val();
+                if (Getphysician == "") {
+                    $('#Physicians option:not(:selected)').each(function (key, value) {
+                        Getphysician.push(value.value);
+                    });
+                }
+                model.Physicians = Getphysician;
+            }
             model.BillingCode = 1;//$("#BillingCode").val();
             model.CaseType = 9;//$("#CaseTypes").val();
             model.QPSNumbers = $("#QPS_Numbers_List").val();
