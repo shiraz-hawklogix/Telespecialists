@@ -170,7 +170,12 @@
                 </div>
             </div>
         </div>
-        <label class="control-label">Pre-Morbid Modified Ranking Scale:<span class="pl-3" id="has_morbid_symptoms_premorbid">@(Model.cas_metric_has_morbid_symptoms.HasValue ? Model.cas_metric_has_morbid_symptoms.Value != 7 ? Model.cas_metric_has_morbid_symptoms.Value.ToString() : "" : "" )</span></label>
+        <div class="form-group row">
+            <label class="control-label col-sm-4">Pre-Morbid Modified Ranking Scale:</label>
+            <div class="col-sm-8">
+                <span class="pl-3 font-weight-bold" id="has_morbid_symptoms_premorbid">@(Model.cas_metric_has_morbid_symptoms.HasValue ? Model.cas_metric_has_morbid_symptoms.Value != 7 ? Model.cas_metric_has_morbid_symptoms.Value.ToString() : "Information not available at this time in premorbid MRS field" : "" )</span>
+            </div>
+        </div>
     </div>
     <div class="col-xl-7 col-lg-7 col-md-12 col-sm-12">
         <div class="form-group row">
@@ -404,7 +409,7 @@
         $("#pmc_cas_premorbid_completedby_1").val($('#loggedinName').val());
         var value = parseInt($(this).val());
         if (value == 2) {
-           
+
             $("#attempt2").show();
         } else {
             $("#pmc_cas_premorbid_datetime_of_contact_2").val('');
@@ -413,7 +418,7 @@
             var value = $('input[name="pmc_cas_premorbid_successful_or_unsuccessful_second"]:checked').val();
             $('input[name=pmc_cas_premorbid_successful_or_unsuccessful_second][value=' + value+']').prop('checked', false);
             $("#pmc_cas_premorbid_completedby_2").val('');
-            
+
             $("#pmc_cas_premorbid_datetime_of_contact_3").val('');
             $("#pmc_cas_premorbid_spokewith_3").val(0);
             $("#pmc_cas_premorbid_comments_3").val('');
