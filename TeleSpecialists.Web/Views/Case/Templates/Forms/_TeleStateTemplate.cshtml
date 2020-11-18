@@ -235,6 +235,8 @@
         examtext = "true";
         classdanger = "text-danger";
     }
+    var NIHSSComatose = Enum.GetValues(typeof(NIHSSPatientsComatose)).Cast<NIHSSPatientsComatose>().Select(m => new { Value = (int)m, Text = m.ToDescription() });
+    SelectList NIHSSComatoseList = new SelectList(NIHSSComatose, "Value", "Text");
 }
 
 
@@ -372,17 +374,17 @@
         </div>
 
         @*<div class="form-group row">
-            <label class="control-label col-12 text-danger">Comments:</label>
-            <div class="col-10" id="divComment">
-                @Html.TextAreaFor(m => m.case_template_statconsult.ctt_comment, dynamicHtmlAttributesForComment)
-                <div class="text-danger">
-                    <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label>
+                <label class="control-label col-12 text-danger">Comments:</label>
+                <div class="col-10" id="divComment">
+                    @Html.TextAreaFor(m => m.case_template_statconsult.ctt_comment, dynamicHtmlAttributesForComment)
+                    <div class="text-danger">
+                        <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label>
+                    </div>
+                    <div class="error_msg" style="display:none;">
+                        <label>This field is required</label>
+                    </div>
                 </div>
-                <div class="error_msg" style="display:none;">
-                    <label>This field is required</label>
-                </div>
-            </div>
-        </div>*@
+            </div>*@
         @{
             var templateTypes = new List<int>()
             {
@@ -428,15 +430,15 @@
             </div>
         </div>
         @*<div class="form-group row">
-            <div class="col-12">
-                <label class="control-label text-danger">BP: </label> &nbsp;
-                @Html.TextBoxFor(m => m.case_template_statconsult.ctt_vitals_bp, dynamicHtmlAttributesTextBox)&nbsp;
-                <label class="control-label text-danger">Pulse: </label> &nbsp;
-                @Html.TextBoxFor(m => m.case_template_statconsult.ctt_vitals_pulse, dynamicHtmlAttributesTextBox)&nbsp;
-                <label class="control-label text-danger">Blood Glucose: </label> &nbsp;
-                @Html.TextBoxFor(m => m.case_template_statconsult.ctt_vitals_blood_glucose, dynamicHtmlAttributesTextBox)
-            </div>
-        </div>*@
+                <div class="col-12">
+                    <label class="control-label text-danger">BP: </label> &nbsp;
+                    @Html.TextBoxFor(m => m.case_template_statconsult.ctt_vitals_bp, dynamicHtmlAttributesTextBox)&nbsp;
+                    <label class="control-label text-danger">Pulse: </label> &nbsp;
+                    @Html.TextBoxFor(m => m.case_template_statconsult.ctt_vitals_pulse, dynamicHtmlAttributesTextBox)&nbsp;
+                    <label class="control-label text-danger">Blood Glucose: </label> &nbsp;
+                    @Html.TextBoxFor(m => m.case_template_statconsult.ctt_vitals_blood_glucose, dynamicHtmlAttributesTextBox)
+                </div>
+            </div>*@
         <div class="form-group row">
             <label class="control-label col-12 @classdanger">BP: </label>
             <div class="col-10" id="divBP">
@@ -607,18 +609,35 @@
         </div>
         <div id="divNIHSS">
             <div class="form-group row">
-                <div class="col-12">
+                <div class="col-6">
                     @*@Html.CheckBoxFor(m => m.case_template_statconsult.ctt_ignore_nihss)*@
                     @Html.CheckBoxFor(m => m.cas_nihss_cannot_completed)
                     <label class="checkbox-inline">
-                        <b> NIHSS Cannot be Completed Due to Patient Status</b>
+                        <b> NIHSS may not be reliable due to</b>
                     </label>
                     <div id="case_template_statconsult_ctt_ignore_nihss-error" class="error_msg" style="display:none;">
                         <label for="case_template_statconsult.ctt_ignore_nihss">This field is required</label>
                     </div>
                 </div>
+                <div class="col-6">
+                    @Html.DropDownListFor(m => m.case_template_statconsult.ctt_NIHSS_comatose, NIHSSComatoseList, new { @id = "ddlNIHSS", @class = "form-control" })
+                </div>
             </div>
             @* Added BY axim 10-09-2020 *@
+            @* Added BY axim 17-11-2020 *@
+            <div class="form-group row" id="divNIHSScomatose" style="display:none">
+                @*<label class="control-label col-12 @classdanger">Exam Free Text: </label>*@
+                <div class="col-12">
+                    @Html.TextAreaFor(m => m.case_template_statconsult.ctt_NIHSS_comatose_text, new { @class = "form-control" })
+                    @*<div class="text-danger">
+                            <label class="error">50 characters minimum (<span class="Counter">0</span>)</label>
+                        </div>*@
+                    <div class="error_msg" id="case_template_statconsult_ctt_NIHSS_comatose_text-error" style="display:none;">
+                        <label>This field is required</label>
+                    </div>
+                </div>
+            </div>
+            @* Ended by Axim 17-11-2020 *@
             <div class="form-group row" id="divexamTextFree" style="display:none">
                 <label class="control-label col-12 @classdanger">Exam Free Text: </label>
                 <div class="col-12" id="divexamFree">
@@ -856,7 +875,7 @@
         else {
             $('#divNIHSS').hide();
         }
-
+        
         // Added By Axim 10-09-2020
         var existingText = $("#cas_exam_free_text").val();
         if (existingText != undefined) {
@@ -896,6 +915,22 @@
     $(".nihss select").off("change").change(function () {
         calculateScore("#case_template_statconsult_ctt_nihss_totalscore");
     });
+    //Added By Axim 17-11-2020
+    if ('@Model.case_template_statconsult.ctt_NIHSS_comatose' == "3") {
+        $("#divNIHSScomatose").show();
+    } else {
+        $("#divNIHSScomatose").hide();
+    }
+    $("#ddlNIHSS").off("change").change(function () {
+        var currentval = $(this).val();
+        if (currentval == "3") {
+            $("#divNIHSScomatose").show();
+        }
+        else {
+            $("#divNIHSScomatose").hide();
+        }
+    });
+    //Ended BY Axim 17-11-2020
     //$('#case_template_statconsult_ctt_ignore_nihss').change(function () {
     $('#cas_nihss_cannot_completed').change(function () {
         if ($(this).is(":checked")) {

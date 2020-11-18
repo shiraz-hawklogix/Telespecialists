@@ -109,6 +109,8 @@
         examtext = "true";
         classdanger = "text-danger";
     }
+    var NIHSSComatose = Enum.GetValues(typeof(NIHSSPatientsComatose)).Cast<NIHSSPatientsComatose>().Select(m => new { Value = (int)m, Text = m.ToDescription() });
+    SelectList NIHSSComatoseList = new SelectList(NIHSSComatose, "Value", "Text");
 }
 
 @Html.HiddenFor(m => m.case_template_stroke_notpa.ctn_nihss_totalscore)
@@ -384,15 +386,32 @@
     </div>
     <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
         <div class="form-group row">
-            <div class="col-12">
+            <div class="col-6">
                 @*@Html.CheckBoxFor(m => m.case_template_stroke_notpa.ctn_ignore_nihss)*@
                 @Html.CheckBoxFor(m => m.cas_nihss_cannot_completed)
                 <label class="checkbox-inline">
-                    <b> NIHSS Cannot be Completed Due to Patient Status</b>
+                    <b> NIHSS may not be reliable due to </b>
                 </label>
+            </div>
+            <div class="col-6">
+                @Html.DropDownListFor(m => m.case_template_stroke_notpa.ctn_NIHSS_comatose, NIHSSComatoseList, new { @id = "ddlNIHSS", @class = "form-control" })
             </div>
         </div>
         @* Added BY axim 10-09-2020 *@
+        @* Added BY axim 17-11-2020 *@
+        <div class="form-group row" id="divNIHSScomatose" style="display:none">
+            @*<label class="control-label col-12 @classdanger">Exam Free Text: </label>*@
+            <div class="col-12">
+                @Html.TextAreaFor(m => m.case_template_stroke_notpa.ctn_NIHSS_comatose_text, new { @class = "form-control" })
+                @*<div class="text-danger">
+                    <label class="error">50 characters minimum (<span class="Counter">0</span>)</label>
+                </div>*@
+                <div class="error_msg" id="case_template_stroke_notpa_ctn_NIHSS_comatose_text-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>
+        @* Ended by Axim 17-11-2020 *@
         <div class="form-group row" id="divexamTextFree" style="display:none">
             <label class="control-label col-12 @classdanger">Exam Free Text: </label>
             <div class="col-12" id="divexamFree">
@@ -500,7 +519,22 @@
     $(".nihss select").off("change").change(function () {
     calculateScore("#case_template_stroke_notpa_ctn_nihss_totalscore");
 });
-
+    //Added By Axim 17-11-2020
+    if ('@Model.case_template_stroke_notpa.ctn_NIHSS_comatose' == "3") {
+        $("#divNIHSScomatose").show();
+    } else {
+        $("#divNIHSScomatose").hide();
+    }
+    $("#ddlNIHSS").off("change").change(function () {
+        var currentval = $(this).val();
+        if (currentval == "3") {
+            $("#divNIHSScomatose").show();
+        }
+        else {
+            $("#divNIHSScomatose").hide();
+        }
+    });
+    //Ended BY Axim 17-11-2020
     //$('#case_template_stroke_notpa_ctn_ignore_nihss').change(function () {
     $('#cas_nihss_cannot_completed').change(function () {
         if ($(this).is(":checked")) {

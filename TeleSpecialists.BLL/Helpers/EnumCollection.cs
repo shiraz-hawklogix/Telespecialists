@@ -1605,7 +1605,18 @@ namespace TeleSpecialists.BLL.Helpers
         [Description("Other")]
         Other = 5
     }
-    #endregion
+    public enum NIHSSPatientsComatose {
+        [Description("-- Select --")]
+        Select = 0,
+        [Description("Patient is comatose")]
+        patient_comatose = 1,
+        [Description("Patient was intubated and paralyzed")]
+        patient_intubated = 2,
+        [Description("Other")]
+        other = 3,
 
+    }
+
+    #endregion
 }
 
