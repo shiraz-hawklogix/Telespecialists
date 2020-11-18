@@ -44,6 +44,7 @@ namespace TeleSpecialists.BLL.ViewModels
         public string TS_Response_Time { get; set; }
         public string CallBack_Response_Time { get; set; }
         public DateTime Created_Date { get; set; }
+        public string Operations_Notes { get; set; }
     }
 
 

@@ -1266,6 +1266,10 @@ EntityTypes.StateAlertTemplate.ToInt()
             if (currentVal != "7") {
                 $("#has_morbid_symptoms_premorbid").empty();
                 $("#has_morbid_symptoms_premorbid").append(currentVal);
+            } else if (currentVal == "7") {
+                currentVal = "Information not available at this time in premorbid MRS field";
+                $("#has_morbid_symptoms_premorbid").empty();
+                $("#has_morbid_symptoms_premorbid").append(currentVal);
             } else {
                 $("#has_morbid_symptoms_premorbid").empty();
             }

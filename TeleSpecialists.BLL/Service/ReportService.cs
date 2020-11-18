@@ -5996,7 +5996,8 @@ namespace TeleSpecialists.BLL.Service
                                 TS_ResponseTime = DBHelper.FormatSeconds(timestamp.cts_response_sec),
                                 CallBackResponseTime = ca.cas_ctp_key == 10 ? timestamp.cts_callback_to_tsnotification / 60 : 0,
                                 CallBack_Response = DBHelper.FormatSeconds(timestamp.cts_callback_to_tsnotification),
-                                ca.cas_created_date
+                                ca.cas_created_date,
+                                cas_operations_review = ca.cas_operations_review != null ? ca.cas_operations_review : ""
                             });
 
                 DateTime currentdate = DateTime.Now.ToEST();
@@ -6056,6 +6057,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                     //obj.TS_Response_Time = (item.casetypeid == 9) ? item.TS_ResponseTime : item.CallBack_Response;
                     obj.Created_Date = item.cas_created_date;
+                    obj.Operations_Notes = item.cas_operations_review;
                     _list.Add(obj);
 
                     //else if (item.CallBackResponseTime > 15 && item.casetypeid == 10)

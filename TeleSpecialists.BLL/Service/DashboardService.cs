@@ -48,7 +48,7 @@ namespace TeleSpecialists.BLL.Service
             .Select(g => new { hour = g.Key, count = g.Count() });
             */
             
-            for (int i = 1; i < 25; i++)
+            for (int i = 0; i < 24; i++)
             {
                 //int currentCount = casesList.Where(x => x.hour == i).Select(x => x.count).FirstOrDefault();
                 
