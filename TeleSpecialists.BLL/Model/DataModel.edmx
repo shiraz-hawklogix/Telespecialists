@@ -204,6 +204,7 @@
           <Property Name="IsTwoFactVerified" Type="bit" />
           <Property Name="TwoFactVerifyCode" Type="varchar" MaxLength="20" />
           <Property Name="CodeExpiryTime" Type="datetime" />
+          <Property Name="PhysicianId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="AspNetUsers_Log">
           <Key>
@@ -1503,6 +1504,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="mcas_connectivity_issue" Type="bit" />
           <Property Name="mcas_is_nav_blast" Type="bit" />
           <Property Name="mcas_mock_drill_comments" Type="varchar(max)" />
+          <Property Name="mcas_navigator_stamp_notes" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="nih_stroke_scale">
           <Key>
@@ -1942,6 +1944,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="tok_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="tok_phy_key" Type="nvarchar" MaxLength="128" />
           <Property Name="tok_phy_token" Type="nvarchar(max)" />
+          <Property Name="tok_device_type" Type="nvarchar" MaxLength="100" />
+          <Property Name="tok_machine_name" Type="nvarchar" MaxLength="400" />
         </EntityType>
         <EntityType Name="ucl">
           <Key>
@@ -2983,10 +2987,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Parameter Name="isTimeBetween7and12" Type="int" Mode="In" />
           <Parameter Name="SoftSaveGuid" Type="uniqueidentifier" Mode="In" />
         </Function>
-        <Function Name="UspGetAllCaseDataForCCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="UspGetAllOnBoarededList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="UspGetAllPhyDataForBCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="UspGetAllPhyDataForCCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="UspGetAllPhysicion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="UspGetCaseDataForBCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
@@ -3804,7 +3804,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             <End Role="mock_case" EntitySet="mock_case" />
           </AssociationSet>
           <EntitySet Name="telecare_counters" EntityType="DataModel.telecare_counters" />
-          <EntitySet Name="BCI_ReportData" EntityType="DataModel.BCI_ReportData" />
           <EntitySet Name="CCIReport_Data" EntityType="DataModel.CCIReport_Data" />
           <FunctionImport Name="UspGetAllCaseDataForCCI" ReturnType="Collection(DataModel.UspGetAllCaseDataForCCI_Result)" />
           <FunctionImport Name="UspGetAllOnBoarededList" ReturnType="Collection(DataModel.UspGetAllOnBoarededList_Result)" />
@@ -3814,6 +3813,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySet Name="user_access" EntityType="DataModel.user_access" />
           <EntitySet Name="view_facility_physician" EntityType="DataModel.view_facility_physician" />
           <EntitySet Name="view_user_schedule" EntityType="DataModel.view_user_schedule" />
+          <EntitySet Name="BCI_ReportData" EntityType="DataModel.BCI_ReportData" />
 
           </EntityContainer>
         <EntityType Name="alarm_setting">
@@ -6225,6 +6225,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="AspNetUser" ToRole="mock_case" />
           <NavigationProperty Name="mock_case1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="AspNetUser" ToRole="mock_case" />
           <NavigationProperty Name="mock_case2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="AspNetUser" ToRole="mock_case" />
+          <Property Name="PhysicianId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           </EntityType>
 
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
@@ -6635,6 +6636,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Name="tok_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="tok_phy_token" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_token_AspNetUsers" FromRole="token" ToRole="AspNetUser" />
+          <Property Name="tok_device_type" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="tok_machine_name" Type="String" MaxLength="400" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_token_AspNetUsers">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
@@ -6829,6 +6832,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="mock_case" ToRole="AspNetUser" />
           <NavigationProperty Name="facility" Relationship="DataModel.FK_mock_case_facility" FromRole="mock_case" ToRole="facility" />
           <Property Name="mcas_mock_drill_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="mcas_navigator_stamp_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_mock_case_AspNetUsers">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
@@ -6889,15 +6893,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="counter_text" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="counter_value" Type="Int64" />
-        </EntityType>
-        <EntityType Name="BCI_ReportData">
-          <Key>
-            <PropertyRef Name="BCI_ID" />
-          </Key>
-          <Property Name="BCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Phy_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Phy_Bci_Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Phy_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="CCIReport_Data">
           <Key>
@@ -6990,6 +6985,15 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Name="DayNumber" Type="Int64" />
           <Property Name="TIMEFROM" Type="Int64" />
           <Property Name="TIMETO" Type="Int64" />
+        </EntityType>
+        <EntityType Name="BCI_ReportData">
+          <Key>
+            <PropertyRef Name="BCI_ID" />
+          </Key>
+          <Property Name="BCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Phy_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Phy_Bci_Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Phy_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
 
         </Schema>
@@ -8863,6 +8867,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="DataModel.AspNetUser">
               <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
                 <ScalarProperty Name="CodeExpiryTime" ColumnName="CodeExpiryTime" />
                 <ScalarProperty Name="TwoFactVerifyCode" ColumnName="TwoFactVerifyCode" />
                 <ScalarProperty Name="IsTwoFactVerified" ColumnName="IsTwoFactVerified" />
@@ -9039,6 +9044,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySetMapping Name="tokens">
             <EntityTypeMapping TypeName="DataModel.token">
               <MappingFragment StoreEntitySet="token">
+                <ScalarProperty Name="tok_machine_name" ColumnName="tok_machine_name" />
+                <ScalarProperty Name="tok_device_type" ColumnName="tok_device_type" />
                 <ScalarProperty Name="tok_phy_token" ColumnName="tok_phy_token" />
                 <ScalarProperty Name="tok_phy_key" ColumnName="tok_phy_key" />
                 <ScalarProperty Name="tok_key" ColumnName="tok_key" />
@@ -9120,6 +9127,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySetMapping Name="mock_case">
             <EntityTypeMapping TypeName="DataModel.mock_case">
               <MappingFragment StoreEntitySet="mock_case">
+                <ScalarProperty Name="mcas_navigator_stamp_notes" ColumnName="mcas_navigator_stamp_notes" />
                 <ScalarProperty Name="mcas_mock_drill_comments" ColumnName="mcas_mock_drill_comments" />
                 <ScalarProperty Name="mcas_is_nav_blast" ColumnName="mcas_is_nav_blast" />
                 <ScalarProperty Name="mcas_connectivity_issue" ColumnName="mcas_connectivity_issue" />
@@ -9239,16 +9247,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="BCI_ReportData">
-            <EntityTypeMapping TypeName="DataModel.BCI_ReportData">
-              <MappingFragment StoreEntitySet="BCI_ReportData">
-                <ScalarProperty Name="Phy_Id" ColumnName="Phy_Id" />
-                <ScalarProperty Name="Phy_Bci_Value" ColumnName="Phy_Bci_Value" />
-                <ScalarProperty Name="Phy_Name" ColumnName="Phy_Name" />
-                <ScalarProperty Name="BCI_ID" ColumnName="BCI_ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="CCIReport_Data">
             <EntityTypeMapping TypeName="DataModel.CCIReport_Data">
               <MappingFragment StoreEntitySet="CCIReport_Data">
@@ -9261,48 +9259,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="UspGetAllCaseDataForCCI" FunctionName="DataModel.Store.UspGetAllCaseDataForCCI">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DataModel.UspGetAllCaseDataForCCI_Result">
-                <ScalarProperty Name="cas_phy_key" ColumnName="cas_phy_key" />
-                <ScalarProperty Name="cas_fac_key" ColumnName="cas_fac_key" />
-                <ScalarProperty Name="cas_metric_video_start_time" ColumnName="cas_metric_video_start_time" />
-                <ScalarProperty Name="cas_metric_video_end_time" ColumnName="cas_metric_video_end_time" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="UspGetAllOnBoarededList" FunctionName="DataModel.Store.UspGetAllOnBoarededList">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DataModel.UspGetAllOnBoarededList_Result">
-                <ScalarProperty Name="fap_key" ColumnName="fap_key" />
-                <ScalarProperty Name="fap_fac_key" ColumnName="fap_fac_key" />
-                <ScalarProperty Name="fap_user_key" ColumnName="fap_user_key" />
-                <ScalarProperty Name="fap_is_on_boarded" ColumnName="fap_is_on_boarded" />
-                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="UspGetAllPhyDataForBCI" FunctionName="DataModel.Store.UspGetAllPhyDataForBCI">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DataModel.UspGetAllPhyDataForBCI_Result">
-                <ScalarProperty Name="BCI_ID" ColumnName="BCI_ID" />
-                <ScalarProperty Name="Phy_Name" ColumnName="Phy_Name" />
-                <ScalarProperty Name="Phy_Bci_Value" ColumnName="Phy_Bci_Value" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="UspGetAllPhyDataForCCI" FunctionName="DataModel.Store.UspGetAllPhyDataForCCI">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="DataModel.UspGetAllPhyDataForCCI_Result">
-                <ScalarProperty Name="CCI_ID" ColumnName="CCI_ID" />
-                <ScalarProperty Name="Physician_Id" ColumnName="Physician_Id" />
-                <ScalarProperty Name="Physician_CCI" ColumnName="Physician_CCI" />
-                <ScalarProperty Name="Month" ColumnName="Month" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="UspGetForecastDataFOorMOnthly" FunctionName="DataModel.Store.UspGetForecastDataFOorMOnthly">
             <ResultMapping>
               <ComplexTypeMapping TypeName="DataModel.UspGetForecastDataFOorMOnthly_Result">
@@ -9353,6 +9309,16 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
                 <ScalarProperty Name="IsStrokeAlert" ColumnName="IsStrokeAlert" />
                 <ScalarProperty Name="uss_user_id" ColumnName="uss_user_id" />
                 <ScalarProperty Name="uss_key" ColumnName="uss_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BCI_ReportData">
+            <EntityTypeMapping TypeName="DataModel.BCI_ReportData">
+              <MappingFragment StoreEntitySet="BCI_ReportData">
+                <ScalarProperty Name="Phy_Id" ColumnName="Phy_Id" />
+                <ScalarProperty Name="Phy_Bci_Value" ColumnName="Phy_Bci_Value" />
+                <ScalarProperty Name="Phy_Name" ColumnName="Phy_Name" />
+                <ScalarProperty Name="BCI_ID" ColumnName="BCI_ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

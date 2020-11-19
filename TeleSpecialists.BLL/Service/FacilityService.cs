@@ -118,6 +118,12 @@ namespace TeleSpecialists.BLL.Service
             var model = _unitOfWork.UserRepository.Query().Where(x => x.Id == id).Select(m => m.LastName + " " + m.FirstName).FirstOrDefault();
             return model;
         }
+
+        public long GetPhycisionId(string id)
+        {
+            var model = _unitOfWork.UserRepository.Query().Where(x => x.Id == id).Select(m => m.PhysicianId).FirstOrDefault();
+            return model;
+        }
         public int ChKName(string ParameterName, string cas_fac_key_arrays)
         {
             string isValid = "";

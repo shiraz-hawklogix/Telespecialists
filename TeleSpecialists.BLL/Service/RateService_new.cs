@@ -35,6 +35,13 @@ namespace TeleSpecialists.BLL.Service
             return name;
         }
 
+        public long GetPhysicianId(string id)
+        {
+            var getRecord = _unitOfWork.ApplicationUsers.Where(x => x.Id == id).FirstOrDefault();
+            long PhysicianId = getRecord.PhysicianId;
+            return PhysicianId;
+        }
+
         private physician_shift_rate GetRecordBlast(string id, int shift)
         {
             var obj = _unitOfWork.PhysicianRateRepository.Query()
@@ -279,6 +286,7 @@ namespace TeleSpecialists.BLL.Service
                                         {
                                             AssignDate = DBHelper.FormatDateTime(DbFunctions.TruncateTime(onShiftModel.c.cas_billing_date_of_consult).Value, false),
                                             Physician = onShiftModel.u.LastName + " " + onShiftModel.u.FirstName,
+                                            PhysicianId = onShiftModel.u.PhysicianId,
                                             PhysicianKey = onShiftModel.c.cas_phy_key,
                                         } into g
                                 select new PhysicianBillingByShiftViewModel
@@ -286,6 +294,7 @@ namespace TeleSpecialists.BLL.Service
                                     AssignDate = g.Key.AssignDate,
                                     Schedule = "",//g.Key.Schedule,
                                     Physician = g.Key.Physician,
+                                    PhysicianId = g.Key.PhysicianId,
                                     PhysicianKey = g.Key.PhysicianKey,
                                     Open = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.Open ? 1 : 0),
                                     WaitingToAccept = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.WaitingToAccept ? 1 : 0),
@@ -679,6 +688,7 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     AssignDate = g.Key.AssignDate,
                                     Schedule = g.First().obj.Schedule,
+                                    PhysicianId = g.First().obj.PhysicianId,
                                     Physician = g.First().obj.Physician,
                                     PhysicianKey = g.Key.PhysicianKey,
                                     CC1_StrokeAlert = g.Sum(x => x.obj.CC1_StrokeAlert),
@@ -711,6 +721,7 @@ namespace TeleSpecialists.BLL.Service
                                       {
                                           AssignDate = g.Key.AssignDate,
                                           Schedule = g.First().obj.Schedule,
+                                          PhysicianId = g.First().obj.PhysicianId,
                                           Physician = g.First().obj.Physician,
                                           PhysicianKey = g.Key.PhysicianKey,
                                           CC1_StrokeAlert = g.Sum(x => x.obj.CC1_StrokeAlert),
@@ -933,6 +944,7 @@ namespace TeleSpecialists.BLL.Service
         private List<PhysicianBillingByShiftViewModel> GetAllScheduleBilling(List<PhysicianBillingByShiftViewModel> list, List<user_schedule> listSchedule, string phy_id)
         {
             var phy_name = GetPhysicianName(phy_id);
+            var phy_Id = GetPhysicianId(phy_id);
             List<PhysicianBillingByShiftViewModel> new_billing_list = new List<PhysicianBillingByShiftViewModel>();
             PhysicianBillingByShiftViewModel obj;
             foreach (var item in listSchedule)
@@ -953,6 +965,7 @@ namespace TeleSpecialists.BLL.Service
                     obj = new PhysicianBillingByShiftViewModel();
                     obj.AssignDate = date;
                     obj.PhysicianKey = item.uss_user_id;
+                    obj.PhysicianId = phy_Id;
                     obj.Physician = phy_name;
                     DateTime timeFrom = (DateTime)item.uss_time_from_calc;
                     DateTime timeTo = (DateTime)item.uss_time_to_calc;

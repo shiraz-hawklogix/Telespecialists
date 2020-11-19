@@ -9,6 +9,7 @@ namespace TeleSpecialists.BLL.Helpers
    public class RCIReport
     {
         public string Physicians_Id { get; set; }
+        public long PhysicianId { get; set; }
         public string Physicians_name { get; set; }
         public string Physicians { get; set; }
         public DateTime FromMonth { get; set; }

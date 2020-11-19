@@ -551,7 +551,9 @@
 
                  filterColumns();
              },
-             columns: [{ field: "date", width: 260, title: "Date", groupFooterTemplate: "Total", footerTemplate: "Grand Total" },
+             columns: [
+                 { field: "date", width: 260, title: "Date", groupFooterTemplate: "Total", footerTemplate: "Grand Total" },
+                 { field: "PhysicianId", width: 100, title: "Id" },
                  {
                      //headerTemplate: "<input type='button' class='btn btn-dark btn-sm' data-graphid='strokealert' onclick='showgraph.call(this)' value='Graph View' />",
                      columns: [{ field: "physician", width: 100, title: "Physician" }]
