@@ -1,16 +1,4 @@
-﻿// config wetting of telenotification db
-//var firebaseConfig = {
-//    apiKey: "AIzaSyBn7zsblu7K4SdNc48pcGXkGaUWLW7rWIo",
-//    authDomain: "telenotification-a48ca.firebaseapp.com",
-//    databaseURL: "https://telenotification-a48ca.firebaseio.com",
-//    projectId: "telenotification-a48ca",
-//    storageBucket: "telenotification-a48ca.appspot.com",
-//    messagingSenderId: "694692088545",
-//    appId: "1:694692088545:web:b488ac266dc3875ab945a0",
-//    measurementId: "G-SBF832LGH6"
-//};
-// config wetting of teleCare db
-
+﻿
 var blastInterval; 
 var checkBlastArr = [];
 var animated = false;
@@ -58,12 +46,6 @@ listener.onmessage = function (e) {
     else if (caseType === StatusArray[9])
         stopBlastInterval(caseId);
 };
-
-var isCaseFound = $('#lblCaseId').val();
-if (isCaseFound)
-    alert(isCaseFound);
-
-
 firebase.messaging().onMessage(function (payload) {
    // debugger;
     console.log("Message received. ", payload);
@@ -110,7 +92,6 @@ firebase.messaging().onMessage(function (payload) {
         stopBlastInterval(caseId);
     
 });
-
 function appendMessage(payload) {
     const messagesElement = document.querySelector('#messages');
     const dataHeaderELement = document.createElement('h5');
@@ -121,7 +102,6 @@ function appendMessage(payload) {
     messagesElement.appendChild(dataHeaderELement);
     messagesElement.appendChild(dataElement);
 }
-
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
         navigator.serviceWorker.register('/firebase-messaging-sw.js').then(function (registration) {
@@ -133,14 +113,9 @@ if ('serviceWorker' in navigator) {
         });
     });
 }
-
-
-////// blast icon code
-
 function AnimateImg() {
     $('#imgForBlast').toggle(500);
 }
-
 function CheckFirebaseUser() {
     var userStatus = $('#lblforfirebase').val();
     if (userStatus === 'get') {
@@ -148,15 +123,14 @@ function CheckFirebaseUser() {
         CallView();
     }
 }
-
 $('#imgForBlast').click(function () {
     stopBlastInterval();
     $('#imgForBlast').hide();
     var id = $('#cas_key_blast').val();
     SendStrokeInternalBlast(id, true);
 });
-
 function startBlastInterval(id, blastType, strokeStamp) {
+    console.log('checkBlastArr:', checkBlastArr);
     var arraycontainBlast = (checkBlastArr.indexOf(id) > -1);
     console.log('arraycontainBlast result : ' + arraycontainBlast);
     if (!arraycontainBlast) {
@@ -170,8 +144,8 @@ function startBlastInterval(id, blastType, strokeStamp) {
             playBlastNotification();
         else
             console.log('tune muted');
-        
-        localStorage.setItem("activeBlastIds", checkBlastArr);
+
+        localStorage.setItem("activeBlastIds", JSON.stringify(checkBlastArr));
         localStorage.setItem("activeBlasts", $('#divInternalExternal').html());
     }
 }
@@ -181,20 +155,17 @@ function stopBlastInterval(id) {
     $('#' + id).remove();
     localStorage.setItem("activeBlasts", $('#divInternalExternal').html());
 }
-
 $('.btnBlast').click(function () {
     stopBlastInterval();
     var id = $('#cas_key_blast').val();
     SendStrokeInternalBlast(id, true);
 });
-
 function GetBlastDetail(e) {
    // var _strokeStamp = //$(this).attr('data-strokeStamp');
     console.log('open stamp: ', e);
     //stopBlastInterval(e);
     SendStrokeInternalBlast(e, true);
 }
-
 function AnimateJS() {
     animated = true;
     var textWrapper = document.querySelector('.ml6 .letters');
@@ -215,10 +186,9 @@ function AnimateJS() {
             delay: 500
         });
 }
-
 $(document).ready(function () {
-    var _arrVal = localStorage.getItem('activeBlastIds');
+    var _arrVal = JSON.parse( localStorage.getItem('activeBlastIds'));
+    console.log('_arrVal:', _arrVal);
     if (_arrVal)
         checkBlastArr = _arrVal.slice();
-    console.log('checkBlastArr:', checkBlastArr);
 });
