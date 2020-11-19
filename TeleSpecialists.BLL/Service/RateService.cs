@@ -342,6 +342,7 @@ namespace TeleSpecialists.BLL.Service
                                                 + DbFunctions.Right("00" + SqlFunctions.DateName("minute", onShiftModel.s.uss_time_to_calc.Value), 2),
                                             Physician = onShiftModel.u.LastName + " " + onShiftModel.u.FirstName,
                                             PhysicianKey = onShiftModel.c.cas_phy_key,
+                                            PhysicianId = onShiftModel.u.PhysicianId,
                                             uss_time_from_calc = onShiftModel.s.uss_time_from_calc.Value,
                                             uss_time_to_calc = onShiftModel.s.uss_time_to_calc.Value,
                                             //assign_date = onShiftModel.c.cas_physician_assign_date
@@ -352,6 +353,7 @@ namespace TeleSpecialists.BLL.Service
                                     //assign_date = (DateTime)g.Key.assign_date,
                                     Schedule = g.Key.Schedule,
                                     Physician = g.Key.Physician,
+                                    PhysicianId = g.Key.PhysicianId,
                                     PhysicianKey = g.Key.PhysicianKey,
                                     Open = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.Open ? 1 : 0),
                                     WaitingToAccept = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.WaitingToAccept ? 1 : 0),
@@ -410,6 +412,7 @@ namespace TeleSpecialists.BLL.Service
                                             {
                                                 Schedule = "",
                                                 Physician = offShiftModel.u.LastName + " " + offShiftModel.u.FirstName,
+                                                PhysicianId = offShiftModel.u.PhysicianId,
                                                 PhysicianKey = offShiftModel.c.cas_phy_key,
                                             } into g
                                      select new PhysicianBillingByShiftViewModel
@@ -417,6 +420,7 @@ namespace TeleSpecialists.BLL.Service
                                          AssignDate = "Blast",
                                          Schedule = "",
                                          Physician = g.Key.Physician,
+                                         PhysicianId = g.Key.PhysicianId,
                                          PhysicianKey = g.Key.PhysicianKey,
                                          Open = null,
                                          WaitingToAccept = null,
@@ -446,6 +450,7 @@ namespace TeleSpecialists.BLL.Service
                         AssignDate = "Blast",
                         Schedule = "",
                         Physician = item.Physician,
+                        PhysicianId = item.PhysicianId,
                         PhysicianKey = item.PhysicianKey,
                         Open = null,
                         WaitingToAccept = null,
@@ -508,6 +513,7 @@ namespace TeleSpecialists.BLL.Service
                                         {
                                             AssignDate = DBHelper.FormatDateTime(DbFunctions.TruncateTime(onShiftModel.c.cas_billing_date_of_consult).Value, false),
                                             Physician = onShiftModel.u.LastName + " " + onShiftModel.u.FirstName,
+                                            PhysicianId = onShiftModel.u.PhysicianId,
                                             PhysicianKey = onShiftModel.c.cas_phy_key,
                                         } into g
                                 select new PhysicianBillingByShiftViewModel
@@ -515,6 +521,7 @@ namespace TeleSpecialists.BLL.Service
                                     AssignDate = g.Key.AssignDate,
                                     Schedule = "",//g.Key.Schedule,
                                     Physician = g.Key.Physician,
+                                    
                                     PhysicianKey = g.Key.PhysicianKey,
                                     Open = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.Open ? 1 : 0),
                                     WaitingToAccept = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.WaitingToAccept ? 1 : 0),
@@ -964,6 +971,7 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     AssignDate = g.Key.AssignDate,
                                     Schedule = g.First().obj.Schedule,
+                                    PhysicianId = g.First().obj.PhysicianId,
                                     Physician = g.First().obj.Physician,
                                     PhysicianKey = g.Key.PhysicianKey,
                                     CC1_StrokeAlert = g.Sum(x => x.obj.CC1_StrokeAlert),
@@ -996,6 +1004,7 @@ namespace TeleSpecialists.BLL.Service
                                       {
                                           AssignDate = g.Key.AssignDate,
                                           Schedule = g.First().obj.Schedule,
+                                          PhysicianId = g.First().obj.PhysicianId,
                                           Physician = g.First().obj.Physician,
                                           PhysicianKey = g.Key.PhysicianKey,
                                           CC1_StrokeAlert = g.Sum(x => x.obj.CC1_StrokeAlert),

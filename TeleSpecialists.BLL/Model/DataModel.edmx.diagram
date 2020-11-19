@@ -153,11 +153,11 @@
         <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers1" />
         <AssociationConnector Association="DataModel.FK_mock_case_facility" />
         <EntityTypeShape EntityType="DataModel.telecare_counters" Width="1.5" PointX="13.375" PointY="10.75" />
-        <EntityTypeShape EntityType="DataModel.BCI_ReportData" Width="1.5" PointX="9.375" PointY="18.75" />
         <EntityTypeShape EntityType="DataModel.CCIReport_Data" Width="1.5" PointX="19.375" PointY="16.75" />
         <EntityTypeShape EntityType="DataModel.user_access" Width="1.5" PointX="19.75" PointY="19.75" />
         <EntityTypeShape EntityType="DataModel.view_facility_physician" Width="1.5" PointX="0.75" PointY="20.75" />
         <EntityTypeShape EntityType="DataModel.view_user_schedule" Width="1.5" PointX="2.75" PointY="20.75" />
+        <EntityTypeShape EntityType="DataModel.BCI_ReportData" Width="1.5" PointX="9.375" PointY="18.75" />
 
         </Diagram>
     </edmx:Diagrams>

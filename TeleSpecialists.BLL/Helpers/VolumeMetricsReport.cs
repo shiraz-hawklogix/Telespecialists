@@ -30,5 +30,6 @@ namespace TeleSpecialists.BLL.Helpers
         public int EDOnset { get; set; }
         public string EDOnsetPercent { get; set; }
         public int TotalCases { get; set; }
+        public long PhysicianId { get; set; }
     }
 }

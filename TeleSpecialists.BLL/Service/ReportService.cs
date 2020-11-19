@@ -63,6 +63,7 @@ namespace TeleSpecialists.BLL.Service
                         {
                             state = stt.ucd_title,
                             phyId = p.Id,
+                            PhysicianId = p.PhysicianId,
                             fac_id = f.fac_key.ToString(),
                             FullName = p.LastName + " " + p.FirstName,
                             f.fac_name,
@@ -142,6 +143,7 @@ namespace TeleSpecialists.BLL.Service
                         select new
                         {
                             phyId = p.Id,
+                            PhysicianId = p.PhysicianId,
                             FullName = p.LastName + " " + p.FirstName,
                             ucd_key = s.ucd_key.ToString(),
                             s.ucd_title,
@@ -242,6 +244,7 @@ namespace TeleSpecialists.BLL.Service
                 billing_code = m.billingCode != null ? m.billingCode.ucd_title : "",
                 case_type = m.caseType != null ? m.caseType.ucd_title : "",
                 Physician = m.ca.AspNetUser2 != null ? m.ca.AspNetUser2.LastName + " " + m.ca.AspNetUser2.FirstName : "",
+                PhysicianId = m.ca.AspNetUser2.PhysicianId,
                 cas_metric_firstlogin_date_est = m.ca.cas_response_first_atempt != null ? DBHelper.FormatDateTime(m.ca.cas_response_first_atempt.Value, true) : "",
                 //stampt_to_login_time = DBHelper.FormatSeconds(DbFunctions.DiffSeconds(m.ca.cas_metric_stamp_time_est, m.ca.cas_response_first_atempt)),
                 stampt_to_login_time = DBHelper.FormatSeconds(m.ca.cas_metric_stamp_time_est, m.ca.cas_response_first_atempt),
@@ -307,6 +310,7 @@ namespace TeleSpecialists.BLL.Service
                                                 + ":"
                                                 + DbFunctions.Right("00" + SqlFunctions.DateName("minute", onShiftModel.s.uss_time_to_calc.Value), 2),
                                             Physician = onShiftModel.u.LastName + " " + onShiftModel.u.FirstName,
+                                            PhysicianId = onShiftModel.u.PhysicianId,
                                             PhysicianKey = onShiftModel.c.cas_phy_key,
                                             uss_time_from_calc = onShiftModel.s.uss_time_from_calc.Value,
                                             uss_time_to_calc = onShiftModel.s.uss_time_to_calc.Value,
@@ -318,6 +322,7 @@ namespace TeleSpecialists.BLL.Service
                                     //assign_date = (DateTime)g.Key.assign_date,
                                     Schedule = g.Key.Schedule,
                                     Physician = g.Key.Physician,
+                                    PhysicianId = g.Key.PhysicianId,
                                     PhysicianKey = g.Key.PhysicianKey,
                                     Open = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.Open ? 1 : 0),
                                     WaitingToAccept = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.WaitingToAccept ? 1 : 0),
@@ -366,12 +371,15 @@ namespace TeleSpecialists.BLL.Service
                                         {
                                             Schedule = "",
                                             Physician = offShiftModel.u.LastName + " " + offShiftModel.u.FirstName,
+                                            PhysicianId = offShiftModel.u.PhysicianId,
                                             PhysicianKey = offShiftModel.c.cas_phy_key,
+
                                         } into g
                                  select new PhysicianBillingByShiftViewModel
                                  {
                                      AssignDate = "Blast",
                                      Schedule = "",
+                                     PhysicianId = g.Key.PhysicianId,
                                      Physician = g.Key.Physician,
                                      PhysicianKey = g.Key.PhysicianKey,
                                      Open = null,
@@ -400,6 +408,7 @@ namespace TeleSpecialists.BLL.Service
                         AssignDate = "Blast",
                         Schedule = "",
                         Physician = item.Physician,
+                        PhysicianId = item.PhysicianId,
                         PhysicianKey = item.PhysicianKey,
                         Open = null,
                         WaitingToAccept = null,
@@ -500,6 +509,7 @@ namespace TeleSpecialists.BLL.Service
                                             //    + ":"
                                             //    + DbFunctions.Right("00" + SqlFunctions.DateName("minute", onShiftModel.s.uss_time_to_calc.Value), 2),
                                             Physician = onShiftModel.u.LastName + " " + onShiftModel.u.FirstName,
+                                            PhysicianId = onShiftModel.u.PhysicianId,
                                             PhysicianKey = onShiftModel.c.cas_phy_key,
                                             //uss_time_from_calc = onShiftModel.s.uss_time_from_calc.Value,
                                             //uss_time_to_calc = onShiftModel.s.uss_time_to_calc.Value
@@ -509,6 +519,7 @@ namespace TeleSpecialists.BLL.Service
                                     AssignDate = g.Key.AssignDate,
                                     Schedule = "",//g.Key.Schedule,
                                     Physician = g.Key.Physician,
+                                    PhysicianId = g.Key.PhysicianId,
                                     PhysicianKey = g.Key.PhysicianKey,
                                     Open = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.Open ? 1 : 0),
                                     WaitingToAccept = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.WaitingToAccept ? 1 : 0),
@@ -587,6 +598,7 @@ namespace TeleSpecialists.BLL.Service
                                         {
                                             Schedule = "",
                                             Physician = offShiftModel.u.LastName + " " + offShiftModel.u.FirstName,
+                                            PhysicianId = offShiftModel.u.PhysicianId,
                                             PhysicianKey = offShiftModel.c.cas_phy_key,
                                         } into g
                                  select new PhysicianBillingByShiftViewModel
@@ -594,6 +606,7 @@ namespace TeleSpecialists.BLL.Service
                                      AssignDate = "Blast",
                                      Schedule = "",
                                      Physician = g.Key.Physician,
+                                     PhysicianId = g.Key.PhysicianId,
                                      PhysicianKey = g.Key.PhysicianKey,
                                      Open = null,
                                      WaitingToAccept = null,
@@ -621,6 +634,7 @@ namespace TeleSpecialists.BLL.Service
                         AssignDate = "Blast",
                         Schedule = "",
                         Physician = item.Physician,
+                        PhysicianId = item.PhysicianId,
                         PhysicianKey = item.PhysicianKey,
                         Open = null,
                         WaitingToAccept = null,
@@ -723,6 +737,7 @@ namespace TeleSpecialists.BLL.Service
                 case_type = x.caseType != null ? x.caseType.ucd_title : "",
                 caseStatus = x.caseStatus != null ? x.caseStatus.ucd_title : "",
                 Physician = x.ca.AspNetUser2 != null ? x.ca.AspNetUser2.LastName + " " + x.ca.AspNetUser2.FirstName : "",
+                PhysicianId = x.ca.AspNetUser2.PhysicianId,
                 // husnain code end
                 cas_billing_date_of_consult = x.ca.cas_billing_date_of_consult.HasValue
                                     ? DBHelper.FormatDateTime(x.ca.cas_billing_date_of_consult.Value, false)
@@ -870,6 +885,7 @@ namespace TeleSpecialists.BLL.Service
                             tpaDelay,
                             CaseStatus = case_status != null ? case_status.ucd_title : "",
                             CaseType = case_type != null ? case_type.ucd_title : "",
+                            PhysicianId = physicianInfo.PhysicianId,
                             physician = physicianInfo.LastName + " " + (string.IsNullOrEmpty(physicianInfo.FirstName) ? "" : physicianInfo.FirstName.Substring(0, 1)),
                         });
             cases = cases.OrderBy(x => x.ca.cas_billing_date_of_consult);
@@ -883,6 +899,7 @@ namespace TeleSpecialists.BLL.Service
                 x.ca.cas_case_number,
                 ctp_name = x.CaseType,
                 cst_name = x.CaseStatus,
+                x.PhysicianId,
                 x.physician,
                 fac_name = x.ca.facility != null ? x.ca.facility.fac_name : "",
                 cas_created_date = DBHelper.FormatDateTime(x.ca.cas_created_date, false),
@@ -1474,6 +1491,7 @@ namespace TeleSpecialists.BLL.Service
 
 
                     physicians = DBHelper.GetPhysiciansInitialsCount(x.ca.cas_history_physician_initial_cal),
+                    PhysicianId = x.ca.AspNetUser2.PhysicianId,
                     physicianName = DBHelper.GetUserFullName(x.ca.cas_phy_key),//x.ca.AspNetUser2 != null ? x.ca.AspNetUser2.LastName + " " + x.ca.AspNetUser2.FirstName : "",
                     x.billingCode,
                     x.caseType,
@@ -1788,6 +1806,7 @@ namespace TeleSpecialists.BLL.Service
                             obj.date = item.date;
                             obj.CreatedDate = item.CreatedDate;
                             obj.Physician = item.Physician;
+                            obj.PhysicianId = item.PhysicianId;
                             obj.Available = item.Available;
                             obj.AvailableS = string.Format("{0:D2}:{1:D2}:{2:D2}", (item.Available / 3600), ((item.Available % 3600) / 60), item.Available % 60);
                             obj.TPA = item.TPA;
@@ -1813,6 +1832,7 @@ namespace TeleSpecialists.BLL.Service
                 x.date,
                 x.CreatedDate,
                 x.Physician,
+                x.PhysicianId,
                 x.AvailableS,
                 x.TPAS,
                 x.StrokeAlertS,
@@ -5837,6 +5857,7 @@ namespace TeleSpecialists.BLL.Service
                             select (new
                             {
                                 PhysicianName = phys.FirstName + " " + phys.LastName,
+                                PhysicianId = phys.PhysicianId,
                                 ca.cas_billing_physician_blast,
                                 ca.cas_fac_key,
                                 ca.cas_phy_key,
@@ -5922,6 +5943,7 @@ namespace TeleSpecialists.BLL.Service
                             resultforstrokestat = resultforstrokestats.Select(x => new VolumeMetricsReport
                             {
                                 PhysicianKey = x.cas_phy_key,
+                                PhysicianId = x.PhysicianId,
                                 PhysicianName = x.PhysicianName,
                                 StrokeAlert = model.Blast == null ? x.cas_ctp_key == 9 ? 1 : 0 : x.cas_billing_physician_blast == isblast ? x.cas_ctp_key == 9 ? 1 : 0 : 0,
                                 STAT = x.cas_ctp_key == 10 ? 1 : 0,
@@ -5930,6 +5952,7 @@ namespace TeleSpecialists.BLL.Service
                             resultforothers = resultforother.Select(x => new VolumeMetricsReport
                             {
                                 PhysicianKey = x.cas_phy_key,
+                                PhysicianId = x.PhysicianId,
                                 PhysicianName = x.PhysicianName,
                                 New = x.cas_ctp_key == 163 || x.cas_ctp_key == 227 ? 1 : 0,
                                 FollowUp = x.cas_ctp_key == 164 || x.cas_ctp_key == 228 ? 1 : 0,
@@ -5975,6 +5998,7 @@ namespace TeleSpecialists.BLL.Service
                             resultforstrokestat = resultforstrokestats.Select(x => new VolumeMetricsReport
                             {
                                 PhysicianKey = x.cas_phy_key,
+                                PhysicianId = x.PhysicianId,
                                 PhysicianName = x.PhysicianName,
                                 StrokeAlert = model.Blast == null ? x.cas_billing_bic_key == 1 ? 1 : 0 : x.cas_billing_physician_blast == isblast ? x.cas_billing_bic_key == 1 ? 1 : 0 : 0,
                                 STAT = x.cas_billing_bic_key == 2 ? 1 : 0,
@@ -5983,6 +6007,7 @@ namespace TeleSpecialists.BLL.Service
                             resultforothers = resultforother.Select(x => new VolumeMetricsReport
                             {
                                 PhysicianKey = x.cas_phy_key,
+                                PhysicianId = x.PhysicianId,
                                 PhysicianName = x.PhysicianName,
                                 New = x.cas_billing_bic_key == 3 ? 1 : 0,
                                 FollowUp = x.cas_billing_bic_key == 4 ? 1 : 0,
@@ -6033,6 +6058,7 @@ namespace TeleSpecialists.BLL.Service
                             resultforstrokestat = resultforstrokestats.Select(x => new VolumeMetricsReport
                             {
                                 PhysicianKey = x.cas_phy_key,
+                                PhysicianId = x.PhysicianId,
                                 PhysicianName = x.PhysicianName,
                                 StrokeAlert = model.Blast == null ? x.cas_ctp_key == 9 ? 1 : 0 : x.cas_billing_physician_blast == isblast ? x.cas_ctp_key == 9 ? 1 : 0 : 0,
                                 STAT = x.cas_ctp_key == 10 ? 1 : 0,
@@ -6041,6 +6067,7 @@ namespace TeleSpecialists.BLL.Service
                             resultforothers = resultforother.Select(x => new VolumeMetricsReport
                             {
                                 PhysicianKey = x.cas_phy_key,
+                                PhysicianId = x.PhysicianId,
                                 PhysicianName = x.PhysicianName,
                                 New = x.cas_ctp_key == 163 || x.cas_ctp_key == 227 ? 1 : 0,
                                 FollowUp = x.cas_ctp_key == 164 || x.cas_ctp_key == 228 ? 1 : 0,
@@ -6092,6 +6119,7 @@ namespace TeleSpecialists.BLL.Service
                             resultforstrokestat = resultforstrokestats.Select(x => new VolumeMetricsReport
                             {
                                 PhysicianKey = x.cas_phy_key,
+                                PhysicianId = x.PhysicianId,
                                 PhysicianName = x.PhysicianName,
                                 StrokeAlert = model.Blast == null ? x.cas_billing_bic_key == 1 ? 1 : 0 : x.cas_billing_physician_blast == isblast ? x.cas_billing_bic_key == 1 ? 1 : 0 : 0,
                                 STAT = x.cas_billing_bic_key == 2 ? 1 : 0,
@@ -6100,6 +6128,7 @@ namespace TeleSpecialists.BLL.Service
                             resultforothers = resultforother.Select(x => new VolumeMetricsReport
                             {
                                 PhysicianKey = x.cas_phy_key,
+                                PhysicianId = x.PhysicianId,
                                 PhysicianName = x.PhysicianName,
                                 New = x.cas_billing_bic_key == 3 ? 1 : 0,
                                 FollowUp = x.cas_billing_bic_key == 4 ? 1 : 0,
@@ -6111,6 +6140,7 @@ namespace TeleSpecialists.BLL.Service
                             report = result.GroupBy(x => x.PhysicianName).Select(x => new VolumeMetricsReport
                             {
                                 TimeCycle = startdateval,
+                               PhysicianId = x.Select(s => s.PhysicianId).FirstOrDefault(),
                                 PhysicianName = x.Key,
                                 StrokeAlert = x.Sum(s => s.StrokeAlert),
                                 STAT = x.Sum(s => s.STAT),
@@ -6129,6 +6159,7 @@ namespace TeleSpecialists.BLL.Service
                 var finalresult = volumelist.Select(x => new
                 {
                     physician = x.PhysicianName,
+                    PhysicianId = x.PhysicianId,
                     date = x.TimeCycle,
                     strokealert = x.StrokeAlert,
                     stat = x.STAT,
@@ -9174,7 +9205,9 @@ namespace TeleSpecialists.BLL.Service
                     DateTime StartDate = Convert.ToDateTime(FromMonth);
                     DateTime EndDate = Convert.ToDateTime(ToMonth).AddMonths(1);
                     report.Physicians_name = _FacilityService.GetPhycisionName(item.ToString());
+                    report.PhysicianId = _FacilityService.GetPhycisionId(item.ToString());
                     report.Physicians_Id = item.ToString();
+
                     report.fac_Id = phycisions.Where(x => x.fap_user_key == item.ToString()).Select(x => x.fap_fac_key).FirstOrDefault().ToString();
                     for (var i = StartDate; StartDate < EndDate;)
                     {
@@ -9427,6 +9460,7 @@ namespace TeleSpecialists.BLL.Service
             var finalresult = volumelist.Select(x => new
             {
                 Physicians_Id = x.Physicians_Id,
+                PhysicianId = x.PhysicianId,
                 Physicians_name = x.Physicians_name,
                 January = x.January,
                 February = x.February,

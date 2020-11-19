@@ -28,5 +28,6 @@ namespace TeleSpecialists.BLL.ViewModels.Reports
         public string TotalCases { get; set; }
         public DateTime time_from_calc { get; set; }
         public DateTime time_to_calc { get; set; }
+        public long PhysicianId { get; set; }
     }
 }

@@ -161,6 +161,7 @@
                 },
                 columns: [
                     { hidden: true, field: "psl_key" },
+                    { field: "PhysicianId", width: 100, title: "Id" },
                     { field: "physician_name", width: 250, title: "Physician Name" },
                     { field: "physician_status", width: 185, title: "Physician Status" },
                     { field: "psl_created_date", template: "#= kendo.toString(kendo.parseDate(psl_created_date, 'yyyy-MM-dd HH:mm:ss'), 'MM/dd/yyyy HH:mm:ss') #", width: 185, title: "Date" },

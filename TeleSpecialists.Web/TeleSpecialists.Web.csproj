@@ -306,6 +306,7 @@
     <Compile Include="Models\CallHistoryViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PhysicianCaseTempViewModel.cs" />
+    <Compile Include="Models\ProfileAccessViewModel.cs" />
     <Compile Include="Models\SignalRCaseDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
@@ -3547,6 +3548,8 @@
     <Content Include="Views\Reports\Daily_forecast.cshtml" />
     <Content Include="Views\Reports\MOnth_forecast.cshtml" />
     <Content Include="Views\Reports\CCIReport.cshtml" />
+    <Content Include="Views\MenuAccess\_GetUserBasedAccess.cshtml" />
+    <Content Include="Views\MenuAccess\UserBasedMenuAccess.cshtml" />
     <Content Include="Views\Reports\StatusSnapshot.cshtml" />
   </ItemGroup>
   <ItemGroup>

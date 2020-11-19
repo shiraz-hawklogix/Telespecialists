@@ -12,7 +12,7 @@ namespace TeleSpecialists.BLL.ViewModels.Reports
         public string physician { get; set; }
         public string cancelReason { get; set; }
         public string cancelType { get; set; }
-             
-        
+        public long PhysicianId { get; set; }
+
     }
 }

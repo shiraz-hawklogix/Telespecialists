@@ -34,7 +34,15 @@ namespace TeleSpecialists.BLL.Service
             return GetFacilities(phoneNumber).Where(f=>f.fac_is_active);
         }
 
+        public IQueryable<facility> GetAll(string phoneNumber)
+        {
+            return GetFacilities(phoneNumber);
+        }
+        public IQueryable<facility> GetAllActnNonActFacility(string phoneNumber)
+
+
 		public IQueryable<facility> GetAllActnNonActFacility(string phoneNumber)
+
         {
             return GetFacilities(phoneNumber);
         }
