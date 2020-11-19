@@ -392,13 +392,13 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 }
 @if (User.IsInRole(UserRoles.Physician.ToDescription()) && DifferenceInMinutes.Minutes < 5)// 5 minutes check
-    {
-<ul class="nav nav-tabs" style="float:right">
-    <li class="nav-item"> <button class="btn btn-danger" style="padding:7px 30px;" id="rejectCaseButton">Reject Case</button></li>
-</ul>
-@*<select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation d-none" data-selectedValue="@(Model != null ? Model.cas_phy_key : "0")"></select>*@
+{
+    <ul class="nav nav-tabs" style="float:right">
+        <li class="nav-item"> <button class="btn btn-danger" style="padding:7px 30px;" id="rejectCaseButton">Reject Case</button></li>
+    </ul>
+    @*<select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation d-none" data-selectedValue="@(Model != null ? Model.cas_phy_key : "0")"></select>*@
     @*@Html.HiddenFor(x => x.cas_phy_key, new { id = "cas_phy_key", @class = "d-none" })*@
-  }
+}
 <ul class="nav nav-tabs" role="tablist" id="menuTabs">
     @if (!(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())))
     {
@@ -452,11 +452,11 @@ EntityTypes.StateAlertTemplate.ToInt()
 }
 <div class="ajaxForm">
     <form method="post" class="form-horizontal" id="createForm" action="@editUrl">
-      @if (User.IsInRole(UserRoles.Physician.ToDescription()))
-      {
-        <select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation d-none"></select>
-      }
-        <input type = "hidden" name="cas_cancelled_type" id="cas_cancelled_type" value="@Model.cas_cancelled_type" />
+        @if (User.IsInRole(UserRoles.Physician.ToDescription()))
+        {
+            <select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation d-none"></select>
+        }
+        <input type="hidden" name="cas_cancelled_type" id="cas_cancelled_type" value="@Model.cas_cancelled_type" />
         @Html.HiddenFor(x => x.cas_billing_bic_key_initial, new { @id = "key_revised" })
         @Html.Partial("_caseCancellationReason")
         @Html.Partial("_caseRejectionReason")
@@ -549,168 +549,168 @@ EntityTypes.StateAlertTemplate.ToInt()
                     <div class="col-10 text-right">
                         <input type="button" class="btn btn-dark" id="btnSaveTemplate" value="Save" />
 
-    @*<input type="button" class="btn btn-dark" id="btnSaveAndCopyTemplate" value="Save & Finalize" data-clipboard-action="copy" data-clipboard-target="#editorContentHolder" />*@
-                            <input type="button" class="btn btn-dark" id="btnSaveAndCloseTemplate" value="Save & Close" />
-                            <div id="editorContentHolder" style="height:0.5px; width:0.5px; overflow:hidden;"></div>
-                        </div>
+                        @*<input type="button" class="btn btn-dark" id="btnSaveAndCopyTemplate" value="Save & Finalize" data-clipboard-action="copy" data-clipboard-target="#editorContentHolder" />*@
+                        <input type="button" class="btn btn-dark" id="btnSaveAndCloseTemplate" value="Save & Close" />
+                        <div id="editorContentHolder" style="height:0.5px; width:0.5px; overflow:hidden;"></div>
                     </div>
                 </div>
-            }
-        </div>
+            </div>
+        }
+    </div>
 </div>
 
 <div id="casereviewtemplatemodal" class="modal" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-lg">
-            @using (Html.BeginForm(new { role = "form" }))
-            {
-                <div class="modal-content">
-                    <!-- Modal Header -->
-                    <div class="modal-header">
-                        <h4 class="modal-title">Case Review Template</h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="modal-body">
-                        <div class="form-horizontal">
-                            <div id="Reviewvalidation">
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-12">
-                                    <textarea class="form-control" id="cas_review_template_html" name="cas_review_template_html"></textarea>
-                                </div>
-                            </div>
+    <div class="modal-dialog modal-lg">
+        @using (Html.BeginForm(new { role = "form" }))
+        {
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Case Review Template</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div id="Reviewvalidation">
                         </div>
-                    </div>
-                    <!-- Modal footer -->
-                    <div class="modal-footer">
-                        <div class="col-2 text-left">
-                            <a class="btn btn-link" href="#" id="btnCancelReviewTemplatePopup">Cancel</a>
-                        </div>
-                        <div class="col-10 text-right">
-                            <input type = "button" class="btn btn-dark" id="btnSaveReviewTemplate" value="Save" />
-                            <input type = "button" class="btn btn-dark" id="btnSaveAndCloseReviewTemplate" value="Save & Close" />
-                            <input type = "button" class="btn btn-dark" id="btnPdfExport" value="Export PDF" style="display:none" />
-                            <input type = "button" class="btn btn-dark" id="btnWordDocumentExport" value="Export Word" />
-
-                            <div id = "editorContentHolder" style="height:0.5px; width:0.5px; overflow:hidden;"></div>
+                        <div class="form-group row">
+                            <div class="col-12">
+                                <textarea class="form-control" id="cas_review_template_html" name="cas_review_template_html"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
-            }
-        </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <div class="col-2 text-left">
+                        <a class="btn btn-link" href="#" id="btnCancelReviewTemplatePopup">Cancel</a>
+                    </div>
+                    <div class="col-10 text-right">
+                        <input type="button" class="btn btn-dark" id="btnSaveReviewTemplate" value="Save" />
+                        <input type="button" class="btn btn-dark" id="btnSaveAndCloseReviewTemplate" value="Save & Close" />
+                        <input type="button" class="btn btn-dark" id="btnPdfExport" value="Export PDF" style="display:none" />
+                        <input type="button" class="btn btn-dark" id="btnWordDocumentExport" value="Export Word" />
+
+                        <div id="editorContentHolder" style="height:0.5px; width:0.5px; overflow:hidden;"></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 <div class="row">
-        <div class="col-2 btn-copy-popup">
-            <input type = "button" value="Copy" class="btn btn-dark" id="btnCopy" disabled="disabled" />
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-8 col-12 btn-save-close-cancel">
-            @if(!string.IsNullOrEmpty(Request.Params["RedirectUrl"]))
-{
-                <a href = "@Request.Params["RedirectUrl"]" class="btn btn-link loadLinkAsync-cancel">Cancel</a>
-            }
-            else
-            {
-                <a href = "@Url.Action("Index")" class="btn btn-link loadLinkAsync-cancel">Cancel</a>
-            }
+    <div class="col-2 btn-copy-popup">
+        <input type="button" value="Copy" class="btn btn-dark" id="btnCopy" disabled="disabled" />
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-8 col-12 btn-save-close-cancel">
+        @if (!string.IsNullOrEmpty(Request.Params["RedirectUrl"]))
+        {
+            <a href="@Request.Params["RedirectUrl"]" class="btn btn-link loadLinkAsync-cancel">Cancel</a>
+        }
+        else
+        {
+            <a href="@Url.Action("Index")" class="btn btn-link loadLinkAsync-cancel">Cancel</a>
+        }
 
-            <input type = "button" class="btn btn-dark" value="Save" id="btnSave" disabled="disabled" />
+        <input type="button" class="btn btn-dark" value="Save" id="btnSave" disabled="disabled" />
 
-            <input type = "button" class="btn btn-dark" value="Save & Close" id="btnSaveClose" disabled="disabled" />
+        <input type="button" class="btn btn-dark" value="Save & Close" id="btnSaveClose" disabled="disabled" />
 
-    @*work for tele*@
-            @{
-                var reviewtemplate = Model.case_review_template.Where(x => x.crt_cas_key == Model.cas_key).FirstOrDefault();
-                <input type = "button" class="btn btn-dark" value="@(reviewtemplate?.crt_cas_key !=null ? "Load Review Template" : "Generate Review Template")" id="btnExportWord" style="display:none" />
-            }
-    @*work for tele*@
+        @*work for tele*@
+        @{
+            var reviewtemplate = Model.case_review_template.Where(x => x.crt_cas_key == Model.cas_key).FirstOrDefault();
+            <input type="button" class="btn btn-dark" value="@(reviewtemplate?.crt_cas_key !=null ? "Load Review Template" : "Generate Review Template")" id="btnExportWord" style="display:none" />
+        }
+        @*work for tele*@
 
-            @{
-                var template = Model.case_generated_template.Where(m => m.cgt_ent_key == Model.TemplateEntityType.ToInt()).FirstOrDefault();
-            }
+        @{
+            var template = Model.case_generated_template.Where(m => m.cgt_ent_key == Model.TemplateEntityType.ToInt()).FirstOrDefault();
+        }
 
-            <input type = "button" class="btn btn-dark" @(Model.cas_template_deleted_date.HasValue? "disabled" : "") value="@(template?.cgt_finalize_date != null ? "Load Template" : "Generate Template")" id="btnDownloadTemplate" style="display:none" />
-            <input type = "button" class="btn btn-dark" value="Complete Case" id="btnCompleteCase" disabled="disabled" style="display:none" />
-            <input type = "button" class="btn btn-danger" value="Cancel Case" id="btnCancelCase" disabled="disabled" style="display:none" />
-        </div>
-        <div class="col-1"></div>
+        <input type="button" class="btn btn-dark" @(Model.cas_template_deleted_date.HasValue ? "disabled" : "") value="@(template?.cgt_finalize_date != null ? "Load Template" : "Generate Template")" id="btnDownloadTemplate" style="display:none" />
+        <input type="button" class="btn btn-dark" value="Complete Case" id="btnCompleteCase" disabled="disabled" style="display:none" />
+        <input type="button" class="btn btn-danger" value="Cancel Case" id="btnCancelCase" disabled="disabled" style="display:none" />
+    </div>
+    <div class="col-1"></div>
 </div>
 
-@if(!ViewData.ModelState.IsValid)
+@if (!ViewData.ModelState.IsValid)
 {
-        <div >
-            <br />
-            @Html.ShowBootStrapAlert("", Html.ValidationSummary().ToHtmlString(), BootStrapeAlertType.Danger);
-        </div >
+    <div>
+        <br />
+        @Html.ShowBootStrapAlert("", Html.ValidationSummary().ToHtmlString(), BootStrapeAlertType.Danger);
+    </div>
 }
 
 @Html.Partial("_CaseCopyPopup")
 
-<div id = "caseTemplatePreviewModal" class="modal" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Copy Preview</h4>
-                    <button type = "button" class="close btnCloseTemplatePreview">&times;</button>
+<div id="caseTemplatePreviewModal" class="modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Copy Preview</h4>
+                <button type="button" class="close btnCloseTemplatePreview">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="caseTemplateReviewData">
                 </div>
-                <!-- Modal body -->
-                <div class="modal-body">
-                    <div id = "caseTemplateReviewData" >
-                    </div >
-                </div >
-                <!--Modal footer -->
-                <div class="modal-footer">
-                    <div class="col-2 text-left">
-                        <input type = "button" class="btn btn-dark btnCloseTemplatePreview" id="btnCancelTemplatePreview" value="Close" />
-                    </div>
-                    <div class="col-10 text-right">
-                        <input type = "button" class="btn btn-dark" id="btnOKTemplatePreview" value="OK" />
-                        <input type = "button" class="btn btn-dark d-none " id="btnCopyTemplatePreview" value="copyTemplateAlt" data-clipboard-action="copy" data-clipboard-target="#caseTemplateReviewData" />
-                    </div>
+            </div>
+            <!--Modal footer -->
+            <div class="modal-footer">
+                <div class="col-2 text-left">
+                    <input type="button" class="btn btn-dark btnCloseTemplatePreview" id="btnCancelTemplatePreview" value="Close" />
+                </div>
+                <div class="col-10 text-right">
+                    <input type="button" class="btn btn-dark" id="btnOKTemplatePreview" value="OK" />
+                    <input type="button" class="btn btn-dark d-none " id="btnCopyTemplatePreview" value="copyTemplateAlt" data-clipboard-action="copy" data-clipboard-target="#caseTemplateReviewData" />
                 </div>
             </div>
         </div>
+    </div>
 </div>
 
-<div id = "casereviewremplatepreviewmodal" class="modal" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Copy Preview</h4>
-                    <button type = "button" class="close btnCloseReviewTemplatePreview">&times;</button>
+<div id="casereviewremplatepreviewmodal" class="modal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Copy Preview</h4>
+                <button type="button" class="close btnCloseReviewTemplatePreview">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="caseReviewTemplateReviewData">
                 </div>
-                <!-- Modal body -->
-                <div class="modal-body">
-                    <div id = "caseReviewTemplateReviewData" >
-                    </div >
-                </div >
-                <!--Modal footer -->
-                <div class="modal-footer">
-                    <div class="col-2 text-left">
-                        <input type = "button" class="btn btn-dark btnCloseReviewTemplatePreview" id="btnCancelReviewTemplatePreview" value="Close" />
-                    </div>
-                    <div class="col-10 text-right">
-                        <input type = "button" class="btn btn-dark" id="btnOKReviewTemplatePreview" value="OK" />
-                        <input type = "button" class="btn btn-dark d-none " id="btnCopyReviewTemplatePreview" value="copyTemplateAlt" data-clipboard-action="copy" data-clipboard-target="#caseReviewTemplateReviewData" />
-                    </div>
+            </div>
+            <!--Modal footer -->
+            <div class="modal-footer">
+                <div class="col-2 text-left">
+                    <input type="button" class="btn btn-dark btnCloseReviewTemplatePreview" id="btnCancelReviewTemplatePreview" value="Close" />
+                </div>
+                <div class="col-10 text-right">
+                    <input type="button" class="btn btn-dark" id="btnOKReviewTemplatePreview" value="OK" />
+                    <input type="button" class="btn btn-dark d-none " id="btnCopyReviewTemplatePreview" value="copyTemplateAlt" data-clipboard-action="copy" data-clipboard-target="#caseReviewTemplateReviewData" />
                 </div>
             </div>
         </div>
+    </div>
 </div>
 
 @Html.Partial("_EDMainCallPopup")
 
-<script src="~/Scripts/clipboard.min.js" ></script>
+<script src="~/Scripts/clipboard.min.js"></script>
 
 <script src="~/Content/case/pdf/jspdf.min.js"></script>
-<script src="~/Content/case/pdf/html2canvas.min.js"></script >
+<script src="~/Content/case/pdf/html2canvas.min.js"></script>
 <script src="~/Content/case/pdf/html2pdf.bundle.min.js"></script>
 
 <script>
 
-    
+
     //function _CreateGroupNew(name, grptype) {
     //    GrpCreate(name, grptype);
     //}
@@ -2348,7 +2348,7 @@ function onLoadCompleteCode()
                                     if (typeof (caseTemplateBeforeSubmit) != "undefined") {
                                         caseTemplateBeforeSubmit();
                                     }
-                                            if (validateGeneralTabForm(true, true, false) && validateMetricsRequiredFields(true) /*&& validatepremorbidFields(true)*/ && validateBillingRequiredFields(true) && validateTemplateTabRequiredFields($("#TemplateEntityType").val() @*@Model.TemplateEntityType.ToInt()*@, true)) {
+                                            if (validateGModelodfac_namenerafac_name_namefac_nameameameorm(true, true, false) && validateMetricsRequiredFields(true) /*&& validatepremorbidFields(true)*/ && validateBillingRequiredFields(true) && validateTemplateTabRequiredFields($("#TemplateEntityType").val() @*@Model.TemplateEntityType.ToInt()*@, true)) {
                                         // check tpa fields in physician metrics tab, and reset hidden field values.
                                         resetTpaCandidatehiddenFields();
                                         GetCaseReviewers();
@@ -4133,8 +4133,8 @@ function onLoadCompleteCode()
         var phy_name = $("#RejectPhyName").text();
         var cas_number = $("#spnCaseNumber").text();
         var physician = $("#cas_phy").val();
-
-        var msg = 'Dr ' + phy_name + ' has Rejected the Case # ' + cas_number;
+        let facilityName = "@Model.facility.fac_name";
+        var msg = 'Dr ' + phy_name + ' has been Rejected the Case # ' + cas_number + ', ' + facilityName;
         var physician = $("#cas_phy").val();
         AcceptCase(msg, physician);
         rejectCaseWithNoQueue(false);
@@ -4217,10 +4217,10 @@ function onLoadCompleteCode()
 
 @if (ShowPopup)
 {
-<script>
+    <script>
     var caseKey = $.trim($("#createForm").find("#cas_key").val()).toInt();
     LoadNotes(caseKey); @*(@Model.cas_key);*@
-</script>
+    </script>
 }
 
 
