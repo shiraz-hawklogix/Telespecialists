@@ -25,7 +25,7 @@ namespace TeleSpecialists.Web.Controllers
                                             .Select(m => new { Value = m.Id, Text = m.Name})
                                             .ToList()
                                             .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text });
-            return View();
+            return GetViewResult();
         }
         public ActionResult _Index(string ID)
         {
@@ -110,7 +110,7 @@ namespace TeleSpecialists.Web.Controllers
             return PartialView(result);
         }
         [HttpPost]
-        public JsonResult CreateUserbasedAccess(int MenuId, bool CheckboxStatus, string RoleId, string userId)
+        public ActionResult CreateUserbasedAccess(int MenuId, bool CheckboxStatus, string RoleId, string userId)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace TeleSpecialists.Web.Controllers
                 Session["userRole"] = RoleId;
                 ViewBag.roleId = RoleId;
                 var result = _menuService.getMenuAccess(RoleId);
-                return Json(true, JsonRequestBehavior.AllowGet);
+                return RedirectToAction("_GetUserBasedAccess", RoleId, userId);
             }
             catch (Exception e)
             {

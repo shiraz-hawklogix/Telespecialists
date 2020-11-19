@@ -60,9 +60,9 @@
 <script type="text/javascript">
 
     $("#btnSearch").on('click', function () {
-      
+
         setTimeout(function () {
-         
+
             loadData($('#roleId').val(), $('#UserId').val());
         })
         function loadData(roleId, userid) {
@@ -78,6 +78,47 @@
                     $("#lstOfItemPlaceHoder").html(response);
                 }
             });
+        };
+    });
+</script>
+<script type="text/javascript">
+
+    function AllowAccessViewChanged(thisCTRL) {
+        ShowLoading();
+        var _menuId = $(thisCTRL).attr("data-action");
+        var _checkboxStatus = $(thisCTRL).prop("checked")
+        var roleid = $("#roleId").val();
+        var userId = $("#UserId").val();
+
+        var DataObjectForAjaxCall = { MenuId: _menuId, CheckboxStatus: _checkboxStatus, RoleId: roleid, userId: userId };
+        $.ajax({
+            url: '/MenuAccess/CreateUserbasedAccess',
+            type: "POST",
+            data: DataObjectForAjaxCall,
+            success: function (Result) {
+                loadData(roleid, userId);
+
+            },
+            error: function (Result) {
+
+            }
+        });
+
+        function loadData(roleId, userid) {
+            ShowLoading();
+            var roleid = roleId;
+            var userId = userid;
+            $.ajax({
+                type: "POST",
+                data: { "roleId": roleId, "userId": userid },
+                url: '/MenuAccess/_GetUserBasedAccess',
+                asyc: false,
+                success: function (response) {
+                    $("#lstOfItemPlaceHoder").html('');
+                    $("#lstOfItemPlaceHoder").html(response);
+                }
+            });
+            HideLoading();
         }
-    })
+    }
 </script>

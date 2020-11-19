@@ -162,27 +162,3 @@
         });
     }
 </script>
-<script type="text/javascript">
-    function AllowAccessViewChanged(thisCTRL) {
-        var _menuId = $(thisCTRL).attr("data-action");
-
-        var _checkboxStatus = $(thisCTRL).prop("checked")
-        var roleid = $("#roleId").val();
-        var userId = $("#UserId").val();
-
-        var DataObjectForAjaxCall = { MenuId: _menuId, CheckboxStatus: _checkboxStatus, RoleId: roleid, userId: userId};
-        $.ajax({
-            url: '/MenuAccess/CreateUserbasedAccess',
-            type: "POST",
-            //async: false,
-            data: DataObjectForAjaxCall,
-            success: function (Result) {
-                loadData(roleid);
-
-            },
-            error: function (Result) {
-
-            }
-        });
-    }
-</script>

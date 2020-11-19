@@ -28,6 +28,7 @@
 
 <script>
     function OnRoleChanged(thisCTRL) {
+        ShowLoading();
 
         if ($(thisCTRL).val() == '') {
             alert("Please select role")
@@ -38,8 +39,10 @@
 
             }, 500);
         }
+        HideLoading();
     }
     function loadData(id) {
+        ShowLoading();
         
         $.ajax({
             type: "POST",
@@ -52,10 +55,13 @@
                 $("#lstOfItemPlaceHoder").html(response);
             }
         });
+        HideLoading();
     }
 </script>
 <script type="text/javascript">
     function AllowAccessViewChanged(thisCTRL) {
+        ShowLoading();
+        debugger
         var _menuId = $(thisCTRL).attr("data-action");
 
         var _checkboxStatus = $(thisCTRL).prop("checked")
@@ -75,5 +81,6 @@
 
             }
         });
+        HideLoading();
     }
 </script>
