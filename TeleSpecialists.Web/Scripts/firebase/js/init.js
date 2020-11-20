@@ -137,8 +137,8 @@ function startBlastInterval(id, blastType, strokeStamp) {
         checkBlastArr.push(id);
         var divBlast = "<a href='javascript:void(0);' id='" + id + "'   onclick='GetBlastDetail(" + id + ");' data-strokeStamp='" + strokeStamp+"' > <span class='ml6 font_12px'><span class='text-wrapper'> <span class='letters' id='lblBlast" + id + "'>" + blastType + "</span></span> </span> </a>";
         $('#divInternalExternal').append(divBlast);
-        if (!animated)
-            AnimateJS();
+        //if (!animated)
+        //    AnimateJS();
         let muteStatus = localStorage.getItem('muteStatus');
         if (muteStatus === 'false')
             playBlastNotification();
