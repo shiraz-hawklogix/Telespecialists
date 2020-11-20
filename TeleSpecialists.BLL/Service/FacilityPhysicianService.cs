@@ -351,6 +351,39 @@ namespace TeleSpecialists.BLL.Service
 
             return facilities.Distinct();
         }
+        public IQueryable<facility> GetPhysicianTeleNeuroFacilities(string phy_key, string phoneNumber)
+        {
+            var currentDate = DateTime.Now.ToEST();
+            var maxDate = DateTime.MaxValue;
+            var defaultStatus = _physicianStatusService.GetDefault();
+            var physicianLicenseStates = (_unitOfWork.PhysicianLicenseRepository.Query()
+                                          .Where(m => m.phl_is_active)
+                                          .Where(m => DbFunctions.TruncateTime(currentDate) >= DbFunctions.TruncateTime(m.phl_issued_date))
+                                          .Where(m => m.phl_user_key == phy_key)
+                                          //.Where(m => m.phl_license_state == null || facility.fac_stt_key == null || m.phl_license_state == facility.fac_stt_key)
+                                          .Where(m => m.phl_expired_date == null || DbFunctions.TruncateTime(currentDate) <= DbFunctions.TruncateTime(m.phl_expired_date))
+                                          ).Select(m => m.phl_license_state).ToList();
+
+            var facilities = from m in _unitOfWork.FacilityPhysicianRepository.Query()
+                             join contact in _unitOfWork.ContactRepository.Query() on m.fap_fac_key equals contact.cnt_fac_key into facilityContactJoin
+                             from facilityContact in facilityContactJoin.DefaultIfEmpty() 
+
+                             join fcs in _unitOfWork.FacilityContractServiceRepository.Query() on m.fap_fac_key equals fcs.fcs_fct_key into facilityContractServiceJoin
+                             from facilitycontractService in facilityContractServiceJoin.DefaultIfEmpty()
+
+                             where
+                             m.fap_user_key == phy_key
+                             && m.fap_is_active
+                             && m.fap_is_on_boarded
+                             && !m.fap_hide
+                             && physicianLicenseStates.Contains(m.facility.fac_stt_key)
+                             && (phoneNumber == "" || (facilityContact.cnt_is_active && facilityContact.cnt_is_deleted == false && facilityContact.cnt_mobile_phone == phoneNumber))
+                             && facilitycontractService.fcs_srv_key == 42 // Tele Neuro Check
+                             select m.facility;
+
+            return facilities.Distinct();
+        }
+
         public IQueryable<AspNetUser> GetAllPhysicians()
         {
             var physicians = GetPhysicians()
