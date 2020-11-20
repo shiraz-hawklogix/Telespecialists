@@ -195,7 +195,7 @@ function GetBlastDetail(e) {
     SendStrokeInternalBlast(e, true);
 }
 
-function AnimateJS() {
+/*function AnimateJS() {
     animated = true;
     var textWrapper = document.querySelector('.ml6 .letters');
     textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
@@ -214,7 +214,7 @@ function AnimateJS() {
             easing: "easeOutExpo",
             delay: 500
         });
-}
+}*/
 
 $(document).ready(function () {
     var _arrVal = localStorage.getItem('activeBlastIds');
