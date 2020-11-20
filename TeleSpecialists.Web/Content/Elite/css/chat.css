@@ -339,6 +339,7 @@ img {
     height: 35px;
     width: 35px;
     border: 1.5px solid #f5f6fa;
+    object-fit:cover;
 }
 .img_cont {
     position: relative;
