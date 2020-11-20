@@ -21,12 +21,12 @@
 @if (isAllowListing)
 {
     { Html.RenderAction("_AdvanceSearch", new { @source = PageSource.Dashboard, @showFollowUp = false }); }
-    <div class="row">
+    <div class="row mb-5">
         <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12">
             @{
                 var hideToolTip = User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) ? "d-none" : "";
             }
-            <div class="border @hideToolTip col-xl-6 col-lg-6 col-md-6 col-sm-6" style="float:right" id="divToolTip">
+            <div class="border offset-2 @hideToolTip col-5" style="float:right" id="divToolTip">
                 <div class="text-danger"><strong>*Tool Tip - STATS</strong></div>
                 <div>
                     <div>Yellow = If rotating more than 2 physicians</div>
@@ -34,7 +34,7 @@
                     <div>Purple = If both yellow/pink are true</div>
                 </div>
             </div>
-            <div class="border @hideToolTip col-xl-6 col-lg-6 col-md-6 col-sm-6" style="float:right" id="divToolTip">
+            <div class="border @hideToolTip col-5" style="float:right" id="divToolTip">
                 <div class="text-danger"><strong>*Tool Tip - Stroke Alerts</strong></div>
                 <div>
                     <div>Yellow = If rotating more than 2 physicians</div>
@@ -45,7 +45,7 @@
 
         </div>
     </div>
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12">
             <div>
                 <form id="frmSearch" method="post" class="row">

@@ -21,3 +21,32 @@
         display: inline-block;
         line-height: 1em;
     }*/
+
+
+
+.letters {
+    animation: blinkingText 1.3s infinite;
+}
+
+@keyframes blinkingText {
+    0% {
+        color: yellow;
+    }
+
+    49% {
+        color: transparent;
+    }
+
+    50% {
+        color: transparent;
+    }
+
+    75% {
+        color: yellow;
+    }
+
+    100% {
+        color: yellow;
+    }
+}
+    

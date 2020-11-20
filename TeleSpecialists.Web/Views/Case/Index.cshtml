@@ -37,11 +37,11 @@
     { Html.RenderAction("_AdvanceSearch", new { @source = PageSource.CaseListing }); }
 
     <div class="row mb-4">
-        <div class="col-3">
+        <div class="col-4">
             @{
                 var hideToolTip = User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) ? "d-none" : "";
             }
-            <div class="border p3 @hideToolTip" id="divToolTip">
+            <div class="border p-3 @hideToolTip" id="divToolTip">
                 <div class="text-danger"><strong>*Tool Tip</strong></div>
                 <div>
                     <div>3 Minutes - Yellow (Assignment overdue)</div>
@@ -50,7 +50,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-9 col-xl-9 col-sm-9 col-md-9">
+        <div class="col-8">
             <div id="divSearch">
                 <form id="frmSearch" method="post" class="row">
                     <div class="form-row float-right col-lg-12 justify-content-end">
@@ -277,7 +277,7 @@
     <div class="tab-content" id="caseListTabsContent">
         <div class="tab-pane fade  @(_cls)" id="emergentTab" role="tabpanel" aria-labelledby="home-tab">
             <div class="row">
-                <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 text-center m-2">
+                <div class="col-12 mt-4 mb-3 text-right">
 
                     @if (!User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) && !User.IsInRole(UserRoles.QPS.ToDescription()) && !User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) && !User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) && !User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) && !User.IsInRole(UserRoles.MedicalStaff.ToDescription()) && !User.IsInRole(UserRoles.Finance.ToDescription()) && !User.IsInRole(UserRoles.VPQuality.ToDescription()))
                     {
@@ -294,7 +294,7 @@
         <div class="tab-pane fade " id="eegsTab" role="tabpanel" aria-labelledby="contact-tab"></div>
         <div class="tab-pane fade @(cls)" id="homehealthTab" role="tabpanel" aria-labelledby="contact-tab">
             <div class="row">
-                <div class="col-lg-12 col-xl-12 col-sm-12 col-md-12 text-center m-2">
+                <div class="col-12 text-right mt-4 mb-3">
                     @if (User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.PACNavigator.ToDescription()))
                     {
                         <a class="btn btn-dark loadLinkAsync" href="@Url.Action("Create","PACPhysician")">Create Sleep Case</a>

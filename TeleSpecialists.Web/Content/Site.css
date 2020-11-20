@@ -26,6 +26,7 @@ body {
     margin: 0;
     padding-bottom: 3rem;
     min-height: 100%;
+    overflow-x: hidden;
 }
 /* Menu Effect*/
 
