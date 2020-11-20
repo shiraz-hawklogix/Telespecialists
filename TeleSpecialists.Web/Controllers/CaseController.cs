@@ -6012,7 +6012,10 @@ ViewBag.StatConsultOtherWork = _uclService.GetUclData(UclTypes.OtherWorkUp)
                     _firebase_Usersemail.fre_firstname = getuser.FirstName + " " + getuser.LastName;
                     _firebase_Usersemail.fre_email = getuser.UserName;
                     _firebase_Usersemail.fre_firebase_email = getuser.Email;
-                    _firebase_Usersemail.fre_profileimg = "/Content/images/M.png";//getuser.ImgPath;
+                    if (getuser.User_Image != null)
+                        _firebase_Usersemail.fre_profileimg = getuser.User_Image; //"/Content/images/M.png";
+                    else
+                        _firebase_Usersemail.fre_profileimg = "/Content/images/M.png";
                     detail = _fireBaseUserMailService.CreateAndReturn(_firebase_Usersemail);
 
                 }

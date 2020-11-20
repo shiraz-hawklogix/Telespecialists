@@ -596,8 +596,10 @@ function loginUsernameFB(email, password, tele_id, username, img, userSqlid, sav
                          _senderName = snapshot.val().name;
                          _senderPhoto = snapshot.val().image;
                         //let _teleid = snapshot.val().teleid;
-                        var user_info = 'on';//"<div class='row'><img src='" + _senderPhoto + "' style='height:20px;width:20px' /> <span> " + _senderName + " </span>&nbsp;<span class='label label-rouded label-danger' id='lblnotify'></span></div>";
+                        var user_info = 'on';
                         $("#lblFirebase").html(user_info);
+                        // update user image in its connections use, can be used for existing db
+                        UpdateUserInfo(userId, username, img);
                     }
                     else {
                         // alert('record not found');
@@ -670,7 +672,6 @@ function SignInStatus(userid) {
     ref.on("child_added", function (snapshot) {
         ref.child(snapshot.key).child('Connections').on('child_added', function (data) {
             if (data.key === userid) {
-                console.log('update online users in connections');
                 var _ref = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
                 _ref.child(userid).update({
                     Online: true,
@@ -840,4 +841,20 @@ function GetMuteStatus() {
         Error: function (e) {
         }
     });
+}
+function UpdateUserInfo(userid, username, img) {
+    firebase.database().ref('TeleUsers').child(userid).update({
+        name: username,
+        image: img
+    });
+    let ref = firebase.database().ref("TeleUsers/" + userid + "/Connections");
+    ref.orderByChild('type').equalTo('Private').on('child_added', function (snapshot) {
+        console.log('private users in connections:' + snapshot.key);
+        let refConn = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
+        refConn.child(userid).update({
+            image: img,
+            name: username
+        })
+    })
+
 }
