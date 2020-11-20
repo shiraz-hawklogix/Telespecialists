@@ -149,8 +149,8 @@ img {
 }
     .incoming_msg_img > img {
         border: 1.5px solid #F8F8F8;
-        width: 44px;
-        height: 44px;
+        width: 38px;
+        height: 38px;
         object-fit: cover;
         border-radius: 50%;
     }
@@ -352,10 +352,9 @@ img {
 }
 
 .user_img_prf {
+    width: 38px;
     border: 1.5px solid #f5f6fa;
-    width: 44px;
-    border: 1.5px solid #f5f6fa;
-    height: 44px;
+    height: 38px;
 }
 
 .img_cont {
@@ -415,6 +414,11 @@ img {
 .chat-header-wrapper {
     display: flex;
     justify-content: space-between;
-    padding: 12px 15px;
+    padding: 6.5px 15px;
     background-color: #f8f8f8;
+    align-items: center;
 }
+
+    .chat-header-wrapper .box-title {
+        margin: 9.5px 0px;
+    }
