@@ -207,9 +207,10 @@ img {
 
 .sent_msg {
     float: right;
-    min-width: 10%;
-    max-width:40%;
-    
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: 40%;
 }
 
 .input_msg_write input {
@@ -324,7 +325,13 @@ img {
         background: #555;
     }
 
-
+.chat_img > img {
+    border: 1.5px solid #f5f6fa;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
 
 .user_img {
     /*height: 40px;
