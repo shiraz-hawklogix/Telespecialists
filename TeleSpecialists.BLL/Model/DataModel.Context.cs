@@ -109,6 +109,14 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
         public virtual DbSet<Forcast_Data> Forcast_Data { get; set; }
         public virtual DbSet<mock_case> mock_case { get; set; }
+
+       
+        public virtual DbSet<BCI_ReportData> BCI_ReportData { get; set; }
+        public virtual DbSet<CCIReport_Data> CCIReport_Data { get; set; }
+        public virtual DbSet<user_access> user_access { get; set; }
+        public virtual DbSet<view_facility_physician> view_facility_physician { get; set; }
+        public virtual DbSet<view_user_schedule> view_user_schedule { get; set; }
+
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {
@@ -212,6 +220,31 @@ namespace TeleSpecialists.BLL.Model
                 new ObjectParameter("Id", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_getMenuAccess1_Result>("sp_getMenuAccess1", idParameter);
+        }
+    
+        public virtual ObjectResult<UspGetAllCaseDataForCCI_Result> UspGetAllCaseDataForCCI()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<UspGetAllCaseDataForCCI_Result>("UspGetAllCaseDataForCCI");
+        }
+    
+        public virtual ObjectResult<UspGetAllOnBoarededList_Result> UspGetAllOnBoarededList()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<UspGetAllOnBoarededList_Result>("UspGetAllOnBoarededList");
+        }
+    
+        public virtual ObjectResult<UspGetAllPhyDataForBCI_Result> UspGetAllPhyDataForBCI()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<UspGetAllPhyDataForBCI_Result>("UspGetAllPhyDataForBCI");
+        }
+    
+        public virtual ObjectResult<UspGetAllPhyDataForCCI_Result> UspGetAllPhyDataForCCI()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<UspGetAllPhyDataForCCI_Result>("UspGetAllPhyDataForCCI");
+        }
+    
+        public virtual ObjectResult<UspGetForecastDataFOorMOnthly_Result> UspGetForecastDataFOorMOnthly()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<UspGetForecastDataFOorMOnthly_Result>("UspGetForecastDataFOorMOnthly");
         }
     }
 }

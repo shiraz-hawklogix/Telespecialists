@@ -1280,6 +1280,7 @@ function onLoadCompleteCode()
                  //Added By Axim 29-10-2020
         $(".morbidSymptoms").on('change', function () {
             var currentVal = $('input:radio[name=cas_metric_has_morbid_symptoms]:checked').val();
+
             $('.premorbid :radio:not(:checked)').attr('disabled', false);
             if (currentVal == "0") {
                 $("#cas_metric_has_morbid_symptoms_0_UP").prop('checked', true);
@@ -1297,6 +1298,17 @@ function onLoadCompleteCode()
                 $("#cas_metric_has_morbid_symptoms_6_UP").prop('checked', true);
             }if (currentVal == "7") {
                 $("#cas_metric_has_morbid_symptoms_7_UP").prop('checked', true);
+
+            if (currentVal != "7") {
+                $("#has_morbid_symptoms_premorbid").empty();
+                $("#has_morbid_symptoms_premorbid").append(currentVal);
+            } else if (currentVal == "7") {
+                currentVal = "Information not available at this time in premorbid MRS field";
+                $("#has_morbid_symptoms_premorbid").empty();
+                $("#has_morbid_symptoms_premorbid").append(currentVal);
+            } else {
+                $("#has_morbid_symptoms_premorbid").empty();
+
             }
             if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' != 'True') {
                 $('.premorbid :radio:not(:checked)').attr('disabled', true);

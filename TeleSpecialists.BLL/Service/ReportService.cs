@@ -1425,7 +1425,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -1756,7 +1763,7 @@ namespace TeleSpecialists.BLL.Service
             return fac_list.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
         #endregion
-        
+
         #region User Presence Report by Axim
         public DataSourceResult GetUserPresence(DataSourceRequest request, List<string> UserStatus, DateTime startTime, DateTime endTime, string ReportType)
         {
@@ -1819,8 +1826,8 @@ namespace TeleSpecialists.BLL.Service
 
         public DataSourceResult GetUserPresenceGraph(DataSourceRequest request, string UserStatus, DateTime startTime)
         {
-           
-            var UsersList = _unitOfWork.SqlQuery<UserPresenceGraph>(string.Format("Exec usp_UserPresence_Graph_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}'", startTime,startTime, UserStatus)).ToList();
+
+            var UsersList = _unitOfWork.SqlQuery<UserPresenceGraph>(string.Format("Exec usp_UserPresence_Graph_Report @starttime = '{0}',@endtime = '{1}',@status = '{2}'", startTime, startTime, UserStatus)).ToList();
 
             var final_list = UsersList.AsQueryable();
 
@@ -1828,7 +1835,7 @@ namespace TeleSpecialists.BLL.Service
         }
 
         #endregion
-        
+
         #region Quality Report by Ahmad junaid
         public DataSourceResult GetVolumeMetricsReport(DataSourceRequest request, QualityMetricsViewModel model, string facilityAdminId, string Status)
         {
@@ -1849,6 +1856,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_fac_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -1880,6 +1888,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 cases = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
 
@@ -2383,6 +2401,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_fac_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -2411,6 +2430,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 cases = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
 
@@ -2562,6 +2591,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_fac_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -2590,6 +2620,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 cases = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
 
@@ -2965,7 +3005,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -2993,7 +3040,7 @@ namespace TeleSpecialists.BLL.Service
 
                     bedside_response_time = x.ca.cas_response_first_atempt < x.ca.cas_metric_stamp_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_stamp_time, x.ca.cas_response_first_atempt),
                     bedside_response_time_cmp = x.ca.cas_response_first_atempt < x.ca.cas_metric_stamp_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_stamp_time, x.ca.cas_response_first_atempt),
-                    arrival_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_patient_type != patientType && x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "",
+                    arrival_needle_time = x.ca.cas_metric_tpa_consult == true && x.ca.cas_metric_wakeup_stroke == false ? x.ca.cas_patient_type != patientType && x.ca.cas_patient_type != EDStay ? x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time) : "" : "",
                     arrival_needle_time_cmp = x.ca.cas_metric_needle_time < x.ca.cas_metric_door_time ? 0 : DBHelper.DiffSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_door_time),
                     verbal_order_to_needle_time = x.ca.cas_metric_tpa_consult == true ? x.ca.cas_metric_needle_time < x.ca.cas_metric_tpa_verbal_order_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_needle_time, x.ca.cas_metric_tpa_verbal_order_time) : "",
                     on_screen_time = x.ca.cas_metric_video_end_time < x.ca.cas_metric_video_start_time ? "00:00:00" : DBHelper.FormatSeconds(x.ca.cas_metric_video_end_time, x.ca.cas_metric_video_start_time),
@@ -3384,6 +3431,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -3593,6 +3648,15 @@ namespace TeleSpecialists.BLL.Service
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
 
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
+
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -3794,7 +3858,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -3996,7 +4067,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -4029,8 +4107,8 @@ namespace TeleSpecialists.BLL.Service
                 query = query.OrderBy(m => m.on_screen_time);
                 List<QualityMetricsReportCls> final = new List<QualityMetricsReportCls>();
                 List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
-                string guids = "";
-
+                string facguids = "";
+                string phyguids = "";
                 QualityMetricsReportCls cls = new QualityMetricsReportCls();
                 List<double> _meanlist = new List<double>();
                 List<double> _medianlist = new List<double>();
@@ -4079,18 +4157,31 @@ namespace TeleSpecialists.BLL.Service
                 {
                     foreach (var guid in model.Facilities)
                     {
-                        guids += guid + ",";
+                        facguids += guid + ",";
                     }
                 }
+                facguids = facguids.TrimEnd(',');
 
-                guids = guids.TrimEnd(',');
+                if (model.Physicians != null)
+                {
+                    foreach (var guid in model.Physicians)
+                    {
+                        phyguids += guid + ",";
+                    }
+                }
+                phyguids = phyguids.TrimEnd(',');
+
                 result.Add(cls);
 
                 string timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
                 var finalresult = result.Select(x => new
                 {
-                    id = guids,
-                    hospitalname = x.hospitals,
+                    id = facguids,
+                    phy_id = phyguids,
+                    Facility = x.Facility,
+                    Physician = x.Physician,
+                    hospitalcount = x.hospitals,
+                    //hospitalname = x.hospitals,
                     mean = (string.Format("{0:00}:{1:00}:{2:00}", (x._meantime.Hours + x._meantime.Days * 24), x._meantime.Minutes, x._meantime.Seconds)),
                     median = (string.Format("{0:00}:{1:00}:{2:00}", (x._mediantime.Hours + x._mediantime.Days * 24), x._mediantime.Minutes, x._mediantime.Seconds)),
                     timecycle = timeframe
@@ -4099,6 +4190,186 @@ namespace TeleSpecialists.BLL.Service
                 return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
             }
         }
+
+        public DataSourceResult GetOnScreenIND(DataSourceRequest request, QualityMetricsViewModel model, string facilityAdminId)
+        {
+
+            var cases = from ca in _unitOfWork.CaseRepository.Query()
+                        join users in _unitOfWork.UserRepository.Query() on ca.cas_phy_key equals users.Id into physicians
+                        from users in physicians.DefaultIfEmpty()
+                        where ca.cas_is_active == true && ca.cas_cst_key == 20 && ca.cas_billing_bic_key == 1 && ca.cas_ctp_key == 9 &&
+                        ca.cas_metric_wakeup_stroke == model.WakeUpStroke
+                        select (new
+                        {
+                            cas_key = ca.cas_key,
+                            cas_created_date = ca.cas_created_date,
+                            cas_patient_type = ca.cas_patient_type,
+                            cas_ctp_key = ca.cas_ctp_key,
+                            cas_phy_key = ca.cas_phy_key,
+                            physicianname = users.FirstName + " " + users.LastName,
+                            cas_fac_key = ca.cas_fac_key,
+                            facility = ca.facility.fac_name,
+                            qps_number = ca.facility.qps_number,
+                            cas_metric_tpa_consult = ca.cas_metric_tpa_consult,
+                            cas_is_ealert = ca.cas_is_ealert,
+                            cas_metric_video_start_time = ca.cas_metric_video_start_time,
+                            cas_metric_video_end_time = ca.cas_metric_video_end_time,
+                            navigator = ca.cas_created_by_name,
+                        });
+
+            #region ----- Filters -----
+
+            cases = cases.Where(x => DbFunctions.TruncateTime(x.cas_created_date) >= DbFunctions.TruncateTime(model.StartDate) &&
+                                     DbFunctions.TruncateTime(x.cas_created_date) <= DbFunctions.TruncateTime(model.EndDate));
+
+            if (model.WorkFlowType != null)
+                cases = cases.Where(m => model.WorkFlowType.Contains((m.cas_patient_type.HasValue ? m.cas_patient_type.Value : -1)) && m.cas_ctp_key == (int)CaseType.StrokeAlert);
+
+            if (model.Physicians != null)
+                cases = cases.Where(m => model.Physicians.Contains(m.cas_phy_key));
+
+            if (model.Facilities != null && model.Facilities.Count > 0)
+            {
+                if (model.Facilities[0] != Guid.Empty)
+                    cases = cases.Where(m => model.Facilities.Contains(m.cas_fac_key));
+            }
+            else if (model.states != null && model.states.Count > 0)
+            {
+                IQueryable<int?> States = model.states.AsQueryable();
+                model.Facilities = _lookUpService.GetAllFacilityByState(null, States).Select(x => x.fac_key).ToList();
+                if (model.Facilities != null && model.Facilities.Count > 0)
+                {
+                    if (model.Facilities[0] != Guid.Empty)
+                        cases = cases.Where(m => model.Facilities.Contains(m.cas_fac_key));
+                }
+            }
+            else if (!string.IsNullOrEmpty(facilityAdminId))
+            {
+                var facilities = _ealertFacilitiesService.GetAllAssignedFacilities(facilityAdminId)
+                                                        .Select(m => m.Facility).ToList();
+                cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
+            }
+
+
+            if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
+            {
+                cases = cases.Where(c => model.QPSNumbers.Contains(c.qps_number));//cases = cases.Where(c => c.ca.facility.qps_number.HasValue && model.QPSNumbers.Contains(c.ca.facility.qps_number.Value));
+            }
+
+
+            if (model.tPA != null && model.tPA.Count > 0)
+            {
+                cases = cases.Where(c => model.tPA.Contains(c.cas_metric_tpa_consult));
+            }
+
+            #region TCARE-479
+            if (model.eAlert != null && model.eAlert.Count > 0)
+            {
+                cases = cases.Where(c => model.eAlert.Contains(c.cas_is_ealert));
+            }
+            #endregion
+
+            #endregion
+            #region ----- Calculations -----
+            var query = cases.Select(x => new
+            {
+                id = x.cas_key,
+                facility_key = x.cas_fac_key,
+                facility = (x.facility != null && !String.IsNullOrEmpty(x.facility)) ? x.facility : "",
+                phy_key = x.cas_phy_key,
+                physicianname = x.physicianname,
+                on_screen_time = x.cas_metric_video_end_time < x.cas_metric_video_start_time ? "00:00:00" : DBHelper.FormatSeconds(x.cas_metric_video_end_time, x.cas_metric_video_start_time),
+            });
+
+            #endregion
+
+            var Finalquery = query.Where(x => x.on_screen_time != "00:00:00").OrderBy(m => m.physicianname).ToList();
+            List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
+            if (Finalquery.Count > 0)
+            {
+                List<string> physicianlist = Finalquery.Select(x => x.phy_key).Distinct().ToList();
+                List<Guid> facilitylist = Finalquery.Select(x => x.facility_key).Distinct().ToList();
+                for (var i = 0; i < physicianlist.Count; i++)
+                {
+                    for (var f = 0; f < facilitylist.Count; f++)
+                    {
+                        var Record = Finalquery.Where(x => x.phy_key == physicianlist[i] && x.facility_key == facilitylist[f]).ToList();
+                        if (Record.Count > 0)
+                        {
+                            List<string> onscreen = Record.Select(x => x.on_screen_time).ToList();
+                            if (onscreen.Count > 0)
+                            {
+                                QualityMetricsReportCls cls = new QualityMetricsReportCls();
+                                List<double> _meanlist = new List<double>();
+                                List<double> _medianlist = new List<double>();
+                                int count = 0;
+                                if (onscreen.Count > 0)
+                                {
+                                    foreach (var item in onscreen)
+                                    {
+                                        if (item != "")
+                                        {
+                                            var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
+                                            _meanlist.Add(time);
+                                            _medianlist.Add(time);
+                                            count++;
+                                        }
+                                    }
+                                }
+                                TimeSpan _meantime = new TimeSpan();
+                                TimeSpan _mediantime = new TimeSpan();
+                                if (_meanlist.Count > 0)
+                                {
+                                    double mean = _meanlist.Average();
+                                    _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
+                                }
+                                if (_medianlist.Count > 0)
+                                {
+                                    int numbercount = _medianlist.Count();
+                                    int halfindex = _medianlist.Count() / 2;
+                                    var sortednumbers = _medianlist.OrderBy(x => x);
+                                    double median;
+                                    if ((numbercount % 2) == 0)
+                                    {
+                                        median = ((sortednumbers.ElementAt(halfindex) + sortednumbers.ElementAt(halfindex - 1))) / 2;
+                                    }
+                                    else
+                                    {
+                                        median = sortednumbers.ElementAt(halfindex);
+                                    }
+                                    _mediantime = TimeSpan.FromSeconds(Convert.ToDouble(median));
+                                }
+                                cls.FacilityId = Record[0].facility_key;
+                                cls.Facility = Record[0].facility;
+                                cls.PhysicianId = Record[0].phy_key;
+                                cls.Physician = Record[0].physicianname;
+                                cls.hospitals = count;
+                                cls._meantime = _meantime;
+                                cls._mediantime = _mediantime;
+                                result.Add(cls);
+                            }
+                        }
+                    }
+                }
+            }
+
+            string timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
+            var finalresult = result.Select(x => new
+            {
+                id = x.FacilityId,
+                Facility = x.Facility,
+                phy_id = x.PhysicianId,
+                Physician = x.Physician,
+                hospitalcount = x.hospitals,
+                mean = (string.Format("{0:00}:{1:00}:{2:00}", (x._meantime.Hours + x._meantime.Days * 24), x._meantime.Minutes, x._meantime.Seconds)),
+                median = (string.Format("{0:00}:{1:00}:{2:00}", (x._mediantime.Hours + x._mediantime.Days * 24), x._mediantime.Minutes, x._mediantime.Seconds)),
+                timecycle = timeframe
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+
         public DataSourceResult GetHandleTime(DataSourceRequest request, QualityMetricsViewModel model, string facilityAdminId)
         {
             using (var context = new Model.TeleSpecialistsContext())
@@ -4133,7 +4404,7 @@ namespace TeleSpecialists.BLL.Service
                                 callerSource = (ca.cas_caller_source_text == "" ? (caller_source != null ? caller_source.ucd_description : "") : ca.cas_caller_source_text)
                             });
 
-               // var test = cases.ToList();
+                // var test = cases.ToList();
 
                 #region ----- Filters -----
 
@@ -4190,7 +4461,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
 
                 //if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
                 //{
@@ -4245,7 +4523,7 @@ namespace TeleSpecialists.BLL.Service
                         QualityMetricsReportCls cls = new QualityMetricsReportCls();
                         List<double> _meanlist = new List<double>();
                         List<double> _medianlist = new List<double>();
-                        List<string> handletime = queryList.Where(x => 
+                        List<string> handletime = queryList.Where(x =>
                         x.navigatorID == model.Physicians[i]).Select(x => x.handle_time).ToList();
                         int count = 0;
                         if (handletime.Count > 0)
@@ -4300,7 +4578,7 @@ namespace TeleSpecialists.BLL.Service
                         guids = guids.TrimEnd(',');
                         cls.timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
                         result.Add(cls);
-                     }
+                    }
                 }
                 var finalresult = result.Select(x => new
                 {
@@ -4413,7 +4691,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -4422,7 +4707,7 @@ namespace TeleSpecialists.BLL.Service
 
                 #endregion
                 cases = cases.Where(c => c.ca.cas_patient_type != 4);
-                
+
                 #endregion
                 #region ----- Calculations -----
                 var patientType = PatientType.Inpatient.ToInt();
@@ -4566,7 +4851,7 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(m => model.WorkFlowType.Contains((m.ca.cas_patient_type.HasValue ? m.ca.cas_patient_type.Value : -1)) && m.ca.cas_ctp_key == (int)CaseType.StrokeAlert);
                 }
-                
+
                 if (model.CallType != null)
                     cases = cases.Where(m => model.CallType.Contains((m.ca.cas_call_type.HasValue ? m.ca.cas_call_type.Value : -1)) && m.ca.cas_ctp_key == ((int)CaseType.StrokeAlert));
 
@@ -4618,7 +4903,14 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => model.tPA.Contains(c.ca.cas_metric_tpa_consult));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 #region TCARE-479
                 if (model.eAlert != null && model.eAlert.Count > 0)
                 {
@@ -4626,7 +4918,7 @@ namespace TeleSpecialists.BLL.Service
                 }
                 #endregion
                 cases = cases.Where(c => c.ca.cas_patient_type == 4);
-                
+
                 #endregion
                 #region ----- Calculations -----
                 var patientType = PatientType.Inpatient.ToInt();
@@ -5324,11 +5616,11 @@ namespace TeleSpecialists.BLL.Service
                     expiringCase.FacilityName = item.FacilityName;
                     if (item.EndDate.HasValue)
                     {
-                        expiringCase.EndDate = item.EndDate.Value.ToString("MM-dd-yyyy");
+                        expiringCase.EndDate = item.EndDate;
                     }
                     else
                     {
-                        expiringCase.EndDate = "";
+                        expiringCase.EndDate = null;
                     }
 
                     result.CredentialsCases.Add(expiringCase);
@@ -5489,6 +5781,12 @@ namespace TeleSpecialists.BLL.Service
 
                 return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
             }
+        }
+
+        public DataSourceResult GetCasesIndirectList(DataSourceRequest request, string period)
+        {
+            var finalresult = _unitOfWork.SqlQuery<IndirectCasesList>(string.Format("Exec usp_dashboard_indirect_cases_box @filter = '{0}'", period)).AsQueryable();
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
 
         public DataSourceResult GetCasesCompletedReviewList(DataSourceRequest request, List<string> QPS, string period)
@@ -5681,6 +5979,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_phy_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
 
@@ -5712,6 +6011,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 //cases = cases.Where(x => x.datetime >= querysdate &&
                 //                             x.datetime <= queryedate);
                 #endregion
@@ -5996,7 +6305,8 @@ namespace TeleSpecialists.BLL.Service
                                 TS_ResponseTime = DBHelper.FormatSeconds(timestamp.cts_response_sec),
                                 CallBackResponseTime = ca.cas_ctp_key == 10 ? timestamp.cts_callback_to_tsnotification / 60 : 0,
                                 CallBack_Response = DBHelper.FormatSeconds(timestamp.cts_callback_to_tsnotification),
-                                ca.cas_created_date
+                                ca.cas_created_date,
+                                cas_operations_review = ca.cas_operations_review != null ? ca.cas_operations_review : ""
                             });
 
                 DateTime currentdate = DateTime.Now.ToEST();
@@ -6056,6 +6366,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                     //obj.TS_Response_Time = (item.casetypeid == 9) ? item.TS_ResponseTime : item.CallBack_Response;
                     obj.Created_Date = item.cas_created_date;
+                    obj.Operations_Notes = item.cas_operations_review;
                     _list.Add(obj);
 
                     //else if (item.CallBackResponseTime > 15 && item.casetypeid == 10)
@@ -6132,6 +6443,21 @@ namespace TeleSpecialists.BLL.Service
             //}
         }
 
+        public DataSourceResult GetStatusSnapshot(DataSourceRequest request, string datevalue)
+        {
+            DateTime Date = Convert.ToDateTime(datevalue);
+            DateTime Time = Convert.ToDateTime(datevalue);
+            List<StatusSnapshotcls> Physician_StatusList = _unitOfWork.SqlQuery<StatusSnapshotcls>(string.Format("Exec sp_get_status_snapshot @Date = '{0}',@Time = '{1}'", Date, Time)).ToList();
+            var finalresult = Physician_StatusList.Select(x => new
+            {
+                x.psl_key,
+                x.physician_name,
+                x.physician_status,
+                psl_created_date = datevalue
+            }).AsQueryable();
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+        }
+
         #endregion
 
         #region Graph Quality Report by Ahmad junaid
@@ -6152,6 +6478,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_fac_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -6182,6 +6509,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 var casesforstrokestat = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
                 var casesforothers = cases.Where(x => DbFunctions.TruncateTime(x.datetime) >= DbFunctions.TruncateTime(model.StartDate) &&
@@ -6314,7 +6651,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
 
                 foreach (var month in last12Months)
                 {
@@ -6517,6 +6861,15 @@ namespace TeleSpecialists.BLL.Service
                     var facilities = _ealertFacilitiesService.GetAllAssignedFacilities(facilityAdminId)
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
+                }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
                 }
 
                 foreach (var month in last12Months)
@@ -6723,7 +7076,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
 
                 foreach (var month in last12Months)
                 {
@@ -6927,6 +7287,14 @@ namespace TeleSpecialists.BLL.Service
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
 
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
 
                 foreach (var month in last12Months)
                 {
@@ -6961,7 +7329,7 @@ namespace TeleSpecialists.BLL.Service
                         cases1 = cases1.Where(m => model.CaseType.Contains(m.ca.cas_ctp_key));
                     if (model.BillingCode != null)
                         cases1 = cases1.Where(m => m.ca.cas_billing_bic_key.HasValue && model.BillingCode.Contains(m.ca.cas_billing_bic_key.Value));
-                    if (model.Physicians != null)
+                    if (model.Physicians != null && model.Physicians[0] != "")
                         cases1 = cases1.Where(m => model.Physicians.Contains(m.ca.cas_phy_key));
 
                     if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
@@ -7132,7 +7500,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 foreach (var month in last12Months)
                 {
                     DateTime date = Convert.ToDateTime(month);
@@ -7357,7 +7732,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 foreach (var month in last12Months)
                 {
                     DateTime date = Convert.ToDateTime(month);
@@ -7569,7 +7951,14 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.ca.cas_fac_key));
                 }
-
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
+                }
                 foreach (var month in last12Months)
                 {
                     DateTime date = Convert.ToDateTime(month);
@@ -7934,6 +8323,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_phy_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -7974,6 +8364,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 cases = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
 
@@ -8442,6 +8842,7 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_phy_key,
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
+                                ca.cas_metric_wakeup_stroke,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
@@ -8478,6 +8879,16 @@ namespace TeleSpecialists.BLL.Service
                                                              .Select(m => m.Facility).ToList();
                     cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
                 }
+
+                if (model.WakeUpStroke == true)
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == true);
+                }
+                else
+                {
+                    cases = cases.Where(c => c.cas_metric_wakeup_stroke == false);
+                }
+
                 var casesforstrokestat = cases.Where(x => x.datetime >= querysdate &&
                                              x.datetime <= queryedate);
                 var casesforothers = cases.Where(x => DbFunctions.TruncateTime(x.datetime) >= DbFunctions.TruncateTime(model.StartDate) &&
@@ -9552,7 +9963,7 @@ namespace TeleSpecialists.BLL.Service
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
-        
+
         public List<DailyVolematricReport> GetDailyFacilityVolumetricReports(string cas_fac_key_arrays, DateTime FromMonth, DateTime ToMonth, string cas_fac_Name_array)
         {
 
@@ -9600,202 +10011,16 @@ namespace TeleSpecialists.BLL.Service
             }
 
         }
-        
+
         public DataSourceResult GetBCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
         {
-            //Get Data From Database for cases
-            var date = new DateTime(2020, 01, 01);
-            var startdate = date.ToString("yyyy-MM-dd");
-
-            //var datess = new DateTime(2020, 10, 01);
-            //var currentdate = datess.ToString("yyyy-MM-dd");
-
-
-            var current_date = DateTime.Now.AddMonths(-1);
-            var cd = new DateTime(current_date.Year, current_date.Month, 1);
-            var currentdate = cd.AddMonths(1).AddDays(-1);
-            //next month first and last date for forcaste db table data getting
-            var next_date = DateTime.Now;
-            var next_month_start_date = new DateTime(next_date.Year, next_date.Month, 1);
-            var next_month_end_date = next_month_start_date.AddMonths(1).AddDays(-1);
-            //initialize model listing
-            List<BCIViewModel> cases = new List<BCIViewModel>();
-            List<GetAllPhycision> _GetAllPhycision = new List<GetAllPhycision>();
-            List<Forcast_Data> values_next_month = new List<Forcast_Data>();
-            List<BCIReport> volumelist = new List<BCIReport>();
-            List<BCIPhysicion> Finallist = new List<BCIPhysicion>();
-            BCIReport report;
-            BCIPhysicion bCIPhysicion;
-            _GetAllPhycision = _unitOfWork.SqlQuery<GetAllPhycision>(string.Format("Exec UspGetAllPhysicion")).ToList();
-            values_next_month = _unitOfWork.SqlQuery<Forcast_Data>(string.Format("Exec UspGetForecastData @StartDate = '{0}',@edate = '{1}'", next_month_start_date, next_month_end_date)).ToList();
-            cases = _unitOfWork.SqlQuery<BCIViewModel>(string.Format("Exec UspGetCaseDataForBCI @StartDate = '{0}',@edate = '{1}'", startdate, currentdate)).ToList();
-            // Step 1
-            // Average Video Time Per Facility Per Stroke Alert
-            int _recordCount = 0;
-            string Time_string_list = "";
+            List<BCI_ReportData> Finallist = new List<BCI_ReportData>();
+            Finallist = _unitOfWork.SqlQuery<BCI_ReportData>(string.Format("Exec UspGetAllPhyDataForBCI")).ToList();
             if (facilities != null && facilities.Count > 0)
             {
                 if (facilities[0] != Guid.Empty)
-                    cases = cases.Where(m => facilities.Contains(m.cas_fac_key)).ToList();
-                values_next_month = values_next_month.Where(m => facilities.Contains(new Guid(m.Fac_Id))).ToList();
+                    Finallist = Finallist.Where(m => Physicians.Contains(new Guid(m.Phy_Id))).ToList();
             }
-            foreach (var fac in facilities)
-            {
-                report = new BCIReport();
-                report.fac_name = _FacilityService.GetFacilityNameForreport(fac);
-                report.fac_Id = fac.ToString();
-                var case_list = cases.Where(x => x.cas_fac_key == fac).ToList();
-                foreach (var item in case_list)
-                {
-                    DateTime? d1 = item.cas_metric_video_start_time;
-                    DateTime? d2 = item.cas_metric_video_end_time;
-                    DateTime date1 = d1 ?? DateTime.MinValue;
-                    DateTime date2 = d2 ?? DateTime.MinValue;
-                    TimeSpan Time_value = date2.Subtract(date1);
-                    Time_string_list += Time_value + ",";
-                }
-                List<double> _meanlist = new List<double>();
-                var times = Time_string_list.Split(',').ToArray();
-                int count = 0;
-                foreach (var item in times)
-                {
-                    if (item != "")
-                    {
-                        var chk_formt = item.ToString().Split(':')[0];
-                        if (chk_formt.Contains("."))
-                        {
-                            var ts = TimeSpan.Parse(item).TotalSeconds;
-                            _meanlist.Add(ts);
-                        }
-                        else
-                        {
-                            var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
-                            _meanlist.Add(time);
-                        }
-                        count++;
-                    }
-                }
-                TimeSpan _meantime = new TimeSpan();
-                if (_meanlist.Count > 0)
-                {
-                    double mean = _meanlist.Average();
-                    _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
-                }
-                report.Mean_Per_Facilitys = string.Format("{0:00}:{1:00}:{2:00}", (_meantime.Hours + _meantime.Days * 24), _meantime.Minutes, _meantime.Seconds);
-                volumelist.Add(report);
-                Time_string_list = "";
-                //Step 2
-                // Demand Next Month Prediction
-                foreach (var item in values_next_month)
-                {
-                    var get_id = fac.ToString();
-                    var model_id = item.Fac_Id;
-                    if (get_id == model_id)
-                    {
-                        var _items = volumelist[_recordCount];
-                        _items.Next_Month_Data = Math.Round(item.Month_Prediction.ToDouble(), 2).ToString();
-                        break;
-                    }
-                }
-                _recordCount = _recordCount + 1;
-            }
-            var report_values = volumelist.Where(x => facilities.Contains(new Guid(x.fac_Id))).ToList();
-            //Step 3
-            //Next Month Video Time
-            int counter = 0;
-            foreach (var item in report_values)
-            {
-                if (item.Mean_Per_Facilitys != "")
-                {
-                    var get_mean_data = item.Mean_Per_Facilitys;
-                    var time = new TimeSpan(int.Parse(get_mean_data.Split(':')[0]), int.Parse(get_mean_data.Split(':')[1]), int.Parse(get_mean_data.Split(':')[2])).TotalMinutes;
-                    var next_month_data = item.Next_Month_Data;
-                    double next_month_video_time = (double)time * next_month_data.ToDouble();
-                    var _item = volumelist[counter];
-                    if (next_month_video_time.ToString() == "∞" || next_month_video_time.ToString() == "NaN")
-                    {
-                        _item.Next_Month_Video_Time = "0";
-                    }
-                    else
-                    {
-                        _item.Next_Month_Video_Time = next_month_video_time.ToString();
-                    }
-                    counter++;
-                }
-            }
-            // Step 4
-            //Time Adjusted Demand Ratio
-            double Total_Demand_Video_Time = 0;
-            int countes_val = 0;
-            double cal_sum = 0;
-            double mul_value = 0;
-            var Sum_All_Video_Time = report_values.Select(x => x.Next_Month_Video_Time).ToList();
-            foreach (var item in Sum_All_Video_Time)
-            {
-                Total_Demand_Video_Time = Total_Demand_Video_Time.ToDouble() + item.ToDouble();
-            }
-
-            foreach (var item in report_values)
-            {
-                var cal = (double)item.Next_Month_Video_Time.ToDouble() / Total_Demand_Video_Time;
-                if (cal.ToString() == "NaN")
-                {
-                    cal_sum += cal;
-                    var items = volumelist[countes_val];
-                    items.Time_Adjusted_Demand_Ratio = "0";
-                    double get_percenatge = (double)0 * 100;
-                    items.Percentage = get_percenatge.ToString();
-                    mul_value += get_percenatge;
-                    countes_val++;
-                }
-                else
-                {
-                    cal_sum += cal;
-                    var items = volumelist[countes_val];
-                    items.Time_Adjusted_Demand_Ratio = cal.ToString();
-                    double get_percenatge = (double)cal * 100;
-                    items.Percentage = get_percenatge.ToString();
-                    mul_value += get_percenatge;
-                    countes_val++;
-                }
-
-            }
-
-            // Step 5 
-
-            var chk_phy = _GetAllPhycision.ToList();
-            var Physician = _lookUpService.GetPhysicians().Where(m => m.IsActive == true && m.IsStrokeAlert == true)
-                      .OrderBy(m => m.LastName)
-                      .Select(m => new { Value = m.Id, Text = m.LastName + " " + m.FirstName })
-                      .ToList();
-            if (Physicians != null && Physicians.Count > 0)
-            {
-                if (facilities[0] != Guid.Empty)
-                    Physician = Physician.Where(m => Physicians.Contains(new Guid(m.Value))).ToList();
-            }
-            foreach (var phy in Physician)
-            {
-                bCIPhysicion = new BCIPhysicion();
-                double Total_phy_video_time = 0;
-                var get_onboarded_list = chk_phy.Where(x => x.fap_user_key == phy.Value).ToList();
-                if (facilities != null && facilities.Count > 0)
-                {
-                    if (facilities[0] != Guid.Empty)
-                        get_onboarded_list = get_onboarded_list.Where(m => facilities.Contains(m.fap_fac_key)).ToList();
-                }
-                foreach (var item in get_onboarded_list)
-                {
-                    var get_video_value = report_values.Where(x => x.fac_Id == item.fap_fac_key.ToString()).Select(m => m.Time_Adjusted_Demand_Ratio).FirstOrDefault();
-                    Total_phy_video_time += get_video_value.ToDouble();
-                }
-
-                bCIPhysicion.Phy_Name = phy.Text;
-                var _vals = Total_phy_video_time * 100;
-                bCIPhysicion.Phy_Bci_Value = Math.Round(_vals, 2);
-                Finallist.Add(bCIPhysicion);
-                Total_phy_video_time = 0;
-            }
-            //Convert List To Queryable
             var finalresult = Finallist.Select(x => new
             {
                 Phy_Name = x.Phy_Name,
@@ -9806,6 +10031,30 @@ namespace TeleSpecialists.BLL.Service
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
+
+        public DataSourceResult GetCCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        {
+
+            List<CCIReport_Data> Finallist = new List<CCIReport_Data>();
+            Finallist = _unitOfWork.SqlQuery<CCIReport_Data>(string.Format("Exec UspGetAllPhyDataForCCI")).ToList();
+
+            if (facilities != null && facilities.Count > 0)
+            {
+                if (facilities[0] != Guid.Empty)
+                    Finallist = Finallist.Where(m => Physicians.Contains(new Guid(m.Physician_Id))).ToList();
+            }
+            //Convert List To Queryable
+            var finalresult = Finallist.Select(x => new
+            {
+                Physician_Name = x.Physician_Name,
+                Physician_CCI = x.Physician_CCI
+
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+
         public DataSourceResult GetDailyForecastBydb(DataSourceRequest request, string facilitiess)
         {
             List<Monthly_Forecast> volumelist = new List<Monthly_Forecast>();
@@ -9888,6 +10137,8 @@ namespace TeleSpecialists.BLL.Service
 
             }
 
+
+
             //Convert List To Queryable
             var finalresult = volumelist.Select(x => new
             {
@@ -9899,7 +10150,8 @@ namespace TeleSpecialists.BLL.Service
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
-        
+
+
 
     }
 }

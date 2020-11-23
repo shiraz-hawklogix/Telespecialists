@@ -15,6 +15,6 @@ namespace TeleSpecialists.BLL.ViewModels
         public int Fac_Key { get; set; }
         public string PhysicianName { get; set; }
         public string FacilityName { get; set; }
-        public string EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

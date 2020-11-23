@@ -116,6 +116,7 @@
     <Compile Include="Helpers\BCIPhysicion.cs" />
     <Compile Include="Helpers\BCIReport.cs" />
     <Compile Include="Helpers\CaseReviewTrends.cs" />
+    <Compile Include="Helpers\CCIReport.cs" />
     <Compile Include="Helpers\CSVReader.cs" />
     <Compile Include="Helpers\CWHGraphReport.cs" />
     <Compile Include="Helpers\CWHReport.cs" />
@@ -163,6 +164,9 @@
     <Compile Include="Model\audit_records.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\BCI_ReportData.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\case.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -176,6 +180,9 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\case_template_statconsult.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CCIReport_Data.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\component.cs">
@@ -280,6 +287,9 @@
     <Compile Include="Model\token.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\user_access.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\user_login_verify.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -289,6 +299,26 @@
     <Compile Include="Model\user_schedule_sleep.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+
+    <Compile Include="Model\UspGetAllCaseDataForCCI_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetAllOnBoarededList_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetAllPhyDataForBCI_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetAllPhyDataForCCI_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetAllPhysicion_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetCaseDataForBCI_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+
     <Compile Include="Model\UspGetCWHData2_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -298,10 +328,27 @@
     <Compile Include="Model\UspGetCWHData_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+
+    <Compile Include="Model\UspGetDailyVolimetircdata_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetForecastDataFOorMOnthly_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\UspGetForecastData_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+
     <Compile Include="Model\UspGetRCIData_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\usp_get_cwh_data_Result.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\view_facility_physician.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\view_user_schedule.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\web2campaign_log.cs">
@@ -342,6 +389,7 @@
     <Compile Include="Repository\RootCauseRepository.cs" />
     <Compile Include="Repository\SleepRepository.cs" />
     <Compile Include="Repository\TokenRepository.cs" />
+    <Compile Include="Repository\UserAccessRepository.cs" />
     <Compile Include="Repository\UserProfileRepository.cs" />
     <Compile Include="Repository\UserVerificationRepoistory.cs" />
     <Compile Include="Repository\Web2Campaign_LogRepository.cs" />

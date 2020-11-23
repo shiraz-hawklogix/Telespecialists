@@ -135,7 +135,7 @@
                 },
                {
                    field: "fap_onboarded_date", title: "Onboarding Date",width: '150px' ,
-                   template: '<span> #= fap_onboarded_date && fap_is_on_boarded ? kendo.toString(kendo.parseDate(fap_onboarded_date), "MM/dd/yyyy") + " " +  fap_onboarded_by_name : ""# </span>',
+                   template: '<span> #= fap_onboarded_date && fap_is_on_boarded && fap_onboarded_by_name ? kendo.toString(kendo.parseDate(fap_onboarded_date), "MM/dd/yyyy") + " " +  fap_onboarded_by_name : ""# </span>',
                     filterable: false
                 },
 

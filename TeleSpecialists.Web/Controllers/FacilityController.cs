@@ -401,6 +401,7 @@ namespace TeleSpecialists.Controllers
                                  .Select(m => new { Value = m.fac_key, Text = m.fac_name })
                                  .ToList()
                                  .Select(m => new SelectListItem { Value = m.Value.ToString(), Text = m.Text }).Where(x => x.Value != fac_key);
+
             var result = RenderPartialViewToString("EditButton", model);
             return Json(new { success = true, data = result });
             //return GetViewResult();

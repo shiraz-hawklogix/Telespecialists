@@ -1,0 +1,147 @@
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL;
+@using TeleSpecialists.Models;
+@using Microsoft.AspNet.Identity;
+@{
+    var loggedInUser = ViewBag.loggedInUser as ApplicationUser;
+
+}
+
+<input type="hidden" id="IsSuperAdminAdminRRCDirector" value="@(User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) ? 1 : 0)" />
+
+<div class="row mt-3">
+    <div class="col-12 text-right">
+        <div class="nav-wrapper d-inline-block mt-4 mt-lg-0 indirectstatsIndicator">
+            <ul class="nav nav-pills Indirect_List">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnlastthree">Last 3 Months</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnlasttwo">Last 2 Months</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" id="btnlast">Last Month</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12 col-xl-12 col-lg-12 col-md-12">
+        <div id="cases-indirect-container">
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("#cases-indirect-container").addClass("d-none");
+        if ($("#IsSuperAdminAdminRRCDirector").val() == "1") {
+            $("#cases-indirect-container").removeClass("d-none");
+            refreshCasesIndirectList('Last Month');
+        }
+
+    })
+
+    function LoadCasesIndirectList() {
+        var period = $('.Indirect_List').find('.nav-link.active').text()
+        if (refreshCasesIndirectList.loadTimeout != undefined)
+            window.clearTimeout(refreshCasesIndirectList.loadTimeout);
+
+        refreshCasesIndirectList.loadTimeout = window.setTimeout(function () { refreshCasesIndirectList(period) }, 5000);
+    }
+
+    function refreshCasesIndirectList(period) {
+
+        $("#cases-indirect-container").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetCasesIndirectList", "Reports")',
+                        contentType: "application/json",
+                        type: "POST",
+                        data: { period: period },
+                        type: "POST"
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify(options);
+                    }
+                },
+                schema: {
+                    data: "Data",
+                    total: "Total"
+                },
+                //serverPaging: true,
+                //serverFiltering: true,
+                //serverSorting: true,
+                //pageSize: GetKendoPageSize("QualityReport", "RecPerPage", true),
+                //page: KendoGet("QualityReport", "page")
+                serverPaging: true,
+                pageSize: 10,
+                serverFiltering: false,
+                serverSorting: true,
+            },
+            width: '100%',
+            pageable: {
+                refresh: true,
+                //pageSizes: true,
+                //pageSize: 10
+                pageSizes: [10, 20, 30, 50, 'All']
+            },
+            groupable: false,
+            filterable: true,
+            sortable: true,
+            resizable: true,
+
+            dataBound: function (e) {
+
+                $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                $('[data-role="dropdownlist"]').each(function () {
+                    var kendoDropDown = $(this).data("kendoDropDownList");
+                    if (kendoDropDown)
+                        kendoDropDown.bind("open", onDropdDownOpen);
+                });
+                //LoadCasesIndirectList();
+                //DoRed();
+            },
+            columns: [
+                {
+                    title: "<span class='font-weight-bold' style='font-size: larger;'>Indirect Call Log</span>",
+                    columns: [
+                        { hidden: true, field: "CasKey" },
+                        { title: "TC Case Number", template: "<a class='loadLinkAsync' onclick='AssignTabID.call(this)' title='TC Case Number' href='@Url.Action("Edit", "Case")?id=#= CasKey#&isReadOnly=#= true#'>#=CaseNumber#</a>", width: 185 },
+                        { field: "Facility", width: 250, title: "Facility" },
+                        { field: "CallerSource", width: 350, title: "Caller Source" },
+
+                    ]
+                }]
+        });
+    }
+    var AssignTabID = function () {
+        localStorage.clickfromhome = "casespendingreview";
+    }
+    function DoRed() {
+        $("#cases-indirect-container tbody tr").each(function (index, element) {
+            var row = $(element);
+            var Cases = row.find("td:nth-child(1)").text();
+            if (Cases == "true") {
+                row.addClass("text-danger font-weight-bold");
+            }
+        });
+    }
+
+    $('.indirectstatsIndicator .nav-link').off("click").click(function (e) {
+
+        e.preventDefault();
+        if (refreshCasesIndirectList.loadAllTimeout != undefined)
+            window.clearTimeout(refreshCasesIndirectList.loadAllTimeout);
+        $('.nav.Indirect_List>li>a').removeClass('active');
+        $(this).addClass('active');
+        refreshCasesIndirectList($(this).text());
+    });
+
+</script>
+

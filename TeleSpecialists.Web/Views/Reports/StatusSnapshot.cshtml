@@ -1,0 +1,173 @@
+﻿@using TeleSpecialists.BLL.Extensions;
+@using TeleSpecialists.BLL.ViewModels.Reports;
+@using TeleSpecialists.BLL.Helpers;
+@{
+    ViewBag.Title = "Status Snapshot Report";
+}
+
+@Html.Partial("_ReportLayout")
+
+<div class="row" id="divLocalFilters">
+    <div class="col-12">
+        <div class="form-row">
+            <div class="form-group row col-xl-5 col-12" id="divDateRange">
+                <div class="col-6 pr-0">
+                    <label>Select DateTime</label>
+                    <input type="text" id=FromDate name=FromDate class="form-control datepicker" />
+                </div>
+            </div>
+
+            <div class="form-group col-12 mt-xl-12 pt-xl-12">
+                <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
+                <button type="button" class="btn btn-dark ml-2 d-none" id="resetSearch">Clear Search</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="~/Scripts/Custom/inputMask.js"></script>
+
+<script>
+
+        function showAllColumns() {
+
+            var grid = $("#kendoDataGrid").data("kendoGrid");
+            if (grid != null && grid != 'undefined') {
+
+                var cols = grid.columns.length
+
+            /// Starting from 2nd column so it will not effect the Action column
+                for (var i = 2; i < cols; i++) {
+                    grid.showColumn(i)
+                }
+            }
+        }
+        var isFacilityAdmin = @User.IsInRole(UserRoles.FacilityAdmin.ToDescription()).ToString().ToLower();
+        $(document).ready(function () {
+            document.title = $("#title-prefix").val() + '@ViewBag.Title';
+            $('#btnExportPdf').hide();
+            $('.datepicker').kendoDateTimePicker({
+                timeFormat: "HH:mm",
+                format: "yyyy-MM-dd HH:mm:ss",
+                //parseFormats: ["yyyy-MM-dd HH:mm:ss"]
+            });
+            $('#divLocalFilters').appendTo('#divFilters');
+
+            $('#btnSearch').off("click").click(function () {
+
+                var errorMessage = "";
+                if ($("#ddlTimeFrame").val() == "CustomRange") {
+                    if ($("#FromDate").val() == "")
+                        errorMessage = "Enter From Date<br/>";
+                    if ($("#ToDate").val() == "")
+                        errorMessage += "Enter To Date";
+                }
+                if (errorMessage == "") {
+                    loadGridData();
+                    localStorage.setItem('QualityMetricsReport.SearchApplied', true);
+                    $("#resetSearch").removeClass("d-none");
+                }
+                else {
+                    $("#mainContentArea").find("#validationSummary").empty().showBSDangerAlert("", errorMessage);
+                }
+
+
+            });
+            $('#resetSearch').off("click").click(function () {
+                localStorage.setItem('QualityMetricsReport.SearchApplied', false);
+                loadGridData();
+                $("#resetSearch").addClass("d-none");
+            });
+            $('#kendoDataGrid').attr("style", "min-height : unset !important");
+
+            loadGridData();
+        });
+
+        function mapModelProperties(elem, benchMark) {
+            var data = {};
+            if ($(benchMark).prop("checked") == true) {
+                $(elem).find('select').each(function () {
+                    data.ComparisonOperator = this.value;
+                });
+                $(elem).find('input[type="text"]').each(function () {
+                    data.TimeToEvaluate = this.value;
+                });
+            }
+            else {
+                data = null;
+            }
+            return data;
+        }
+
+        function loadGridData() {
+            showAllColumns();
+
+            $("#kendoDataGrid").kendoGrid({
+                excel: {
+                    allPages: true,
+                    filterable: false,
+                    fileName: '@ViewBag.Title' + '.xlsx',
+                    proxyURL: '@Url.Action("ExportToExcel")',
+                },
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetStatusSnapshot")',
+                            contentType: "application/json",
+                            type: "POST",
+                            data: { datevalue: $("#FromDate").val() },
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total"
+                    },
+                    //serverPaging: true,
+                    //serverFiltering: true,
+                    //serverSorting: true,
+                    //pageSize: GetKendoPageSize("QualityReport", "RecPerPage", true),
+                    //page: KendoGet("QualityReport", "page")
+                    serverPaging: true,
+                    pageSize: 10,
+                    serverFiltering: false,
+                    serverSorting: true,
+                },
+                width: '100%',
+                pageable: {
+                    refresh: true,
+                    //pageSizes: true,
+                    //pageSize: 10
+                    pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+                },
+                groupable: false,
+                filterable: true,
+                sortable: true,
+                resizable: true,
+                dataBound: function (e) {
+
+                    $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+
+                },
+                columns: [
+                    { hidden: true, field: "psl_key" },
+                    { field: "physician_name", width: 250, title: "Physician Name" },
+                    { field: "physician_status", width: 185, title: "Physician Status" },
+                    { field: "psl_created_date", template: "#= kendo.toString(kendo.parseDate(psl_created_date, 'yyyy-MM-dd HH:mm:ss'), 'MM/dd/yyyy HH:mm:ss') #", width: 185, title: "Date" },
+                ]
+            });
+        }
+
+</script>
+
+

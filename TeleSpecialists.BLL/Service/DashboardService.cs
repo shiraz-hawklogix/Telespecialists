@@ -29,26 +29,42 @@ namespace TeleSpecialists.BLL.Service
         }
         public dynamic LoadCasesStats(string filter)
         {
-            return _unitOfWork.SqlToList(string.Format("Exec usp_dashboard_stats '{0}'", filter));
+            //return _unitOfWork.SqlToList(string.Format("Exec usp_dashboard_stats '{0}'", filter));
+            return _unitOfWork.SqlToList(string.Format("Exec usp_dashboard_stats_new '{0}'", filter));
         }
         public dynamic GetStrokeAlertChartStats()
         {
             List<StrokeAlertChartViewModel> chartDataList = new List<StrokeAlertChartViewModel>();
             var currentTimeEst = DateTime.Now.ToEST();
+
+            List<StrokeStatChartViewModel> CasesCount = _unitOfWork.SqlQuery<StrokeStatChartViewModel>(string.Format("Exec sp_get_casescount_by_casetype @Date = '{0}'", currentTimeEst)).ToList();
+            /*
             var query = _unitOfWork.CaseRepository.Query()
                     .Where(x => DbFunctions.TruncateTime(x.cas_created_date) == DbFunctions.TruncateTime(currentTimeEst))
                     .Where(x => x.cas_ctp_key == (int)CaseType.StrokeAlert)
+                    .Where(x => x.cas_cst_key != 140)
                     .Select(x => x.cas_created_date).ToList();
+
             var casesList = query.GroupBy(x => x.Hour)
             .Select(g => new { hour = g.Key, count = g.Count() });
-
-            for (int i = 1; i < 25; i++)
+            */
+            
+            for (int i = 0; i < 24; i++)
             {
-                int currentCount = casesList.Where(x => x.hour == i).Select(x => x.count).FirstOrDefault();
+                //int currentCount = casesList.Where(x => x.hour == i).Select(x => x.count).FirstOrDefault();
+                
+                int StrokeCount = CasesCount.Where(x => x.Hour == i).Select(x => x.Count).FirstOrDefault();
+                int PhysicianCount = CasesCount.Where(x => x.Hour == i).Select(x => x.PhysicianBlastCount).FirstOrDefault();
+                int NavigatorCount = CasesCount.Where(x => x.Hour == i).Select(x => x.NavigatorBlastCount).FirstOrDefault();
+                int StatCount = CasesCount.Where(x => x.Hour == i).Select(x => x.STATCount).FirstOrDefault();
+
                 chartDataList.Add(new StrokeAlertChartViewModel()
                 {
                     Hour = i,
-                    Count = currentCount
+                    Count = StrokeCount,
+                    PhysicianBlastCount = PhysicianCount,
+                    NavigatorBlastCount = NavigatorCount,
+                    STATCount = StatCount
                 });
             }
             return chartDataList;

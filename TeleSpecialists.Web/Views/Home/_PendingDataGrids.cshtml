@@ -42,6 +42,10 @@
     {
         @Html.Partial("_operationsoutliers")
     }
+    if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()))
+    {
+        @Html.Partial("_IndirectCasesList")
+    }
 }
 
 <script>

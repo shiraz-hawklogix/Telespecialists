@@ -3782,6 +3782,7 @@
     <Content Include="Views\Menu\Edit.cshtml" />
     <Content Include="Views\Menu\Index.cshtml" />
     <Content Include="Views\Menu\_Form.cshtml" />
+
     <Content Include="temp\Sch20200811020206.csv" />
     <Content Include="temp\Sch20200811020744.csv" />
     <Content Include="temp\Sch20200811021109.csv" />
@@ -3830,6 +3831,24 @@
     <Content Include="Views\FireBaseChat\UserWithStatus.cshtml" />
     <Content Include="Views\Case\_CaseRejectionReason.cshtml" />
     <Content Include="Views\Physician\_NewCasePopupPhysicianBlast.cshtml" />
+
+    <Content Include="Views\Case\_mockcases.cshtml" />
+    <Content Include="Views\MockCase\Create.cshtml" />
+    <Content Include="Views\MockCase\Edit.cshtml" />
+    <Content Include="Views\MockCase\_CaseCancellationReason.cshtml" />
+    <Content Include="Views\MockCase\_CaseCopyPopup.cshtml" />
+    <Content Include="Views\MockCase\_facilityInfoPopover.cshtml" />
+    <Content Include="Views\MockCase\_mockCase.cshtml" />
+    <Content Include="Views\MockCase\_mockcasecompitencydrill.cshtml" />
+    <Content Include="Views\MockCase\_mockcases.cshtml" />
+    <Content Include="Views\Reports\_AddPhysician.cshtml" />
+    <Content Include="Views\Reports\BCIReport.cshtml" />
+    <Content Include="Views\Reports\R_Index.cshtml" />
+    <Content Include="Views\Reports\DailyFacilityVolumetricReport.cshtml" />
+    <Content Include="Views\Reports\Daily_forecast.cshtml" />
+    <Content Include="Views\Reports\MOnth_forecast.cshtml" />
+    <Content Include="Views\Reports\CCIReport.cshtml" />
+
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

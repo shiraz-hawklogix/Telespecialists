@@ -25,6 +25,7 @@ namespace TeleSpecialists.BLL.ViewModels.Reports
         public DateTime assign_date { get; set; }
         public decimal Amount { get; set; }
         public string AmountDollar { get; set; }
+        public string TotalCases { get; set; }
         public DateTime time_from_calc { get; set; }
         public DateTime time_to_calc { get; set; }
     }

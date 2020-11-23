@@ -26,10 +26,16 @@
                     <a class="nav-link" href="#" id="btnMonth">Month</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" id="btnYear">Year</a>
+                    <a class="nav-link" href="#" id="btnQuarter">Quarter</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#" id="btnToday">Today</a>
+                    <a class="nav-link" href="#" id="btnTodayFrom1900EST">Today From 1900EST</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="btnTodayFrom700EST">Today From 700EST</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" id="btnTodayFromMidnight">Today From Midnight</a>
                 </li>
             </ul>
         </div>
@@ -54,8 +60,8 @@
                             <i class="icon-chart icons"></i>
                         </div>
                         <div class="wrapper text-wrapper">
-                            <p class="text-dark" id="lblTotalCases">0</p>
-                            <p>Total Cases</p>
+                            <p class="text-dark" id="lblStrokeAlerts">0</p>
+                            <p>Total Stroke Alerts</p>
                         </div>
                     </div>
                     <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
@@ -63,8 +69,8 @@
                             <i class="icon-clock icons"></i>
                         </div>
                         <div class="wrapper text-wrapper">
-                            <p class="text-dark" id="lblStrokeAlerts">0</p>
-                            <p>Stroke Alerts</p>
+                            <p class="text-dark" id="lblStatConsults">0</p>
+                            <p>STAT Consults</p>
                         </div>
                     </div>
                     <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
@@ -72,8 +78,8 @@
                             <i class="icon-umbrella icons"></i>
                         </div>
                         <div class="wrapper text-wrapper">
-                            <p class="text-dark" id="lblRoutineConsultsNew">0</p>
-                            <p>Routine Consults New</p>
+                            <p class="text-dark" id="lblNavigatorBlasts">0</p>
+                            <p>Navigator Blasts</p>
                         </div>
                     </div>
                     <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
@@ -81,11 +87,11 @@
                             <i class="icon-umbrella icons"></i>
                         </div>
                         <div class="wrapper text-wrapper">
-                            <p class="text-dark" id="lblRoutineConsultsFollowup">0</p>
-                            <p>Routine Consults Follow-Up</p>
+                            <p class="text-dark" id="lblPhysicianBlasts">0</p>
+                            <p>Physician Blasts</p>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                    @*<div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
                         <div class="wrapper icon-circle bg-primary">
                             <i class="icon-check icons"></i>
                         </div>
@@ -93,14 +99,14 @@
                             <p class="text-dark" id="lblOthers">0</p>
                             <p>Others</p>
                         </div>
-                    </div>
+                    </div>*@
                     <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
                         <div class="wrapper icon-circle bg-dark">
                             <i class="icon-phone icons"></i>
                         </div>
                         <div class="wrapper text-wrapper">
-                            <p class="text-dark" id="lblAverageStartToStamp">00:00:00</p>
-                            <p>Average Start to Stamp Time</p>
+                            <p class="text-dark" id="lblAverageDoorToNeedle">00:00:00</p>
+                            <p>Average Door to Needle</p>
                         </div>
                     </div>
                     <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
@@ -108,8 +114,8 @@
                             <i class="icon-call-out icons"></i>
                         </div>
                         <div class="wrapper text-wrapper">
-                            <p class="text-dark" id="lblAverageStartToAcceptance">00:00:00</p>
-                            <p>Average Start to Acceptance Time</p>
+                            <p class="text-dark" id="lblAverageLogonToNeedle">00:00:00</p>
+                            <p>Average Logon to Needle</p>
                         </div>
                     </div>
                     <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
@@ -121,15 +127,15 @@
                             <p>Average Start to First Login</p>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
-                        <div class="wrapper icon-circle bg-secondary" @*style="display: none !important;"*@>
+                    @*<div class="col-lg-4 col-xl-3 col-md-4 col-sm-6 d-flex flex-row justify-content-left align-items-center dashboard-indicators">
+                        <div class="wrapper icon-circle bg-secondary" @*style="display: none !important;">
                             <i class="icon-call-in icons"></i>
                         </div>
-                        <div class="wrapper text-wrapper" @*style="display: none !important;"*@>
+                        <div class="wrapper text-wrapper" style="display: none !important;">
                             <p class="text-dark" id="lblAverageConsultTime">00:00:00</p>
                             <p>Average Consult  Time</p>
                         </div>
-                    </div>
+                    </div>*@
                 </div>
             </div>
         </div>
@@ -488,28 +494,35 @@
     }
     function caseStats(data) {
         var totalCases = data[0].TotalCases;
-        $('#lblTotalCases').text(totalCases);
         $('#lblStrokeAlerts').text(data[0].TotalStrokeAlert);
-        $('#lblRoutineConsultsNew').text(data[0].TotalRoutineConsultsNew);
-        $('#lblRoutineConsultsFollowup').text(data[0].TotalRoutineConsultsFollowup);
-        $('#lblOthers').text(data[0].TotalOthers);
+        $('#lblStatConsults').text(data[0].TotalStatConsults);
+        $('#lblNavigatorBlasts').text(data[0].TotalNavigatorBlasts);
+        $('#lblPhysicianBlasts').text(data[0].TotalPhysicianBlasts);
+        //$('#lblOthers').text(data[0].TotalOthers);
 
-        $('#lblAverageStartToStamp').text(data[0].AverageStartToStamp);
-        $('#lblAverageStartToAcceptance').text(data[0].AverageStartToAcceptance);
+        $('#lblAverageDoorToNeedle').text(data[0].AverageDoorToNeedle);
+        $('#lblAverageLogonToNeedle').text(data[0].AverageLogonToNeedle);
         $('#lblAverageStartToFirstLogin').text(data[0].AverageStartToFirstLogin);
-        $('#lblAverageConsultTime').text(data[0].AverageConsultTime);
+        //$('#lblAverageConsultTime').text(data[0].AverageConsultTime);
 
         $("#currentCount").val(totalCases);
     }
-    function strokeAlertChart(data) {
-        if (data != undefined && data != null) {
+    function strokeAlertChart(Strokedata) {
+        if (Strokedata != undefined && Strokedata != null) {
             var hours = [];
             var counts = [];
-            var maxCount = Math.max.apply(Math, data.map(function (i) { return parseInt(i.Count); }));
-            for (var i = 0; i < data.length; i++) {
-                hours.push(data[i].Hour);
-                counts.push(data[i].Count);
+            var statcounts = [];
+            var physiciancounts = [];
+            var navigatorcounts = [];
+            var maxCount = Math.max.apply(Math, Strokedata.map(function (i) { return parseInt(i.Count); }));
+            for (var i = 0; i < Strokedata.length; i++) {
+                hours.push(Strokedata[i].Hour);
+                counts.push(Strokedata[i].Count);
+                statcounts.push(Strokedata[i].STATCount);
+                physiciancounts.push(Strokedata[i].PhysicianBlastCount);
+                navigatorcounts.push(Strokedata[i].NavigatorBlastCount);
             }
+
             $("#StrokeAlertchart").kendoChart({
                 title: {
                     text: "Total Cases",
@@ -525,11 +538,25 @@
                         background: "transparent"
                     }
                 },
-                series: [{
-                    name: "Stroke Alerts",
-                    data: counts,
-                    color: "#1391b9"
-                }],
+                series: [
+                    {
+                        name: "Stroke Alerts",
+                        data: counts,
+                        color: "#1391b9"
+                    }, {
+                        name: "Physician Blast",
+                        data: physiciancounts,
+                        color: "#6f18e2"
+                    }, {
+                        name: "Navigator Blast",
+                        data: navigatorcounts,
+                        color: "#f17ee6"
+                    }, {
+                        name: "STAT Consults",
+                        data: statcounts,
+                        color: "#8a8aa3"
+                    }
+                ],
                 categoryAxis: {
                     categories: hours,
                     line: {

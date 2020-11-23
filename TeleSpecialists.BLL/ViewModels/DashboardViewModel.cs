@@ -17,6 +17,9 @@
     {
         public int Hour { get; set; }
         public int Count { get; set; }
+        public int PhysicianBlastCount { get; set; }
+        public int NavigatorBlastCount { get; set; }
+        public int STATCount { get; set; }
     }
 
 
