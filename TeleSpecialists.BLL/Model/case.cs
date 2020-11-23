@@ -303,11 +303,6 @@ namespace TeleSpecialists.BLL.Model
         public virtual ICollection<case_generated_template> case_generated_template { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<case_review_template> case_review_template { get; set; }
-        public virtual case_template_statconsult case_template_statconsult { get; set; }
-        public virtual case_template_stroke_neuro_tpa case_template_stroke_neuro_tpa { get; set; }
-        public virtual case_template_stroke_notpa case_template_stroke_notpa { get; set; }
-        public virtual case_template_stroke_tpa case_template_stroke_tpa { get; set; }
-        public virtual case_template_telestroke_notpa case_template_telestroke_notpa { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<nih_stroke_scale_answer> nih_stroke_scale_answer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -317,5 +312,10 @@ namespace TeleSpecialists.BLL.Model
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual AspNetUser AspNetUser1 { get; set; }
         public virtual AspNetUser AspNetUser2 { get; set; }
+        public virtual case_template_statconsult case_template_statconsult { get; set; }
+        public virtual case_template_stroke_neuro_tpa case_template_stroke_neuro_tpa { get; set; }
+        public virtual case_template_stroke_notpa case_template_stroke_notpa { get; set; }
+        public virtual case_template_stroke_tpa case_template_stroke_tpa { get; set; }
+        public virtual case_template_telestroke_notpa case_template_telestroke_notpa { get; set; }
     }
 }

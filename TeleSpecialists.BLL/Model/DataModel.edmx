@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="DataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="alarm_setting">
           <Key>
             <PropertyRef Name="als_key" />
@@ -95,6 +95,7 @@
           <Property Name="aps_session_timeout_in_minutes" Type="bigint" />
           <Property Name="aps_two_factor_code_expiry_timeout_in_minutes" Type="bigint" />
           <Property Name="aps_enable_logout_from_other_devices" Type="bit" Nullable="false" />
+          <Property Name="aps_enable_pending_cases_notifications" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
@@ -203,6 +204,7 @@
           <Property Name="IsTwoFactVerified" Type="bit" />
           <Property Name="TwoFactVerifyCode" Type="varchar" MaxLength="20" />
           <Property Name="CodeExpiryTime" Type="datetime" />
+          <Property Name="PhysicianId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="AspNetUsers_Log">
           <Key>
@@ -567,6 +569,7 @@
           <Property Name="cas_premorbid_symptoms_text" Type="varchar(max)" />
           <Property Name="cas_premorbid_completed_by" Type="varchar" MaxLength="128" />
           <Property Name="cas_premorbid_completed_date" Type="datetime" />
+          <Property Name="cas_metric_wakeup_stroke" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="case_assign_history">
           <Key>
@@ -714,6 +717,8 @@
           <Property Name="ctt_nihss_or_neuro" Type="varchar" MaxLength="50" />
           <Property Name="ctt_cheif_complaints" Type="nvarchar(max)" />
           <Property Name="ctt_exam_free_text" Type="nvarchar(max)" />
+          <Property Name="ctt_NIHSS_comatose" Type="int" />
+          <Property Name="ctt_NIHSS_comatose_text" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="case_template_stroke_neuro_tpa">
           <Key>
@@ -748,6 +753,8 @@
           <Property Name="csn_anticoagulant_use_text" Type="varchar(max)" />
           <Property Name="csn_antiplatelet_use" Type="bit" />
           <Property Name="csn_antiplatelet_use_text" Type="varchar(max)" />
+          <Property Name="csn_NIHSS_comatose" Type="int" />
+          <Property Name="csn_NIHSS_comatose_text" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="case_template_stroke_notpa">
           <Key>
@@ -789,6 +796,8 @@
           <Property Name="ctn_anticoagulant_use_text" Type="varchar(max)" />
           <Property Name="ctn_antiplatelet_use" Type="bit" />
           <Property Name="ctn_antiplatelet_use_text" Type="varchar(max)" />
+          <Property Name="ctn_NIHSS_comatose" Type="int" />
+          <Property Name="ctn_NIHSS_comatose_text" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="case_template_stroke_tpa">
           <Key>
@@ -822,6 +831,8 @@
           <Property Name="cts_anticoagulant_use_text" Type="varchar(max)" />
           <Property Name="cts_antiplatelet_use" Type="bit" />
           <Property Name="cts_antiplatelet_use_text" Type="varchar(max)" />
+          <Property Name="cts_NIHSS_comatose" Type="int" />
+          <Property Name="cts_NIHSS_comatose_text" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="case_template_telestroke_notpa">
           <Key>
@@ -874,6 +885,8 @@
           <Property Name="ctt_anticoagulant_use_text" Type="varchar(max)" />
           <Property Name="ctt_antiplatelet_use" Type="bit" />
           <Property Name="ctt_antiplatelet_use_text" Type="varchar(max)" />
+          <Property Name="ctt_NIHSS_comatose" Type="int" />
+          <Property Name="ctt_NIHSS_comatose_text" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="case_timestamp">
           <Key>
@@ -916,39 +929,6 @@
           <Property Name="Month" Type="datetime" />
           <Property Name="Date" Type="datetime" />
           <Property Name="Physician_Name" Type="nvarchar" MaxLength="100" />
-        </EntityType>
-        <EntityType Name="component_access">
-          <Key>
-            <PropertyRef Name="cac_key" />
-          </Key>
-          <Property Name="cac_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="cac_roleid" Type="nvarchar" MaxLength="128" />
-          <Property Name="cac_com_key" Type="int" />
-          <Property Name="cac_addedby" Type="varchar" MaxLength="300" />
-          <Property Name="cac_addeddate" Type="datetime" />
-          <Property Name="cac_modifiedby" Type="varchar" MaxLength="300" />
-          <Property Name="cac_modifiedon" Type="datetime" />
-          <Property Name="cac_isAllowed" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="components">
-          <Key>
-            <PropertyRef Name="com_key" />
-          </Key>
-          <Property Name="com_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="com_parentcomponentid" Type="int" />
-          <Property Name="com_module_name" Type="varchar" MaxLength="200" />
-          <Property Name="com_page_url" Type="varchar" MaxLength="200" />
-          <Property Name="com_page_name" Type="varchar" MaxLength="200" />
-          <Property Name="com_page_title" Type="varchar" MaxLength="200" />
-          <Property Name="com_page_description" Type="varchar" MaxLength="200" />
-          <Property Name="com_form_id" Type="varchar" MaxLength="200" />
-          <Property Name="com_status" Type="bit" Nullable="false" />
-          <Property Name="com_addedby" Type="varchar" MaxLength="300" />
-          <Property Name="com_addedon" Type="datetime" />
-          <Property Name="com_modifiedby" Type="varchar" MaxLength="300" />
-          <Property Name="com_modifiedon" Type="datetime" />
-          <Property Name="com_sortorder" Type="int" />
-          <Property Name="com_moduleimage" Type="varchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="contact">
           <Key>
@@ -1216,7 +1196,7 @@
           <Property Name="fap_preapp_receive_date" Type="datetime" />
           <Property Name="fap_app_sent_to_dr" Type="datetime" />
           <Property Name="fap_Credentials_confirmed_date" Type="datetime" />
-          <Property Name="fap_Password" Type="nvarchar(max)" />
+          <Property Name="fap_Password" Type="nvarchar" MaxLength="40" />
           <Property Name="fap_Password_BY" Type="nvarchar" MaxLength="100" />
           <Property Name="fap_Password_Date" Type="datetime" />
           <Property Name="fap_Array_path" Type="nvarchar(max)" />
@@ -1375,7 +1355,7 @@
           <Property Name="SortNum" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.MDStaffFacility' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="MDStaffFacility">
           <Key>
             <PropertyRef Name="ID" />
@@ -1564,7 +1544,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <PropertyRef Name="Onboarded_ID" />
           </Key>
           <Property Name="Onboarded_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ParameterName" Type="nvarchar(max)" />
+          <Property Name="ParameterName" Type="nvarchar" MaxLength="100" />
           <Property Name="ParameterName_Info" Type="nvarchar(max)" />
           <Property Name="ParameterName_Image" Type="nvarchar(max)" />
           <Property Name="ParameterName_Image_Id" Type="nvarchar" MaxLength="50" />
@@ -1986,20 +1966,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="ucd_modified_date" Type="datetime" />
           <Property Name="ucd_modified_by" Type="nvarchar" MaxLength="128" />
         </EntityType>
-        <EntityType Name="user_access">
-          <Key>
-            <PropertyRef Name="user_key" />
-          </Key>
-          <Property Name="user_key" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="user_role_key" Type="nvarchar" MaxLength="128" />
-          <Property Name="user_id" Type="nvarchar" MaxLength="128" />
-          <Property Name="user_com_key" Type="int" />
-          <Property Name="user_isAllowed" Type="bit" Nullable="false" />
-          <Property Name="user_createddate" Type="datetime" />
-          <Property Name="user_createdBy" Type="nvarchar" MaxLength="128" />
-          <Property Name="user_updateddate" Type="datetime" />
-          <Property Name="user_updatedBy" Type="nvarchar" MaxLength="128" />
-        </EntityType>
         <EntityType Name="user_login_verify">
           <Key>
             <PropertyRef Name="Id" />
@@ -2106,7 +2072,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="wcl_request_retry_count" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_facility_physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_facility_physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="view_facility_physician">
           <Key>
             <PropertyRef Name="fap_key" />
@@ -2128,7 +2094,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_facility_physician' 
           <Property Name="fac_go_live" Type="bit" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedule' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="view_user_schedule">
           <Key>
             <PropertyRef Name="uss_key" />
@@ -2339,18 +2305,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             </Principal>
             <Dependent Role="case_template_telestroke_notpa">
               <PropertyRef Name="ctt_cas_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ComponentAccess_Component_Id">
-          <End Role="components" Type="Self.components" Multiplicity="0..1" />
-          <End Role="component_access" Type="Self.component_access" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="components">
-              <PropertyRef Name="com_key" />
-            </Principal>
-            <Dependent Role="component_access">
-              <PropertyRef Name="cac_com_key" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2998,7 +2952,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Parameter Name="isTimeBetween7and12" Type="int" Mode="In" />
           <Parameter Name="SoftSaveGuid" Type="uniqueidentifier" Mode="In" />
         </Function>
-
         <Function Name="UspGetAllCaseDataForCCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="UspGetAllOnBoarededList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="UspGetAllPhyDataForBCI" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
@@ -3008,7 +2961,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
         </Function>
-
         <Function Name="UspGetCWHData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
@@ -3021,7 +2973,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
         </Function>
-
         <Function Name="UspGetDailyVolimetircdata" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
@@ -3031,7 +2982,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Parameter Name="edate" Type="datetime" Mode="In" />
         </Function>
         <Function Name="UspGetForecastDataFOorMOnthly" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-
         <Function Name="UspGetRCIData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="StartDate" Type="datetime" Mode="In" />
           <Parameter Name="edate" Type="datetime" Mode="In" />
@@ -3065,8 +3015,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySet Name="case_template_telestroke_notpa" EntityType="Self.case_template_telestroke_notpa" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="case_timestamp" EntityType="Self.case_timestamp" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CCIReport_Data" EntityType="Self.CCIReport_Data" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="component_access" EntityType="Self.component_access" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="components" EntityType="Self.components" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="contact" EntityType="Self.contact" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="cwh_data" EntityType="Self.cwh_data" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="default_notification_tune" EntityType="Self.default_notification_tune" Schema="dbo" store:Type="Tables" />
@@ -3115,7 +3063,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySet Name="token" EntityType="Self.token" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ucl" EntityType="Self.ucl" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ucl_data" EntityType="Self.ucl_data" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="user_access" EntityType="Self.user_access" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_login_verify" EntityType="Self.user_login_verify" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_schedule" EntityType="Self.user_schedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_schedule_nhalert" EntityType="Self.user_schedule_nhalert" Schema="dbo" store:Type="Tables" />
@@ -3241,10 +3188,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <AssociationSet Name="FK_case_template_telestroke_notpa_case" Association="Self.FK_case_template_telestroke_notpa_case">
             <End Role="case" EntitySet="case" />
             <End Role="case_template_telestroke_notpa" EntitySet="case_template_telestroke_notpa" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ComponentAccess_Component_Id" Association="Self.FK_ComponentAccess_Component_Id">
-            <End Role="components" EntitySet="components" />
-            <End Role="component_access" EntitySet="component_access" />
           </AssociationSet>
           <AssociationSet Name="FK_contact_contact" Association="Self.FK_contact_contact">
             <End Role="ucl_data" EntitySet="ucl_data" />
@@ -3453,9 +3396,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySet Name="case_copy_log" EntityType="DataModel.case_copy_log" />
           <EntitySet Name="case_generated_template" EntityType="DataModel.case_generated_template" />
           <EntitySet Name="case_review_template" EntityType="DataModel.case_review_template" />
-          <EntitySet Name="case_template_stroke_neuro_tpa" EntityType="DataModel.case_template_stroke_neuro_tpa" />
-          <EntitySet Name="case_template_stroke_notpa" EntityType="DataModel.case_template_stroke_notpa" />
-          <EntitySet Name="case_template_stroke_tpa" EntityType="DataModel.case_template_stroke_tpa" />
           <EntitySet Name="case_timestamp" EntityType="DataModel.case_timestamp" />
           <EntitySet Name="contacts" EntityType="DataModel.contact" />
           <EntitySet Name="default_notification_tune" EntityType="DataModel.default_notification_tune" />
@@ -3541,7 +3481,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             <End Role="pac_case_template" EntitySet="pac_case_template" />
           </AssociationSet>
           <EntitySet Name="audit_records" EntityType="DataModel.audit_records" />
-          <EntitySet Name="case_template_telestroke_notpa" EntityType="DataModel.case_template_telestroke_notpa" />
           <EntitySet Name="physician_holiday_rate" EntityType="DataModel.physician_holiday_rate" />
           <EntitySet Name="user_schedule" EntityType="DataModel.user_schedule" />
           <EntitySet Name="rapids_mailbox" EntityType="DataModel.rapids_mailbox" />
@@ -3551,7 +3490,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             <End Role="quality_goals" EntitySet="quality_goals" />
             <End Role="goals_data" EntitySet="goals_data" />
           </AssociationSet>
-          <EntitySet Name="case_template_statconsult" EntityType="DataModel.case_template_statconsult" />
           <EntitySet Name="case_cancelled_type" EntityType="DataModel.case_cancelled_type" />
           <EntitySet Name="facility_questionnaire_contact" EntityType="DataModel.facility_questionnaire_contact" />
           <EntitySet Name="facility_questionnaire_contact_designation" EntityType="DataModel.facility_questionnaire_contact_designation" />
@@ -3591,26 +3529,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <AssociationSet Name="FK_case_review_template_case" Association="DataModel.FK_case_review_template_case">
             <End Role="case" EntitySet="cases" />
             <End Role="case_review_template" EntitySet="case_review_template" />
-          </AssociationSet>
-          <AssociationSet Name="FK_case_template_statconsult_case" Association="DataModel.FK_case_template_statconsult_case">
-            <End Role="case" EntitySet="cases" />
-            <End Role="case_template_statconsult" EntitySet="case_template_statconsult" />
-          </AssociationSet>
-          <AssociationSet Name="FK_case_template_stroke_neuro_tpa_case" Association="DataModel.FK_case_template_stroke_neuro_tpa_case">
-            <End Role="case" EntitySet="cases" />
-            <End Role="case_template_stroke_neuro_tpa" EntitySet="case_template_stroke_neuro_tpa" />
-          </AssociationSet>
-          <AssociationSet Name="FK_case_template_stroke_notpa_case" Association="DataModel.FK_case_template_stroke_notpa_case">
-            <End Role="case" EntitySet="cases" />
-            <End Role="case_template_stroke_notpa" EntitySet="case_template_stroke_notpa" />
-          </AssociationSet>
-          <AssociationSet Name="FK_case_template_stroke_tpa_case" Association="DataModel.FK_case_template_stroke_tpa_case">
-            <End Role="case" EntitySet="cases" />
-            <End Role="case_template_stroke_tpa" EntitySet="case_template_stroke_tpa" />
-          </AssociationSet>
-          <AssociationSet Name="FK_case_template_telestroke_notpa_case" Association="DataModel.FK_case_template_telestroke_notpa_case">
-            <End Role="case" EntitySet="cases" />
-            <End Role="case_template_telestroke_notpa" EntitySet="case_template_telestroke_notpa" />
           </AssociationSet>
           <AssociationSet Name="FK_nih_stroke_scale_answer_case" Association="DataModel.FK_nih_stroke_scale_answer_case">
             <End Role="case" EntitySet="cases" />
@@ -3686,18 +3604,9 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <FunctionImport Name="sp_getMenuAccess" ReturnType="Collection(DataModel.sp_getMenuAccess_Result)">
           <Parameter Name="Id" Mode="In" Type="String" />
           </FunctionImport>
-          <EntitySet Name="case_rejection_reason" EntityType="DataModel.case_rejection_reason" />
-          <EntitySet Name="firebase_users" EntityType="DataModel.firebase_users" />
           <FunctionImport Name="sp_getMenuAccess1" ReturnType="Collection(DataModel.sp_getMenuAccess1_Result)">
           <Parameter Name="Id" Mode="In" Type="String" />
           </FunctionImport>
-          <EntitySet Name="component_access" EntityType="DataModel.component_access" />
-          <EntitySet Name="components" EntityType="DataModel.component" />
-          <AssociationSet Name="FK_ComponentAccess_Component_Id" Association="DataModel.FK_ComponentAccess_Component_Id">
-            <End Role="component" EntitySet="components" />
-            <End Role="component_access" EntitySet="component_access" />
-          </AssociationSet>
-          <EntitySet Name="tokens" EntityType="DataModel.token" />
           <EntitySet Name="premorbid_correspondnce" EntityType="DataModel.premorbid_correspondnce" />
           <AssociationSet Name="FK_premorbid_correspondnce_case" Association="DataModel.FK_premorbid_correspondnce_case">
             <End Role="case" EntitySet="cases" />
@@ -3780,10 +3689,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="user_schedule" EntitySet="user_schedule" />
           </AssociationSet>
-          <AssociationSet Name="FK_token_AspNetUsers" Association="DataModel.FK_token_AspNetUsers">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="token" EntitySet="tokens" />
-          </AssociationSet>
           <AssociationSet Name="FK_user_login_verify_User_Id" Association="DataModel.FK_user_login_verify_User_Id">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="user_login_verify" EntitySet="user_login_verify" />
@@ -3814,8 +3719,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             <End Role="facility" EntitySet="facilities" />
             <End Role="mock_case" EntitySet="mock_case" />
           </AssociationSet>
-
-          <EntitySet Name="telecare_counters" EntityType="DataModel.telecare_counters" />
           <EntitySet Name="BCI_ReportData" EntityType="DataModel.BCI_ReportData" />
           <EntitySet Name="CCIReport_Data" EntityType="DataModel.CCIReport_Data" />
           <FunctionImport Name="UspGetAllCaseDataForCCI" ReturnType="Collection(DataModel.UspGetAllCaseDataForCCI_Result)" />
@@ -3823,9 +3726,40 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <FunctionImport Name="UspGetAllPhyDataForBCI" ReturnType="Collection(DataModel.UspGetAllPhyDataForBCI_Result)" />
           <FunctionImport Name="UspGetAllPhyDataForCCI" ReturnType="Collection(DataModel.UspGetAllPhyDataForCCI_Result)" />
           <FunctionImport Name="UspGetForecastDataFOorMOnthly" ReturnType="Collection(DataModel.UspGetForecastDataFOorMOnthly_Result)" />
-          <EntitySet Name="user_access" EntityType="DataModel.user_access" />
           <EntitySet Name="view_facility_physician" EntityType="DataModel.view_facility_physician" />
           <EntitySet Name="view_user_schedule" EntityType="DataModel.view_user_schedule" />
+          <EntitySet Name="case_rejection_reason" EntityType="DataModel.case_rejection_reason" />
+          <EntitySet Name="firebase_users" EntityType="DataModel.firebase_users" />
+          <EntitySet Name="tokens" EntityType="DataModel.token" />
+          <AssociationSet Name="FK_token_AspNetUsers" Association="DataModel.FK_token_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="token" EntitySet="tokens" />
+          </AssociationSet>
+          <EntitySet Name="case_template_statconsult" EntityType="DataModel.case_template_statconsult" />
+          <EntitySet Name="case_template_stroke_neuro_tpa" EntityType="DataModel.case_template_stroke_neuro_tpa" />
+          <EntitySet Name="case_template_stroke_notpa" EntityType="DataModel.case_template_stroke_notpa" />
+          <EntitySet Name="case_template_stroke_tpa" EntityType="DataModel.case_template_stroke_tpa" />
+          <EntitySet Name="case_template_telestroke_notpa" EntityType="DataModel.case_template_telestroke_notpa" />
+          <AssociationSet Name="FK_case_template_statconsult_case" Association="DataModel.FK_case_template_statconsult_case">
+            <End Role="case" EntitySet="cases" />
+            <End Role="case_template_statconsult" EntitySet="case_template_statconsult" />
+          </AssociationSet>
+          <AssociationSet Name="FK_case_template_stroke_neuro_tpa_case" Association="DataModel.FK_case_template_stroke_neuro_tpa_case">
+            <End Role="case" EntitySet="cases" />
+            <End Role="case_template_stroke_neuro_tpa" EntitySet="case_template_stroke_neuro_tpa" />
+          </AssociationSet>
+          <AssociationSet Name="FK_case_template_stroke_notpa_case" Association="DataModel.FK_case_template_stroke_notpa_case">
+            <End Role="case" EntitySet="cases" />
+            <End Role="case_template_stroke_notpa" EntitySet="case_template_stroke_notpa" />
+          </AssociationSet>
+          <AssociationSet Name="FK_case_template_stroke_tpa_case" Association="DataModel.FK_case_template_stroke_tpa_case">
+            <End Role="case" EntitySet="cases" />
+            <End Role="case_template_stroke_tpa" EntitySet="case_template_stroke_tpa" />
+          </AssociationSet>
+          <AssociationSet Name="FK_case_template_telestroke_notpa_case" Association="DataModel.FK_case_template_telestroke_notpa_case">
+            <End Role="case" EntitySet="cases" />
+            <End Role="case_template_telestroke_notpa" EntitySet="case_template_telestroke_notpa" />
+          </AssociationSet>
 
 
           </EntityContainer>
@@ -4056,117 +3990,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Name="crt_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="crt_modified_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="case" Relationship="DataModel.FK_case_review_template_case" FromRole="case_review_template" ToRole="case" />
-        </EntityType>
-        <EntityType Name="case_template_stroke_neuro_tpa">
-          <Key>
-            <PropertyRef Name="csn_cas_key" />
-          </Key>
-          <Property Name="csn_cas_key" Type="Int32" Nullable="false" />
-          <Property Name="csn_impression" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="csn_acute_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="csn_mechanism_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="csn_mechanism_stroke_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="csn_tpa_bolus_complications" Type="Int32" />
-          <Property Name="csn_tpa_bolus_complications_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="csn_nihss_totalscore" Type="Int32" />
-          <Property Name="csn_vitals_bp" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="csn_vitals_pulse" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="csn_verbal_consent" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="csn_additional_recomendations" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="csn_created_date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="csn_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="csn_created_by_name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="csn_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="csn_modfied_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="csn_modified_date" Type="DateTime" Precision="3" />
-          <Property Name="csn_comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="csn_vitals_blood_glucose" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="csn_patient_family_cosulted" Type="Boolean" />
-          <Property Name="csn_critical_care_was_provided" Type="Boolean" />
-          <Property Name="csn_critical_care_minutes" Type="Int32" />
-          <Property Name="csn_family_consent_available" Type="Boolean" />
-          <Property Name="csn_PMH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="csn_anticoagulant_use" Type="Boolean" />
-          <Property Name="csn_anticoagulant_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="csn_antiplatelet_use" Type="Boolean" />
-          <Property Name="csn_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_stroke_neuro_tpa_case" FromRole="case_template_stroke_neuro_tpa" ToRole="case" />
-        </EntityType>
-        <EntityType Name="case_template_stroke_notpa">
-          <Key>
-            <PropertyRef Name="ctn_cas_key" />
-          </Key>
-          <Property Name="ctn_cas_key" Type="Int32" Nullable="false" />
-          <Property Name="ctn_impression" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_impression_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_mechanism_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_mechanism_stroke_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_antiplatelet_therapy_recommedned" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_antiplatelet_therapy_recommedned_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_imaging_studies_recommedned" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_imaging_studies_recommedned_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_therapies" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_nihss_totalscore" Type="Int32" />
-          <Property Name="ctn_dysphaghia_screen" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_dvt_prophylaxis" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_dvt_prophylaxis_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ctn_lipid_panel_obtained" Type="Boolean" Nullable="false" />
-          <Property Name="ctn_disposition" Type="Int32" />
-          <Property Name="ctn_sign_out" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_created_date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ctn_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_created_by_name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_modfied_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_modified_date" Type="DateTime" Precision="3" />
-          <Property Name="ctn_vitals_bp" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_vitals_pulse" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_vitals_blood_glucose" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_patient_family_cosulted" Type="Boolean" />
-          <Property Name="ctn_critical_care_was_provided" Type="Boolean" />
-          <Property Name="ctn_critical_care_minutes" Type="Int32" />
-          <Property Name="ctn_family_consent_available" Type="Boolean" />
-          <Property Name="ctn_PMH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_anticoagulant_use" Type="Boolean" />
-          <Property Name="ctn_anticoagulant_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctn_antiplatelet_use" Type="Boolean" />
-          <Property Name="ctn_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_stroke_notpa_case" FromRole="case_template_stroke_notpa" ToRole="case" />
-        </EntityType>
-        <EntityType Name="case_template_stroke_tpa">
-          <Key>
-            <PropertyRef Name="cts_cas_key" />
-          </Key>
-          <Property Name="cts_cas_key" Type="Int32" Nullable="false" />
-          <Property Name="cts_impression" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="cts_acute_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="cts_mechanism_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="cts_mechanism_stroke_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="cts_tpa_bolus_complications" Type="Int32" />
-          <Property Name="cts_tpa_bolus_complications_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="cts_nihss_totalscore" Type="Int32" />
-          <Property Name="cts_vitals_bp" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="cts_vitals_pulse" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="cts_verbal_consent" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="cts_created_date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="cts_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="cts_created_by_name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="cts_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="cts_modfied_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="cts_modified_date" Type="DateTime" Precision="3" />
-          <Property Name="cts_comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="cts_vitals_blood_glucose" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="cts_patient_family_cosulted" Type="Boolean" />
-          <Property Name="cts_critical_care_was_provided" Type="Boolean" />
-          <Property Name="cts_critical_care_minutes" Type="Int32" />
-          <Property Name="cts_family_consent_available" Type="Boolean" />
-          <Property Name="cts_PMH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="cts_anticoagulant_use" Type="Boolean" />
-          <Property Name="cts_anticoagulant_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="cts_antiplatelet_use" Type="Boolean" />
-          <Property Name="cts_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_stroke_tpa_case" FromRole="case_template_stroke_tpa" ToRole="case" />
         </EntityType>
         <EntityType Name="case_timestamp">
           <Key>
@@ -4964,59 +4787,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Name="aud_host_name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="aud_others" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="case_template_telestroke_notpa">
-          <Key>
-            <PropertyRef Name="ctt_cas_key" />
-          </Key>
-          <Property Name="ctt_cas_key" Type="Int32" Nullable="false" />
-          <Property Name="ctt_impression" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_impression_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_mechanism_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_mechanism_stroke_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_routine_consultation" Type="Boolean" Nullable="false" />
-          <Property Name="ctt_nihss_totalscore" Type="Int32" />
-          <Property Name="ctt_sign_out" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_created_date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ctt_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_created_by_name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_modfied_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_modified_date" Type="DateTime" Precision="3" />
-          <Property Name="ctt_antiplatelet_therapy_recommedned" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_antiplatelet_therapy_recommedned_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_vitals_bp" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_vitals_pulse" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_vitals_blood_glucose" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_patient_family_cosulted" Type="Boolean" />
-          <Property Name="ctt_critical_care_was_provided" Type="Boolean" />
-          <Property Name="ctt_critical_care_minutes" Type="Int32" />
-          <Property Name="ctt_imaging" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_therapies" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_other_workup" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_neuro_exam" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_speech" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_language" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_face" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_facial_sensation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_visual" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_extraocular_movement" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_motor" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_sensation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_coordination" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_consented_to_tele" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_disposition" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_nihss_or_neuro" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_cheif_complaints" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ctt_exam_free_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ctt_family_consent_available" Type="Boolean" />
-          <Property Name="ctt_PMH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_anticoagulant_use" Type="Boolean" />
-          <Property Name="ctt_anticoagulant_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_antiplatelet_use" Type="Boolean" />
-          <Property Name="ctt_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_telestroke_notpa_case" FromRole="case_template_telestroke_notpa" ToRole="case" />
-        </EntityType>
         <EntityType Name="physician_holiday_rate">
           <Key>
             <PropertyRef Name="phr_key" />
@@ -5130,53 +4900,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="case_template_statconsult">
-          <Key>
-            <PropertyRef Name="ctt_cas_key" />
-          </Key>
-          <Property Name="ctt_cas_key" Type="Int32" Nullable="false" />
-          <Property Name="ctt_impression" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_impression_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_mechanism_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_mechanism_stroke_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_routine_consultation" Type="Boolean" Nullable="false" />
-          <Property Name="ctt_nihss_totalscore" Type="Int32" />
-          <Property Name="ctt_sign_out" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_created_date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ctt_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_created_by_name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_modfied_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_modified_date" Type="DateTime" Precision="3" />
-          <Property Name="ctt_antiplatelet_therapy_recommedned" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_antiplatelet_therapy_recommedned_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_vitals_bp" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_vitals_pulse" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_vitals_blood_glucose" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_patient_family_cosulted" Type="Boolean" />
-          <Property Name="ctt_critical_care_was_provided" Type="Boolean" />
-          <Property Name="ctt_critical_care_minutes" Type="Int32" />
-          <Property Name="ctt_imaging" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_therapies" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_other_workup" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_neuro_exam" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_speech" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_language" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_face" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_facial_sensation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_visual" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_extraocular_movement" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_motor" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_sensation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_coordination" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_consented_to_tele" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_disposition" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_nihss_or_neuro" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ctt_cheif_complaints" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ctt_exam_free_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_statconsult_case" FromRole="case_template_statconsult" ToRole="case" />
-        </EntityType>
         <EntityType Name="case_cancelled_type">
           <Key>
             <PropertyRef Name="cct_key" />
@@ -5594,11 +5317,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <NavigationProperty Name="facility" Relationship="DataModel.FK_case_facility" FromRole="case" ToRole="facility" />
           <NavigationProperty Name="case_generated_template" Relationship="DataModel.FK_case_generated_template_case" FromRole="case" ToRole="case_generated_template" />
           <NavigationProperty Name="case_review_template" Relationship="DataModel.FK_case_review_template_case" FromRole="case" ToRole="case_review_template" />
-          <NavigationProperty Name="case_template_statconsult" Relationship="DataModel.FK_case_template_statconsult_case" FromRole="case" ToRole="case_template_statconsult" />
-          <NavigationProperty Name="case_template_stroke_neuro_tpa" Relationship="DataModel.FK_case_template_stroke_neuro_tpa_case" FromRole="case" ToRole="case_template_stroke_neuro_tpa" />
-          <NavigationProperty Name="case_template_stroke_notpa" Relationship="DataModel.FK_case_template_stroke_notpa_case" FromRole="case" ToRole="case_template_stroke_notpa" />
-          <NavigationProperty Name="case_template_stroke_tpa" Relationship="DataModel.FK_case_template_stroke_tpa_case" FromRole="case" ToRole="case_template_stroke_tpa" />
-          <NavigationProperty Name="case_template_telestroke_notpa" Relationship="DataModel.FK_case_template_telestroke_notpa_case" FromRole="case" ToRole="case_template_telestroke_notpa" />
           <NavigationProperty Name="nih_stroke_scale_answer" Relationship="DataModel.FK_nih_stroke_scale_answer_case" FromRole="case" ToRole="nih_stroke_scale_answer" />
           <NavigationProperty Name="rca_counter_measure" Relationship="DataModel.FK_rca_counter_measure_case" FromRole="case" ToRole="rca_counter_measure" />
           <Property Name="cas_metric_has_time_of_set" Type="Int32" />
@@ -5649,6 +5367,12 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_case_AspNetUsers" FromRole="case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_case_AspNetUsers_Navigator" FromRole="case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_case_AspNetUsers1" FromRole="case" ToRole="AspNetUser" />
+          <Property Name="cas_metric_wakeup_stroke" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="case_template_statconsult" Relationship="DataModel.FK_case_template_statconsult_case" FromRole="case" ToRole="case_template_statconsult" />
+          <NavigationProperty Name="case_template_stroke_neuro_tpa" Relationship="DataModel.FK_case_template_stroke_neuro_tpa_case" FromRole="case" ToRole="case_template_stroke_neuro_tpa" />
+          <NavigationProperty Name="case_template_stroke_notpa" Relationship="DataModel.FK_case_template_stroke_notpa_case" FromRole="case" ToRole="case_template_stroke_notpa" />
+          <NavigationProperty Name="case_template_stroke_tpa" Relationship="DataModel.FK_case_template_stroke_tpa_case" FromRole="case" ToRole="case_template_stroke_tpa" />
+          <NavigationProperty Name="case_template_telestroke_notpa" Relationship="DataModel.FK_case_template_telestroke_notpa_case" FromRole="case" ToRole="case_template_telestroke_notpa" />
         </EntityType>
         <EntityType Name="facility">
           <Key>
@@ -5753,68 +5477,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             </Principal>
             <Dependent Role="case_review_template">
               <PropertyRef Name="crt_cas_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_case_template_statconsult_case">
-          <End Type="DataModel.case" Role="case" Multiplicity="1" />
-          <End Type="DataModel.case_template_statconsult" Role="case_template_statconsult" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="case">
-              <PropertyRef Name="cas_key" />
-            </Principal>
-            <Dependent Role="case_template_statconsult">
-              <PropertyRef Name="ctt_cas_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_case_template_stroke_neuro_tpa_case">
-          <End Type="DataModel.case" Role="case" Multiplicity="1" />
-          <End Type="DataModel.case_template_stroke_neuro_tpa" Role="case_template_stroke_neuro_tpa" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="case">
-              <PropertyRef Name="cas_key" />
-            </Principal>
-            <Dependent Role="case_template_stroke_neuro_tpa">
-              <PropertyRef Name="csn_cas_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_case_template_stroke_notpa_case">
-          <End Type="DataModel.case" Role="case" Multiplicity="1" />
-          <End Type="DataModel.case_template_stroke_notpa" Role="case_template_stroke_notpa" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="case">
-              <PropertyRef Name="cas_key" />
-            </Principal>
-            <Dependent Role="case_template_stroke_notpa">
-              <PropertyRef Name="ctn_cas_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_case_template_stroke_tpa_case">
-          <End Type="DataModel.case" Role="case" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.case_template_stroke_tpa" Role="case_template_stroke_tpa" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="case">
-              <PropertyRef Name="cas_key" />
-            </Principal>
-            <Dependent Role="case_template_stroke_tpa">
-              <PropertyRef Name="cts_cas_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_case_template_telestroke_notpa_case">
-          <End Type="DataModel.case" Role="case" Multiplicity="1" />
-          <End Type="DataModel.case_template_telestroke_notpa" Role="case_template_telestroke_notpa" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="case">
-              <PropertyRef Name="cas_key" />
-            </Principal>
-            <Dependent Role="case_template_telestroke_notpa">
-              <PropertyRef Name="ctt_cas_key" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6031,7 +5693,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Name="fap_preapp_receive_date" Type="DateTime" Precision="3" />
           <Property Name="fap_app_sent_to_dr" Type="DateTime" Precision="3" />
           <Property Name="fap_Credentials_confirmed_date" Type="DateTime" Precision="3" />
-          <Property Name="fap_Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="fap_Password" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
           <Property Name="fap_Password_BY" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="fap_Password_Date" Type="DateTime" Precision="3" />
           <Property Name="fap_Array_path" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -6124,6 +5786,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Name="aps_session_timeout_in_minutes" Type="Int64" />
           <Property Name="aps_two_factor_code_expiry_timeout_in_minutes" Type="Int64" />
           <Property Name="aps_enable_logout_from_other_devices" Type="Boolean" Nullable="false" />
+          <Property Name="aps_enable_pending_cases_notifications" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="user_login_verify">
           <Key>
@@ -6182,7 +5845,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             <PropertyRef Name="Onboarded_ID" />
           </Key>
           <Property Name="Onboarded_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParameterName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ParameterName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="ParameterName_Info" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ParameterName_Image_Id" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Facility_Name" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
@@ -6224,29 +5887,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Type="Boolean" Name="cac_isAllowed" Nullable="false" />
           <Property Type="String" Name="cac_roleid" Nullable="true" MaxLength="128" />
         </ComplexType>
-        <EntityType Name="case_rejection_reason">
-          <Key>
-            <PropertyRef Name="crr_key" />
-          </Key>
-          <Property Name="crr_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="crr_reason" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="crr_troubleshoot" Type="Boolean" Nullable="false" />
-          <Property Name="crr_parent_key" Type="Int32" />
-          <Property Name="crr_users" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="crr_created_on" Type="DateTime" Precision="3" />
-          <Property Name="crr_created_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="crr_modified_on" Type="DateTime" Precision="3" />
-          <Property Name="crr_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="firebase_users">
-          <Key>
-            <PropertyRef Name="frb_key" />
-          </Key>
-          <Property Name="frb_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="frb_userId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="frb_user_firebaseId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="frb_deviceTokenId" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-        </EntityType>
         <ComplexType Name="sp_getMenuAccess1_Result">
           <Property Type="String" Name="com_page_title" Nullable="true" MaxLength="200" />
           <Property Type="Int32" Name="com_key" Nullable="false" />
@@ -6257,63 +5897,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Type="Boolean" Name="cac_isAllowed" Nullable="false" />
           <Property Type="String" Name="cac_roleid" Nullable="true" MaxLength="128" />
         </ComplexType>
-        <EntityType Name="component_access">
-          <Key>
-            <PropertyRef Name="cac_key" />
-          </Key>
-          <Property Name="cac_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="cac_roleid" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="cac_com_key" Type="Int32" />
-          <Property Name="cac_addedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="cac_addeddate" Type="DateTime" Precision="3" />
-          <Property Name="cac_modifiedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="cac_modifiedon" Type="DateTime" Precision="3" />
-          <Property Name="cac_isAllowed" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="component" Relationship="DataModel.FK_ComponentAccess_Component_Id" FromRole="component_access" ToRole="component" />
-        </EntityType>
-        <EntityType Name="component">
-          <Key>
-            <PropertyRef Name="com_key" />
-          </Key>
-          <Property Name="com_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="com_parentcomponentid" Type="Int32" />
-          <Property Name="com_module_name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_page_url" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_page_name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_page_title" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_page_description" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_form_id" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_status" Type="Boolean" Nullable="false" />
-          <Property Name="com_addedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="com_addedon" Type="DateTime" Precision="3" />
-          <Property Name="com_modifiedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="com_modifiedon" Type="DateTime" Precision="3" />
-          <Property Name="com_sortorder" Type="Int32" />
-          <Property Name="com_moduleimage" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="component_access" Relationship="DataModel.FK_ComponentAccess_Component_Id" FromRole="component" ToRole="component_access" />
-        </EntityType>
-        <Association Name="FK_ComponentAccess_Component_Id">
-          <End Type="DataModel.component" Role="component" Multiplicity="0..1" />
-          <End Type="DataModel.component_access" Role="component_access" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="component">
-              <PropertyRef Name="com_key" />
-            </Principal>
-            <Dependent Role="component_access">
-              <PropertyRef Name="cac_com_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="token">
-          <Key>
-            <PropertyRef Name="tok_key" />
-          </Key>
-          <Property Name="tok_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="tok_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="tok_phy_token" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_token_AspNetUsers" FromRole="token" ToRole="AspNetUser" />
-          <Property Name="tok_device_type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityType Name="premorbid_correspondnce">
           <Key>
             <PropertyRef Name="Id" />
@@ -6422,13 +6005,14 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <NavigationProperty Name="post_acute_care" Relationship="DataModel.FK_post_acute_care_users_AspNetUsers" FromRole="AspNetUser" ToRole="post_acute_care" />
           <NavigationProperty Name="physician_rate" Relationship="DataModel.FK_Rate_Rate" FromRole="AspNetUser" ToRole="physician_rate" />
           <NavigationProperty Name="user_schedule" Relationship="DataModel.FK_resource_scheduler_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule" />
-          <NavigationProperty Name="tokens" Relationship="DataModel.FK_token_AspNetUsers" FromRole="AspNetUser" ToRole="token" />
           <NavigationProperty Name="user_login_verify" Relationship="DataModel.FK_user_login_verify_User_Id" FromRole="AspNetUser" ToRole="user_login_verify" />
           <NavigationProperty Name="user_schedule_nhalert" Relationship="DataModel.FK_user_schedule_nhalert_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_nhalert" />
           <NavigationProperty Name="user_schedule_sleep" Relationship="DataModel.FK_user_schedule_sleep_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_sleep" />
           <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="AspNetUser" ToRole="mock_case" />
           <NavigationProperty Name="mock_case1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="AspNetUser" ToRole="mock_case" />
           <NavigationProperty Name="mock_case2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="AspNetUser" ToRole="mock_case" />
+          <Property Name="PhysicianId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="tokens" Relationship="DataModel.FK_token_AspNetUsers" FromRole="AspNetUser" ToRole="token" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
@@ -6674,18 +6258,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_token_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
-          <End Type="DataModel.token" Role="token" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="token">
-              <PropertyRef Name="tok_phy_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_user_login_verify_User_Id">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
           <End Type="DataModel.user_login_verify" Role="user_login_verify" Multiplicity="*" />
@@ -6901,15 +6473,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-
-        <EntityType Name="telecare_counters">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="counter_text" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="counter_value" Type="Int64" />
-        </EntityType>
         <EntityType Name="BCI_ReportData">
           <Key>
             <PropertyRef Name="BCI_ID" />
@@ -6964,20 +6527,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Type="String" Name="Month_Prediction" Nullable="true" MaxLength="100" />
           <Property Type="DateTime" Name="Created_Date" Nullable="true" Precision="23" />
         </ComplexType>
-        <EntityType Name="user_access">
-          <Key>
-            <PropertyRef Name="user_key" />
-          </Key>
-          <Property Name="user_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="user_role_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="user_id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="user_com_key" Type="Int32" />
-          <Property Name="user_isAllowed" Type="Boolean" Nullable="false" />
-          <Property Name="user_createddate" Type="DateTime" Precision="3" />
-          <Property Name="user_createdBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="user_updateddate" Type="DateTime" Precision="3" />
-          <Property Name="user_updatedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityType Name="view_facility_physician">
           <Key>
             <PropertyRef Name="fap_key" />
@@ -7011,6 +6560,334 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <Property Name="TIMEFROM" Type="Int64" />
           <Property Name="TIMETO" Type="Int64" />
         </EntityType>
+        <EntityType Name="case_rejection_reason">
+          <Key>
+            <PropertyRef Name="crr_key" />
+          </Key>
+          <Property Name="crr_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="crr_reason" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="crr_troubleshoot" Type="Boolean" Nullable="false" />
+          <Property Name="crr_parent_key" Type="Int32" />
+          <Property Name="crr_users" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="crr_created_on" Type="DateTime" Precision="3" />
+          <Property Name="crr_created_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="crr_modified_on" Type="DateTime" Precision="3" />
+          <Property Name="crr_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="firebase_users">
+          <Key>
+            <PropertyRef Name="frb_key" />
+          </Key>
+          <Property Name="frb_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="frb_userId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="frb_user_firebaseId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="frb_deviceTokenId" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="token">
+          <Key>
+            <PropertyRef Name="tok_key" />
+          </Key>
+          <Property Name="tok_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="tok_phy_key" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="tok_phy_token" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="tok_device_type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_token_AspNetUsers" FromRole="token" ToRole="AspNetUser" />
+        </EntityType>
+        <Association Name="FK_token_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="DataModel.token" Role="token" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="token">
+              <PropertyRef Name="tok_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="case_template_statconsult">
+          <Key>
+            <PropertyRef Name="ctt_cas_key" />
+          </Key>
+          <Property Name="ctt_cas_key" Type="Int32" Nullable="false" />
+          <Property Name="ctt_impression" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_impression_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_mechanism_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_mechanism_stroke_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_routine_consultation" Type="Boolean" Nullable="false" />
+          <Property Name="ctt_nihss_totalscore" Type="Int32" />
+          <Property Name="ctt_sign_out" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_created_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ctt_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_created_by_name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_modfied_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_modified_date" Type="DateTime" Precision="3" />
+          <Property Name="ctt_antiplatelet_therapy_recommedned" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_antiplatelet_therapy_recommedned_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_vitals_bp" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_vitals_pulse" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_vitals_blood_glucose" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_patient_family_cosulted" Type="Boolean" />
+          <Property Name="ctt_critical_care_was_provided" Type="Boolean" />
+          <Property Name="ctt_critical_care_minutes" Type="Int32" />
+          <Property Name="ctt_imaging" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_therapies" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_other_workup" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_neuro_exam" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_speech" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_language" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_face" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_facial_sensation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_visual" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_extraocular_movement" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_motor" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_sensation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_coordination" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_consented_to_tele" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_disposition" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_nihss_or_neuro" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_cheif_complaints" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ctt_exam_free_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ctt_NIHSS_comatose" Type="Int32" />
+          <Property Name="ctt_NIHSS_comatose_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_statconsult_case" FromRole="case_template_statconsult" ToRole="case" />
+        </EntityType>
+        <EntityType Name="case_template_stroke_neuro_tpa">
+          <Key>
+            <PropertyRef Name="csn_cas_key" />
+          </Key>
+          <Property Name="csn_cas_key" Type="Int32" Nullable="false" />
+          <Property Name="csn_impression" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="csn_acute_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="csn_mechanism_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="csn_mechanism_stroke_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="csn_tpa_bolus_complications" Type="Int32" />
+          <Property Name="csn_tpa_bolus_complications_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="csn_nihss_totalscore" Type="Int32" />
+          <Property Name="csn_vitals_bp" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="csn_vitals_pulse" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="csn_verbal_consent" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="csn_additional_recomendations" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="csn_created_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="csn_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="csn_created_by_name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="csn_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="csn_modfied_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="csn_modified_date" Type="DateTime" Precision="3" />
+          <Property Name="csn_comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="csn_vitals_blood_glucose" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="csn_patient_family_cosulted" Type="Boolean" />
+          <Property Name="csn_critical_care_was_provided" Type="Boolean" />
+          <Property Name="csn_critical_care_minutes" Type="Int32" />
+          <Property Name="csn_family_consent_available" Type="Boolean" />
+          <Property Name="csn_PMH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="csn_anticoagulant_use" Type="Boolean" />
+          <Property Name="csn_anticoagulant_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="csn_antiplatelet_use" Type="Boolean" />
+          <Property Name="csn_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="csn_NIHSS_comatose" Type="Int32" />
+          <Property Name="csn_NIHSS_comatose_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_stroke_neuro_tpa_case" FromRole="case_template_stroke_neuro_tpa" ToRole="case" />
+        </EntityType>
+        <EntityType Name="case_template_stroke_notpa">
+          <Key>
+            <PropertyRef Name="ctn_cas_key" />
+          </Key>
+          <Property Name="ctn_cas_key" Type="Int32" Nullable="false" />
+          <Property Name="ctn_impression" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_impression_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_mechanism_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_mechanism_stroke_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_antiplatelet_therapy_recommedned" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_antiplatelet_therapy_recommedned_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_imaging_studies_recommedned" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_imaging_studies_recommedned_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_therapies" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_nihss_totalscore" Type="Int32" />
+          <Property Name="ctn_dysphaghia_screen" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_dvt_prophylaxis" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_dvt_prophylaxis_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ctn_lipid_panel_obtained" Type="Boolean" Nullable="false" />
+          <Property Name="ctn_disposition" Type="Int32" />
+          <Property Name="ctn_sign_out" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_created_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ctn_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_created_by_name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_modfied_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_modified_date" Type="DateTime" Precision="3" />
+          <Property Name="ctn_vitals_bp" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_vitals_pulse" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_vitals_blood_glucose" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_patient_family_cosulted" Type="Boolean" />
+          <Property Name="ctn_critical_care_was_provided" Type="Boolean" />
+          <Property Name="ctn_critical_care_minutes" Type="Int32" />
+          <Property Name="ctn_family_consent_available" Type="Boolean" />
+          <Property Name="ctn_PMH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_anticoagulant_use" Type="Boolean" />
+          <Property Name="ctn_anticoagulant_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_antiplatelet_use" Type="Boolean" />
+          <Property Name="ctn_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctn_NIHSS_comatose" Type="Int32" />
+          <Property Name="ctn_NIHSS_comatose_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_stroke_notpa_case" FromRole="case_template_stroke_notpa" ToRole="case" />
+        </EntityType>
+        <EntityType Name="case_template_stroke_tpa">
+          <Key>
+            <PropertyRef Name="cts_cas_key" />
+          </Key>
+          <Property Name="cts_cas_key" Type="Int32" Nullable="false" />
+          <Property Name="cts_impression" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="cts_acute_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="cts_mechanism_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="cts_mechanism_stroke_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cts_tpa_bolus_complications" Type="Int32" />
+          <Property Name="cts_tpa_bolus_complications_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cts_nihss_totalscore" Type="Int32" />
+          <Property Name="cts_vitals_bp" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cts_vitals_pulse" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cts_verbal_consent" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="cts_created_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="cts_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="cts_created_by_name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="cts_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="cts_modfied_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="cts_modified_date" Type="DateTime" Precision="3" />
+          <Property Name="cts_comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cts_vitals_blood_glucose" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cts_patient_family_cosulted" Type="Boolean" />
+          <Property Name="cts_critical_care_was_provided" Type="Boolean" />
+          <Property Name="cts_critical_care_minutes" Type="Int32" />
+          <Property Name="cts_family_consent_available" Type="Boolean" />
+          <Property Name="cts_PMH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="cts_anticoagulant_use" Type="Boolean" />
+          <Property Name="cts_anticoagulant_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cts_antiplatelet_use" Type="Boolean" />
+          <Property Name="cts_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cts_NIHSS_comatose" Type="Int32" />
+          <Property Name="cts_NIHSS_comatose_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_stroke_tpa_case" FromRole="case_template_stroke_tpa" ToRole="case" />
+        </EntityType>
+        <EntityType Name="case_template_telestroke_notpa">
+          <Key>
+            <PropertyRef Name="ctt_cas_key" />
+          </Key>
+          <Property Name="ctt_cas_key" Type="Int32" Nullable="false" />
+          <Property Name="ctt_impression" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_impression_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_mechanism_stroke" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_mechanism_stroke_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_comment" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_routine_consultation" Type="Boolean" Nullable="false" />
+          <Property Name="ctt_nihss_totalscore" Type="Int32" />
+          <Property Name="ctt_sign_out" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_created_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ctt_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_created_by_name" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_modfied_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_modified_date" Type="DateTime" Precision="3" />
+          <Property Name="ctt_antiplatelet_therapy_recommedned" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_antiplatelet_therapy_recommedned_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_vitals_bp" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_vitals_pulse" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_vitals_blood_glucose" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_patient_family_cosulted" Type="Boolean" />
+          <Property Name="ctt_critical_care_was_provided" Type="Boolean" />
+          <Property Name="ctt_critical_care_minutes" Type="Int32" />
+          <Property Name="ctt_imaging" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_therapies" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_other_workup" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_neuro_exam" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_speech" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_language" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_face" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_facial_sensation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_visual" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_extraocular_movement" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_motor" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_sensation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_coordination" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_consented_to_tele" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_disposition" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_nihss_or_neuro" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_cheif_complaints" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ctt_exam_free_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ctt_family_consent_available" Type="Boolean" />
+          <Property Name="ctt_PMH" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_anticoagulant_use" Type="Boolean" />
+          <Property Name="ctt_anticoagulant_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_antiplatelet_use" Type="Boolean" />
+          <Property Name="ctt_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ctt_NIHSS_comatose" Type="Int32" />
+          <Property Name="ctt_NIHSS_comatose_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="case" Relationship="DataModel.FK_case_template_telestroke_notpa_case" FromRole="case_template_telestroke_notpa" ToRole="case" />
+        </EntityType>
+        <Association Name="FK_case_template_statconsult_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="1" />
+          <End Type="DataModel.case_template_statconsult" Role="case_template_statconsult" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="case">
+              <PropertyRef Name="cas_key" />
+            </Principal>
+            <Dependent Role="case_template_statconsult">
+              <PropertyRef Name="ctt_cas_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_template_stroke_neuro_tpa_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="1" />
+          <End Type="DataModel.case_template_stroke_neuro_tpa" Role="case_template_stroke_neuro_tpa" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="case">
+              <PropertyRef Name="cas_key" />
+            </Principal>
+            <Dependent Role="case_template_stroke_neuro_tpa">
+              <PropertyRef Name="csn_cas_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_template_stroke_notpa_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="1" />
+          <End Type="DataModel.case_template_stroke_notpa" Role="case_template_stroke_notpa" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="case">
+              <PropertyRef Name="cas_key" />
+            </Principal>
+            <Dependent Role="case_template_stroke_notpa">
+              <PropertyRef Name="ctn_cas_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_template_stroke_tpa_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.case_template_stroke_tpa" Role="case_template_stroke_tpa" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="case">
+              <PropertyRef Name="cas_key" />
+            </Principal>
+            <Dependent Role="case_template_stroke_tpa">
+              <PropertyRef Name="cts_cas_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_template_telestroke_notpa_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="1" />
+          <End Type="DataModel.case_template_telestroke_notpa" Role="case_template_telestroke_notpa" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="case">
+              <PropertyRef Name="cas_key" />
+            </Principal>
+            <Dependent Role="case_template_telestroke_notpa">
+              <PropertyRef Name="ctt_cas_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
 
 
         </Schema>
@@ -7246,117 +7123,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
                 <ScalarProperty Name="crt_template_html" ColumnName="crt_template_html" />
                 <ScalarProperty Name="crt_cas_key" ColumnName="crt_cas_key" />
                 <ScalarProperty Name="crt_key" ColumnName="crt_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="case_template_stroke_neuro_tpa">
-            <EntityTypeMapping TypeName="DataModel.case_template_stroke_neuro_tpa">
-              <MappingFragment StoreEntitySet="case_template_stroke_neuro_tpa">
-                <ScalarProperty Name="csn_antiplatelet_use_text" ColumnName="csn_antiplatelet_use_text" />
-                <ScalarProperty Name="csn_antiplatelet_use" ColumnName="csn_antiplatelet_use" />
-                <ScalarProperty Name="csn_anticoagulant_use_text" ColumnName="csn_anticoagulant_use_text" />
-                <ScalarProperty Name="csn_anticoagulant_use" ColumnName="csn_anticoagulant_use" />
-                <ScalarProperty Name="csn_PMH" ColumnName="csn_PMH" />
-                <ScalarProperty Name="csn_family_consent_available" ColumnName="csn_family_consent_available" />
-                <ScalarProperty Name="csn_critical_care_minutes" ColumnName="csn_critical_care_minutes" />
-                <ScalarProperty Name="csn_critical_care_was_provided" ColumnName="csn_critical_care_was_provided" />
-                <ScalarProperty Name="csn_patient_family_cosulted" ColumnName="csn_patient_family_cosulted" />
-                <ScalarProperty Name="csn_vitals_blood_glucose" ColumnName="csn_vitals_blood_glucose" />
-                <ScalarProperty Name="csn_comment" ColumnName="csn_comment" />
-                <ScalarProperty Name="csn_modified_date" ColumnName="csn_modified_date" />
-                <ScalarProperty Name="csn_modfied_by_name" ColumnName="csn_modfied_by_name" />
-                <ScalarProperty Name="csn_modified_by" ColumnName="csn_modified_by" />
-                <ScalarProperty Name="csn_created_by_name" ColumnName="csn_created_by_name" />
-                <ScalarProperty Name="csn_created_by" ColumnName="csn_created_by" />
-                <ScalarProperty Name="csn_created_date" ColumnName="csn_created_date" />
-                <ScalarProperty Name="csn_additional_recomendations" ColumnName="csn_additional_recomendations" />
-                <ScalarProperty Name="csn_verbal_consent" ColumnName="csn_verbal_consent" />
-                <ScalarProperty Name="csn_vitals_pulse" ColumnName="csn_vitals_pulse" />
-                <ScalarProperty Name="csn_vitals_bp" ColumnName="csn_vitals_bp" />
-                <ScalarProperty Name="csn_nihss_totalscore" ColumnName="csn_nihss_totalscore" />
-                <ScalarProperty Name="csn_tpa_bolus_complications_text" ColumnName="csn_tpa_bolus_complications_text" />
-                <ScalarProperty Name="csn_tpa_bolus_complications" ColumnName="csn_tpa_bolus_complications" />
-                <ScalarProperty Name="csn_mechanism_stroke_text" ColumnName="csn_mechanism_stroke_text" />
-                <ScalarProperty Name="csn_mechanism_stroke" ColumnName="csn_mechanism_stroke" />
-                <ScalarProperty Name="csn_acute_stroke" ColumnName="csn_acute_stroke" />
-                <ScalarProperty Name="csn_impression" ColumnName="csn_impression" />
-                <ScalarProperty Name="csn_cas_key" ColumnName="csn_cas_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="case_template_stroke_notpa">
-            <EntityTypeMapping TypeName="DataModel.case_template_stroke_notpa">
-              <MappingFragment StoreEntitySet="case_template_stroke_notpa">
-                <ScalarProperty Name="ctn_antiplatelet_use_text" ColumnName="ctn_antiplatelet_use_text" />
-                <ScalarProperty Name="ctn_antiplatelet_use" ColumnName="ctn_antiplatelet_use" />
-                <ScalarProperty Name="ctn_anticoagulant_use_text" ColumnName="ctn_anticoagulant_use_text" />
-                <ScalarProperty Name="ctn_anticoagulant_use" ColumnName="ctn_anticoagulant_use" />
-                <ScalarProperty Name="ctn_PMH" ColumnName="ctn_PMH" />
-                <ScalarProperty Name="ctn_family_consent_available" ColumnName="ctn_family_consent_available" />
-                <ScalarProperty Name="ctn_critical_care_minutes" ColumnName="ctn_critical_care_minutes" />
-                <ScalarProperty Name="ctn_critical_care_was_provided" ColumnName="ctn_critical_care_was_provided" />
-                <ScalarProperty Name="ctn_patient_family_cosulted" ColumnName="ctn_patient_family_cosulted" />
-                <ScalarProperty Name="ctn_vitals_blood_glucose" ColumnName="ctn_vitals_blood_glucose" />
-                <ScalarProperty Name="ctn_vitals_pulse" ColumnName="ctn_vitals_pulse" />
-                <ScalarProperty Name="ctn_vitals_bp" ColumnName="ctn_vitals_bp" />
-                <ScalarProperty Name="ctn_modified_date" ColumnName="ctn_modified_date" />
-                <ScalarProperty Name="ctn_modfied_by_name" ColumnName="ctn_modfied_by_name" />
-                <ScalarProperty Name="ctn_modified_by" ColumnName="ctn_modified_by" />
-                <ScalarProperty Name="ctn_created_by_name" ColumnName="ctn_created_by_name" />
-                <ScalarProperty Name="ctn_created_by" ColumnName="ctn_created_by" />
-                <ScalarProperty Name="ctn_created_date" ColumnName="ctn_created_date" />
-                <ScalarProperty Name="ctn_sign_out" ColumnName="ctn_sign_out" />
-                <ScalarProperty Name="ctn_disposition" ColumnName="ctn_disposition" />
-                <ScalarProperty Name="ctn_lipid_panel_obtained" ColumnName="ctn_lipid_panel_obtained" />
-                <ScalarProperty Name="ctn_dvt_prophylaxis_text" ColumnName="ctn_dvt_prophylaxis_text" />
-                <ScalarProperty Name="ctn_dvt_prophylaxis" ColumnName="ctn_dvt_prophylaxis" />
-                <ScalarProperty Name="ctn_dysphaghia_screen" ColumnName="ctn_dysphaghia_screen" />
-                <ScalarProperty Name="ctn_nihss_totalscore" ColumnName="ctn_nihss_totalscore" />
-                <ScalarProperty Name="ctn_therapies" ColumnName="ctn_therapies" />
-                <ScalarProperty Name="ctn_imaging_studies_recommedned_text" ColumnName="ctn_imaging_studies_recommedned_text" />
-                <ScalarProperty Name="ctn_imaging_studies_recommedned" ColumnName="ctn_imaging_studies_recommedned" />
-                <ScalarProperty Name="ctn_antiplatelet_therapy_recommedned_text" ColumnName="ctn_antiplatelet_therapy_recommedned_text" />
-                <ScalarProperty Name="ctn_antiplatelet_therapy_recommedned" ColumnName="ctn_antiplatelet_therapy_recommedned" />
-                <ScalarProperty Name="ctn_comment" ColumnName="ctn_comment" />
-                <ScalarProperty Name="ctn_mechanism_stroke_text" ColumnName="ctn_mechanism_stroke_text" />
-                <ScalarProperty Name="ctn_mechanism_stroke" ColumnName="ctn_mechanism_stroke" />
-                <ScalarProperty Name="ctn_impression_text" ColumnName="ctn_impression_text" />
-                <ScalarProperty Name="ctn_impression" ColumnName="ctn_impression" />
-                <ScalarProperty Name="ctn_cas_key" ColumnName="ctn_cas_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="case_template_stroke_tpa">
-            <EntityTypeMapping TypeName="DataModel.case_template_stroke_tpa">
-              <MappingFragment StoreEntitySet="case_template_stroke_tpa">
-                <ScalarProperty Name="cts_antiplatelet_use_text" ColumnName="cts_antiplatelet_use_text" />
-                <ScalarProperty Name="cts_antiplatelet_use" ColumnName="cts_antiplatelet_use" />
-                <ScalarProperty Name="cts_anticoagulant_use_text" ColumnName="cts_anticoagulant_use_text" />
-                <ScalarProperty Name="cts_anticoagulant_use" ColumnName="cts_anticoagulant_use" />
-                <ScalarProperty Name="cts_PMH" ColumnName="cts_PMH" />
-                <ScalarProperty Name="cts_family_consent_available" ColumnName="cts_family_consent_available" />
-                <ScalarProperty Name="cts_critical_care_minutes" ColumnName="cts_critical_care_minutes" />
-                <ScalarProperty Name="cts_critical_care_was_provided" ColumnName="cts_critical_care_was_provided" />
-                <ScalarProperty Name="cts_patient_family_cosulted" ColumnName="cts_patient_family_cosulted" />
-                <ScalarProperty Name="cts_vitals_blood_glucose" ColumnName="cts_vitals_blood_glucose" />
-                <ScalarProperty Name="cts_comment" ColumnName="cts_comment" />
-                <ScalarProperty Name="cts_modified_date" ColumnName="cts_modified_date" />
-                <ScalarProperty Name="cts_modfied_by_name" ColumnName="cts_modfied_by_name" />
-                <ScalarProperty Name="cts_modified_by" ColumnName="cts_modified_by" />
-                <ScalarProperty Name="cts_created_by_name" ColumnName="cts_created_by_name" />
-                <ScalarProperty Name="cts_created_by" ColumnName="cts_created_by" />
-                <ScalarProperty Name="cts_created_date" ColumnName="cts_created_date" />
-                <ScalarProperty Name="cts_verbal_consent" ColumnName="cts_verbal_consent" />
-                <ScalarProperty Name="cts_vitals_pulse" ColumnName="cts_vitals_pulse" />
-                <ScalarProperty Name="cts_vitals_bp" ColumnName="cts_vitals_bp" />
-                <ScalarProperty Name="cts_nihss_totalscore" ColumnName="cts_nihss_totalscore" />
-                <ScalarProperty Name="cts_tpa_bolus_complications_text" ColumnName="cts_tpa_bolus_complications_text" />
-                <ScalarProperty Name="cts_tpa_bolus_complications" ColumnName="cts_tpa_bolus_complications" />
-                <ScalarProperty Name="cts_mechanism_stroke_text" ColumnName="cts_mechanism_stroke_text" />
-                <ScalarProperty Name="cts_mechanism_stroke" ColumnName="cts_mechanism_stroke" />
-                <ScalarProperty Name="cts_acute_stroke" ColumnName="cts_acute_stroke" />
-                <ScalarProperty Name="cts_impression" ColumnName="cts_impression" />
-                <ScalarProperty Name="cts_cas_key" ColumnName="cts_cas_key" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -7966,59 +7732,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="case_template_telestroke_notpa">
-            <EntityTypeMapping TypeName="DataModel.case_template_telestroke_notpa">
-              <MappingFragment StoreEntitySet="case_template_telestroke_notpa">
-                <ScalarProperty Name="ctt_antiplatelet_use_text" ColumnName="ctt_antiplatelet_use_text" />
-                <ScalarProperty Name="ctt_antiplatelet_use" ColumnName="ctt_antiplatelet_use" />
-                <ScalarProperty Name="ctt_anticoagulant_use_text" ColumnName="ctt_anticoagulant_use_text" />
-                <ScalarProperty Name="ctt_anticoagulant_use" ColumnName="ctt_anticoagulant_use" />
-                <ScalarProperty Name="ctt_PMH" ColumnName="ctt_PMH" />
-                <ScalarProperty Name="ctt_family_consent_available" ColumnName="ctt_family_consent_available" />
-                <ScalarProperty Name="ctt_exam_free_text" ColumnName="ctt_exam_free_text" />
-                <ScalarProperty Name="ctt_cheif_complaints" ColumnName="ctt_cheif_complaints" />
-                <ScalarProperty Name="ctt_nihss_or_neuro" ColumnName="ctt_nihss_or_neuro" />
-                <ScalarProperty Name="ctt_disposition" ColumnName="ctt_disposition" />
-                <ScalarProperty Name="ctt_consented_to_tele" ColumnName="ctt_consented_to_tele" />
-                <ScalarProperty Name="ctt_coordination" ColumnName="ctt_coordination" />
-                <ScalarProperty Name="ctt_sensation" ColumnName="ctt_sensation" />
-                <ScalarProperty Name="ctt_motor" ColumnName="ctt_motor" />
-                <ScalarProperty Name="ctt_extraocular_movement" ColumnName="ctt_extraocular_movement" />
-                <ScalarProperty Name="ctt_visual" ColumnName="ctt_visual" />
-                <ScalarProperty Name="ctt_facial_sensation" ColumnName="ctt_facial_sensation" />
-                <ScalarProperty Name="ctt_face" ColumnName="ctt_face" />
-                <ScalarProperty Name="ctt_language" ColumnName="ctt_language" />
-                <ScalarProperty Name="ctt_speech" ColumnName="ctt_speech" />
-                <ScalarProperty Name="ctt_neuro_exam" ColumnName="ctt_neuro_exam" />
-                <ScalarProperty Name="ctt_other_workup" ColumnName="ctt_other_workup" />
-                <ScalarProperty Name="ctt_therapies" ColumnName="ctt_therapies" />
-                <ScalarProperty Name="ctt_imaging" ColumnName="ctt_imaging" />
-                <ScalarProperty Name="ctt_critical_care_minutes" ColumnName="ctt_critical_care_minutes" />
-                <ScalarProperty Name="ctt_critical_care_was_provided" ColumnName="ctt_critical_care_was_provided" />
-                <ScalarProperty Name="ctt_patient_family_cosulted" ColumnName="ctt_patient_family_cosulted" />
-                <ScalarProperty Name="ctt_vitals_blood_glucose" ColumnName="ctt_vitals_blood_glucose" />
-                <ScalarProperty Name="ctt_vitals_pulse" ColumnName="ctt_vitals_pulse" />
-                <ScalarProperty Name="ctt_vitals_bp" ColumnName="ctt_vitals_bp" />
-                <ScalarProperty Name="ctt_antiplatelet_therapy_recommedned_text" ColumnName="ctt_antiplatelet_therapy_recommedned_text" />
-                <ScalarProperty Name="ctt_antiplatelet_therapy_recommedned" ColumnName="ctt_antiplatelet_therapy_recommedned" />
-                <ScalarProperty Name="ctt_modified_date" ColumnName="ctt_modified_date" />
-                <ScalarProperty Name="ctt_modfied_by_name" ColumnName="ctt_modfied_by_name" />
-                <ScalarProperty Name="ctt_modified_by" ColumnName="ctt_modified_by" />
-                <ScalarProperty Name="ctt_created_by_name" ColumnName="ctt_created_by_name" />
-                <ScalarProperty Name="ctt_created_by" ColumnName="ctt_created_by" />
-                <ScalarProperty Name="ctt_created_date" ColumnName="ctt_created_date" />
-                <ScalarProperty Name="ctt_sign_out" ColumnName="ctt_sign_out" />
-                <ScalarProperty Name="ctt_nihss_totalscore" ColumnName="ctt_nihss_totalscore" />
-                <ScalarProperty Name="ctt_routine_consultation" ColumnName="ctt_routine_consultation" />
-                <ScalarProperty Name="ctt_comment" ColumnName="ctt_comment" />
-                <ScalarProperty Name="ctt_mechanism_stroke_text" ColumnName="ctt_mechanism_stroke_text" />
-                <ScalarProperty Name="ctt_mechanism_stroke" ColumnName="ctt_mechanism_stroke" />
-                <ScalarProperty Name="ctt_impression_text" ColumnName="ctt_impression_text" />
-                <ScalarProperty Name="ctt_impression" ColumnName="ctt_impression" />
-                <ScalarProperty Name="ctt_cas_key" ColumnName="ctt_cas_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="physician_holiday_rate">
             <EntityTypeMapping TypeName="DataModel.physician_holiday_rate">
               <MappingFragment StoreEntitySet="physician_holiday_rate">
@@ -8116,53 +7829,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
                 <ScalarProperty Name="qag_time_frame" ColumnName="qag_time_frame" />
                 <ScalarProperty Name="qag_fac_key" ColumnName="qag_fac_key" />
                 <ScalarProperty Name="qag_key" ColumnName="qag_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="case_template_statconsult">
-            <EntityTypeMapping TypeName="DataModel.case_template_statconsult">
-              <MappingFragment StoreEntitySet="case_template_statconsult">
-                <ScalarProperty Name="ctt_exam_free_text" ColumnName="ctt_exam_free_text" />
-                <ScalarProperty Name="ctt_cheif_complaints" ColumnName="ctt_cheif_complaints" />
-                <ScalarProperty Name="ctt_nihss_or_neuro" ColumnName="ctt_nihss_or_neuro" />
-                <ScalarProperty Name="ctt_disposition" ColumnName="ctt_disposition" />
-                <ScalarProperty Name="ctt_consented_to_tele" ColumnName="ctt_consented_to_tele" />
-                <ScalarProperty Name="ctt_coordination" ColumnName="ctt_coordination" />
-                <ScalarProperty Name="ctt_sensation" ColumnName="ctt_sensation" />
-                <ScalarProperty Name="ctt_motor" ColumnName="ctt_motor" />
-                <ScalarProperty Name="ctt_extraocular_movement" ColumnName="ctt_extraocular_movement" />
-                <ScalarProperty Name="ctt_visual" ColumnName="ctt_visual" />
-                <ScalarProperty Name="ctt_facial_sensation" ColumnName="ctt_facial_sensation" />
-                <ScalarProperty Name="ctt_face" ColumnName="ctt_face" />
-                <ScalarProperty Name="ctt_language" ColumnName="ctt_language" />
-                <ScalarProperty Name="ctt_speech" ColumnName="ctt_speech" />
-                <ScalarProperty Name="ctt_neuro_exam" ColumnName="ctt_neuro_exam" />
-                <ScalarProperty Name="ctt_other_workup" ColumnName="ctt_other_workup" />
-                <ScalarProperty Name="ctt_therapies" ColumnName="ctt_therapies" />
-                <ScalarProperty Name="ctt_imaging" ColumnName="ctt_imaging" />
-                <ScalarProperty Name="ctt_critical_care_minutes" ColumnName="ctt_critical_care_minutes" />
-                <ScalarProperty Name="ctt_critical_care_was_provided" ColumnName="ctt_critical_care_was_provided" />
-                <ScalarProperty Name="ctt_patient_family_cosulted" ColumnName="ctt_patient_family_cosulted" />
-                <ScalarProperty Name="ctt_vitals_blood_glucose" ColumnName="ctt_vitals_blood_glucose" />
-                <ScalarProperty Name="ctt_vitals_pulse" ColumnName="ctt_vitals_pulse" />
-                <ScalarProperty Name="ctt_vitals_bp" ColumnName="ctt_vitals_bp" />
-                <ScalarProperty Name="ctt_antiplatelet_therapy_recommedned_text" ColumnName="ctt_antiplatelet_therapy_recommedned_text" />
-                <ScalarProperty Name="ctt_antiplatelet_therapy_recommedned" ColumnName="ctt_antiplatelet_therapy_recommedned" />
-                <ScalarProperty Name="ctt_modified_date" ColumnName="ctt_modified_date" />
-                <ScalarProperty Name="ctt_modfied_by_name" ColumnName="ctt_modfied_by_name" />
-                <ScalarProperty Name="ctt_modified_by" ColumnName="ctt_modified_by" />
-                <ScalarProperty Name="ctt_created_by_name" ColumnName="ctt_created_by_name" />
-                <ScalarProperty Name="ctt_created_by" ColumnName="ctt_created_by" />
-                <ScalarProperty Name="ctt_created_date" ColumnName="ctt_created_date" />
-                <ScalarProperty Name="ctt_sign_out" ColumnName="ctt_sign_out" />
-                <ScalarProperty Name="ctt_nihss_totalscore" ColumnName="ctt_nihss_totalscore" />
-                <ScalarProperty Name="ctt_routine_consultation" ColumnName="ctt_routine_consultation" />
-                <ScalarProperty Name="ctt_comment" ColumnName="ctt_comment" />
-                <ScalarProperty Name="ctt_mechanism_stroke_text" ColumnName="ctt_mechanism_stroke_text" />
-                <ScalarProperty Name="ctt_mechanism_stroke" ColumnName="ctt_mechanism_stroke" />
-                <ScalarProperty Name="ctt_impression_text" ColumnName="ctt_impression_text" />
-                <ScalarProperty Name="ctt_impression" ColumnName="ctt_impression" />
-                <ScalarProperty Name="ctt_cas_key" ColumnName="ctt_cas_key" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -8331,6 +7997,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySetMapping Name="cases">
             <EntityTypeMapping TypeName="DataModel.case">
               <MappingFragment StoreEntitySet="case">
+                <ScalarProperty Name="cas_metric_wakeup_stroke" ColumnName="cas_metric_wakeup_stroke" />
                 <ScalarProperty Name="cas_premorbid_completed_date" ColumnName="cas_premorbid_completed_date" />
                 <ScalarProperty Name="cas_premorbid_completed_by" ColumnName="cas_premorbid_completed_by" />
                 <ScalarProperty Name="cas_premorbid_symptoms_text" ColumnName="cas_premorbid_symptoms_text" />
@@ -8797,6 +8464,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySetMapping Name="application_setting">
             <EntityTypeMapping TypeName="DataModel.application_setting">
               <MappingFragment StoreEntitySet="application_setting">
+                <ScalarProperty Name="aps_enable_pending_cases_notifications" ColumnName="aps_enable_pending_cases_notifications" />
                 <ScalarProperty Name="aps_enable_logout_from_other_devices" ColumnName="aps_enable_logout_from_other_devices" />
                 <ScalarProperty Name="aps_two_factor_code_expiry_timeout_in_minutes" ColumnName="aps_two_factor_code_expiry_timeout_in_minutes" />
                 <ScalarProperty Name="aps_session_timeout_in_minutes" ColumnName="aps_session_timeout_in_minutes" />
@@ -8946,31 +8614,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="case_rejection_reason">
-            <EntityTypeMapping TypeName="DataModel.case_rejection_reason">
-              <MappingFragment StoreEntitySet="case_rejection_reason">
-                <ScalarProperty Name="crr_modified_by" ColumnName="crr_modified_by" />
-                <ScalarProperty Name="crr_modified_on" ColumnName="crr_modified_on" />
-                <ScalarProperty Name="crr_created_by" ColumnName="crr_created_by" />
-                <ScalarProperty Name="crr_created_on" ColumnName="crr_created_on" />
-                <ScalarProperty Name="crr_users" ColumnName="crr_users" />
-                <ScalarProperty Name="crr_parent_key" ColumnName="crr_parent_key" />
-                <ScalarProperty Name="crr_troubleshoot" ColumnName="crr_troubleshoot" />
-                <ScalarProperty Name="crr_reason" ColumnName="crr_reason" />
-                <ScalarProperty Name="crr_key" ColumnName="crr_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="firebase_users">
-            <EntityTypeMapping TypeName="DataModel.firebase_users">
-              <MappingFragment StoreEntitySet="firebase_users">
-                <ScalarProperty Name="frb_deviceTokenId" ColumnName="frb_deviceTokenId" />
-                <ScalarProperty Name="frb_user_firebaseId" ColumnName="frb_user_firebaseId" />
-                <ScalarProperty Name="frb_userId" ColumnName="frb_userId" />
-                <ScalarProperty Name="frb_key" ColumnName="frb_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="sp_getMenuAccess1" FunctionName="DataModel.Store.sp_getMenuAccess">
             <ResultMapping>
               <ComplexTypeMapping TypeName="DataModel.sp_getMenuAccess1_Result">
@@ -8985,51 +8628,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="component_access">
-            <EntityTypeMapping TypeName="DataModel.component_access">
-              <MappingFragment StoreEntitySet="component_access">
-                <ScalarProperty Name="cac_isAllowed" ColumnName="cac_isAllowed" />
-                <ScalarProperty Name="cac_modifiedon" ColumnName="cac_modifiedon" />
-                <ScalarProperty Name="cac_modifiedby" ColumnName="cac_modifiedby" />
-                <ScalarProperty Name="cac_addeddate" ColumnName="cac_addeddate" />
-                <ScalarProperty Name="cac_addedby" ColumnName="cac_addedby" />
-                <ScalarProperty Name="cac_com_key" ColumnName="cac_com_key" />
-                <ScalarProperty Name="cac_roleid" ColumnName="cac_roleid" />
-                <ScalarProperty Name="cac_key" ColumnName="cac_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="components">
-            <EntityTypeMapping TypeName="DataModel.component">
-              <MappingFragment StoreEntitySet="components">
-                <ScalarProperty Name="com_moduleimage" ColumnName="com_moduleimage" />
-                <ScalarProperty Name="com_sortorder" ColumnName="com_sortorder" />
-                <ScalarProperty Name="com_modifiedon" ColumnName="com_modifiedon" />
-                <ScalarProperty Name="com_modifiedby" ColumnName="com_modifiedby" />
-                <ScalarProperty Name="com_addedon" ColumnName="com_addedon" />
-                <ScalarProperty Name="com_addedby" ColumnName="com_addedby" />
-                <ScalarProperty Name="com_status" ColumnName="com_status" />
-                <ScalarProperty Name="com_form_id" ColumnName="com_form_id" />
-                <ScalarProperty Name="com_page_description" ColumnName="com_page_description" />
-                <ScalarProperty Name="com_page_title" ColumnName="com_page_title" />
-                <ScalarProperty Name="com_page_name" ColumnName="com_page_name" />
-                <ScalarProperty Name="com_page_url" ColumnName="com_page_url" />
-                <ScalarProperty Name="com_module_name" ColumnName="com_module_name" />
-                <ScalarProperty Name="com_parentcomponentid" ColumnName="com_parentcomponentid" />
-                <ScalarProperty Name="com_key" ColumnName="com_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="tokens">
-            <EntityTypeMapping TypeName="DataModel.token">
-              <MappingFragment StoreEntitySet="token">
-                <ScalarProperty Name="tok_device_type" ColumnName="tok_device_type" />
-                <ScalarProperty Name="tok_phy_token" ColumnName="tok_phy_token" />
-                <ScalarProperty Name="tok_phy_key" ColumnName="tok_phy_key" />
-                <ScalarProperty Name="tok_key" ColumnName="tok_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="premorbid_correspondnce">
             <EntityTypeMapping TypeName="DataModel.premorbid_correspondnce">
               <MappingFragment StoreEntitySet="premorbid_correspondnce">
@@ -9052,6 +8650,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="DataModel.AspNetUser">
               <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
                 <ScalarProperty Name="CodeExpiryTime" ColumnName="CodeExpiryTime" />
                 <ScalarProperty Name="TwoFactVerifyCode" ColumnName="TwoFactVerifyCode" />
                 <ScalarProperty Name="IsTwoFactVerified" ColumnName="IsTwoFactVerified" />
@@ -9234,16 +8833,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-
-          <EntitySetMapping Name="telecare_counters">
-            <EntityTypeMapping TypeName="DataModel.telecare_counters">
-              <MappingFragment StoreEntitySet="telecare_counters">
-                <ScalarProperty Name="counter_value" ColumnName="counter_value" />
-                <ScalarProperty Name="counter_text" ColumnName="counter_text" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="BCI_ReportData">
             <EntityTypeMapping TypeName="DataModel.BCI_ReportData">
               <MappingFragment StoreEntitySet="BCI_ReportData">
@@ -9320,21 +8909,6 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <EntitySetMapping Name="user_access">
-            <EntityTypeMapping TypeName="DataModel.user_access">
-              <MappingFragment StoreEntitySet="user_access">
-                <ScalarProperty Name="user_updatedBy" ColumnName="user_updatedBy" />
-                <ScalarProperty Name="user_updateddate" ColumnName="user_updateddate" />
-                <ScalarProperty Name="user_createdBy" ColumnName="user_createdBy" />
-                <ScalarProperty Name="user_createddate" ColumnName="user_createddate" />
-                <ScalarProperty Name="user_isAllowed" ColumnName="user_isAllowed" />
-                <ScalarProperty Name="user_com_key" ColumnName="user_com_key" />
-                <ScalarProperty Name="user_id" ColumnName="user_id" />
-                <ScalarProperty Name="user_role_key" ColumnName="user_role_key" />
-                <ScalarProperty Name="user_key" ColumnName="user_key" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="view_facility_physician">
             <EntityTypeMapping TypeName="DataModel.view_facility_physician">
               <MappingFragment StoreEntitySet="view_facility_physician">
@@ -9358,6 +8932,262 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.view_user_schedule' does 
                 <ScalarProperty Name="IsStrokeAlert" ColumnName="IsStrokeAlert" />
                 <ScalarProperty Name="uss_user_id" ColumnName="uss_user_id" />
                 <ScalarProperty Name="uss_key" ColumnName="uss_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="case_rejection_reason">
+            <EntityTypeMapping TypeName="DataModel.case_rejection_reason">
+              <MappingFragment StoreEntitySet="case_rejection_reason">
+                <ScalarProperty Name="crr_modified_by" ColumnName="crr_modified_by" />
+                <ScalarProperty Name="crr_modified_on" ColumnName="crr_modified_on" />
+                <ScalarProperty Name="crr_created_by" ColumnName="crr_created_by" />
+                <ScalarProperty Name="crr_created_on" ColumnName="crr_created_on" />
+                <ScalarProperty Name="crr_users" ColumnName="crr_users" />
+                <ScalarProperty Name="crr_parent_key" ColumnName="crr_parent_key" />
+                <ScalarProperty Name="crr_troubleshoot" ColumnName="crr_troubleshoot" />
+                <ScalarProperty Name="crr_reason" ColumnName="crr_reason" />
+                <ScalarProperty Name="crr_key" ColumnName="crr_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="firebase_users">
+            <EntityTypeMapping TypeName="DataModel.firebase_users">
+              <MappingFragment StoreEntitySet="firebase_users">
+                <ScalarProperty Name="frb_deviceTokenId" ColumnName="frb_deviceTokenId" />
+                <ScalarProperty Name="frb_user_firebaseId" ColumnName="frb_user_firebaseId" />
+                <ScalarProperty Name="frb_userId" ColumnName="frb_userId" />
+                <ScalarProperty Name="frb_key" ColumnName="frb_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tokens">
+            <EntityTypeMapping TypeName="DataModel.token">
+              <MappingFragment StoreEntitySet="token">
+                <ScalarProperty Name="tok_device_type" ColumnName="tok_device_type" />
+                <ScalarProperty Name="tok_phy_token" ColumnName="tok_phy_token" />
+                <ScalarProperty Name="tok_phy_key" ColumnName="tok_phy_key" />
+                <ScalarProperty Name="tok_key" ColumnName="tok_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="case_template_statconsult">
+            <EntityTypeMapping TypeName="DataModel.case_template_statconsult">
+              <MappingFragment StoreEntitySet="case_template_statconsult">
+                <ScalarProperty Name="ctt_NIHSS_comatose_text" ColumnName="ctt_NIHSS_comatose_text" />
+                <ScalarProperty Name="ctt_NIHSS_comatose" ColumnName="ctt_NIHSS_comatose" />
+                <ScalarProperty Name="ctt_exam_free_text" ColumnName="ctt_exam_free_text" />
+                <ScalarProperty Name="ctt_cheif_complaints" ColumnName="ctt_cheif_complaints" />
+                <ScalarProperty Name="ctt_nihss_or_neuro" ColumnName="ctt_nihss_or_neuro" />
+                <ScalarProperty Name="ctt_disposition" ColumnName="ctt_disposition" />
+                <ScalarProperty Name="ctt_consented_to_tele" ColumnName="ctt_consented_to_tele" />
+                <ScalarProperty Name="ctt_coordination" ColumnName="ctt_coordination" />
+                <ScalarProperty Name="ctt_sensation" ColumnName="ctt_sensation" />
+                <ScalarProperty Name="ctt_motor" ColumnName="ctt_motor" />
+                <ScalarProperty Name="ctt_extraocular_movement" ColumnName="ctt_extraocular_movement" />
+                <ScalarProperty Name="ctt_visual" ColumnName="ctt_visual" />
+                <ScalarProperty Name="ctt_facial_sensation" ColumnName="ctt_facial_sensation" />
+                <ScalarProperty Name="ctt_face" ColumnName="ctt_face" />
+                <ScalarProperty Name="ctt_language" ColumnName="ctt_language" />
+                <ScalarProperty Name="ctt_speech" ColumnName="ctt_speech" />
+                <ScalarProperty Name="ctt_neuro_exam" ColumnName="ctt_neuro_exam" />
+                <ScalarProperty Name="ctt_other_workup" ColumnName="ctt_other_workup" />
+                <ScalarProperty Name="ctt_therapies" ColumnName="ctt_therapies" />
+                <ScalarProperty Name="ctt_imaging" ColumnName="ctt_imaging" />
+                <ScalarProperty Name="ctt_critical_care_minutes" ColumnName="ctt_critical_care_minutes" />
+                <ScalarProperty Name="ctt_critical_care_was_provided" ColumnName="ctt_critical_care_was_provided" />
+                <ScalarProperty Name="ctt_patient_family_cosulted" ColumnName="ctt_patient_family_cosulted" />
+                <ScalarProperty Name="ctt_vitals_blood_glucose" ColumnName="ctt_vitals_blood_glucose" />
+                <ScalarProperty Name="ctt_vitals_pulse" ColumnName="ctt_vitals_pulse" />
+                <ScalarProperty Name="ctt_vitals_bp" ColumnName="ctt_vitals_bp" />
+                <ScalarProperty Name="ctt_antiplatelet_therapy_recommedned_text" ColumnName="ctt_antiplatelet_therapy_recommedned_text" />
+                <ScalarProperty Name="ctt_antiplatelet_therapy_recommedned" ColumnName="ctt_antiplatelet_therapy_recommedned" />
+                <ScalarProperty Name="ctt_modified_date" ColumnName="ctt_modified_date" />
+                <ScalarProperty Name="ctt_modfied_by_name" ColumnName="ctt_modfied_by_name" />
+                <ScalarProperty Name="ctt_modified_by" ColumnName="ctt_modified_by" />
+                <ScalarProperty Name="ctt_created_by_name" ColumnName="ctt_created_by_name" />
+                <ScalarProperty Name="ctt_created_by" ColumnName="ctt_created_by" />
+                <ScalarProperty Name="ctt_created_date" ColumnName="ctt_created_date" />
+                <ScalarProperty Name="ctt_sign_out" ColumnName="ctt_sign_out" />
+                <ScalarProperty Name="ctt_nihss_totalscore" ColumnName="ctt_nihss_totalscore" />
+                <ScalarProperty Name="ctt_routine_consultation" ColumnName="ctt_routine_consultation" />
+                <ScalarProperty Name="ctt_comment" ColumnName="ctt_comment" />
+                <ScalarProperty Name="ctt_mechanism_stroke_text" ColumnName="ctt_mechanism_stroke_text" />
+                <ScalarProperty Name="ctt_mechanism_stroke" ColumnName="ctt_mechanism_stroke" />
+                <ScalarProperty Name="ctt_impression_text" ColumnName="ctt_impression_text" />
+                <ScalarProperty Name="ctt_impression" ColumnName="ctt_impression" />
+                <ScalarProperty Name="ctt_cas_key" ColumnName="ctt_cas_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="case_template_stroke_neuro_tpa">
+            <EntityTypeMapping TypeName="DataModel.case_template_stroke_neuro_tpa">
+              <MappingFragment StoreEntitySet="case_template_stroke_neuro_tpa">
+                <ScalarProperty Name="csn_NIHSS_comatose_text" ColumnName="csn_NIHSS_comatose_text" />
+                <ScalarProperty Name="csn_NIHSS_comatose" ColumnName="csn_NIHSS_comatose" />
+                <ScalarProperty Name="csn_antiplatelet_use_text" ColumnName="csn_antiplatelet_use_text" />
+                <ScalarProperty Name="csn_antiplatelet_use" ColumnName="csn_antiplatelet_use" />
+                <ScalarProperty Name="csn_anticoagulant_use_text" ColumnName="csn_anticoagulant_use_text" />
+                <ScalarProperty Name="csn_anticoagulant_use" ColumnName="csn_anticoagulant_use" />
+                <ScalarProperty Name="csn_PMH" ColumnName="csn_PMH" />
+                <ScalarProperty Name="csn_family_consent_available" ColumnName="csn_family_consent_available" />
+                <ScalarProperty Name="csn_critical_care_minutes" ColumnName="csn_critical_care_minutes" />
+                <ScalarProperty Name="csn_critical_care_was_provided" ColumnName="csn_critical_care_was_provided" />
+                <ScalarProperty Name="csn_patient_family_cosulted" ColumnName="csn_patient_family_cosulted" />
+                <ScalarProperty Name="csn_vitals_blood_glucose" ColumnName="csn_vitals_blood_glucose" />
+                <ScalarProperty Name="csn_comment" ColumnName="csn_comment" />
+                <ScalarProperty Name="csn_modified_date" ColumnName="csn_modified_date" />
+                <ScalarProperty Name="csn_modfied_by_name" ColumnName="csn_modfied_by_name" />
+                <ScalarProperty Name="csn_modified_by" ColumnName="csn_modified_by" />
+                <ScalarProperty Name="csn_created_by_name" ColumnName="csn_created_by_name" />
+                <ScalarProperty Name="csn_created_by" ColumnName="csn_created_by" />
+                <ScalarProperty Name="csn_created_date" ColumnName="csn_created_date" />
+                <ScalarProperty Name="csn_additional_recomendations" ColumnName="csn_additional_recomendations" />
+                <ScalarProperty Name="csn_verbal_consent" ColumnName="csn_verbal_consent" />
+                <ScalarProperty Name="csn_vitals_pulse" ColumnName="csn_vitals_pulse" />
+                <ScalarProperty Name="csn_vitals_bp" ColumnName="csn_vitals_bp" />
+                <ScalarProperty Name="csn_nihss_totalscore" ColumnName="csn_nihss_totalscore" />
+                <ScalarProperty Name="csn_tpa_bolus_complications_text" ColumnName="csn_tpa_bolus_complications_text" />
+                <ScalarProperty Name="csn_tpa_bolus_complications" ColumnName="csn_tpa_bolus_complications" />
+                <ScalarProperty Name="csn_mechanism_stroke_text" ColumnName="csn_mechanism_stroke_text" />
+                <ScalarProperty Name="csn_mechanism_stroke" ColumnName="csn_mechanism_stroke" />
+                <ScalarProperty Name="csn_acute_stroke" ColumnName="csn_acute_stroke" />
+                <ScalarProperty Name="csn_impression" ColumnName="csn_impression" />
+                <ScalarProperty Name="csn_cas_key" ColumnName="csn_cas_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="case_template_stroke_notpa">
+            <EntityTypeMapping TypeName="DataModel.case_template_stroke_notpa">
+              <MappingFragment StoreEntitySet="case_template_stroke_notpa">
+                <ScalarProperty Name="ctn_NIHSS_comatose_text" ColumnName="ctn_NIHSS_comatose_text" />
+                <ScalarProperty Name="ctn_NIHSS_comatose" ColumnName="ctn_NIHSS_comatose" />
+                <ScalarProperty Name="ctn_antiplatelet_use_text" ColumnName="ctn_antiplatelet_use_text" />
+                <ScalarProperty Name="ctn_antiplatelet_use" ColumnName="ctn_antiplatelet_use" />
+                <ScalarProperty Name="ctn_anticoagulant_use_text" ColumnName="ctn_anticoagulant_use_text" />
+                <ScalarProperty Name="ctn_anticoagulant_use" ColumnName="ctn_anticoagulant_use" />
+                <ScalarProperty Name="ctn_PMH" ColumnName="ctn_PMH" />
+                <ScalarProperty Name="ctn_family_consent_available" ColumnName="ctn_family_consent_available" />
+                <ScalarProperty Name="ctn_critical_care_minutes" ColumnName="ctn_critical_care_minutes" />
+                <ScalarProperty Name="ctn_critical_care_was_provided" ColumnName="ctn_critical_care_was_provided" />
+                <ScalarProperty Name="ctn_patient_family_cosulted" ColumnName="ctn_patient_family_cosulted" />
+                <ScalarProperty Name="ctn_vitals_blood_glucose" ColumnName="ctn_vitals_blood_glucose" />
+                <ScalarProperty Name="ctn_vitals_pulse" ColumnName="ctn_vitals_pulse" />
+                <ScalarProperty Name="ctn_vitals_bp" ColumnName="ctn_vitals_bp" />
+                <ScalarProperty Name="ctn_modified_date" ColumnName="ctn_modified_date" />
+                <ScalarProperty Name="ctn_modfied_by_name" ColumnName="ctn_modfied_by_name" />
+                <ScalarProperty Name="ctn_modified_by" ColumnName="ctn_modified_by" />
+                <ScalarProperty Name="ctn_created_by_name" ColumnName="ctn_created_by_name" />
+                <ScalarProperty Name="ctn_created_by" ColumnName="ctn_created_by" />
+                <ScalarProperty Name="ctn_created_date" ColumnName="ctn_created_date" />
+                <ScalarProperty Name="ctn_sign_out" ColumnName="ctn_sign_out" />
+                <ScalarProperty Name="ctn_disposition" ColumnName="ctn_disposition" />
+                <ScalarProperty Name="ctn_lipid_panel_obtained" ColumnName="ctn_lipid_panel_obtained" />
+                <ScalarProperty Name="ctn_dvt_prophylaxis_text" ColumnName="ctn_dvt_prophylaxis_text" />
+                <ScalarProperty Name="ctn_dvt_prophylaxis" ColumnName="ctn_dvt_prophylaxis" />
+                <ScalarProperty Name="ctn_dysphaghia_screen" ColumnName="ctn_dysphaghia_screen" />
+                <ScalarProperty Name="ctn_nihss_totalscore" ColumnName="ctn_nihss_totalscore" />
+                <ScalarProperty Name="ctn_therapies" ColumnName="ctn_therapies" />
+                <ScalarProperty Name="ctn_imaging_studies_recommedned_text" ColumnName="ctn_imaging_studies_recommedned_text" />
+                <ScalarProperty Name="ctn_imaging_studies_recommedned" ColumnName="ctn_imaging_studies_recommedned" />
+                <ScalarProperty Name="ctn_antiplatelet_therapy_recommedned_text" ColumnName="ctn_antiplatelet_therapy_recommedned_text" />
+                <ScalarProperty Name="ctn_antiplatelet_therapy_recommedned" ColumnName="ctn_antiplatelet_therapy_recommedned" />
+                <ScalarProperty Name="ctn_comment" ColumnName="ctn_comment" />
+                <ScalarProperty Name="ctn_mechanism_stroke_text" ColumnName="ctn_mechanism_stroke_text" />
+                <ScalarProperty Name="ctn_mechanism_stroke" ColumnName="ctn_mechanism_stroke" />
+                <ScalarProperty Name="ctn_impression_text" ColumnName="ctn_impression_text" />
+                <ScalarProperty Name="ctn_impression" ColumnName="ctn_impression" />
+                <ScalarProperty Name="ctn_cas_key" ColumnName="ctn_cas_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="case_template_stroke_tpa">
+            <EntityTypeMapping TypeName="DataModel.case_template_stroke_tpa">
+              <MappingFragment StoreEntitySet="case_template_stroke_tpa">
+                <ScalarProperty Name="cts_NIHSS_comatose_text" ColumnName="cts_NIHSS_comatose_text" />
+                <ScalarProperty Name="cts_NIHSS_comatose" ColumnName="cts_NIHSS_comatose" />
+                <ScalarProperty Name="cts_antiplatelet_use_text" ColumnName="cts_antiplatelet_use_text" />
+                <ScalarProperty Name="cts_antiplatelet_use" ColumnName="cts_antiplatelet_use" />
+                <ScalarProperty Name="cts_anticoagulant_use_text" ColumnName="cts_anticoagulant_use_text" />
+                <ScalarProperty Name="cts_anticoagulant_use" ColumnName="cts_anticoagulant_use" />
+                <ScalarProperty Name="cts_PMH" ColumnName="cts_PMH" />
+                <ScalarProperty Name="cts_family_consent_available" ColumnName="cts_family_consent_available" />
+                <ScalarProperty Name="cts_critical_care_minutes" ColumnName="cts_critical_care_minutes" />
+                <ScalarProperty Name="cts_critical_care_was_provided" ColumnName="cts_critical_care_was_provided" />
+                <ScalarProperty Name="cts_patient_family_cosulted" ColumnName="cts_patient_family_cosulted" />
+                <ScalarProperty Name="cts_vitals_blood_glucose" ColumnName="cts_vitals_blood_glucose" />
+                <ScalarProperty Name="cts_comment" ColumnName="cts_comment" />
+                <ScalarProperty Name="cts_modified_date" ColumnName="cts_modified_date" />
+                <ScalarProperty Name="cts_modfied_by_name" ColumnName="cts_modfied_by_name" />
+                <ScalarProperty Name="cts_modified_by" ColumnName="cts_modified_by" />
+                <ScalarProperty Name="cts_created_by_name" ColumnName="cts_created_by_name" />
+                <ScalarProperty Name="cts_created_by" ColumnName="cts_created_by" />
+                <ScalarProperty Name="cts_created_date" ColumnName="cts_created_date" />
+                <ScalarProperty Name="cts_verbal_consent" ColumnName="cts_verbal_consent" />
+                <ScalarProperty Name="cts_vitals_pulse" ColumnName="cts_vitals_pulse" />
+                <ScalarProperty Name="cts_vitals_bp" ColumnName="cts_vitals_bp" />
+                <ScalarProperty Name="cts_nihss_totalscore" ColumnName="cts_nihss_totalscore" />
+                <ScalarProperty Name="cts_tpa_bolus_complications_text" ColumnName="cts_tpa_bolus_complications_text" />
+                <ScalarProperty Name="cts_tpa_bolus_complications" ColumnName="cts_tpa_bolus_complications" />
+                <ScalarProperty Name="cts_mechanism_stroke_text" ColumnName="cts_mechanism_stroke_text" />
+                <ScalarProperty Name="cts_mechanism_stroke" ColumnName="cts_mechanism_stroke" />
+                <ScalarProperty Name="cts_acute_stroke" ColumnName="cts_acute_stroke" />
+                <ScalarProperty Name="cts_impression" ColumnName="cts_impression" />
+                <ScalarProperty Name="cts_cas_key" ColumnName="cts_cas_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="case_template_telestroke_notpa">
+            <EntityTypeMapping TypeName="DataModel.case_template_telestroke_notpa">
+              <MappingFragment StoreEntitySet="case_template_telestroke_notpa">
+                <ScalarProperty Name="ctt_NIHSS_comatose_text" ColumnName="ctt_NIHSS_comatose_text" />
+                <ScalarProperty Name="ctt_NIHSS_comatose" ColumnName="ctt_NIHSS_comatose" />
+                <ScalarProperty Name="ctt_antiplatelet_use_text" ColumnName="ctt_antiplatelet_use_text" />
+                <ScalarProperty Name="ctt_antiplatelet_use" ColumnName="ctt_antiplatelet_use" />
+                <ScalarProperty Name="ctt_anticoagulant_use_text" ColumnName="ctt_anticoagulant_use_text" />
+                <ScalarProperty Name="ctt_anticoagulant_use" ColumnName="ctt_anticoagulant_use" />
+                <ScalarProperty Name="ctt_PMH" ColumnName="ctt_PMH" />
+                <ScalarProperty Name="ctt_family_consent_available" ColumnName="ctt_family_consent_available" />
+                <ScalarProperty Name="ctt_exam_free_text" ColumnName="ctt_exam_free_text" />
+                <ScalarProperty Name="ctt_cheif_complaints" ColumnName="ctt_cheif_complaints" />
+                <ScalarProperty Name="ctt_nihss_or_neuro" ColumnName="ctt_nihss_or_neuro" />
+                <ScalarProperty Name="ctt_disposition" ColumnName="ctt_disposition" />
+                <ScalarProperty Name="ctt_consented_to_tele" ColumnName="ctt_consented_to_tele" />
+                <ScalarProperty Name="ctt_coordination" ColumnName="ctt_coordination" />
+                <ScalarProperty Name="ctt_sensation" ColumnName="ctt_sensation" />
+                <ScalarProperty Name="ctt_motor" ColumnName="ctt_motor" />
+                <ScalarProperty Name="ctt_extraocular_movement" ColumnName="ctt_extraocular_movement" />
+                <ScalarProperty Name="ctt_visual" ColumnName="ctt_visual" />
+                <ScalarProperty Name="ctt_facial_sensation" ColumnName="ctt_facial_sensation" />
+                <ScalarProperty Name="ctt_face" ColumnName="ctt_face" />
+                <ScalarProperty Name="ctt_language" ColumnName="ctt_language" />
+                <ScalarProperty Name="ctt_speech" ColumnName="ctt_speech" />
+                <ScalarProperty Name="ctt_neuro_exam" ColumnName="ctt_neuro_exam" />
+                <ScalarProperty Name="ctt_other_workup" ColumnName="ctt_other_workup" />
+                <ScalarProperty Name="ctt_therapies" ColumnName="ctt_therapies" />
+                <ScalarProperty Name="ctt_imaging" ColumnName="ctt_imaging" />
+                <ScalarProperty Name="ctt_critical_care_minutes" ColumnName="ctt_critical_care_minutes" />
+                <ScalarProperty Name="ctt_critical_care_was_provided" ColumnName="ctt_critical_care_was_provided" />
+                <ScalarProperty Name="ctt_patient_family_cosulted" ColumnName="ctt_patient_family_cosulted" />
+                <ScalarProperty Name="ctt_vitals_blood_glucose" ColumnName="ctt_vitals_blood_glucose" />
+                <ScalarProperty Name="ctt_vitals_pulse" ColumnName="ctt_vitals_pulse" />
+                <ScalarProperty Name="ctt_vitals_bp" ColumnName="ctt_vitals_bp" />
+                <ScalarProperty Name="ctt_antiplatelet_therapy_recommedned_text" ColumnName="ctt_antiplatelet_therapy_recommedned_text" />
+                <ScalarProperty Name="ctt_antiplatelet_therapy_recommedned" ColumnName="ctt_antiplatelet_therapy_recommedned" />
+                <ScalarProperty Name="ctt_modified_date" ColumnName="ctt_modified_date" />
+                <ScalarProperty Name="ctt_modfied_by_name" ColumnName="ctt_modfied_by_name" />
+                <ScalarProperty Name="ctt_modified_by" ColumnName="ctt_modified_by" />
+                <ScalarProperty Name="ctt_created_by_name" ColumnName="ctt_created_by_name" />
+                <ScalarProperty Name="ctt_created_by" ColumnName="ctt_created_by" />
+                <ScalarProperty Name="ctt_created_date" ColumnName="ctt_created_date" />
+                <ScalarProperty Name="ctt_sign_out" ColumnName="ctt_sign_out" />
+                <ScalarProperty Name="ctt_nihss_totalscore" ColumnName="ctt_nihss_totalscore" />
+                <ScalarProperty Name="ctt_routine_consultation" ColumnName="ctt_routine_consultation" />
+                <ScalarProperty Name="ctt_comment" ColumnName="ctt_comment" />
+                <ScalarProperty Name="ctt_mechanism_stroke_text" ColumnName="ctt_mechanism_stroke_text" />
+                <ScalarProperty Name="ctt_mechanism_stroke" ColumnName="ctt_mechanism_stroke" />
+                <ScalarProperty Name="ctt_impression_text" ColumnName="ctt_impression_text" />
+                <ScalarProperty Name="ctt_impression" ColumnName="ctt_impression" />
+                <ScalarProperty Name="ctt_cas_key" ColumnName="ctt_cas_key" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

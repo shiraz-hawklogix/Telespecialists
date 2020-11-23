@@ -128,6 +128,7 @@
     <Compile Include="Helpers\Functions.cs" />
     <Compile Include="Helpers\GetAllPhycision.cs" />
     <Compile Include="Helpers\HourlyMeanReport.cs" />
+    <Compile Include="Helpers\IndirectCasesList.cs" />
     <Compile Include="Helpers\Monthly_Forecast.cs" />
     <Compile Include="Helpers\PredicateUtils.cs" />
     <Compile Include="Helpers\PremorbidCorrespondnce.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Helpers\QualityMetricsReportCls.cs" />
     <Compile Include="Helpers\RCIGraphReport.cs" />
     <Compile Include="Helpers\RCIReport.cs" />
+    <Compile Include="Helpers\StatusSnapshotcls.cs" />
     <Compile Include="Helpers\tPACaseAnalysis.cs" />
     <Compile Include="Helpers\VolumeMetricsReport.cs" />
     <Compile Include="Helpers\WebScrapper.cs" />
@@ -183,12 +185,6 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\CCIReport_Data.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\component.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\component_access.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\cwh_data.cs">
@@ -287,9 +283,6 @@
     <Compile Include="Model\token.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\user_access.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Model\user_login_verify.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -299,7 +292,6 @@
     <Compile Include="Model\user_schedule_sleep.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-
     <Compile Include="Model\UspGetAllCaseDataForCCI_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -312,13 +304,6 @@
     <Compile Include="Model\UspGetAllPhyDataForCCI_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\UspGetAllPhysicion_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\UspGetCaseDataForBCI_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-
     <Compile Include="Model\UspGetCWHData2_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -328,17 +313,9 @@
     <Compile Include="Model\UspGetCWHData_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-
-    <Compile Include="Model\UspGetDailyVolimetircdata_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Model\UspGetForecastDataFOorMOnthly_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\UspGetForecastData_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-
     <Compile Include="Model\UspGetRCIData_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -370,8 +347,6 @@
     <Compile Include="Repository\GoalsDataRepository.cs" />
     <Compile Include="Repository\HospitalProtocols.cs" />
     <Compile Include="Repository\ICwhData.cs" />
-    <Compile Include="Repository\MenuAccessRepository.cs" />
-    <Compile Include="Repository\MenuRepository.cs" />
     <Compile Include="Repository\MockCaseRepository.cs" />
     <Compile Include="Repository\NHRepository.cs" />
     <Compile Include="Repository\OnBoardedRepository.cs" />
@@ -389,7 +364,6 @@
     <Compile Include="Repository\RootCauseRepository.cs" />
     <Compile Include="Repository\SleepRepository.cs" />
     <Compile Include="Repository\TokenRepository.cs" />
-    <Compile Include="Repository\UserAccessRepository.cs" />
     <Compile Include="Repository\UserProfileRepository.cs" />
     <Compile Include="Repository\UserVerificationRepoistory.cs" />
     <Compile Include="Repository\Web2Campaign_LogRepository.cs" />
@@ -406,7 +380,6 @@
     <Compile Include="Service\FacilityPIService.cs" />
     <Compile Include="Service\FireBaseUserMailService.cs" />
     <Compile Include="Service\HospitalprotocolServices.cs" />
-    <Compile Include="Service\MenuService.cs" />
     <Compile Include="Service\MockCaseService.cs" />
     <Compile Include="Service\NHService.cs" />
     <Compile Include="Service\OnBoardedServices.cs" />
@@ -448,6 +421,7 @@
     <Compile Include="ViewModels\Reports\PhysicianVolumetricViewModel.cs" />
     <Compile Include="ViewModels\Reports\QualityGoalsViewModel.cs" />
     <Compile Include="ViewModels\Schedule\ScheduleExportVM.cs" />
+    <Compile Include="ViewModels\StrokeStatChartViewModel.cs" />
     <Compile Include="ViewModels\UserLoggedInVerification.cs" />
     <Compile Include="ViewModels\UserPresenceListings.cs" />
     <Compile Include="ViewModels\user_alarm_setting.cs" />

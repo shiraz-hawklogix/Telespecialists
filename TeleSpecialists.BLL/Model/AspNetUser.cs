@@ -35,13 +35,13 @@ namespace TeleSpecialists.BLL.Model
             this.post_acute_care = new HashSet<post_acute_care>();
             this.physician_rate = new HashSet<physician_rate>();
             this.user_schedule = new HashSet<user_schedule>();
-            this.tokens = new HashSet<token>();
             this.user_login_verify = new HashSet<user_login_verify>();
             this.user_schedule_nhalert = new HashSet<user_schedule_nhalert>();
             this.user_schedule_sleep = new HashSet<user_schedule_sleep>();
             this.mock_case = new HashSet<mock_case>();
             this.mock_case1 = new HashSet<mock_case>();
             this.mock_case2 = new HashSet<mock_case>();
+            this.tokens = new HashSet<token>();
         }
     
         public string Id { get; set; }
@@ -98,6 +98,7 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<bool> IsTwoFactVerified { get; set; }
         public string TwoFactVerifyCode { get; set; }
         public Nullable<System.DateTime> CodeExpiryTime { get; set; }
+        public long PhysicianId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetUserClaim> AspNetUserClaims { get; set; }
@@ -137,8 +138,6 @@ namespace TeleSpecialists.BLL.Model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<user_schedule> user_schedule { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<token> tokens { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<user_login_verify> user_login_verify { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<user_schedule_nhalert> user_schedule_nhalert { get; set; }
@@ -150,5 +149,7 @@ namespace TeleSpecialists.BLL.Model
         public virtual ICollection<mock_case> mock_case1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<mock_case> mock_case2 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<token> tokens { get; set; }
     }
 }

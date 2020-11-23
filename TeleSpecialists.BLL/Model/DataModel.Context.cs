@@ -40,9 +40,6 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<case_copy_log> case_copy_log { get; set; }
         public virtual DbSet<case_generated_template> case_generated_template { get; set; }
         public virtual DbSet<case_review_template> case_review_template { get; set; }
-        public virtual DbSet<case_template_stroke_neuro_tpa> case_template_stroke_neuro_tpa { get; set; }
-        public virtual DbSet<case_template_stroke_notpa> case_template_stroke_notpa { get; set; }
-        public virtual DbSet<case_template_stroke_tpa> case_template_stroke_tpa { get; set; }
         public virtual DbSet<case_timestamp> case_timestamp { get; set; }
         public virtual DbSet<contact> contacts { get; set; }
         public virtual DbSet<default_notification_tune> default_notification_tune { get; set; }
@@ -72,13 +69,11 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<MDStaffFacility> MDStaffFacilities { get; set; }
         public virtual DbSet<post_acute_care> post_acute_care { get; set; }
         public virtual DbSet<audit_records> audit_records { get; set; }
-        public virtual DbSet<case_template_telestroke_notpa> case_template_telestroke_notpa { get; set; }
         public virtual DbSet<physician_holiday_rate> physician_holiday_rate { get; set; }
         public virtual DbSet<user_schedule> user_schedule { get; set; }
         public virtual DbSet<rapids_mailbox> rapids_mailbox { get; set; }
         public virtual DbSet<goals_data> goals_data { get; set; }
         public virtual DbSet<quality_goals> quality_goals { get; set; }
-        public virtual DbSet<case_template_statconsult> case_template_statconsult { get; set; }
         public virtual DbSet<case_cancelled_type> case_cancelled_type { get; set; }
         public virtual DbSet<facility_questionnaire_contact> facility_questionnaire_contact { get; set; }
         public virtual DbSet<facility_questionnaire_contact_designation> facility_questionnaire_contact_designation { get; set; }
@@ -100,23 +95,22 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<Hospital_Protocols> Hospital_Protocols { get; set; }
         public virtual DbSet<Onboarded> Onboardeds { get; set; }
         public virtual DbSet<web2campaign_log> web2campaign_log { get; set; }
-        public virtual DbSet<case_rejection_reason> case_rejection_reason { get; set; }
-        public virtual DbSet<firebase_users> firebase_users { get; set; }
-        public virtual DbSet<component_access> component_access { get; set; }
-        public virtual DbSet<component> components { get; set; }
-        public virtual DbSet<token> tokens { get; set; }
         public virtual DbSet<premorbid_correspondnce> premorbid_correspondnce { get; set; }
         public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
         public virtual DbSet<Forcast_Data> Forcast_Data { get; set; }
         public virtual DbSet<mock_case> mock_case { get; set; }
-
-       
         public virtual DbSet<BCI_ReportData> BCI_ReportData { get; set; }
         public virtual DbSet<CCIReport_Data> CCIReport_Data { get; set; }
-        public virtual DbSet<user_access> user_access { get; set; }
         public virtual DbSet<view_facility_physician> view_facility_physician { get; set; }
         public virtual DbSet<view_user_schedule> view_user_schedule { get; set; }
-
+        public virtual DbSet<case_rejection_reason> case_rejection_reason { get; set; }
+        public virtual DbSet<firebase_users> firebase_users { get; set; }
+        public virtual DbSet<token> tokens { get; set; }
+        public virtual DbSet<case_template_statconsult> case_template_statconsult { get; set; }
+        public virtual DbSet<case_template_stroke_neuro_tpa> case_template_stroke_neuro_tpa { get; set; }
+        public virtual DbSet<case_template_stroke_notpa> case_template_stroke_notpa { get; set; }
+        public virtual DbSet<case_template_stroke_tpa> case_template_stroke_tpa { get; set; }
+        public virtual DbSet<case_template_telestroke_notpa> case_template_telestroke_notpa { get; set; }
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {

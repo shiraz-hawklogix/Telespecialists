@@ -265,8 +265,7 @@
     <Compile Include="Controllers\FireBaseChatController.cs" />
     <Compile Include="Controllers\HospitalProtocolsController.cs" />
     <Compile Include="Controllers\MDStaffController.cs" />
-    <Compile Include="Controllers\MenuAccessController.cs" />
-    <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\MockCaseController.cs" />
     <Compile Include="Controllers\PACPhysicianController.cs" />
     <Compile Include="Controllers\PhonebarController.cs" />
     <Compile Include="Controllers\PhysicianCaseTempController.cs" />
@@ -303,14 +302,17 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AjaxResult.cs" />
     <Compile Include="Models\AutoSaveViewModel.cs" />
+    <Compile Include="Models\header.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\CallHistoryViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PhysicianCaseTempViewModel.cs" />
+    <Compile Include="Models\ProfileAccessViewModel.cs" />
     <Compile Include="Models\SignalRCaseDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Views\Reports\Helper\BCIPhysicion.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />
@@ -776,7 +778,7 @@
     <Content Include="Content\simple-line-icons\simple-line-icons.css" />
     <Content Include="Content\simple-line-icons\simple-line-icons.min.css" />
     <Content Include="Content\simple-line-icons\Simple-Line-Icons.svg" />
-    <Content Include="Content\sounds\blast.mp3" />	
+    <Content Include="Content\sounds\blast.mp3" />
     <Content Include="Content\sounds\blast1.mp3" />
     <Content Include="Content\sounds\msg_notify.mp3" />
     <Content Include="Content\sounds\new_case_notification.mp3" />
@@ -1085,6 +1087,11 @@
     <None Include="Properties\PublishProfiles\TeleCareQA.pubxml" />
     <None Include="Properties\PublishProfiles\VM - Web Deploy.pubxml" />
     <Content Include="ReportsToPrint\CasesReport.csv" />
+    <Content Include="R-Scripting\Foracst_BCI.R" />
+    <Content Include="R-Scripting\ForecastingExport.csv" />
+    <Content Include="R-Scripting\forecast_testF.R" />
+    <Content Include="R-Scripting\forecast_testF_daily.R" />
+    <Content Include="R-Scripting\Monthly_Forcasting.csv" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\Chart.js" />
     <Content Include="Scripts\Chart.min.js" />
@@ -3782,7 +3789,6 @@
     <Content Include="Views\Menu\Edit.cshtml" />
     <Content Include="Views\Menu\Index.cshtml" />
     <Content Include="Views\Menu\_Form.cshtml" />
-
     <Content Include="temp\Sch20200811020206.csv" />
     <Content Include="temp\Sch20200811020744.csv" />
     <Content Include="temp\Sch20200811021109.csv" />
@@ -3831,7 +3837,6 @@
     <Content Include="Views\FireBaseChat\UserWithStatus.cshtml" />
     <Content Include="Views\Case\_CaseRejectionReason.cshtml" />
     <Content Include="Views\Physician\_NewCasePopupPhysicianBlast.cshtml" />
-
     <Content Include="Views\Case\_mockcases.cshtml" />
     <Content Include="Views\MockCase\Create.cshtml" />
     <Content Include="Views\MockCase\Edit.cshtml" />
@@ -3848,7 +3853,13 @@
     <Content Include="Views\Reports\Daily_forecast.cshtml" />
     <Content Include="Views\Reports\MOnth_forecast.cshtml" />
     <Content Include="Views\Reports\CCIReport.cshtml" />
-
+    <Content Include="Views\Home\_IndirectCasesList.cshtml" />
+    <Content Include="Views\Patient\Create.cshtml" />
+    <Content Include="Views\Patient\Edit.cshtml" />
+    <Content Include="Views\Patient\Index.cshtml" />
+    <Content Include="Views\Patient\_EditLineItem.cshtml" />
+    <Content Include="Views\FacilityPhysician\_FacilityForm.cshtml" />
+    <Content Include="Views\Reports\StatusSnapshot.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="0f9282533e2c4b57b1710716d023b273" Name="Diagram1" ZoomLevel="68">
+      <Diagram DiagramId="0f9282533e2c4b57b1710716d023b273" Name="Diagram1" ZoomLevel="89">
         <EntityTypeShape EntityType="DataModel.alarm_setting" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="DataModel.alarm_tunes" Width="1.5" PointX="2.75" PointY="0.75" />
         <EntityTypeShape EntityType="DataModel.AspNetRole" Width="1.5" PointX="3.75" PointY="73.125" />
@@ -18,9 +18,6 @@
         <EntityTypeShape EntityType="DataModel.case_copy_log" Width="1.5" PointX="8.75" PointY="0.75" />
         <EntityTypeShape EntityType="DataModel.case_generated_template" Width="1.5" PointX="17.25" PointY="65.375" />
         <EntityTypeShape EntityType="DataModel.case_review_template" Width="1.5" PointX="17.25" PointY="84.125" />
-        <EntityTypeShape EntityType="DataModel.case_template_stroke_neuro_tpa" Width="1.5" PointX="17.25" PointY="77.75" />
-        <EntityTypeShape EntityType="DataModel.case_template_stroke_notpa" Width="1.5" PointX="17.25" PointY="70" />
-        <EntityTypeShape EntityType="DataModel.case_template_stroke_tpa" Width="1.5" PointX="17.25" PointY="55.875" />
         <EntityTypeShape EntityType="DataModel.case_timestamp" Width="1.5" PointX="8.75" PointY="6.75" />
         <EntityTypeShape EntityType="DataModel.contact" Width="1.5" PointX="9" PointY="73.5" />
         <EntityTypeShape EntityType="DataModel.default_notification_tune" Width="1.5" PointX="0.75" PointY="9.75" />
@@ -64,14 +61,12 @@
         <EntityTypeShape EntityType="DataModel.post_acute_care" Width="1.5" PointX="12" PointY="55.5" />
         <AssociationConnector Association="DataModel.FK_pac_case_template_post_acute_care" />
         <EntityTypeShape EntityType="DataModel.audit_records" Width="1.5" PointX="13.375" PointY="5.75" />
-        <EntityTypeShape EntityType="DataModel.case_template_telestroke_notpa" Width="1.5" PointX="17.25" PointY="45.625" />
         <EntityTypeShape EntityType="DataModel.physician_holiday_rate" Width="1.5" PointX="9.375" PointY="13.75" />
         <EntityTypeShape EntityType="DataModel.user_schedule" Width="1.5" PointX="3" PointY="58" />
         <EntityTypeShape EntityType="DataModel.rapids_mailbox" Width="1.5" PointX="13.375" PointY="0.75" />
         <EntityTypeShape EntityType="DataModel.goals_data" Width="1.5" PointX="5.25" PointY="38.625" />
         <EntityTypeShape EntityType="DataModel.quality_goals" Width="1.5" PointX="3" PointY="40.125" />
         <AssociationConnector Association="DataModel.FK_goals_data_quality_goals" />
-        <EntityTypeShape EntityType="DataModel.case_template_statconsult" Width="1.5" PointX="17.25" PointY="89" />
         <EntityTypeShape EntityType="DataModel.case_cancelled_type" Width="1.5" PointX="11.375" PointY="14.75" />
         <EntityTypeShape EntityType="DataModel.facility_questionnaire_contact" Width="1.5" PointX="5.25" PointY="33.875" />
         <EntityTypeShape EntityType="DataModel.facility_questionnaire_contact_designation" Width="1.5" PointX="3" PointY="28.5" />
@@ -88,11 +83,6 @@
         <AssociationConnector Association="DataModel.FK_case_facility" />
         <AssociationConnector Association="DataModel.FK_case_generated_template_case" />
         <AssociationConnector Association="DataModel.FK_case_review_template_case" />
-        <AssociationConnector Association="DataModel.FK_case_template_statconsult_case" />
-        <AssociationConnector Association="DataModel.FK_case_template_stroke_neuro_tpa_case" />
-        <AssociationConnector Association="DataModel.FK_case_template_stroke_notpa_case" />
-        <AssociationConnector Association="DataModel.FK_case_template_stroke_tpa_case" />
-        <AssociationConnector Association="DataModel.FK_case_template_telestroke_notpa_case" />
         <AssociationConnector Association="DataModel.FK_nih_stroke_scale_answer_case" />
         <AssociationConnector Association="DataModel.FK_rca_counter_measure_case" />
         <AssociationConnector Association="DataModel.FK_contact_facility" />
@@ -114,12 +104,6 @@
         <EntityTypeShape EntityType="DataModel.Hospital_Protocols" Width="1.5" PointX="0.75" PointY="16.75" />
         <EntityTypeShape EntityType="DataModel.Onboarded" Width="1.5" PointX="18.75" PointY="0.75" />
         <EntityTypeShape EntityType="DataModel.web2campaign_log" Width="1.5" PointX="18.375" PointY="4.75" />
-        <EntityTypeShape EntityType="DataModel.case_rejection_reason" Width="1.5" PointX="9.375" PointY="18.75" />
-        <EntityTypeShape EntityType="DataModel.firebase_users" Width="1.5" PointX="5.375" PointY="8.75" />
-        <EntityTypeShape EntityType="DataModel.component_access" Width="1.5" PointX="21.625" PointY="11.75" />
-        <EntityTypeShape EntityType="DataModel.component" Width="1.5" PointX="19.375" PointY="11" />
-        <AssociationConnector Association="DataModel.FK_ComponentAccess_Component_Id" />
-        <EntityTypeShape EntityType="DataModel.token" Width="1.5" PointX="3" PointY="110.875" />
         <EntityTypeShape EntityType="DataModel.premorbid_correspondnce" Width="1.5" PointX="8.75" PointY="104" />
         <AssociationConnector Association="DataModel.FK_premorbid_correspondnce_case" />
         <EntityTypeShape EntityType="DataModel.AspNetUser" Width="1.5" PointX="0.75" PointY="103.875" />
@@ -142,7 +126,6 @@
         <AssociationConnector Association="DataModel.FK_post_acute_care_users_AspNetUsers" />
         <AssociationConnector Association="DataModel.FK_Rate_Rate" />
         <AssociationConnector Association="DataModel.FK_resource_scheduler_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_token_AspNetUsers" />
         <AssociationConnector Association="DataModel.FK_user_login_verify_User_Id" />
         <AssociationConnector Association="DataModel.FK_user_schedule_nhalert_AspNetUsers" />
         <AssociationConnector Association="DataModel.FK_user_schedule_sleep_AspNetUsers" />
@@ -152,13 +135,24 @@
         <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers_Navigator" />
         <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers1" />
         <AssociationConnector Association="DataModel.FK_mock_case_facility" />
-
-        <EntityTypeShape EntityType="DataModel.telecare_counters" Width="1.5" PointX="13.375" PointY="10.75" />
-        <EntityTypeShape EntityType="DataModel.BCI_ReportData" Width="1.5" PointX="9.375" PointY="18.75" />
+        <EntityTypeShape EntityType="DataModel.BCI_ReportData" Width="1.5" PointX="12" PointY="21.125" />
         <EntityTypeShape EntityType="DataModel.CCIReport_Data" Width="1.5" PointX="19.375" PointY="16.75" />
-        <EntityTypeShape EntityType="DataModel.user_access" Width="1.5" PointX="19.75" PointY="19.75" />
         <EntityTypeShape EntityType="DataModel.view_facility_physician" Width="1.5" PointX="0.75" PointY="20.75" />
         <EntityTypeShape EntityType="DataModel.view_user_schedule" Width="1.5" PointX="2.75" PointY="20.75" />
+        <EntityTypeShape EntityType="DataModel.case_rejection_reason" Width="1.5" PointX="20.375" PointY="4.75" />
+        <EntityTypeShape EntityType="DataModel.firebase_users" Width="1.5" PointX="5.375" PointY="8.75" />
+        <EntityTypeShape EntityType="DataModel.token" Width="1.5" PointX="3" PointY="111.125" />
+        <AssociationConnector Association="DataModel.FK_token_AspNetUsers" />
+        <EntityTypeShape EntityType="DataModel.case_template_statconsult" Width="1.5" PointX="8.75" PointY="90.75" />
+        <EntityTypeShape EntityType="DataModel.case_template_stroke_neuro_tpa" Width="1.5" PointX="8.75" PointY="109" />
+        <EntityTypeShape EntityType="DataModel.case_template_stroke_notpa" Width="1.5" PointX="8.75" PointY="128.25" />
+        <EntityTypeShape EntityType="DataModel.case_template_stroke_tpa" Width="1.5" PointX="8.75" PointY="83" />
+        <EntityTypeShape EntityType="DataModel.case_template_telestroke_notpa" Width="1.5" PointX="8.75" PointY="116.875" />
+        <AssociationConnector Association="DataModel.FK_case_template_statconsult_case" />
+        <AssociationConnector Association="DataModel.FK_case_template_stroke_neuro_tpa_case" />
+        <AssociationConnector Association="DataModel.FK_case_template_stroke_notpa_case" />
+        <AssociationConnector Association="DataModel.FK_case_template_stroke_tpa_case" />
+        <AssociationConnector Association="DataModel.FK_case_template_telestroke_notpa_case" />
 
 
         </Diagram>

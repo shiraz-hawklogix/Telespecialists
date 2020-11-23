@@ -1280,25 +1280,6 @@ function onLoadCompleteCode()
                  //Added By Axim 29-10-2020
         $(".morbidSymptoms").on('change', function () {
             var currentVal = $('input:radio[name=cas_metric_has_morbid_symptoms]:checked').val();
-
-            $('.premorbid :radio:not(:checked)').attr('disabled', false);
-            if (currentVal == "0") {
-                $("#cas_metric_has_morbid_symptoms_0_UP").prop('checked', true);
-            } if (currentVal == "1") {
-                $("#cas_metric_has_morbid_symptoms_1_UP").prop('checked', true);
-            } if (currentVal == "2") {
-                $("#cas_metric_has_morbid_symptoms_2_UP").prop('checked', true);
-            } if (currentVal == "3") {
-                $("#cas_metric_has_morbid_symptoms_3_UP").prop('checked', true);
-            } if (currentVal == "4") {
-                $("#cas_metric_has_morbid_symptoms_4_UP").prop('checked', true);
-            } if (currentVal == "5") {
-                $("#cas_metric_has_morbid_symptoms_5_UP").prop('checked', true);
-            } if (currentVal == "6") {
-                $("#cas_metric_has_morbid_symptoms_6_UP").prop('checked', true);
-            }if (currentVal == "7") {
-                $("#cas_metric_has_morbid_symptoms_7_UP").prop('checked', true);
-
             if (currentVal != "7") {
                 $("#has_morbid_symptoms_premorbid").empty();
                 $("#has_morbid_symptoms_premorbid").append(currentVal);
@@ -1308,11 +1289,13 @@ function onLoadCompleteCode()
                 $("#has_morbid_symptoms_premorbid").append(currentVal);
             } else {
                 $("#has_morbid_symptoms_premorbid").empty();
-
             }
+            
+            //$('.premorbid :radio:not(:checked)').attr('disabled', false);
+            @*
             if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' != 'True') {
                 $('.premorbid :radio:not(:checked)').attr('disabled', true);
-            }
+            }*@
         });
         $(".premorbid").on('change', function () {
             var currentVal = $('input:radio[name=cas_premorbid_symptoms]:checked').val();
