@@ -169,6 +169,9 @@
     <Compile Include="Model\case_cancelled_type.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\case_rejection_reason.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\case_review_template.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -203,6 +206,9 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\facility_rate.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\firebase_users.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\firebase_usersemail.cs">
@@ -265,10 +271,10 @@
     <Compile Include="Model\rca_counter_measure.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\sp_getMenuAccess_Result.cs">
+    <Compile Include="Model\sp_getMenuAccess1_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\telecare_counters.cs">
+    <Compile Include="Model\sp_getMenuAccess_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\token.cs">
@@ -283,12 +289,6 @@
     <Compile Include="Model\user_schedule_sleep.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\UspGetAllPhysicion_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\UspGetCaseDataForBCI_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Model\UspGetCWHData2_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -296,12 +296,6 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\UspGetCWHData_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\UspGetDailyVolimetircdata_Result.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\UspGetForecastData_Result.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\UspGetRCIData_Result.cs">
@@ -316,6 +310,7 @@
     <Compile Include="Process\RapidsProcessor.cs" />
     <Compile Include="Repository\AuditRecordsRepository.cs" />
     <Compile Include="Repository\CasCancelledTypeRepository.cs" />
+    <Compile Include="Repository\CaseRejectRepository.cs" />
     <Compile Include="Repository\CaseReviewerRepository.cs" />
     <Compile Include="Repository\DiagnosisCodesRepoistory.cs" />
     <Compile Include="Repository\FacilityAvailabilityRateRepository.cs" />
@@ -353,9 +348,11 @@
     <Compile Include="Service\AuditRecordsService.cs" />
     <Compile Include="Service\CancelledCasesService.cs" />
     <Compile Include="Service\CasCancelledTypeService.cs" />
+    <Compile Include="Service\CaseRejectService.cs" />
     <Compile Include="Service\CaseReviewTemplateService.cs" />
     <Compile Include="Service\CaseServices\CaseGridService.cs" />
     <Compile Include="Service\DiagnosisCodesService.cs" />
+    <Compile Include="Service\DispatchService.cs" />
     <Compile Include="Service\FacilityBillingReportService.cs" />
     <Compile Include="Service\FacilityQuestionnaireService.cs" />
     <Compile Include="Service\FacilityPIService.cs" />
@@ -387,8 +384,11 @@
     <Compile Include="ViewModels\CasePage\CasePageCommonFields.cs" />
     <Compile Include="ViewModels\CasePage\DashboardPage.cs" />
     <Compile Include="ViewModels\CasePage\DiagnosisCodesViewModel.cs" />
+    <Compile Include="ViewModels\CaseRejectionReasonsViewModel.cs" />
     <Compile Include="ViewModels\CasesPendingReviewListing.cs" />
     <Compile Include="ViewModels\CredentialsExpiringCaseListing.cs" />
+    <Compile Include="ViewModels\Dispatch\DispatchListing.cs" />
+    <Compile Include="ViewModels\Dispatch\dispatchSaveStatusVM.cs" />
     <Compile Include="ViewModels\EntityNotes\SignOutNoteViewModel.cs" />
     <Compile Include="ViewModels\FacilityBillingByAmount.cs" />
     <Compile Include="ViewModels\FacilityQuestionnaire\PreLiveVM.cs" />

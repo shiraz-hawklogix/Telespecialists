@@ -225,7 +225,7 @@ $(document).on("click", ".loadLinkAsync", function (e) {
     e.preventDefault();
     var url = $(this).attr("href");
     var target = $(this).data("target");
-    if ($('#Physician').length == 1 && $('#is_super_admin').val() == "SuperAdmin" && url != "/Schedule/main") {
+ if ($('#Physician').length == 1 && $('#is_super_admin').val() == "SuperAdmin" && url != "/Schedule/main") {
         if ($('#ScheduleMId').hasClass('Un-publish-sch')) {
             e.preventDefault();
             e.stopPropagation();
@@ -241,6 +241,9 @@ $(document).on("click", ".loadLinkAsync", function (e) {
     }
 
     loadPageAsync(url, target)
+});
+$(document).on("click", ".signOutCurrentUser", function (e) {
+    signOutAndLogout();
 });
 
 $(document).on("click", ".loadLinkAsync-cancel", function (e) {
@@ -536,7 +539,7 @@ function loadPageAsync(url, target) {
 
             $("#" + target).empty().html(response + $("#hdnJQueryValidations").val());
             onReadyCallBack();
-        });        
+        });
         ScheduleCheckLoad();
     }
 }
@@ -669,6 +672,7 @@ function copyCase() {
         CartlocationText(cartLocation, '#divCaseCopy')
     }
 
+
     var callBack = $.trim($("#cas_callback:visible").val());
     if ($.trim(callBack) != "") {
         $("#divCaseCopy").append("Callback Phone: " + callBack);
@@ -749,6 +753,143 @@ function copyCase() {
         var isRefreshed = $("#caseCopyPopUp").hasClass("show");
         $("#caseCopyPopUp").modal("show");
         logCopyCaseInfo(isRefreshed);
+    }
+}
+function copyFirebase() {
+
+    $("#divCaseCopy").html("");
+
+    var startTime = $.trim($("#five9_start_time").val());
+
+
+
+    if ($.trim(startTime) == "") {
+        startTime = $.trim($("#cas_response_ts_notification").val());
+    }
+
+    if ($.trim(startTime) == "") {
+        startTime = $.trim($("#cas_metric_stamp_time_est").val());
+    }
+
+    var hdnTimeZone = $("#hdnFacilityTimeZone").val();
+    if (hdnTimeZone != "")
+        hdnTimeZone = getFirstLetterOfEarchWord(hdnTimeZone);
+    else
+        hdnTimeZone = "EST";
+
+    if ($.trim(startTime) != "") {
+        if (hdnTimeZone != null && hdnTimeZone != "") {
+            startTime = startTime + " " + hdnTimeZone + " - Local Time ";
+            $("#divCaseCopy").append(startTime);
+        }
+        else
+            $("#divCaseCopy").append(startTime);
+
+        $("#divCaseCopy").append("##NewLine##");
+    }
+
+    //if (startTime != "" && startTime != undefined) {
+    //    $("#divCaseCopy").append(startTime);
+    //    $("#divCaseCopy").append("##NewLine##");
+    //}
+
+    var caseType = $.trim($("#cas_ctp_key option:selected").text()).replace("-- Select --", "");
+    if ($.trim(caseType) != "") {
+        $("#divCaseCopy").append(caseType);
+        $("#divCaseCopy").append("##NewLine##");
+    }
+
+
+
+    var facility = $.trim($("#cas_fac_key option:selected").text()).replace("--Select--", "");
+    if ($.trim(facility) != "") {
+        $("#divCaseCopy").append(facility);
+        $("#divCaseCopy").append("##NewLine##");
+    }
+
+    var cart = $.trim($("#cas_cart").val());
+    if ($.trim(cart) != "") {
+        $("#divCaseCopy").append("Cart: " + cart);
+        $("#divCaseCopy").append("##NewLine##");
+    }
+
+    var cartLocation = $.trim($('#cas_cart_location_key option:selected').text()).replace("-- Select --", "");
+    if (cartLocation == "Other") {
+        var cartLocationText = $.trim($('#cas_cart_location_text').val());
+        if (cartLocationText != "") {
+            CartlocationText('<span style="word-wrap: break-word;">' + cartLocationText + '</span>', '#divCaseCopy')
+        }
+        else {
+            CartlocationText(cartLocation, '#divCaseCopy')
+        }
+    }
+    else if (cartLocation != "") {
+        CartlocationText(cartLocation, '#divCaseCopy')
+    }
+
+
+    var callBack = $.trim($("#cas_callback:visible").val());
+    if ($.trim(callBack) != "") {
+        $("#divCaseCopy").append("Callback Phone: " + callBack);
+        $("#divCaseCopy").append("##NewLine##");
+    }
+
+    var extension = $.trim($("#cas_callback_extension:visible").val());
+    if (extension != "") {
+        $("#divCaseCopy").append("Extension: " + extension);
+        $("#divCaseCopy").append("##NewLine##");
+    }
+
+    var patient = $.trim($("#general_cas_patient_name:visible").val());
+    if ($.trim(patient) != "") {
+        $("#divCaseCopy").append("Patient Name: " + patient);
+        $("#divCaseCopy").append("##NewLine##");
+    }
+
+
+    var triageNotes = $.trim($("#cas_triage_notes:visible").val());
+    if ($.trim(triageNotes) != "") {
+        $("#divCaseCopy").append("Triage Notes: " + triageNotes);
+        $("#divCaseCopy").append("##NewLine##");
+    }
+
+    var notes = $.trim($("#cas_notes:visible").val());
+    if (notes != undefined && notes != "") {
+
+        var notesMarkup = '';
+        $(notes.split("\n")).each(function (i, n) {
+            if (n != "") {
+                notesMarkup += n + '##NewLine##';
+            }
+        });
+
+        $("#divCaseCopy").append("Notes: " + notesMarkup);
+        $("#divCaseCopy").append("##NewLine##");
+    }
+    // Comment below code to hide eta in dialog alert box by husnain
+    /*
+    if ($("#case-eta").prop("checked")) {
+        var ETA = $.trim($("#cas_eta").val());
+        if (ETA) {
+            $("#divCaseCopy").append("ETA: " + ETA);
+            $("#divCaseCopy").append("##NewLine##");
+        }
+    }
+    */
+
+    if ($("#cas_phy_has_technical_issue").prop("checked") && $.trim($("#cas_phy_technical_issue_date_est:visible").val()) != "") {
+        var technical_issue_date = $.trim($("#cas_phy_technical_issue_date_est").val());
+        if (technical_issue_date) {
+            $("#divCaseCopy").append("Physician Having Technical Issues: " + technical_issue_date);
+            $("#divCaseCopy").append("##NewLine##");
+        }
+    }
+
+    //New for 387
+    var callbackResponseTime = $.trim($("#cas_callback_response_time_est:visible").val());
+    if (callbackResponseTime != "") {
+        $("#divCaseCopy").append("Callback Response Time: " + callbackResponseTime);
+        $("#divCaseCopy").append("##NewLine##");
     }
 }
 
@@ -1419,3 +1560,20 @@ function checkUserLoggedInStatus() {
         }
     });
 }
+
+function playMsgNotification() {
+    try {
+        var x = document.getElementById('new_msg_notification');
+        x.play();
+    }
+    catch (err) { console.log(err); }
+}
+
+function playBlastNotification() {
+    try {
+        var x = document.getElementById('new_blast_notification');
+        x.play();
+    }
+    catch (err) { console.log(err); }
+}
+

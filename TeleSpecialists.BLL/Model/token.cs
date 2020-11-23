@@ -17,6 +17,7 @@ namespace TeleSpecialists.BLL.Model
         public int tok_key { get; set; }
         public string tok_phy_key { get; set; }
         public string tok_phy_token { get; set; }
+        public string tok_device_type { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
     }

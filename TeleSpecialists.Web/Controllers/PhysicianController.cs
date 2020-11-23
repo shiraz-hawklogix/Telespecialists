@@ -10,6 +10,7 @@ using TeleSpecialists.Web.Hubs;
 using TeleSpecialists.BLL.ViewModels;
 using TeleSpecialists.BLL;
 using System.Collections.Generic;
+using System.Text;
 
 namespace TeleSpecialists.Controllers
 {
@@ -316,13 +317,115 @@ namespace TeleSpecialists.Controllers
                 if (caseDetail.cas_phy_key == User.Identity.GetUserId())
                 {
                     ViewBag.CaseType = _uclService.GetDetails(caseDetail.cas_ctp_key)?.ucd_title;
+                    ViewBag.strokeStamp = GetCaseCopyData(caseDetail);
                     return GetViewResult("_NewCasePopupPhysician", caseDetail);
                 }
             }
 
             return Json(new { success = false, message = "Case Not Found" }, JsonRequestBehavior.AllowGet);
         }
+        #region Stroke for internal blast
+        public ActionResult ShowNewCasePopupInternalBlast(int id)
+        {
+            var caseDetail = _caseService.GetDetailsWithoutTimeConversion(id);
+            if (caseDetail != null)
+            {
+                ViewBag.CaseType = _uclService.GetDetails(caseDetail.cas_ctp_key)?.ucd_title;
+                ViewBag.strokeStamp = GetCaseCopyData(caseDetail);
+                return GetViewResult("_NewCasePopupPhysicianBlast", caseDetail);
+            }
+            return Json(new { success = false, message = "Case Not Found" }, JsonRequestBehavior.AllowGet);
+        }
 
+        public string GetCaseCopyData(@case dbModel)
+        {
+            StringBuilder copytext = new StringBuilder();
+            //var dbModel = _caseService.GetDetails(case_key);
+
+            if (dbModel != null)
+            {
+                var timezone = "";
+                if (dbModel.FacilityTimeZone != null)
+                {
+                    timezone = dbModel.FacilityTimeZone;
+                }
+                if (timezone == "")
+                {
+                    timezone = "EST";
+                }
+
+                if (dbModel.cas_response_ts_notification != null)
+                {
+                    var cas_response_ts_notification = dbModel.cas_response_ts_notification;
+
+                    copytext.Append(cas_response_ts_notification + " " + timezone + " " + " Local Time");
+                    copytext.Append("##NewLine##");
+                }
+                if (dbModel.cas_response_ts_notification == null && dbModel.cas_metric_stamp_time_est != null)
+                {
+                    var cas_metric_stamp_time_est = dbModel.cas_metric_stamp_time_est;
+
+                    copytext.Append(cas_metric_stamp_time_est + " " + timezone + " " + " Local Time");
+                    copytext.Append("##NewLine##");
+                }
+
+
+                if (dbModel.facility != null)
+                {
+                    var fac_name = dbModel.facility.fac_name;
+                    copytext.Append(fac_name);
+                    copytext.Append("##NewLine##");
+                }
+                if (dbModel.cas_cart != null)
+                {
+                    var cart = dbModel.cas_cart;
+                    copytext.Append("Cart: " + cart);
+                    copytext.Append("##NewLine##");
+                }
+                if (dbModel.cas_callback != null)
+                {
+                    var callback = dbModel.cas_callback;
+                    callback = Functions.FormatAsPhoneNumber(callback);
+                    copytext.Append("Callback Phone: " + callback);
+                    copytext.Append("##NewLine##");
+                }
+                if (dbModel.cas_callback_extension != null)
+                {
+                    var extension = dbModel.cas_callback_extension;
+                    copytext.Append("Extension: " + extension);
+                    copytext.Append("##NewLine##");
+                }
+                if (dbModel.cas_patient != null)
+                {
+                    var patientname = dbModel.cas_patient;
+                    copytext.Append("Patient: " + patientname);
+                    copytext.Append("##NewLine##");
+                }
+                if (dbModel.cas_triage_notes != null)
+                {
+                    var triagenotes = dbModel.cas_triage_notes;
+                    copytext.Append("Triage Notes: " + triagenotes);
+                    copytext.Append("##NewLine##");
+                }
+                if (dbModel.cas_notes != null)
+                {
+                    var notes = dbModel.cas_notes;
+                    copytext.Append("Notes: " + notes);
+                    copytext.Append("##NewLine##");
+                }
+                if (dbModel.cas_eta != null)
+                {
+                    var eta = dbModel.cas_eta;
+                    copytext.Append("##NewLine##");
+                    copytext.Append("##NewLine##");
+                    copytext.Append("ETA: " + eta);
+                    copytext.Append("##NewLine##");
+                }
+            }
+
+            return copytext.ToString();
+        }
+        #endregion
 
         public void LogStatusChange(int psl_phs_key, string phy_key)
         {
