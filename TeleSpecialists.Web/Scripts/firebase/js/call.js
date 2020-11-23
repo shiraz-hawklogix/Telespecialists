@@ -849,7 +849,7 @@ function UpdateUserInfo(userid, username, img) {
     });
     let ref = firebase.database().ref("TeleUsers/" + userid + "/Connections");
     ref.orderByChild('type').equalTo('Private').on('child_added', function (snapshot) {
-        console.log('private users in connections:' + snapshot.key);
+        //console.log('private users in connections:' + snapshot.key);
         let refConn = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
         refConn.child(userid).update({
             image: img,

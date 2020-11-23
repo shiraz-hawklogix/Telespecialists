@@ -570,7 +570,7 @@
 
                 UserConnections(shortMsg);
 
-                console.log('is group : ' + isGroup);
+                //console.log('is group : ' + isGroup);
                 if (isGroup) {
                     //GroupMessages(_receiverId, msg);
                     //*********************** First Time read and update unread group msg of a user **********************//
@@ -595,7 +595,7 @@
         }
     });
     $("#txtSearch").keyup(function (event) {
-        console.log('users array contain : ', teleUsersArr);
+        //console.log('users array contain : ', teleUsersArr);
         $("#binduser").html('');
         var txt = $("#txtSearch").val();
         if (txt) {
