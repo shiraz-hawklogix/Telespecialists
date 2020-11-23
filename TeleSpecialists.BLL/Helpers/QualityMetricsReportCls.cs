@@ -8,6 +8,8 @@ namespace TeleSpecialists.BLL.Helpers
 {
     class QualityMetricsReportCls
     {
+        public string Facility { get; set; }
+        public string Physician { get; set; }
         public string reportname { get; set; }
         public int hospitals { get; set; }
         public TimeSpan _meantime { get; set; }
@@ -15,6 +17,7 @@ namespace TeleSpecialists.BLL.Helpers
         public string  Navigator { get; set; }
         public string timeframe { get; set; }
         public string NavigatorID { get; set; }
-        //public List<Guid> hospitalid { get; set; }
+        public Guid FacilityId { get; set; }
+        public string PhysicianId { get; set; }
     }
 }

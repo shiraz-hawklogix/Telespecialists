@@ -51,7 +51,7 @@
     <div class="row" id="divLocalFilters">
         <div class="col-12">
             <div class="form-row">
-                <div class="form-group col-xl-4 col-6 @display">
+                <div class="form-group col-xl-2 col-6 @display">
                     <label for="State">State</label>
                     @Html.DropDownList("fac_stt_key", ViewBag.States as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
                 </div>
@@ -59,11 +59,51 @@
                     <label for="Facilities">Facility</label>
                     <select id="Facilities" name="Facilities" class="form-control Facilities" multiple="multiple"></select>
                 </div>
-                <div class="form-group col-xl-3 col-6">
+                <div class="form-group col-xl-2 col-6">
                     <label for="Physicians">Physician</label>
                     @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
                 </div>
-                <div class="form-group col-xl-3 col-6">
+                <div class="form-group col-xl-2 col-6">
+                    <label>Workflow Type</label>
+                    <div id="divCaseWorkflowFilter">
+                        @Html.DropDownList("WorkflowType", ViewBag.WorkflowType as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+                    </div>
+                </div>
+                <div class="form-group col-xl-1 col-6">
+                    <label>Wake Up Stroke</label>
+                    <div id="divCaseWakeUpStroke">
+                        @Html.DropDownList("WakeUpStroke", ViewBag.WakeUpStroke as List<SelectListItem>, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group col-xl-1 col-6 ">
+                    <label>tPA</label>
+                    <div id="divtPAList">
+                        @Html.DropDownList("tPA_List", tPA_List, new { @class = "form-control", @multiple = "multiple" })
+
+                    </div>
+                </div>
+                <div class="form-group col-xl-2 col-6">
+                    <label>QPS</label>
+                    <div id="divQPSNumbersList">
+                        @Html.DropDownList("QPS_Numbers_List", QPS_Numbers_List, new { @class = "form-control", @multiple = "multiple" })
+
+                    </div>
+                </div>
+                <div class="form-group col-xl-1 col-6">
+                    <label>eAlert</label>
+                    <div id="diveAlert">
+                        @Html.DropDownList("eAlert_List", eAlert_List, new { @class = "form-control", @multiple = "multiple" })
+
+                    </div>
+                </div>
+                <div class="form-group col-xl-2 col-6">
+                    <label for="ddlreporttype">Report Type</label>
+                    <select class="form-control" id="ddlreporttype">
+                        <option value="1">Cumulative</option>
+                        <option value="2">Individual</option>
+                    </select>
+                </div>
+                <div class="form-group col-xl-2 col-6">
                     <label for="ddlTimeFrame">Time Frame</label>
                     <select class="form-control" id="ddlTimeFrame">
                         <option value="LastMonth">Last Month</option>
@@ -88,39 +128,8 @@
                         <input type="text" id="ToDate" name="ToDate" class="form-control datepicker" />
                     </div>
                 </div>
-                <div class="form-group col-xl-2 col-6">
-                    <label>Workflow Type</label>
-                    <div id="divCaseWorkflowFilter">
-                        @Html.DropDownList("WorkflowType", ViewBag.WorkflowType as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
-                    </div>
-                </div>
-                <div class="form-group col-xl-2 col-6">
-                    <label>Wake Up Stroke</label>
-                    <div id="divCaseWakeUpStroke">
-                        @Html.DropDownList("WakeUpStroke", ViewBag.WakeUpStroke as List<SelectListItem>, new { @class = "form-control" })
-                    </div>
-                </div>
-                <div class="form-group col-xl-2 col-6">
-                    <label>QPS</label>
-                    <div id="divQPSNumbersList">
-                        @Html.DropDownList("QPS_Numbers_List", QPS_Numbers_List, new { @class = "form-control", @multiple = "multiple" })
 
-                    </div>
-                </div>
-                <div class="form-group col-xl-1 col-6 ">
-                    <label>tPA</label>
-                    <div id="divtPAList">
-                        @Html.DropDownList("tPA_List", tPA_List, new { @class = "form-control", @multiple = "multiple" })
 
-                    </div>
-                </div>
-                <div class="form-group col-xl-2 col-6">
-                    <label>eAlert</label>
-                    <div id="diveAlert">
-                        @Html.DropDownList("eAlert_List", eAlert_List, new { @class = "form-control", @multiple = "multiple" })
-
-                    </div>
-                </div>
 
                 <div class="form-group col-12 mt-xl-12 pt-xl-12">
                     <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
@@ -695,7 +704,7 @@
         function loadGridData() {
             showAllColumns();
 
-         $("#kendoDataGrid").kendoGrid({
+            $("#kendoDataGrid").kendoGrid({
                 excel: {
                     allPages: true,
                     filterable: false,
@@ -714,23 +723,21 @@
                                     Physicians: "",
                                     StartDate: null,
                                     EndDate: null,
-                                    IncludeTime: false,
-                                    AdvanceSearchCriteria: advanceSearchModel,
-                                    BillingCode : null,
-                                    CaseType: null,
+                                    BillingCode: 1,
+                                    CaseType: 9,
                                     QPSNumbers: "",
                                     tPA: "",
                                     eAlert: "",
                                     TimeFrame: "",
                                     states: "",
-                                    WakeUpStroke: false
+                                    WakeUpStroke: false,
+                                    DefaultType: "1",
+                                    CaseStatus: 20
                                 };
                                 model.states = $("#fac_stt_key").val();
                                 model.Physicians = $("#Physicians").val();
                                 model.Facilities = $(".Facilities").val();
-                                model.BillingCode = 1;//$("#BillingCode").val();
-
-                                model.CaseType = 9;//$("#CaseTypes").val();
+                                model.DefaultType = $("#ddlreporttype").val();
                                 model.QPSNumbers = $("#QPS_Numbers_List").val();
                                 model.tPA = $("#tPA_List").val();
                                 model.eAlert = $("#eAlert_List").val();
@@ -740,11 +747,6 @@
                                 } else {
                                     model.WakeUpStroke = false;
                                 }
-                                model.CallType = $("#CallType").val();
-                                model.CallerSource = $("#CallerSource").val();
-
-
-                                model.CaseStatus = 20;//$("#CaseStatus").val();
                                 model.TimeFrame = $("#ddlTimeFrame").val();
                                 switch (model.TimeFrame) {
                                     case "Today":
@@ -767,7 +769,7 @@
                                         break;
                                     case "LastSevenDays":
                                         model.StartDate = "@(currentDate.AddDays(-7).ToString())";
-                                        model.EndDate ="@currentDate.ToString()";
+                                        model.EndDate = "@currentDate.ToString()";
                                         break;
                                     case "Last14Days":
                                         model.StartDate = "@(currentDate.AddDays(-14).ToString())";
@@ -775,7 +777,7 @@
                                         break;
                                     case "LastMonth":
                                         model.StartDate = "@LMStartDate";
-                                            model.EndDate = "@LMEndDate";
+                                        model.EndDate = "@LMEndDate";
                                         break;
                                     case "Last60Days":
                                         model.StartDate = "@(currentDate.AddDays(-60).ToString())";
@@ -783,7 +785,7 @@
                                         break;
                                     case "Last3Months":
                                         model.StartDate = "@LTHRStartDate";
-                                            model.EndDate = "@LTHREndDate";
+                                        model.EndDate = "@LTHREndDate";
                                         break;
                                     case "Last12Months":
                                         model.StartDate = "@LTWStartDate";
@@ -824,6 +826,9 @@
                     pageSize: 10,
                     serverFiltering: false,
                     serverSorting: true,
+                    group: {
+                        field: "Physician"
+                    }
                 },
                 width: '100%',
                 pageable: {
@@ -835,8 +840,8 @@
                 groupable: false,
                 filterable: true,
                 sortable: true,
-             resizable: true,
-             dataBound: function (e) {
+                resizable: true,
+                dataBound: function (e) {
 
                     $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
                     // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
@@ -844,27 +849,59 @@
                         var kendoDropDown = $(this).data("kendoDropDownList");
                         if (kendoDropDown)
                             kendoDropDown.bind("open", onDropdDownOpen);
-                 });
+                    });
 
-                 filterColumns();
+                    filterColumns();
+                    ShowHideColumns();
                 },
-             columns: [
-                 { hidden: true, field: "id" },
+                columns: [
+                    { hidden: true, field: "id", title: "Id" },
+                    { hidden: true, field: "phy_id" },
                     {
-                        title: "<b>Graph</b>", width: '80px',
-                        template: "<input type='button' class='btn btn-dark btn-sm hopitalid' data-hopitalid='#= id #' onclick='showgraph.call(this)' value='View' />"
+                        title: "<b>Graph</b>",
+                        template: "<input type='button' class='btn btn-dark btn-sm hopitalid' data-phyid='#= phy_id #' data-hopitalid='#= id #' onclick='showgraph.call(this)' value='View' />"
                     },
-                    { field: "hospitalname", width: 250, title: "Case Count" },
-                    { field: "mean", width: 185, title: "Mean" },
-                    { field: "median", width: 185, title: "Median" },
-                    { field: "timecycle", width: 185, title: "Time Frame"},
+                    { hidden: true,field: "Facility", title: "Facility" },
+                    { hidden: true, field: "Physician", title: "Physician" },
+                    { field: "hospitalcount", title: "Case Count" },
+                    { field: "mean", title: "Mean" },
+                    { field: "median", title: "Median" },
+                    { field: "timecycle", title: "Time Frame" },
                 ]
             });
-
-
-
-
         }
+        function ShowHideColumns() {
+            debugger
+            var shouldShow = $("#ddlreporttype").val();
+            var grid = $("#kendoDataGrid").data("kendoGrid");
+            if (shouldShow == "2") {
+                grid.showColumn(3);
+                //grid.showColumn(4);
+            }
+            else {
+                grid.hideColumn(3);
+                //grid.hideColumn(4);
+            }
+        }
+        function myGroupableClickHandler(e) {
+            var expanded = $(e.toElement).hasClass('k-i-collapse');
+            var collapse = $(e.toElement).hasClass('k-i-expand');
+            if (expanded == true) {
+                $(e.toElement).removeClass('k-i-collapse');
+                $(e.toElement).addClass('k-i-expand');
+            }
+            else if (collapse == true) {
+                $(e.toElement).removeClass('k-i-expand');
+                $(e.toElement).addClass('k-i-collapse');
+            }
+        }
+        $(document).ready(function () {
+
+            var grid = $("#kendoDataGrid").getKendoGrid();
+            var table = grid._isLocked() ? grid.lockedTable : grid.table;
+
+            table.on('click.kendoGrid', '.k-grouping-row .k-i-collapse, .k-grouping-row .k-i-expand', myGroupableClickHandler);
+        })
         function validateForm() {
             var selectedOption = $("#ddlTimeFrame").val();
             $("#txtStartDateError").hide();
@@ -899,6 +936,9 @@
         var showgraph = function (){
             var hospitalid = $(this).data("hopitalid");
             var array = hospitalid.split(',');
+            
+            var physicianid = $(this).data("phyid");
+            var physicianarray = physicianid.split(',');
             var model = {
                 Facilities: "",
                 Physicians: "",
@@ -916,7 +956,7 @@
                 WakeUpStroke: false
             };
             model.states = $("#fac_stt_key").val();
-            model.Physicians = $("#Physicians").val();
+            model.Physicians = physicianarray;//$("#Physicians").val();
             model.Facilities = array;
             model.BillingCode = 1;//$("#BillingCode").val();
             model.CaseType = 9;

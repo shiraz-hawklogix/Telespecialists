@@ -320,6 +320,7 @@
                         hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) ? "true" : "false"),
                     },
                     { field: "ResponseTime", title: "TS Response Time", width: '150px', attributes: { "class": "case-grid-response-time" } },
+                    { field: "ArrivalToNeedleTime", title: "Arrival to Needle Time", width: '150px', attributes: { "class": "case-grid-needle-time" } },
                     { hidden: true, field: "CallBackResponseTime", title: "Callback To TS-Response Time", width: '150px', attributes: { "class": "case-grid-callbackresponse-time" } },
                     { field: "cst_name", title: "Status", width: '100px', hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "true" : "false"), },
                     { field: "TPACandidate", title: "tPA", width: '50px' },

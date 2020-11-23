@@ -2728,9 +2728,19 @@ namespace TeleSpecialists.Controllers
         {
             try
             {
-                var isFacilityAdmin = User.IsInRole(UserRoles.FacilityAdmin.ToDescription());
-                var result = _reportService.GetOnScreen(request, model, isFacilityAdmin ? User.Identity.GetUserId() : null);
-                return JsonMax(result, JsonRequestBehavior.AllowGet);
+                if(model.DefaultType == "1")
+                {
+                    var isFacilityAdmin = User.IsInRole(UserRoles.FacilityAdmin.ToDescription());
+                    var result = _reportService.GetOnScreen(request, model, isFacilityAdmin ? User.Identity.GetUserId() : null);
+                    return JsonMax(result, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var isFacilityAdmin = User.IsInRole(UserRoles.FacilityAdmin.ToDescription());
+                    var result = _reportService.GetOnScreenIND(request, model, isFacilityAdmin ? User.Identity.GetUserId() : null);
+                    return JsonMax(result, JsonRequestBehavior.AllowGet);
+                }
+                
             }
             catch (Exception ex)
             {
@@ -2855,6 +2865,20 @@ namespace TeleSpecialists.Controllers
             try
             {
                 var result = _reportService.GetCasesPendingReviewList(request, QPS_Key, period);
+                return JsonMax(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public ActionResult GetCasesIndirectList(DataSourceRequest request, string period)
+        {
+            try
+            {
+                var result = _reportService.GetCasesIndirectList(request, period);
                 return JsonMax(result, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
