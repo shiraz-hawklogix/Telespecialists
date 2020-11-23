@@ -78,6 +78,7 @@ namespace TeleSpecialists.Controllers
                         {
                             ViewBag.f9Domain = ApplicationSetting.aps_five9_domain;
                             ViewBag.f9CallNumber = Functions.ClearPhoneFormat(ApplicationSetting.aps_five9_number_to_dial);
+                            ViewBag.f9List = ApplicationSetting.aps_five9_list;
                         }
                         var model = new @case();
                         model.cas_identification_type = _uCLService.GetDefault(UclTypes.IdentificationType)?.ucd_key;
