@@ -49,4 +49,17 @@
         color: yellow;
     }
 }
-    
+
+.dispatch-row-wrap td > tbody > tr:hover > th:hover, table > tbody > tr:hover > td:hover {
+    background-color: rgba(0,0,0,0.6);
+    color: #ffffff !important;
+    cursor: pointer;
+    /*transition: all 200ms ease-in;
+    transform: scale(1.1);
+    text-align: center;*/
+}
+
+/*.dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
+    transition: all 200ms ease-in;
+    transform: scale(1);
+}*/
