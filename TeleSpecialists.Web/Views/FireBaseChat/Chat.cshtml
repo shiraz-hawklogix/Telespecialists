@@ -1592,6 +1592,12 @@
             }
         });
     }
+    document.getElementById("msgDetail").onscroll = function () {
+        let messageBody = document.querySelector('#msgDetail');
+        //messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+        if (messageBody.scrollTop === 0)
+            console.log('msg detail up & down:', messageBody.scrollTop);
+    };
    // <<<<<<<<<<<<<<<<<*************  Currently Used Functions In Firebase End ***************************** >>>>>>>>>>>>>>>>>>>>>>>>
 
 
