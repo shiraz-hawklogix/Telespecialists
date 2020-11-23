@@ -803,6 +803,7 @@
     <Content Include="Scripts\firebase\firebasejs\firebase-messaging.js" />
     <Content Include="Scripts\firebase\js\call.js" />
     <Content Include="Scripts\firebase\js\custome.js" />
+    <Content Include="Scripts\firebase\js\firebaseConfig.js" />
     <Content Include="Scripts\firebase\js\firebase_auth.js" />
     <Content Include="Scripts\firebase\js\init.js" />
     <Content Include="Scripts\firebase\js\LoadFirebase.js" />

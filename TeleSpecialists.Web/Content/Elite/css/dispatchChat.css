@@ -363,6 +363,7 @@ img {
     width: 38px;
     border: 1.5px solid #f5f6fa;
     height: 38px;
+    object-fit:cover;
 }
 
 .img_cont {
