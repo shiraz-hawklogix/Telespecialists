@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="DataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="alarm_setting">
           <Key>
             <PropertyRef Name="als_key" />
@@ -1815,6 +1815,7 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.MDStaffFacility' 
           <Property Name="psl_uss_key" Type="bigint" />
           <Property Name="psl_cas_key" Type="int" />
           <Property Name="psl_comments" Type="varchar" MaxLength="300" />
+          <Property Name="psl_fac_key" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="physician_status_snooze">
           <Key>
@@ -4630,6 +4631,7 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <NavigationProperty Name="physician_status_log1" Relationship="DataModel.FK_physician_status_log_physician_status_log" FromRole="physician_status_log" ToRole="physician_status_log1" />
           <NavigationProperty Name="physician_status_log2" Relationship="DataModel.FK_physician_status_log_physician_status_log" FromRole="physician_status_log1" ToRole="physician_status_log" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_physician_status_log_AspNetUsers" FromRole="physician_status_log" ToRole="AspNetUser" />
+          <Property Name="psl_fac_key" Type="Guid" />
         </EntityType>
         <EntityType Name="physician_status_snooze">
           <Key>
@@ -7871,6 +7873,7 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <EntitySetMapping Name="physician_status_log">
             <EntityTypeMapping TypeName="DataModel.physician_status_log">
               <MappingFragment StoreEntitySet="physician_status_log">
+                <ScalarProperty Name="psl_fac_key" ColumnName="psl_fac_key" />
                 <ScalarProperty Name="psl_comments" ColumnName="psl_comments" />
                 <ScalarProperty Name="psl_cas_key" ColumnName="psl_cas_key" />
                 <ScalarProperty Name="psl_uss_key" ColumnName="psl_uss_key" />

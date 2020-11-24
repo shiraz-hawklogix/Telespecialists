@@ -12,6 +12,8 @@ using System.Text;
 using System.Threading;
 using System.Globalization;
 using System.Web;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace TeleSpecialists.BLL.Service
 {
@@ -1302,5 +1304,17 @@ namespace TeleSpecialists.BLL.Service
             }
             return obj;
         }
+
+        #region  Nabeel's Code
+
+        public List<CaseNumberDropDownVM> GetCaseNumberDropDown(string physician)
+        {
+            var param_physician = new SqlParameter("PhysicianKey", SqlDbType.VarChar) { Value = physician };
+            var dropdownlist = _unitOfWork.ExecuteStoreProcedure<CaseNumberDropDownVM>("usp_cas_number_dropdown @PhysicianKey", param_physician).ToList();
+
+            return dropdownlist;
+        }
+
+        #endregion
     }
 }

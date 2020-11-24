@@ -443,6 +443,7 @@
     <Compile Include="Service\UserVerificationService.cs" />
     <Compile Include="Service\Web2CampaignLogService.cs" />
     <Compile Include="ViewModels\CancelledCases.cs" />
+    <Compile Include="ViewModels\CaseNumberDropDownVM.cs" />
     <Compile Include="ViewModels\CasePage\CaseListing.cs" />
     <Compile Include="ViewModels\CasePage\CaseListing_Export.cs" />
     <Compile Include="ViewModels\CasePage\CasePageCommonFields.cs" />

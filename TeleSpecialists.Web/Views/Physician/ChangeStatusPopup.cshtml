@@ -35,6 +35,24 @@
                     <button class="round-button status-button update-Status" data-status="@item.phs_key" style="background-color: @item.phs_color_code">@item.phs_name</button>
                 </div>
             }
+            <div class="form-group" id="casNumber_FORMGROUP" style="display:none;">
+                <label class="control-label">Select Case: </label>
+                <div class="col-lg-6 col-xl-6 col-md-6  col-sm-12 col-xs-12">
+                    <select id="casNumber" name="casNumber" class="form-control" data-searchFilter="true" required></select>
+                    <div class="error_msg" id="casNumber_error" style="display:none;">
+                        <label>This field is required</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" id="facility_FORMGROUP" style="display:none;">
+                <label class="control-label">Select Facility: </label>
+                <div class="col-lg-6 col-xl-6 col-md-6  col-sm-12 col-xs-12">
+                    <select id="fac_key" name="fac_key" class="form-control" data-searchFilter="true" required></select>
+                    <div class="error_msg" id="fac_key_error" style="display:none;">
+                        <label>This field is required</label>
+                    </div>
+                </div>
+            </div>
 
             <!-- Modal footer -->
             <div class="modal-footer">
@@ -60,20 +78,55 @@
 
     });
 
+    var elementRound = $("#changePhysicianStatus").find(".poup-current-status");
+
+    var selectedElementValue = elementRound.data("status");
+
+    if (selectedElementValue != 1 && selectedElementValue != 4 && selectedElementValue != 5 && selectedElementValue != 19 && selectedElementValue != 16) {
+        $("#facility_FORMGROUP").css("display", "none");
+        $("#casNumber_FORMGROUP").css("display", "block");
+    }
+    else {
+        $("#casNumber_FORMGROUP").css("display", "none");
+        $("#facility_FORMGROUP").css("display", "none");
+    }
+    if (selectedElementValue == 4 || selectedElementValue == 19) {
+        $("#casNumber_FORMGROUP").css("display", "none");
+        $("#facility_FORMGROUP").css("display", "block");
+    }
+
     $("#btnChangeStatusSave").off("click").click(function () {      
         var element = $("#changePhysicianStatus").find(".poup-current-status");
         $("#changePhysicianStatus").find("#validationSummary").empty();
 
         if (element.length == 0) {
-            $("#changePhysicianStatus").find("#validationSummary").empty().showBSDangerAlert("", "Select a status to proceeed");
+            $("#changePhysicianStatus").find("#validationSummary").empty().showBSDangerAlert("", "Select a status to proceed");
         }
         var selectedValue = element.data("status");
+        var facility = "";
+        var casNum = "";
 
+        if (selectedValue == 4 || selectedValue == 19) {
+            // Get Facility
+            facility = $("#fac_key").val();
+            if (facility == "") {
+                $("#changePhysicianStatus").find("#validationSummary").empty().showBSDangerAlert("", "Select a facility to proceed");
+                return false;
+            }
+        }
+        if (selectedValue != 1 && selectedValue != 4 && selectedValue != 5 && selectedValue != 19 && selectedValue != 16) {
+            // Get Case Number
+            casNum = $("#casNumber").val();
+            if (casNum == "") {
+                $("#changePhysicianStatus").find("#validationSummary").empty().showBSDangerAlert("", "Select case to proceed");
+                return false;
+            }
+        }
         var userId = "@ViewBag.Id";
         var url = "@Url.Action("SetStatus")";
         //
         
-        $.post(url, { id: selectedValue, userId: userId }, function (response) {
+        $.post(url, { id: selectedValue, userId: userId, casKey: casNum, facKey: facility }, function (response) {
             if (response.success) {
                 $("#divModelPopUp").modal("hide");
                // loadPageAsync('/Physician/Status');
@@ -96,7 +149,8 @@
     });
 
    
-
+      $("#fac_key").fillKendoDropDown("/LookUp/GetFacilitiesByPhysician?&physicianKey=@physician.Id", "fac_name", "fac_key", "-- Select --");
+    $("#casNumber").fillKendoDropDown("/Physician/GetCaseNumberDropDown?&physicianKey=@physician.Id", "CaseNumFac", "cas_key", "-- Select -- ");
 
 
 </script>

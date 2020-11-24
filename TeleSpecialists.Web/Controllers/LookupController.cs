@@ -169,6 +169,22 @@ namespace TeleSpecialists.Controllers
                 return Json(new { success = false, data = "", error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+
+
+        [HttpGet]
+        public JsonResult GetFacilitiesByPhysician(string physicianKey)
+        {
+            string phoneNumber = "";
+            var phyFacList = _physicianService.GetPhysicianTeleNeuroFacilities(physicianKey, phoneNumber).Where(f => f.fac_go_live)
+                                     .Select(m =>
+                                                         new
+                                                         {
+                                                             fac_key = m.fac_key,
+                                                             fac_name = m.fac_name
+                                                         });
+            return Json(phyFacList, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpGet]
         public JsonResult GetAllMockFacilities()
         {
