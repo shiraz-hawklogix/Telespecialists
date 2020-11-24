@@ -919,14 +919,6 @@
           <Property Name="cts_modified_by" Type="varchar" MaxLength="128" />
           <Property Name="cts_callback_to_tsnotification" Type="bigint" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6013: The table/view 'dbTeleSpecialists-netsparker.dbo.case_trigger' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
-        <EntityType Name="case_trigger">
-          <Property Name="cas_key" Type="int" />
-          <Property Name="cas_created_date" Type="datetime" />
-          <Property Name="cas_modified_date" Type="datetime" />
-          <Property Name="operation" Type="nvarchar" MaxLength="50" />
-        </EntityType>-->
         <EntityType Name="CCIReport_Data">
           <Key>
             <PropertyRef Name="CCI_ID" />
@@ -1037,21 +1029,6 @@ warning 6013: The table/view 'dbTeleSpecialists-netsparker.dbo.case_trigger' doe
           <Property Name="date_updated" Type="datetime" />
           <Property Name="is_active" Type="bit" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6013: The table/view 'dbTeleSpecialists-netsparker.dbo.dispatch_save_btn_tbl' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
-        <EntityType Name="dispatch_save_btn_tbl">
-          <Property Name="cas_key" Type="int" />
-          <Property Name="cas_physician_key_old" Type="uniqueidentifier" />
-          <Property Name="cas_physician_key_new" Type="uniqueidentifier" />
-          <Property Name="row_status" Type="bit" />
-        </EntityType>-->
-        <!--Errors Found During Generation:
-warning 6013: The table/view 'dbTeleSpecialists-netsparker.dbo.dispatch_trigger_tbl' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
-        <EntityType Name="dispatch_trigger_tbl">
-          <Property Name="trgr_caskey" Type="int" />
-          <Property Name="trgr_rowstatus" Type="bit" />
-          <Property Name="trgr_operation" Type="varchar" MaxLength="50" />
-        </EntityType>-->
         <EntityType Name="ealert_user_case_type">
           <Key>
             <PropertyRef Name="ect_key" />
@@ -3765,6 +3742,62 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <EntitySet Name="application_setting" EntityType="DataModel.application_setting" />
           <EntitySet Name="user_login_verify" EntityType="DataModel.user_login_verify" />
           <EntitySet Name="firebase_usersemail" EntityType="DataModel.firebase_usersemail" />
+          <EntitySet Name="operationsoutliersTemps" EntityType="DataModel.operationsoutliersTemp" />
+          <EntitySet Name="Hospital_Protocols" EntityType="DataModel.Hospital_Protocols" />
+          <EntitySet Name="Onboardeds" EntityType="DataModel.Onboarded" />
+          <EntitySet Name="web2campaign_log" EntityType="DataModel.web2campaign_log" />
+
+          <EntitySet Name="component_access" EntityType="DataModel.component_access" />
+          <EntitySet Name="components" EntityType="DataModel.component" />
+          <AssociationSet Name="FK_ComponentAccess_Component_Id" Association="DataModel.FK_ComponentAccess_Component_Id">
+            <End Role="component" EntitySet="components" />
+            <End Role="component_access" EntitySet="component_access" />
+          </AssociationSet>
+          <FunctionImport Name="sp_getMenuAccess" ReturnType="Collection(DataModel.sp_getMenuAccess_Result)">
+          <Parameter Name="Id" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="premorbid_correspondnce" EntityType="DataModel.premorbid_correspondnce" />
+          <AssociationSet Name="FK_premorbid_correspondnce_case" Association="DataModel.FK_premorbid_correspondnce_case">
+            <End Role="case" EntitySet="cases" />
+            <End Role="premorbid_correspondnce" EntitySet="premorbid_correspondnce" />
+          </AssociationSet>
+          <EntitySet Name="Forcast_Data" EntityType="DataModel.Forcast_Data" />
+          <FunctionImport Name="UspGetAllPhysicion" ReturnType="Collection(DataModel.UspGetAllPhysicion_Result)" />
+          <FunctionImport Name="UspGetCaseDataForBCI" ReturnType="Collection(DataModel.UspGetCaseDataForBCI_Result)">
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="edate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="UspGetDailyVolimetircdata" ReturnType="Collection(DataModel.UspGetDailyVolimetircdata_Result)">
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="edate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="UspGetForecastData" ReturnType="Collection(DataModel.UspGetForecastData_Result)">
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="edate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="telecare_counters" EntityType="DataModel.telecare_counters" />
+          <EntitySet Name="CCIReport_Data" EntityType="DataModel.CCIReport_Data" />
+          <FunctionImport Name="UspGetAllCaseDataForCCI" ReturnType="Collection(DataModel.UspGetAllCaseDataForCCI_Result)" />
+          <FunctionImport Name="UspGetAllOnBoarededList" ReturnType="Collection(DataModel.UspGetAllOnBoarededList_Result)" />
+          <FunctionImport Name="UspGetAllPhyDataForBCI" ReturnType="Collection(DataModel.UspGetAllPhyDataForBCI_Result)" />
+          <FunctionImport Name="UspGetAllPhyDataForCCI" ReturnType="Collection(DataModel.UspGetAllPhyDataForCCI_Result)" />
+          <FunctionImport Name="UspGetForecastDataFOorMOnthly" ReturnType="Collection(DataModel.UspGetForecastDataFOorMOnthly_Result)" />
+          <EntitySet Name="view_facility_physician" EntityType="DataModel.view_facility_physician" />
+          <EntitySet Name="view_user_schedule" EntityType="DataModel.view_user_schedule" />
+          <EntitySet Name="BCI_ReportData" EntityType="DataModel.BCI_ReportData" />
+          <EntitySet Name="case_rejection_reason" EntityType="DataModel.case_rejection_reason" />
+          <EntitySet Name="firebase_users" EntityType="DataModel.firebase_users" />
+          <EntitySet Name="For_Case" EntityType="DataModel.For_Case" />
+          <EntitySet Name="mute_firebase_notification" EntityType="DataModel.mute_firebase_notification" />
+          <EntitySet Name="icd10_billing_codes_calcualtor" EntityType="DataModel.icd10_billing_codes_calcualtor" />
+          <EntitySet Name="mock_case" EntityType="DataModel.mock_case" />
+          <EntitySet Name="OperationOutlierNotificationLogs" EntityType="DataModel.OperationOutlierNotificationLog" />
+          <EntitySet Name="tokens" EntityType="DataModel.token" />
+          <EntitySet Name="user_access" EntityType="DataModel.user_access" />
+          <AssociationSet Name="FK_mock_case_facility" Association="DataModel.FK_mock_case_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
           <EntitySet Name="AspNetUsers" EntityType="DataModel.AspNetUser" />
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="DataModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
@@ -3818,6 +3851,18 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="facility_physician" EntitySet="facility_physician" />
           </AssociationSet>
+          <AssociationSet Name="FK_mock_case_AspNetUsers" Association="DataModel.FK_mock_case_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_AspNetUsers_Navigator" Association="DataModel.FK_mock_case_AspNetUsers_Navigator">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_AspNetUsers1" Association="DataModel.FK_mock_case_AspNetUsers1">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
           <AssociationSet Name="FK_physician_license_AspNetUsers" Association="DataModel.FK_physician_license_AspNetUsers">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="physician_license" EntitySet="physician_license" />
@@ -3842,6 +3887,10 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="user_schedule" EntitySet="user_schedule" />
           </AssociationSet>
+          <AssociationSet Name="FK_token_AspNetUsers" Association="DataModel.FK_token_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="token" EntitySet="tokens" />
+          </AssociationSet>
           <AssociationSet Name="FK_user_login_verify_User_Id" Association="DataModel.FK_user_login_verify_User_Id">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="user_login_verify" EntitySet="user_login_verify" />
@@ -3853,78 +3902,6 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <AssociationSet Name="FK_user_schedule_sleep_AspNetUsers" Association="DataModel.FK_user_schedule_sleep_AspNetUsers">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="user_schedule_sleep" EntitySet="user_schedule_sleep" />
-          </AssociationSet>
-          <EntitySet Name="operationsoutliersTemps" EntityType="DataModel.operationsoutliersTemp" />
-          <EntitySet Name="Hospital_Protocols" EntityType="DataModel.Hospital_Protocols" />
-          <EntitySet Name="Onboardeds" EntityType="DataModel.Onboarded" />
-          <EntitySet Name="web2campaign_log" EntityType="DataModel.web2campaign_log" />
-
-          <EntitySet Name="component_access" EntityType="DataModel.component_access" />
-          <EntitySet Name="components" EntityType="DataModel.component" />
-          <AssociationSet Name="FK_ComponentAccess_Component_Id" Association="DataModel.FK_ComponentAccess_Component_Id">
-            <End Role="component" EntitySet="components" />
-            <End Role="component_access" EntitySet="component_access" />
-          </AssociationSet>
-          <FunctionImport Name="sp_getMenuAccess" ReturnType="Collection(DataModel.sp_getMenuAccess_Result)">
-          <Parameter Name="Id" Mode="In" Type="String" />
-          </FunctionImport>
-          <EntitySet Name="premorbid_correspondnce" EntityType="DataModel.premorbid_correspondnce" />
-          <AssociationSet Name="FK_premorbid_correspondnce_case" Association="DataModel.FK_premorbid_correspondnce_case">
-            <End Role="case" EntitySet="cases" />
-            <End Role="premorbid_correspondnce" EntitySet="premorbid_correspondnce" />
-          </AssociationSet>
-          <EntitySet Name="Forcast_Data" EntityType="DataModel.Forcast_Data" />
-          <FunctionImport Name="UspGetAllPhysicion" ReturnType="Collection(DataModel.UspGetAllPhysicion_Result)" />
-          <FunctionImport Name="UspGetCaseDataForBCI" ReturnType="Collection(DataModel.UspGetCaseDataForBCI_Result)">
-            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
-            <Parameter Name="edate" Mode="In" Type="DateTime" />
-          </FunctionImport>
-          <FunctionImport Name="UspGetDailyVolimetircdata" ReturnType="Collection(DataModel.UspGetDailyVolimetircdata_Result)">
-            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
-            <Parameter Name="edate" Mode="In" Type="DateTime" />
-          </FunctionImport>
-          <FunctionImport Name="UspGetForecastData" ReturnType="Collection(DataModel.UspGetForecastData_Result)">
-            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
-            <Parameter Name="edate" Mode="In" Type="DateTime" />
-          </FunctionImport>
-          <EntitySet Name="telecare_counters" EntityType="DataModel.telecare_counters" />
-          <EntitySet Name="CCIReport_Data" EntityType="DataModel.CCIReport_Data" />
-          <FunctionImport Name="UspGetAllCaseDataForCCI" ReturnType="Collection(DataModel.UspGetAllCaseDataForCCI_Result)" />
-          <FunctionImport Name="UspGetAllOnBoarededList" ReturnType="Collection(DataModel.UspGetAllOnBoarededList_Result)" />
-          <FunctionImport Name="UspGetAllPhyDataForBCI" ReturnType="Collection(DataModel.UspGetAllPhyDataForBCI_Result)" />
-          <FunctionImport Name="UspGetAllPhyDataForCCI" ReturnType="Collection(DataModel.UspGetAllPhyDataForCCI_Result)" />
-          <FunctionImport Name="UspGetForecastDataFOorMOnthly" ReturnType="Collection(DataModel.UspGetForecastDataFOorMOnthly_Result)" />
-          <EntitySet Name="view_facility_physician" EntityType="DataModel.view_facility_physician" />
-          <EntitySet Name="view_user_schedule" EntityType="DataModel.view_user_schedule" />
-          <EntitySet Name="BCI_ReportData" EntityType="DataModel.BCI_ReportData" />
-          <EntitySet Name="case_rejection_reason" EntityType="DataModel.case_rejection_reason" />
-          <EntitySet Name="firebase_users" EntityType="DataModel.firebase_users" />
-          <EntitySet Name="For_Case" EntityType="DataModel.For_Case" />
-          <EntitySet Name="mute_firebase_notification" EntityType="DataModel.mute_firebase_notification" />
-          <EntitySet Name="icd10_billing_codes_calcualtor" EntityType="DataModel.icd10_billing_codes_calcualtor" />
-          <EntitySet Name="mock_case" EntityType="DataModel.mock_case" />
-          <EntitySet Name="OperationOutlierNotificationLogs" EntityType="DataModel.OperationOutlierNotificationLog" />
-          <EntitySet Name="tokens" EntityType="DataModel.token" />
-          <EntitySet Name="user_access" EntityType="DataModel.user_access" />
-          <AssociationSet Name="FK_mock_case_AspNetUsers" Association="DataModel.FK_mock_case_AspNetUsers">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="mock_case" EntitySet="mock_case" />
-          </AssociationSet>
-          <AssociationSet Name="FK_mock_case_AspNetUsers_Navigator" Association="DataModel.FK_mock_case_AspNetUsers_Navigator">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="mock_case" EntitySet="mock_case" />
-          </AssociationSet>
-          <AssociationSet Name="FK_mock_case_AspNetUsers1" Association="DataModel.FK_mock_case_AspNetUsers1">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="mock_case" EntitySet="mock_case" />
-          </AssociationSet>
-          <AssociationSet Name="FK_token_AspNetUsers" Association="DataModel.FK_token_AspNetUsers">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="token" EntitySet="tokens" />
-          </AssociationSet>
-          <AssociationSet Name="FK_mock_case_facility" Association="DataModel.FK_mock_case_facility">
-            <End Role="facility" EntitySet="facilities" />
-            <End Role="mock_case" EntitySet="mock_case" />
           </AssociationSet>
 
           </EntityContainer>
@@ -5748,9 +5725,6 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <Property Name="cas_metric_viz_app_usage" Type="Boolean" />
           <Property Name="cas_metric_viz_app_usage_review" Type="Int32" />
           <Property Name="cas_metric_viz_app_usage_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_case_AspNetUsers" FromRole="case" ToRole="AspNetUser" />
-          <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_case_AspNetUsers_Navigator" FromRole="case" ToRole="AspNetUser" />
-          <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_case_AspNetUsers1" FromRole="case" ToRole="AspNetUser" />
           <Property Name="cas_review_qps_reviewed_completed" Type="DateTime" Precision="3" />
           <Property Name="cas_metric_has_morbid_symptoms" Type="Int32" />
           <Property Name="cas_premorbid_symptoms" Type="Int32" />
@@ -5759,6 +5733,9 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <Property Name="cas_premorbid_completed_date" Type="DateTime" Precision="3" />
           <NavigationProperty Name="premorbid_correspondnce" Relationship="DataModel.FK_premorbid_correspondnce_case" FromRole="case" ToRole="premorbid_correspondnce" />
           <Property Name="cas_metric_wakeup_stroke" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_case_AspNetUsers" FromRole="case" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_case_AspNetUsers_Navigator" FromRole="case" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_case_AspNetUsers1" FromRole="case" ToRole="AspNetUser" />
         </EntityType>
         <EntityType Name="facility">
           <Key>
@@ -6263,373 +6240,6 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <Property Name="fre_firebase_uid" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="fre_profileimg" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="AspNetUser">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="FirstName" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
-          <Property Name="LastName" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
-          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
-          <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
-          <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
-          <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
-          <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
-          <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
-          <Property Name="EnableFive9" Type="Boolean" Nullable="false" />
-          <Property Name="MobilePhone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="NPINumber" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="UserInitial" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
-          <Property Name="Gender" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="AddressBlock" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedByName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ModifiedByName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ModifiedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-          <Property Name="CaseReviewer" Type="Boolean" Nullable="false" />
-          <Property Name="status_key" Type="Int32" />
-          <Property Name="status_change_date" Type="DateTime" Precision="3" />
-          <Property Name="CredentialCount" Type="Int32" Nullable="false" />
-          <Property Name="CredentialIndex" Type="Double" Nullable="false" />
-          <Property Name="APISecretKey" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="APIPassword" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="IsEEG" Type="Boolean" Nullable="false" />
-          <Property Name="RequirePasswordReset" Type="Boolean" Nullable="false" />
-          <Property Name="PasswordExpirationDate" Type="DateTime" Precision="3" />
-          <Property Name="ContractDate" Type="DateTime" Precision="3" />
-          <Property Name="status_change_cas_key" Type="Int32" />
-          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
-          <Property Name="status_change_date_forAll" Type="DateTime" Precision="3" />
-          <Property Name="IsStrokeAlert" Type="Boolean" Nullable="false" />
-          <Property Name="NHAlert" Type="Boolean" Nullable="false" />
-          <Property Name="IsDisable" Type="Boolean" Nullable="false" />
-          <Property Name="Address_line1" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Address_line2" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="City" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
-          <Property Name="State_key" Type="Int32" />
-          <Property Name="Zip" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="User_Image" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="IsSleep" Type="Boolean" />
-          <Property Name="IsTwoFactVerified" Type="Boolean" />
-          <Property Name="TwoFactVerifyCode" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="CodeExpiryTime" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="AspNetUserClaims" Relationship="DataModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserClaim" />
-          <NavigationProperty Name="AspNetUserLogins" Relationship="DataModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserLogin" />
-          <NavigationProperty Name="AspNetUserRoles" Relationship="DataModel.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserRole" />
-          <NavigationProperty Name="AspNetUsers_Log" Relationship="DataModel.FK_AspNetUsers_Log_AspNetUsers" FromRole="AspNetUser" ToRole="AspNetUsers_Log" />
-          <NavigationProperty Name="AspNetUsers_PasswordReset" Relationship="DataModel.FK_AspNetUsers_PasswordReset_AspNetUsers" FromRole="AspNetUser" ToRole="AspNetUsers_PasswordReset" />
-          <NavigationProperty Name="physician_status" Relationship="DataModel.FK_AspNetUsers_physician_status" FromRole="AspNetUser" ToRole="physician_status" />
-          <NavigationProperty Name="cases" Relationship="DataModel.FK_case_AspNetUsers" FromRole="AspNetUser" ToRole="case" />
-          <NavigationProperty Name="cases1" Relationship="DataModel.FK_case_AspNetUsers_Navigator" FromRole="AspNetUser" ToRole="case" />
-          <NavigationProperty Name="cases2" Relationship="DataModel.FK_case_AspNetUsers1" FromRole="AspNetUser" ToRole="case" />
-          <NavigationProperty Name="case_assign_history" Relationship="DataModel.FK_case_assign_history_AspNetUsers" FromRole="AspNetUser" ToRole="case_assign_history" />
-          <NavigationProperty Name="ealert_user_case_type" Relationship="DataModel.FK_ealert_user_case_type_AspNetUsers" FromRole="AspNetUser" ToRole="ealert_user_case_type" />
-          <NavigationProperty Name="ealert_user_facility" Relationship="DataModel.FK_ealert_user_facility_AspNetUsers" FromRole="AspNetUser" ToRole="ealert_user_facility" />
-          <NavigationProperty Name="facility_physician" Relationship="DataModel.FK_facility_physician_AspNetUsers" FromRole="AspNetUser" ToRole="facility_physician" />
-          <NavigationProperty Name="physician_license" Relationship="DataModel.FK_physician_license_AspNetUsers" FromRole="AspNetUser" ToRole="physician_license" />
-          <NavigationProperty Name="physician_status_log" Relationship="DataModel.FK_physician_status_log_AspNetUsers" FromRole="AspNetUser" ToRole="physician_status_log" />
-          <NavigationProperty Name="physician_status_snooze" Relationship="DataModel.FK_physician_status_snooze_AspNetUsers" FromRole="AspNetUser" ToRole="physician_status_snooze" />
-          <NavigationProperty Name="post_acute_care" Relationship="DataModel.FK_post_acute_care_users_AspNetUsers" FromRole="AspNetUser" ToRole="post_acute_care" />
-          <NavigationProperty Name="physician_rate" Relationship="DataModel.FK_Rate_Rate" FromRole="AspNetUser" ToRole="physician_rate" />
-          <NavigationProperty Name="user_schedule" Relationship="DataModel.FK_resource_scheduler_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule" />
-          <NavigationProperty Name="user_login_verify" Relationship="DataModel.FK_user_login_verify_User_Id" FromRole="AspNetUser" ToRole="user_login_verify" />
-          <NavigationProperty Name="user_schedule_nhalert" Relationship="DataModel.FK_user_schedule_nhalert_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_nhalert" />
-          <NavigationProperty Name="user_schedule_sleep" Relationship="DataModel.FK_user_schedule_sleep_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_sleep" />
-          <Property Name="PhysicianId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="AspNetUser" ToRole="mock_case" />
-          <NavigationProperty Name="mock_case1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="AspNetUser" ToRole="mock_case" />
-          <NavigationProperty Name="mock_case2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="AspNetUser" ToRole="mock_case" />
-          <NavigationProperty Name="tokens" Relationship="DataModel.FK_token_AspNetUsers" FromRole="AspNetUser" ToRole="token" />
-          </EntityType>
-
-        <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.AspNetUserClaim" Role="AspNetUserClaim" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetUserClaim">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.AspNetUserLogin" Role="AspNetUserLogin" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetUserLogin">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.AspNetUserRole" Role="AspNetUserRole" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetUserRole">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetUsers_Log_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
-          <End Type="DataModel.AspNetUsers_Log" Role="AspNetUsers_Log" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetUsers_Log">
-              <PropertyRef Name="AspNetUsersId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetUsers_PasswordReset_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
-          <End Type="DataModel.AspNetUsers_PasswordReset" Role="AspNetUsers_PasswordReset" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="AspNetUsers_PasswordReset">
-              <PropertyRef Name="AspNetUserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_AspNetUsers_physician_status">
-          <End Type="DataModel.physician_status" Role="physician_status" Multiplicity="0..1" />
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="physician_status">
-              <PropertyRef Name="phs_key" />
-            </Principal>
-            <Dependent Role="AspNetUser">
-              <PropertyRef Name="status_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_case_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
-          <End Type="DataModel.case" Role="case" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="case">
-              <PropertyRef Name="cas_response_phy_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_case_AspNetUsers_Navigator">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
-          <End Type="DataModel.case" Role="case" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="case">
-              <PropertyRef Name="cas_associate_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_case_AspNetUsers1">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.case" Role="case" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="case">
-              <PropertyRef Name="cas_phy_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_case_assign_history_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.case_assign_history" Role="case_assign_history" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="case_assign_history">
-              <PropertyRef Name="cah_phy_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ealert_user_case_type_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
-          <End Type="DataModel.ealert_user_case_type" Role="ealert_user_case_type" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="ealert_user_case_type">
-              <PropertyRef Name="ect_user_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ealert_user_facility_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
-          <End Type="DataModel.ealert_user_facility" Role="ealert_user_facility" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="ealert_user_facility">
-              <PropertyRef Name="efa_user_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_facility_physician_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.facility_physician" Role="facility_physician" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="facility_physician">
-              <PropertyRef Name="fap_user_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_physician_license_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.physician_license" Role="physician_license" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="physician_license">
-              <PropertyRef Name="phl_user_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_physician_status_log_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.physician_status_log" Role="physician_status_log" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="physician_status_log">
-              <PropertyRef Name="psl_user_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_physician_status_snooze_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
-          <End Type="DataModel.physician_status_snooze" Role="physician_status_snooze" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="physician_status_snooze">
-              <PropertyRef Name="pss_user_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_post_acute_care_users_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
-          <End Type="DataModel.post_acute_care" Role="post_acute_care" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="post_acute_care">
-              <PropertyRef Name="pac_phy_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Rate_Rate">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
-          <End Type="DataModel.physician_rate" Role="physician_rate" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="physician_rate">
-              <PropertyRef Name="rat_phy_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_resource_scheduler_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
-          <End Type="DataModel.user_schedule" Role="user_schedule" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="user_schedule">
-              <PropertyRef Name="uss_user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_user_login_verify_User_Id">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
-          <End Type="DataModel.user_login_verify" Role="user_login_verify" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="user_login_verify">
-              <PropertyRef Name="UserId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_user_schedule_nhalert_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
-          <End Type="DataModel.user_schedule_nhalert" Role="user_schedule_nhalert" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="user_schedule_nhalert">
-              <PropertyRef Name="uss_user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_user_schedule_sleep_AspNetUsers">
-          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
-          <End Type="DataModel.user_schedule_sleep" Role="user_schedule_sleep" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="user_schedule_sleep">
-              <PropertyRef Name="uss_user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="operationsoutliersTemp">
           <Key>
             <PropertyRef Name="CaseKey" />
@@ -7077,10 +6687,10 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <Property Name="mcas_connectivity_issue" Type="Boolean" />
           <Property Name="mcas_is_nav_blast" Type="Boolean" />
           <Property Name="mcas_mock_drill_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="facility" Relationship="DataModel.FK_mock_case_facility" FromRole="mock_case" ToRole="facility" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="mock_case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="mock_case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="mock_case" ToRole="AspNetUser" />
-          <NavigationProperty Name="facility" Relationship="DataModel.FK_mock_case_facility" FromRole="mock_case" ToRole="facility" />
         </EntityType>
         <EntityType Name="OperationOutlierNotificationLog">
           <Key>
@@ -7119,6 +6729,274 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <Property Name="user_updateddate" Type="DateTime" Precision="3" />
           <Property Name="user_updatedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
         </EntityType>
+        <Association Name="FK_mock_case_facility">
+          <End Type="DataModel.facility" Role="facility" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.mock_case" Role="mock_case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
+            </Principal>
+            <Dependent Role="mock_case">
+              <PropertyRef Name="mcas_fac_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="AspNetUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="FirstName" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="LastName" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
+          <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+          <Property Name="EnableFive9" Type="Boolean" Nullable="false" />
+          <Property Name="MobilePhone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="NPINumber" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="UserInitial" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="Gender" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="AddressBlock" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedBy" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedByName" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedByName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="CaseReviewer" Type="Boolean" Nullable="false" />
+          <Property Name="status_key" Type="Int32" />
+          <Property Name="status_change_date" Type="DateTime" Precision="3" />
+          <Property Name="CredentialCount" Type="Int32" Nullable="false" />
+          <Property Name="CredentialIndex" Type="Double" Nullable="false" />
+          <Property Name="APISecretKey" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="APIPassword" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="IsEEG" Type="Boolean" Nullable="false" />
+          <Property Name="RequirePasswordReset" Type="Boolean" Nullable="false" />
+          <Property Name="PasswordExpirationDate" Type="DateTime" Precision="3" />
+          <Property Name="ContractDate" Type="DateTime" Precision="3" />
+          <Property Name="status_change_cas_key" Type="Int32" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="status_change_date_forAll" Type="DateTime" Precision="3" />
+          <Property Name="IsStrokeAlert" Type="Boolean" Nullable="false" />
+          <Property Name="NHAlert" Type="Boolean" Nullable="false" />
+          <Property Name="IsDisable" Type="Boolean" Nullable="false" />
+          <Property Name="Address_line1" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Address_line2" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="State_key" Type="Int32" />
+          <Property Name="Zip" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="User_Image" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="IsSleep" Type="Boolean" />
+          <Property Name="IsTwoFactVerified" Type="Boolean" />
+          <Property Name="TwoFactVerifyCode" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="CodeExpiryTime" Type="DateTime" Precision="3" />
+          <Property Name="PhysicianId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="AspNetUserClaims" Relationship="DataModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserClaim" />
+          <NavigationProperty Name="AspNetUserLogins" Relationship="DataModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserLogin" />
+          <NavigationProperty Name="AspNetUserRoles" Relationship="DataModel.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserRole" />
+          <NavigationProperty Name="AspNetUsers_Log" Relationship="DataModel.FK_AspNetUsers_Log_AspNetUsers" FromRole="AspNetUser" ToRole="AspNetUsers_Log" />
+          <NavigationProperty Name="AspNetUsers_PasswordReset" Relationship="DataModel.FK_AspNetUsers_PasswordReset_AspNetUsers" FromRole="AspNetUser" ToRole="AspNetUsers_PasswordReset" />
+          <NavigationProperty Name="physician_status" Relationship="DataModel.FK_AspNetUsers_physician_status" FromRole="AspNetUser" ToRole="physician_status" />
+          <NavigationProperty Name="cases" Relationship="DataModel.FK_case_AspNetUsers" FromRole="AspNetUser" ToRole="case" />
+          <NavigationProperty Name="cases1" Relationship="DataModel.FK_case_AspNetUsers_Navigator" FromRole="AspNetUser" ToRole="case" />
+          <NavigationProperty Name="cases2" Relationship="DataModel.FK_case_AspNetUsers1" FromRole="AspNetUser" ToRole="case" />
+          <NavigationProperty Name="case_assign_history" Relationship="DataModel.FK_case_assign_history_AspNetUsers" FromRole="AspNetUser" ToRole="case_assign_history" />
+          <NavigationProperty Name="ealert_user_case_type" Relationship="DataModel.FK_ealert_user_case_type_AspNetUsers" FromRole="AspNetUser" ToRole="ealert_user_case_type" />
+          <NavigationProperty Name="ealert_user_facility" Relationship="DataModel.FK_ealert_user_facility_AspNetUsers" FromRole="AspNetUser" ToRole="ealert_user_facility" />
+          <NavigationProperty Name="facility_physician" Relationship="DataModel.FK_facility_physician_AspNetUsers" FromRole="AspNetUser" ToRole="facility_physician" />
+          <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="AspNetUser" ToRole="mock_case" />
+          <NavigationProperty Name="mock_case1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="AspNetUser" ToRole="mock_case" />
+          <NavigationProperty Name="mock_case2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="AspNetUser" ToRole="mock_case" />
+          <NavigationProperty Name="physician_license" Relationship="DataModel.FK_physician_license_AspNetUsers" FromRole="AspNetUser" ToRole="physician_license" />
+          <NavigationProperty Name="physician_status_log" Relationship="DataModel.FK_physician_status_log_AspNetUsers" FromRole="AspNetUser" ToRole="physician_status_log" />
+          <NavigationProperty Name="physician_status_snooze" Relationship="DataModel.FK_physician_status_snooze_AspNetUsers" FromRole="AspNetUser" ToRole="physician_status_snooze" />
+          <NavigationProperty Name="post_acute_care" Relationship="DataModel.FK_post_acute_care_users_AspNetUsers" FromRole="AspNetUser" ToRole="post_acute_care" />
+          <NavigationProperty Name="physician_rate" Relationship="DataModel.FK_Rate_Rate" FromRole="AspNetUser" ToRole="physician_rate" />
+          <NavigationProperty Name="user_schedule" Relationship="DataModel.FK_resource_scheduler_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule" />
+          <NavigationProperty Name="tokens" Relationship="DataModel.FK_token_AspNetUsers" FromRole="AspNetUser" ToRole="token" />
+          <NavigationProperty Name="user_login_verify" Relationship="DataModel.FK_user_login_verify_User_Id" FromRole="AspNetUser" ToRole="user_login_verify" />
+          <NavigationProperty Name="user_schedule_nhalert" Relationship="DataModel.FK_user_schedule_nhalert_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_nhalert" />
+          <NavigationProperty Name="user_schedule_sleep" Relationship="DataModel.FK_user_schedule_sleep_AspNetUsers" FromRole="AspNetUser" ToRole="user_schedule_sleep" />
+        </EntityType>
+        <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.AspNetUserClaim" Role="AspNetUserClaim" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserClaim">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.AspNetUserLogin" Role="AspNetUserLogin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserLogin">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.AspNetUserRole" Role="AspNetUserRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserRole">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AspNetUsers_Log_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="DataModel.AspNetUsers_Log" Role="AspNetUsers_Log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUsers_Log">
+              <PropertyRef Name="AspNetUsersId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AspNetUsers_PasswordReset_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="DataModel.AspNetUsers_PasswordReset" Role="AspNetUsers_PasswordReset" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUsers_PasswordReset">
+              <PropertyRef Name="AspNetUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AspNetUsers_physician_status">
+          <End Type="DataModel.physician_status" Role="physician_status" Multiplicity="0..1" />
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="physician_status">
+              <PropertyRef Name="phs_key" />
+            </Principal>
+            <Dependent Role="AspNetUser">
+              <PropertyRef Name="status_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="DataModel.case" Role="case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="case">
+              <PropertyRef Name="cas_response_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_AspNetUsers_Navigator">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="DataModel.case" Role="case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="case">
+              <PropertyRef Name="cas_associate_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_AspNetUsers1">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.case" Role="case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="case">
+              <PropertyRef Name="cas_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_assign_history_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.case_assign_history" Role="case_assign_history" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="case_assign_history">
+              <PropertyRef Name="cah_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ealert_user_case_type_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="DataModel.ealert_user_case_type" Role="ealert_user_case_type" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ealert_user_case_type">
+              <PropertyRef Name="ect_user_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ealert_user_facility_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="DataModel.ealert_user_facility" Role="ealert_user_facility" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ealert_user_facility">
+              <PropertyRef Name="efa_user_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_facility_physician_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.facility_physician" Role="facility_physician" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="facility_physician">
+              <PropertyRef Name="fap_user_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_mock_case_AspNetUsers">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
           <End Type="DataModel.mock_case" Role="mock_case" Multiplicity="*" />
@@ -7157,6 +7035,82 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_physician_license_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.physician_license" Role="physician_license" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="physician_license">
+              <PropertyRef Name="phl_user_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_physician_status_log_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.physician_status_log" Role="physician_status_log" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="physician_status_log">
+              <PropertyRef Name="psl_user_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_physician_status_snooze_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="DataModel.physician_status_snooze" Role="physician_status_snooze" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="physician_status_snooze">
+              <PropertyRef Name="pss_user_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_post_acute_care_users_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="DataModel.post_acute_care" Role="post_acute_care" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="post_acute_care">
+              <PropertyRef Name="pac_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Rate_Rate">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="DataModel.physician_rate" Role="physician_rate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="physician_rate">
+              <PropertyRef Name="rat_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_resource_scheduler_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="DataModel.user_schedule" Role="user_schedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="user_schedule">
+              <PropertyRef Name="uss_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_token_AspNetUsers">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
           <End Type="DataModel.token" Role="token" Multiplicity="*" />
@@ -7169,17 +7123,39 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_mock_case_facility">
-          <End Type="DataModel.facility" Role="facility" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.mock_case" Role="mock_case" Multiplicity="*" />
+        <Association Name="FK_user_login_verify_User_Id">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="DataModel.user_login_verify" Role="user_login_verify" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="facility">
-              <PropertyRef Name="fac_key" />
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="mock_case">
-              <PropertyRef Name="mcas_fac_key" />
+            <Dependent Role="user_login_verify">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_schedule_nhalert_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="DataModel.user_schedule_nhalert" Role="user_schedule_nhalert" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="user_schedule_nhalert">
+              <PropertyRef Name="uss_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_schedule_sleep_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="DataModel.user_schedule_sleep" Role="user_schedule_sleep" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="user_schedule_sleep">
+              <PropertyRef Name="uss_user_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -9063,67 +9039,6 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AspNetUsers">
-            <EntityTypeMapping TypeName="DataModel.AspNetUser">
-              <MappingFragment StoreEntitySet="AspNetUsers">
-                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
-                <ScalarProperty Name="CodeExpiryTime" ColumnName="CodeExpiryTime" />
-                <ScalarProperty Name="TwoFactVerifyCode" ColumnName="TwoFactVerifyCode" />
-                <ScalarProperty Name="IsTwoFactVerified" ColumnName="IsTwoFactVerified" />
-                <ScalarProperty Name="IsSleep" ColumnName="IsSleep" />
-                <ScalarProperty Name="User_Image" ColumnName="User_Image" />
-                <ScalarProperty Name="Zip" ColumnName="Zip" />
-                <ScalarProperty Name="State_key" ColumnName="State_key" />
-                <ScalarProperty Name="City" ColumnName="City" />
-                <ScalarProperty Name="Address_line2" ColumnName="Address_line2" />
-                <ScalarProperty Name="Address_line1" ColumnName="Address_line1" />
-                <ScalarProperty Name="IsDisable" ColumnName="IsDisable" />
-                <ScalarProperty Name="NHAlert" ColumnName="NHAlert" />
-                <ScalarProperty Name="IsStrokeAlert" ColumnName="IsStrokeAlert" />
-                <ScalarProperty Name="status_change_date_forAll" ColumnName="status_change_date_forAll" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="status_change_cas_key" ColumnName="status_change_cas_key" />
-                <ScalarProperty Name="ContractDate" ColumnName="ContractDate" />
-                <ScalarProperty Name="PasswordExpirationDate" ColumnName="PasswordExpirationDate" />
-                <ScalarProperty Name="RequirePasswordReset" ColumnName="RequirePasswordReset" />
-                <ScalarProperty Name="IsEEG" ColumnName="IsEEG" />
-                <ScalarProperty Name="APIPassword" ColumnName="APIPassword" />
-                <ScalarProperty Name="APISecretKey" ColumnName="APISecretKey" />
-                <ScalarProperty Name="CredentialIndex" ColumnName="CredentialIndex" />
-                <ScalarProperty Name="CredentialCount" ColumnName="CredentialCount" />
-                <ScalarProperty Name="status_change_date" ColumnName="status_change_date" />
-                <ScalarProperty Name="status_key" ColumnName="status_key" />
-                <ScalarProperty Name="CaseReviewer" ColumnName="CaseReviewer" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedByName" ColumnName="ModifiedByName" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedByName" ColumnName="CreatedByName" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="AddressBlock" ColumnName="AddressBlock" />
-                <ScalarProperty Name="Gender" ColumnName="Gender" />
-                <ScalarProperty Name="UserInitial" ColumnName="UserInitial" />
-                <ScalarProperty Name="NPINumber" ColumnName="NPINumber" />
-                <ScalarProperty Name="MobilePhone" ColumnName="MobilePhone" />
-                <ScalarProperty Name="EnableFive9" ColumnName="EnableFive9" />
-                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
-                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
-                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
-                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
-                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
-                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
-                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="operationsoutliersTemps">
             <EntityTypeMapping TypeName="DataModel.operationsoutliersTemp">
               <MappingFragment StoreEntitySet="operationsoutliersTemp">
@@ -9590,6 +9505,67 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
                 <ScalarProperty Name="user_id" ColumnName="user_id" />
                 <ScalarProperty Name="user_role_key" ColumnName="user_role_key" />
                 <ScalarProperty Name="user_key" ColumnName="user_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetUsers">
+            <EntityTypeMapping TypeName="DataModel.AspNetUser">
+              <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="CodeExpiryTime" ColumnName="CodeExpiryTime" />
+                <ScalarProperty Name="TwoFactVerifyCode" ColumnName="TwoFactVerifyCode" />
+                <ScalarProperty Name="IsTwoFactVerified" ColumnName="IsTwoFactVerified" />
+                <ScalarProperty Name="IsSleep" ColumnName="IsSleep" />
+                <ScalarProperty Name="User_Image" ColumnName="User_Image" />
+                <ScalarProperty Name="Zip" ColumnName="Zip" />
+                <ScalarProperty Name="State_key" ColumnName="State_key" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address_line2" ColumnName="Address_line2" />
+                <ScalarProperty Name="Address_line1" ColumnName="Address_line1" />
+                <ScalarProperty Name="IsDisable" ColumnName="IsDisable" />
+                <ScalarProperty Name="NHAlert" ColumnName="NHAlert" />
+                <ScalarProperty Name="IsStrokeAlert" ColumnName="IsStrokeAlert" />
+                <ScalarProperty Name="status_change_date_forAll" ColumnName="status_change_date_forAll" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="status_change_cas_key" ColumnName="status_change_cas_key" />
+                <ScalarProperty Name="ContractDate" ColumnName="ContractDate" />
+                <ScalarProperty Name="PasswordExpirationDate" ColumnName="PasswordExpirationDate" />
+                <ScalarProperty Name="RequirePasswordReset" ColumnName="RequirePasswordReset" />
+                <ScalarProperty Name="IsEEG" ColumnName="IsEEG" />
+                <ScalarProperty Name="APIPassword" ColumnName="APIPassword" />
+                <ScalarProperty Name="APISecretKey" ColumnName="APISecretKey" />
+                <ScalarProperty Name="CredentialIndex" ColumnName="CredentialIndex" />
+                <ScalarProperty Name="CredentialCount" ColumnName="CredentialCount" />
+                <ScalarProperty Name="status_change_date" ColumnName="status_change_date" />
+                <ScalarProperty Name="status_key" ColumnName="status_key" />
+                <ScalarProperty Name="CaseReviewer" ColumnName="CaseReviewer" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedByName" ColumnName="ModifiedByName" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedByName" ColumnName="CreatedByName" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="AddressBlock" ColumnName="AddressBlock" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="UserInitial" ColumnName="UserInitial" />
+                <ScalarProperty Name="NPINumber" ColumnName="NPINumber" />
+                <ScalarProperty Name="MobilePhone" ColumnName="MobilePhone" />
+                <ScalarProperty Name="EnableFive9" ColumnName="EnableFive9" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

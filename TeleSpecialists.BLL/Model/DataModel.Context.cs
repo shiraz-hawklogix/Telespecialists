@@ -96,7 +96,6 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<application_setting> application_setting { get; set; }
         public virtual DbSet<user_login_verify> user_login_verify { get; set; }
         public virtual DbSet<firebase_usersemail> firebase_usersemail { get; set; }
-        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
         public virtual DbSet<operationsoutliersTemp> operationsoutliersTemps { get; set; }
         public virtual DbSet<Hospital_Protocols> Hospital_Protocols { get; set; }
         public virtual DbSet<Onboarded> Onboardeds { get; set; }
@@ -119,6 +118,7 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<OperationOutlierNotificationLog> OperationOutlierNotificationLogs { get; set; }
         public virtual DbSet<token> tokens { get; set; }
         public virtual DbSet<user_access> user_access { get; set; }
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {

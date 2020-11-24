@@ -3561,6 +3561,10 @@
     <Content Include="Views\Dispatch\_dispatchCopyPopup.cshtml" />
     <Content Include="Views\Dispatch\_dispatchPhysicianStatusList.cshtml" />
     <Content Include="Views\Dispatch\_firebaseChat.cshtml" />
+    <Content Include="Views\CaseReject\CreateReason.cshtml" />
+    <Content Include="Views\CaseReject\EditReason.cshtml" />
+    <Content Include="Views\CaseReject\Index.cshtml" />
+    <Content Include="Views\CaseReject\_FormRejectionReason.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

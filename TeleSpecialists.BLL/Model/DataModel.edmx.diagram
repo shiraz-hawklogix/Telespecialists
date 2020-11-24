@@ -110,29 +110,6 @@
         <EntityTypeShape EntityType="DataModel.application_setting" Width="1.5" PointX="17.375" PointY="10.75" />
         <EntityTypeShape EntityType="DataModel.user_login_verify" Width="1.5" PointX="3" PointY="100.875" />
         <EntityTypeShape EntityType="DataModel.firebase_usersemail" Width="1.5" PointX="3.375" PointY="5.75" />
-        <EntityTypeShape EntityType="DataModel.AspNetUser" Width="1.5" PointX="0.75" PointY="103.875" />
-        <AssociationConnector Association="DataModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
-        <AssociationConnector Association="DataModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
-        <AssociationConnector Association="DataModel.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" />
-        <AssociationConnector Association="DataModel.FK_AspNetUsers_Log_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_AspNetUsers_PasswordReset_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_AspNetUsers_physician_status" />
-        <AssociationConnector Association="DataModel.FK_case_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_case_AspNetUsers_Navigator" />
-        <AssociationConnector Association="DataModel.FK_case_AspNetUsers1" />
-        <AssociationConnector Association="DataModel.FK_case_assign_history_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_ealert_user_case_type_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_ealert_user_facility_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_facility_physician_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_physician_license_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_physician_status_log_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_physician_status_snooze_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_post_acute_care_users_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_Rate_Rate" />
-        <AssociationConnector Association="DataModel.FK_resource_scheduler_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_user_login_verify_User_Id" />
-        <AssociationConnector Association="DataModel.FK_user_schedule_nhalert_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_user_schedule_sleep_AspNetUsers" />
         <EntityTypeShape EntityType="DataModel.operationsoutliersTemp" Width="1.5" PointX="13.375" PointY="17.75" />
         <EntityTypeShape EntityType="DataModel.Hospital_Protocols" Width="1.5" PointX="0.75" PointY="16.75" />
         <EntityTypeShape EntityType="DataModel.Onboarded" Width="1.5" PointX="18.75" PointY="0.75" />
@@ -159,11 +136,34 @@
         <EntityTypeShape EntityType="DataModel.OperationOutlierNotificationLog" Width="1.5" PointX="7.375" PointY="21.75" />
         <EntityTypeShape EntityType="DataModel.token" Width="1.5" PointX="3" PointY="111.125" />
         <EntityTypeShape EntityType="DataModel.user_access" Width="1.5" PointX="9.375" PointY="21.75" />
+        <AssociationConnector Association="DataModel.FK_mock_case_facility" />
+        <EntityTypeShape EntityType="DataModel.AspNetUser" Width="1.5" PointX="0.75" PointY="103.5" />
+        <AssociationConnector Association="DataModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="DataModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="DataModel.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="DataModel.FK_AspNetUsers_Log_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_AspNetUsers_PasswordReset_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_AspNetUsers_physician_status" />
+        <AssociationConnector Association="DataModel.FK_case_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_case_AspNetUsers_Navigator" />
+        <AssociationConnector Association="DataModel.FK_case_AspNetUsers1" />
+        <AssociationConnector Association="DataModel.FK_case_assign_history_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_ealert_user_case_type_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_ealert_user_facility_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_facility_physician_AspNetUsers" />
         <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers" />
         <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers_Navigator" />
         <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers1" />
+        <AssociationConnector Association="DataModel.FK_physician_license_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_physician_status_log_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_physician_status_snooze_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_post_acute_care_users_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_Rate_Rate" />
+        <AssociationConnector Association="DataModel.FK_resource_scheduler_AspNetUsers" />
         <AssociationConnector Association="DataModel.FK_token_AspNetUsers" />
-        <AssociationConnector Association="DataModel.FK_mock_case_facility" />
+        <AssociationConnector Association="DataModel.FK_user_login_verify_User_Id" />
+        <AssociationConnector Association="DataModel.FK_user_schedule_nhalert_AspNetUsers" />
+        <AssociationConnector Association="DataModel.FK_user_schedule_sleep_AspNetUsers" />
 
         </Diagram>
     </edmx:Diagrams>
