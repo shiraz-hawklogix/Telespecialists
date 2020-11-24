@@ -58,6 +58,7 @@ namespace TeleSpecialists.Controllers
         private readonly user_fcm_notification _user_Fcm_Notification;
         private readonly FireBaseUserMailService _fireBaseUserMailService;
         private readonly MockCaseService _mockCaseService;
+        private readonly CaseRejectService _caseRejectService;
 
         private const int _min_dob_year = 1753;
         private static bool isCalculateBill { get; set; }
@@ -99,6 +100,7 @@ namespace TeleSpecialists.Controllers
             _fireBaseUserMailService = new FireBaseUserMailService();
             _OnBoardedServices = new OnBoardedServices();
             _mockCaseService = new MockCaseService();
+            _caseRejectService = new CaseRejectService();
         }
 
         public ActionResult Index()
@@ -5856,6 +5858,21 @@ namespace TeleSpecialists.Controllers
                 throw ex;
             }
 
+        }
+
+        //[NonAction]
+        public JsonResult GetRejectionReasons()
+        //public List<SelectListItem> GetRejectionReasons()
+        {
+            var result = _caseRejectService.GetDropdownReasons().ToList();
+
+            List<SelectListItem> reasonsList = result.Select(d => new SelectListItem
+            {
+                Text = d.crr_reason,
+                Value = d.crr_key.ToString()
+            }).ToList();
+            return Json(reasonsList, JsonRequestBehavior.AllowGet);
+            //return reasonsList;
         }
 
         private string GetNotes(string phy_key, string fac_key, string existingNotes)
