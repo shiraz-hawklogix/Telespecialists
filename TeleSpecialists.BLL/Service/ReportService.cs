@@ -8860,6 +8860,7 @@ namespace TeleSpecialists.BLL.Service
 
 
 
+
         #region shiraz CWH
         public DataSourceResult GetCWHData(DataSourceRequest request, List<Guid> facilities, DateTime FromMonth, DateTime ToMonth)
         {
@@ -8945,7 +8946,6 @@ namespace TeleSpecialists.BLL.Service
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
-
         public DataSourceResult GetCWHGraph(DataSourceRequest request, CWHReport model)
         {
             using (var context = new Model.TeleSpecialistsContext())
@@ -8953,11 +8953,12 @@ namespace TeleSpecialists.BLL.Service
                 context.Configuration.AutoDetectChangesEnabled = false;
                 context.Configuration.ProxyCreationEnabled = false;
                 context.Configuration.LazyLoadingEnabled = false;
-                List<CaseModel> cases = new List<CaseModel>();
-                var StrokeAlert_value = CaseType.StrokeAlert.ToInt();
+                // List<CWHModel> cases = new List<CWHModel>();
                 string facilityTimeZone = BLL.Settings.DefaultTimeZone;
-                DateTime EndDates = model.ToMonth.AddMonths(1);
-                cases = _unitOfWork.SqlQuery<CaseModel>(string.Format("Exec UspGetCWHData @StartDate = '{0}',@edate = '{1}'", model.FromMonth, EndDates)).ToList();
+                DateTime EndDates = model.ToMonth.AddMonths(1).AddDays(-1);
+                var cases = _FacilityService.GeCWHtDetails(model.FromMonth, EndDates);
+                var results = cases.Where(m => m.cwh_fac_id == new Guid(model.Facilities)).ToList();
+
                 var datelist = Enumerable.Range(0, 12)
                               .Select(i => DateTime.Now.ToEST().AddMonths(i - 12))
                               .Select(date => date.ToString("MM/01/yyyy")).ToArray();
@@ -8986,11 +8987,13 @@ namespace TeleSpecialists.BLL.Service
                     DateTime enddateofmonth = StartDate.AddMonths(1);
                     DateTime sdate = StartDate;
                     DateTime edate = enddateofmonth.AddDays(-1);
-                    Double Total_stroke = cases.Where(x => x.cas_response_ts_notification >= StartDate && x.cas_response_ts_notification <= edate).Count();
-                    var result = cases.Where(x => x.cas_response_ts_notification >= StartDate && x.cas_response_ts_notification <= edate && x.cas_fac_key == new Guid(model.Facilities));
                     var month_in_digit = StartDate.ToString("MMMM");
-                    var jan = result.Count().ToString();
-                    double calvalue = (double)jan.ToDouble() / Total_stroke;
+
+                    //Double Total_stroke = results.Where(x => x.cwh_date >= StartDate && x.cwh_date <= edate).Count();
+                    //var jan = results.Where(x => x.cwh_date >= StartDate && x.cwh_date <= edate && x.cwh_fac_id == new Guid(model.Facilities)).Count().ToString();
+
+                    //(double)jan.ToDouble() / Total_stroke;
+                    double calvalue = results.Where(x => x.cwh_date >= StartDate && x.cwh_date <= edate).Select(x => x.cwh_month_wise_cwh).FirstOrDefault().ToDouble();
                     bool res = Double.IsNaN(calvalue);
                     if (MonthName.January.ToDescription() == month_in_digit)
                     {
@@ -9182,9 +9185,7 @@ namespace TeleSpecialists.BLL.Service
                 return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
             }
         }
-        #endregion
-
-
+        #endregion 
         #region shiraz RCI
         public DataSourceResult GetRCIData(DataSourceRequest request, List<Guid> Physicians, DateTime FromMonth, DateTime ToMonth)
         {
@@ -9205,9 +9206,7 @@ namespace TeleSpecialists.BLL.Service
                     DateTime StartDate = Convert.ToDateTime(FromMonth);
                     DateTime EndDate = Convert.ToDateTime(ToMonth).AddMonths(1);
                     report.Physicians_name = _FacilityService.GetPhycisionName(item.ToString());
-                    report.PhysicianId = _FacilityService.GetPhycisionId(item.ToString());
                     report.Physicians_Id = item.ToString();
-
                     report.fac_Id = phycisions.Where(x => x.fap_user_key == item.ToString()).Select(x => x.fap_fac_key).FirstOrDefault().ToString();
                     for (var i = StartDate; StartDate < EndDate;)
                     {
@@ -9460,7 +9459,6 @@ namespace TeleSpecialists.BLL.Service
             var finalresult = volumelist.Select(x => new
             {
                 Physicians_Id = x.Physicians_Id,
-                PhysicianId = x.PhysicianId,
                 Physicians_name = x.Physicians_name,
                 January = x.January,
                 February = x.February,
@@ -9771,7 +9769,6 @@ namespace TeleSpecialists.BLL.Service
             }
         }
         #endregion
-
         public DataSourceResult GetFacilityVolumetricReports(DataSourceRequest request, List<Guid> facilities, DateTime FromMonth, DateTime ToMonth)
         {
 
@@ -9860,7 +9857,6 @@ namespace TeleSpecialists.BLL.Service
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
-        
         public List<DailyVolematricReport> GetDailyFacilityVolumetricReports(string cas_fac_key_arrays, DateTime FromMonth, DateTime ToMonth, string cas_fac_Name_array)
         {
 
@@ -9909,7 +9905,7 @@ namespace TeleSpecialists.BLL.Service
 
         }
 
-public DataSourceResult GetBCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        public DataSourceResult GetBCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
         {
             List<BCI_ReportData> Finallist = new List<BCI_ReportData>();
             Finallist = _unitOfWork.SqlQuery<BCI_ReportData>(string.Format("Exec UspGetAllPhyDataForBCI")).ToList();
@@ -9920,38 +9916,14 @@ public DataSourceResult GetBCIData(DataSourceRequest request, List<Guid> facilit
             }
             var finalresult = Finallist.Select(x => new
             {
-                    Phy_Name = x.Phy_Name,
-                    Phy_Bci_Value = x.Phy_Bci_Value
+                Phy_Name = x.Phy_Name,
+                Phy_Bci_Value = x.Phy_Bci_Value
 
-            }).OrderBy(x=>x.Phy_Name).AsQueryable();
-
-            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
-
-        }
-
-    public DataSourceResult GetCCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
-        {
-
-            List<CCIReport_Data> Finallist = new List<CCIReport_Data>();
-            Finallist = _unitOfWork.SqlQuery<CCIReport_Data>(string.Format("Exec UspGetAllPhyDataForCCI")).ToList();
-
-            if (facilities != null && facilities.Count > 0)
-            {
-                if (facilities[0] != Guid.Empty)
-                    Finallist = Finallist.Where(m => Physicians.Contains(new Guid(m.Physician_Id))).ToList();
-            }
-            //Convert List To Queryable
-            var finalresult = Finallist.Select(x => new
-            {
-                Physician_Name = x.Physician_Name,
-                Physician_CCI = x.Physician_CCI
-
-            }).AsQueryable();
+            }).OrderBy(x => x.Phy_Name).AsQueryable();
 
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
-
         public DataSourceResult GetDailyForecastBydb(DataSourceRequest request, string facilitiess)
         {
             List<Monthly_Forecast> volumelist = new List<Monthly_Forecast>();
@@ -10035,7 +10007,6 @@ public DataSourceResult GetBCIData(DataSourceRequest request, List<Guid> facilit
             }
 
 
-
             //Convert List To Queryable
             var finalresult = volumelist.Select(x => new
             {
@@ -10047,7 +10018,29 @@ public DataSourceResult GetBCIData(DataSourceRequest request, List<Guid> facilit
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
-      
+        public DataSourceResult GetCCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
+        {
+
+            List<CCIReport_Data> Finallist = new List<CCIReport_Data>();
+            Finallist = _unitOfWork.SqlQuery<CCIReport_Data>(string.Format("Exec UspGetAllPhyDataForCCI")).ToList();
+
+            if (facilities != null && facilities.Count > 0)
+            {
+                if (facilities[0] != Guid.Empty)
+                    Finallist = Finallist.Where(m => Physicians.Contains(new Guid(m.Physician_Id))).ToList();
+            }
+            //Convert List To Queryable
+            var finalresult = Finallist.Select(x => new
+            {
+                Physician_Name = x.Physician_Name,
+                Physician_CCI = x.Physician_CCI
+
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+
 
 
     }

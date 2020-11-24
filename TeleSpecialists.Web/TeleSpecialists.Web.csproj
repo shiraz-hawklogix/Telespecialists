@@ -3565,6 +3565,7 @@
     <Content Include="Views\CaseReject\EditReason.cshtml" />
     <Content Include="Views\CaseReject\Index.cshtml" />
     <Content Include="Views\CaseReject\_FormRejectionReason.cshtml" />
+    <Content Include="Views\Case\_CaseRejectionReason.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

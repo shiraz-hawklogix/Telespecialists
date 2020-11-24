@@ -1101,7 +1101,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             });
         }
         }
-        
+
     }
 
     $(document).ready(function () {
@@ -1307,14 +1307,14 @@ EntityTypes.StateAlertTemplate.ToInt()
             } else {
                 $("#has_morbid_symptoms_premorbid").empty();
             }
-            
+
             //$('.premorbid :radio:not(:checked)').attr('disabled', false);
             @*
             if ('@(User.IsInRole(UserRoles.Physician.ToDescription()))' != 'True') {
                 $('.premorbid :radio:not(:checked)').attr('disabled', true);
             }*@
         });
-       
+
         //Ended By Axim 29-10-2020
 
         $("#cas_billing_visit_type").on('change', function () {
@@ -4145,7 +4145,7 @@ EntityTypes.StateAlertTemplate.ToInt()
 
         });
 
-    }
+    }*@
 
 
 </script>
@@ -4155,7 +4155,7 @@ EntityTypes.StateAlertTemplate.ToInt()
     <script>
             var caseKey = $.trim($("#createForm").find("#cas_key").val()).toInt();
             LoadNotes(caseKey); @*(@Model.cas_key);*@
-    </script>
+</script>
 }
 
 
