@@ -6,6 +6,9 @@
 @{
     //var currentDate = DateTime.Now.ToEST();
     var enableControlsInReadOnly = User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription());
+    var previousphysicians = Model.case_assign_history.Select(cah => cah.cah_phy_key).ToList();
+    var CaseAssignedTime = Model.case_assign_history.Where(mc => mc.cah_phy_key == Model.cas_phy_key).Select(m => m.cah_created_date).FirstOrDefault();
+    var DifferenceInMinutes = DateTime.Now.ToEST() - CaseAssignedTime;
 
     //bool userFacilityAdmin = false;
     //if (User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))
