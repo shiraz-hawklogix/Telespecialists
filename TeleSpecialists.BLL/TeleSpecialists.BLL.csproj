@@ -366,6 +366,7 @@
     <Compile Include="Process\RapidsProcessor.cs" />
     <Compile Include="Repository\AuditRecordsRepository.cs" />
     <Compile Include="Repository\CasCancelledTypeRepository.cs" />
+    <Compile Include="Repository\CaseRejectRepository.cs" />
     <Compile Include="Repository\CaseReviewerRepository.cs" />
     <Compile Include="Repository\DiagnosisCodesRepoistory.cs" />
     <Compile Include="Repository\FacilityAvailabilityRateRepository.cs" />
@@ -404,9 +405,11 @@
     <Compile Include="Service\AuditRecordsService.cs" />
     <Compile Include="Service\CancelledCasesService.cs" />
     <Compile Include="Service\CasCancelledTypeService.cs" />
+    <Compile Include="Service\CaseRejectService.cs" />
     <Compile Include="Service\CaseReviewTemplateService.cs" />
     <Compile Include="Service\CaseServices\CaseGridService.cs" />
     <Compile Include="Service\DiagnosisCodesService.cs" />
+    <Compile Include="Service\DispatchService.cs" />
     <Compile Include="Service\FacilityBillingReportService.cs" />
     <Compile Include="Service\FacilityQuestionnaireService.cs" />
     <Compile Include="Service\FacilityPIService.cs" />
@@ -440,6 +443,8 @@
     <Compile Include="ViewModels\CasePage\DiagnosisCodesViewModel.cs" />
     <Compile Include="ViewModels\CasesPendingReviewListing.cs" />
     <Compile Include="ViewModels\CredentialsExpiringCaseListing.cs" />
+    <Compile Include="ViewModels\Dispatch\DispatchListing.cs" />
+    <Compile Include="ViewModels\Dispatch\dispatchSaveStatusVM.cs" />
     <Compile Include="ViewModels\EntityNotes\SignOutNoteViewModel.cs" />
     <Compile Include="ViewModels\FacilityBillingByAmount.cs" />
     <Compile Include="ViewModels\FacilityQuestionnaire\PreLiveVM.cs" />
