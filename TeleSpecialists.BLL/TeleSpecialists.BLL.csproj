@@ -144,6 +144,7 @@
     <Compile Include="ModelEx\DailyVolimatricModel.cs" />
     <Compile Include="ModelEx\mock_case.cs" />
     <Compile Include="ModelEx\PhysicianModel.cs" />
+    <Compile Include="ModelEx\ProfileAccessViewModel.cs" />
     <Compile Include="Model\alarm_setting.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -168,6 +169,9 @@
     <Compile Include="Model\BCI_ReportData.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\BCI_ReportData1.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\case.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -177,6 +181,9 @@
     <Compile Include="Model\case_rejection_reason.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Model\case_rejection_reason1.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Model\case_review_template.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -184,6 +191,9 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\CCIReport_Data.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\CCIReport_Data1.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\component.cs">
@@ -378,6 +388,7 @@
     <Compile Include="Repository\FireBaseUserMailRepository.cs" />
     <Compile Include="Repository\GoalsDataRepository.cs" />
     <Compile Include="Repository\HospitalProtocols.cs" />
+    <Compile Include="Repository\Icd10CodesCalRepository.cs" />
     <Compile Include="Repository\ICwhData.cs" />
     <Compile Include="Repository\MockCaseRepository.cs" />
     <Compile Include="Repository\NHRepository.cs" />

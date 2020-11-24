@@ -254,9 +254,7 @@
     <Compile Include="Controllers\BillingController.cs" />
     <Compile Include="Controllers\CaseController.cs" />
     <Compile Include="Controllers\CaseCopyLogController.cs" />
-    <Compile Include="Controllers\CaseRejectController.cs" />
     <Compile Include="Controllers\CaseTypeController.cs" />
-    <Compile Include="Controllers\DispatchController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FacilityQuestionnaireController.cs" />
     <Compile Include="Controllers\FacilityPIController.cs" />
@@ -306,7 +304,6 @@
     <Compile Include="Models\CallHistoryViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PhysicianCaseTempViewModel.cs" />
-    <Compile Include="Models\ProfileAccessViewModel.cs" />
     <Compile Include="Models\SignalRCaseDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
@@ -3547,23 +3544,7 @@
     <Content Include="Views\Reports\DailyFacilityVolumetricReport.cshtml" />
     <Content Include="Views\Reports\Daily_forecast.cshtml" />
     <Content Include="Views\Reports\MOnth_forecast.cshtml" />
-    <Content Include="Views\Reports\CCIReport.cshtml" />
-    <Content Include="Views\MenuAccess\_GetUserBasedAccess.cshtml" />
-    <Content Include="Views\MenuAccess\UserBasedMenuAccess.cshtml" />
-    <Content Include="Views\Reports\StatusSnapshot.cshtml" />
-    <Content Include="Views\Dispatch\Index.cshtml" />
-    <Content Include="Views\Patient\Create.cshtml" />
-    <Content Include="Views\Patient\Edit.cshtml" />
-    <Content Include="Views\Patient\Index.cshtml" />
-    <Content Include="Views\Patient\_EditLineItem.cshtml" />
-    <Content Include="Views\Dispatch\_dispatchCopyPopup.cshtml" />
-    <Content Include="Views\Dispatch\_dispatchPhysicianStatusList.cshtml" />
-    <Content Include="Views\Dispatch\_firebaseChat.cshtml" />
-    <Content Include="Views\CaseReject\CreateReason.cshtml" />
-    <Content Include="Views\CaseReject\EditReason.cshtml" />
-    <Content Include="Views\CaseReject\Index.cshtml" />
-    <Content Include="Views\CaseReject\_FormRejectionReason.cshtml" />
-    <Content Include="Views\Case\_CaseRejectionReason.cshtml" />
+    <Content Include="Views\Case\_Icd10BillingCodes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

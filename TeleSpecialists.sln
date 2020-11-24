@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSpecialists.CA.DeleteOl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSpecialist.CWH", "TeleSpecialist.CWH\TeleSpecialist.CWH.csproj", "{175A4A5F-A2E3-4406-916F-31767E6F0651}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSpecialists.OperationOutlierNotifications", "..\..\Telespecialists\OperationOutlierNotifications\TeleSpecialists.OperationOutlierNotifications.csproj", "{CD2B5272-2552-432A-8BC0-B62D3A80304C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AzureCustomBuild-Web|Any CPU = AzureCustomBuild-Web|Any CPU
@@ -173,6 +175,14 @@ Global
 		{175A4A5F-A2E3-4406-916F-31767E6F0651}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
 		{175A4A5F-A2E3-4406-916F-31767E6F0651}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{175A4A5F-A2E3-4406-916F-31767E6F0651}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD2B5272-2552-432A-8BC0-B62D3A80304C}.AzureCustomBuild-Web|Any CPU.ActiveCfg = Release|Any CPU
+		{CD2B5272-2552-432A-8BC0-B62D3A80304C}.AzureCustomBuild-Web|Any CPU.Build.0 = Release|Any CPU
+		{CD2B5272-2552-432A-8BC0-B62D3A80304C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD2B5272-2552-432A-8BC0-B62D3A80304C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD2B5272-2552-432A-8BC0-B62D3A80304C}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD2B5272-2552-432A-8BC0-B62D3A80304C}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{CD2B5272-2552-432A-8BC0-B62D3A80304C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD2B5272-2552-432A-8BC0-B62D3A80304C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -189,6 +199,7 @@ Global
 		{3EB870BF-2083-4C43-BC12-4469D147FC49} = {DE0630A8-9157-41A9-97E9-326F06F29C9B}
 		{22DD2D69-C0EF-4440-A5F7-BF6D30212343} = {DE0630A8-9157-41A9-97E9-326F06F29C9B}
 		{175A4A5F-A2E3-4406-916F-31767E6F0651} = {DE0630A8-9157-41A9-97E9-326F06F29C9B}
+		{CD2B5272-2552-432A-8BC0-B62D3A80304C} = {DE0630A8-9157-41A9-97E9-326F06F29C9B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DA6C646C-E99A-43B9-AF97-790BE3DF22B8}

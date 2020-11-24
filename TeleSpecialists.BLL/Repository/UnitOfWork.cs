@@ -1095,6 +1095,18 @@ namespace TeleSpecialists.BLL.Repository
             }
         }
 
+        private IIcd10CodesCalRepository _Icd10CodesCalRepository;
+        public IIcd10CodesCalRepository Icd10CodesCalRepository
+        {
+            get
+            {
+                if (this._Icd10CodesCalRepository == null)
+                {
+                    this._Icd10CodesCalRepository = new Icd10CodesCalRepository(context);
+                }
+                return _Icd10CodesCalRepository;
+            }
+        }
         #endregion
 
         #region Firebase
@@ -1125,6 +1137,7 @@ namespace TeleSpecialists.BLL.Repository
             }
         }
         #endregion
+
         #region Case Rejection Reason
         private ICaseRejectRepository _casRejectRepository;
         public ICaseRejectRepository CaseRejectRepository

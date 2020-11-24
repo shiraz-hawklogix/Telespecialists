@@ -154,13 +154,13 @@ CaseType.LongTermEEG.ToInt()
                 if (isTeleNeuroFacility)
                 {
                     var billingCodes = new List<int>()
-                                                                            {
-                                                                                CaseBillingCode.New.ToInt(),
-                                                                                CaseBillingCode.FU.ToInt(),
-                                                                                CaseBillingCode.CC1_STAT.ToInt(),
-                                                                                CaseBillingCode.TC.ToInt(),
-                                                                                CaseBillingCode.CC1_StrokeAlert.ToInt()
-                                                                            };
+                                                                                {
+                                                                                    CaseBillingCode.New.ToInt(),
+                                                                                    CaseBillingCode.FU.ToInt(),
+                                                                                    CaseBillingCode.CC1_STAT.ToInt(),
+                                                                                    CaseBillingCode.TC.ToInt(),
+                                                                                    CaseBillingCode.CC1_StrokeAlert.ToInt()
+                                                                                };
                     var currentBillingCode = Model.cas_billing_bic_key.HasValue ? Model.cas_billing_bic_key.Value : 0;
                     if (billingCodes.Contains(currentBillingCode))
                     {
@@ -191,11 +191,13 @@ CaseType.LongTermEEG.ToInt()
 
         <div class="form-group row @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))? "d-none" : "")">
             <label class="control-label col-sm-4">Diagnosis: </label>
-            <div class="col-sm-8">            
-                @Html.TextAreaFor(m => m.cas_billing_diagnosis, new { @class = "form-control", rows = "4" })
+            <div class="col-sm-8">
+                <div id="cas_billing_codes"></div>
+                @Html.HiddenFor(m => m.cas_billing_diagnosis)
+                @*@Html.TextAreaFor(m => m.cas_billing_diagnosis, new { @class = "form-control", rows = "4" })
                 <div class="error_msg" id="cas_billing_diagnosis-error" style="display:none;">
                     <label>This field is required</label>
-                </div>
+                </div>*@
             </div>
         </div>
         <div class="form-group row @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))? "d-none" : "")">
@@ -234,12 +236,12 @@ CaseType.RoutineConsultFollowUp.ToInt()
 
             @{
                 var templateTypes = new List<int>()
-                                                        {
-                                                        EntityTypes.StrokeAlertTemplateTpa.ToInt(),
-                                                        EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt(),
-                                                        EntityTypes.StrokeAlertTemplateNoTpa.ToInt(),
-                                                        EntityTypes.StrokeAlertTemplateNoTpaTeleStroke.ToInt()
-                                                        };
+                                                            {
+                                                            EntityTypes.StrokeAlertTemplateTpa.ToInt(),
+                                                            EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt(),
+                                                            EntityTypes.StrokeAlertTemplateNoTpa.ToInt(),
+                                                            EntityTypes.StrokeAlertTemplateNoTpaTeleStroke.ToInt()
+                                                            };
 
                 if (!Model.TemplateEntityType.HasValue || !templateTypes.Contains(Model.TemplateEntityType.Value))
                 {
