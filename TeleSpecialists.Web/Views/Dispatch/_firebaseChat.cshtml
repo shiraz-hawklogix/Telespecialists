@@ -275,6 +275,13 @@
                     _ref.child(SenderId).update({
                         Online: true,
                         lastOnline: firebase.database.ServerValue.TIMESTAMP
+                    }).then(function () {
+                        return _ref.child(SenderId).once("value");
+                    }).then(function (childSnapshot) {
+                        var time = childSnapshot.val().lastOnline;
+                        _ref.child(SenderId).update({
+                            lastOnline: time * -1
+                        });
                     });
                 }
             });
@@ -372,8 +379,13 @@
             //var _count = ReadMessageStatus(SenderId, friends.key);
             var date = new Date(friends.val().lastMsgDateTime);
             var serverTime = date.toLocaleString();
-            // temp hide serverTime
-            //serverTime = '';
+
+            var lastmsgDate = new Date(serverTime);
+            // Get today's date
+            var todaysDate = new Date();
+            if (lastmsgDate.setHours(0, 0, 0, 0) == todaysDate.setHours(0, 0, 0, 0)) {
+                serverTime = date.toLocaleTimeString();
+            }
             let connectionName = friends.val().name;
             if (connectionName.length > 25)
                 connectionName = connectionName.substring(0, 25) + '...';

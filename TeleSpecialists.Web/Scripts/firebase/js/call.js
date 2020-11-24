@@ -681,8 +681,7 @@ function SignInStatus(userid) {
                 var _ref = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
                 _ref.child(userid).update({
                     Online: true,
-                    lastOnline: firebase.database.ServerValue.TIMESTAMP,
-                    lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP
+                    lastOnline: firebase.database.ServerValue.TIMESTAMP                    
                 }).then(function () {
                     return _ref.child(userid).once("value");
                 }).then(function (childSnapshot) {
@@ -814,8 +813,7 @@ function SignOutStatus() {
                 var _ref = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
                 _ref.child(SenderId).update({
                     Online: false,
-                    lastOnline: firebase.database.ServerValue.TIMESTAMP,
-                    lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP
+                    lastOnline: firebase.database.ServerValue.TIMESTAMP
                 }).then(function () {
                     return _ref.child(SenderId).once("value");
                 }).then(function (childSnapshot) {
