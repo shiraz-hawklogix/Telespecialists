@@ -441,6 +441,7 @@
     <Compile Include="ViewModels\CasePage\CasePageCommonFields.cs" />
     <Compile Include="ViewModels\CasePage\DashboardPage.cs" />
     <Compile Include="ViewModels\CasePage\DiagnosisCodesViewModel.cs" />
+    <Compile Include="ViewModels\CaseRejectionReasonsViewModel.cs" />
     <Compile Include="ViewModels\CasesPendingReviewListing.cs" />
     <Compile Include="ViewModels\CredentialsExpiringCaseListing.cs" />
     <Compile Include="ViewModels\Dispatch\DispatchListing.cs" />
