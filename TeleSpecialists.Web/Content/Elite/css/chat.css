@@ -158,7 +158,6 @@ img {
     padding: 5px 10px 5px 12px;
    float:left;
    max-width:70%;
-    /*width: 100%;*/
 }
 
 .time_date {
@@ -193,9 +192,7 @@ img {
     margin: 0;
     color: #fff;
     padding: 5px 10px 5px 12px;
-    /*float:right;
-    max-width:60%;*/
-    /*width: 100%;*/
+    max-width: 100%;
 
 }
 
@@ -488,3 +485,18 @@ img {
     display: flex;
     align-items: center;
 }
+
+.write_msg {
+    width: calc(100% - 55px);
+    resize: none;
+    border: none;
+    color: #4c4c4c;
+    font-size: 12px;
+    min-height: 58px;
+    padding-top: 18px;
+    outline: none;
+}
+
+    .write_msg::-webkit-scrollbar {
+        display: none;
+    }
