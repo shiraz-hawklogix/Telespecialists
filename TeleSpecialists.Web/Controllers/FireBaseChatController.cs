@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Web.Mvc;
+using TeleSpecialists.BLL.Extensions;
+using TeleSpecialists.BLL.Helpers;
 using TeleSpecialists.BLL.Model;
 using TeleSpecialists.BLL.Service;
 using TeleSpecialists.BLL.ViewModels;
@@ -100,6 +102,11 @@ namespace TeleSpecialists.Controllers
 
                 //var file = RenderImage("");
             }
+            if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()))
+                ViewBag.isroleAdmin = true; 
+            else
+                ViewBag.isroleAdmin = false;
+
             return GetViewResult(_fireBaseData);
         }
         public ActionResult Chat2()

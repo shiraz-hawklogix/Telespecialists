@@ -535,14 +535,12 @@
                         <a href="@Url.Action("alarmsetting", "alarm")" class="btn-sm font_11px loadLinkAsync clearLS"><span class="alarm_setting"></span>Alarm Setting</a>
                     }
                 }
-
+                <img src="~/Content/images/firebase1.png" style="height:18px;width:16px" />
+                <span id="lblFirebase" style="color:white"></span>
+                <a href="@Url.Action("chat", "firebasechat")" class="btn-sm font_12px" target="_blank" id="firebaseLink"><span class="fa fa-comments rapids-inbox"></span>chat</a>
+                
                 @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()) || User.IsInRole(UserRoles.OutsourcedNavigator.ToDescription()) || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription()))
                 {
-
-                    <img src="~/Content/images/firebase1.png" style="height:18px;width:16px" />
-                    <span id="lblFirebase" style="color:white"></span>
-                    <a href="@Url.Action("chat", "firebasechat")" class="btn-sm font_12px" target="_blank" id="firebaseLink"><span class="fa fa-comments rapids-inbox"></span>chat</a>
-                    @*<a href="@Url.Action("hawklogixchat", "firebasechat")" class="btn-sm font_12px" target="_blank"><span class="fa fa-envelope-o rapids-inbox"></span>chat</a>*@
                     <a href="@Url.Action("Index", "Home")" class="btn-sm font_12px loadLinkAsync"><span class="fa fa-inbox rapids-inbox"></span>Inbox</a>
                 }
                 <a href="@Url.Action("ChangePassword", "Manage")" class="btn-sm font_11px loadLinkAsync"><span class="change_pp"></span>Change Password</a>

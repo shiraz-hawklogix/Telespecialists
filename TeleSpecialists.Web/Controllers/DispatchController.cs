@@ -1980,6 +1980,11 @@ namespace TeleSpecialists.Web.Controllers
 
                 //var file = RenderImage("");
             }
+            if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()))
+                ViewBag.isroleAdmin = true;
+            else
+                ViewBag.isroleAdmin = false;
+
             return PartialView(_fireBaseData);
         }
 

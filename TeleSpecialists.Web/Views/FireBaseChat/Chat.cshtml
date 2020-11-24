@@ -1,4 +1,6 @@
-﻿
+﻿@{ 
+    bool isroleAdmin = ViewBag.isroleAdmin;
+}
 <link href="~/Content/Elite/css/chat.css" rel="stylesheet" />
 
 <div class="message-wrapper">
@@ -94,8 +96,13 @@
                     <br>
                     @Html.RadioButton("grpType", "Private", new { @class = "lbltype", @checked = "true" })
                     <span class="font-style-custome">Private (Only allowed members can chat)</span> <br>
-                    @Html.RadioButton("grpType", "Public", new { @class = "lbltype" })
-                    <span class="font-style-custome">Public (Anyone can send msg )</span>
+                    @{
+                        if (isroleAdmin)
+                        {
+                            @Html.RadioButton("grpType", "Public", new { @class = "lbltype" })
+                            <span class="font-style-custome">Public (Anyone can send msg )</span>
+                        }
+                    }
                 </div>
             </div>
             <div class="modal-footer">
