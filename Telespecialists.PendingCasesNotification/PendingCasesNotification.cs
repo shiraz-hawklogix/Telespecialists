@@ -37,10 +37,10 @@ namespace Telespecialists.PendingCasesNotification
 
                 if (isEnablePendCasesNotification)
                 {
-                    _logger.AddLogEntry(_serviceName, "INPROGRESS", _serviceName + " Started", "");
+                    //_logger.AddLogEntry(_serviceName, "INPROGRESS", _serviceName + " Started", "");
                     DateTime TimeTo = DateTime.Now.ToEST().AddHours(-1);
                     DateTime TimeFrom = DateTime.Now.ToEST().AddHours(-1).AddMinutes(-5);
-                    _logger.AddLogEntry(_serviceName, "INPROGRESS", _serviceName + " for " + TimeFrom + " - " + TimeTo, "");
+                    //_logger.AddLogEntry(_serviceName, "INPROGRESS", _serviceName + " for " + TimeFrom + " - " + TimeTo, "");
                     List<SqlParameter> param = new List<SqlParameter>();
                     param.Add(new SqlParameter("@TimeFrom", TimeFrom));
                     param.Add(new SqlParameter("@TimeTo", TimeTo));
@@ -76,12 +76,12 @@ namespace Telespecialists.PendingCasesNotification
                           from: new PhoneNumber(FromPhone),
                           body: sb.ToString());
                         }
-                    }
-                    _logger.AddLogEntry(_serviceName, "COMPLETED", _serviceName + " found " + dataTable.Rows.Count + " pending cases.", "");
+                        _logger.AddLogEntry(_serviceName, "COMPLETED", _serviceName + " found " + dataTable.Rows.Count + " pending cases.", "");
+                    }                    
                 }
                 else
                 {
-                    _logger.AddLogEntry(_serviceName, "STOPPED", _serviceName + " Stopped.", "");
+                    //_logger.AddLogEntry(_serviceName, "STOPPED", _serviceName + " Stopped.", "");
                 }                           
             }
             catch (Exception exception)
@@ -90,7 +90,7 @@ namespace Telespecialists.PendingCasesNotification
             }
             finally
             {
-                _logger.AddLogEntry(_serviceName, "COMPLETED", "", "");
+                //_logger.AddLogEntry(_serviceName, "COMPLETED", "", "");                
             }
 
         }

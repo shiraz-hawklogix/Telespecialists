@@ -5812,6 +5812,18 @@ namespace TeleSpecialists.Controllers
             return Json(result1, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult searchChildIcd10CalCodes(string Id,string Name,string code_id)
+        {
+            var result = _diagnosisCodesService.searchChildIcd10CalCodes(Id,Name, code_id);
+            return Json(new { status = true, codes = result }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult getIcd10SearchKeys()
+        {
+            var result = _diagnosisCodesService.getIcd10SearchKeys();
+            return Json(new { status = true, searchKeys = result }, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
 
         #region Token work

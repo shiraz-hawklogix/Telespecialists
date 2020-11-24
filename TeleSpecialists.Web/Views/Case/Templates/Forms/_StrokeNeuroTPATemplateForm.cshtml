@@ -99,6 +99,7 @@
                 @Model.cas_created_date.FormatDateTime()
             </div>
         </div>
+        @Html.Partial("_Icd10BillingCodes")
         <div id="divImpression">
             <div class="form-group row">
                 <label class="control-label col-12 text-danger">Impression: </label>
@@ -147,17 +148,17 @@
             </div>
         </div>
         @*<div class="form-group row">
-                <label class="control-label col-12 text-danger">Comments:</label>
-                <div class="col-10" id="divComment">
-                    @Html.TextAreaFor(m => m.case_template_stroke_neuro_tpa.csn_comment, new { @style = "width: 100%; height: 100%;" })
-                    <div class="text-danger">
-                        <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label>
-                    </div>
-                    <div class="error_msg" style="display:none;">
-                        <label>This field is required</label>
-                    </div>
+            <label class="control-label col-12 text-danger">Comments:</label>
+            <div class="col-10" id="divComment">
+                @Html.TextAreaFor(m => m.case_template_stroke_neuro_tpa.csn_comment, new { @style = "width: 100%; height: 100%;" })
+                <div class="text-danger">
+                    <label class="error">100 characters minimum (<span class="commentsCount">0</span>)</label>
                 </div>
-            </div>*@
+                <div class="error_msg" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
+        </div>*@
         @{
             var templateTypes = new List<int>()
             {

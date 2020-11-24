@@ -1048,6 +1048,18 @@ namespace TeleSpecialists.BLL.Repository
                 return _DiagnosisCodesRepository;
             }
         }
+        private IIcd10CodesCalRepository _Icd10CodesCalRepository;
+        public IIcd10CodesCalRepository Icd10CodesCalRepository
+        {
+            get
+            {
+                if (this._Icd10CodesCalRepository == null)
+                {
+                    this._Icd10CodesCalRepository = new Icd10CodesCalRepository(context);
+                }
+                return _Icd10CodesCalRepository;
+            }
+        }
 
         #endregion
 

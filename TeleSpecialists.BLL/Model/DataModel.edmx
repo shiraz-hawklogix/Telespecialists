@@ -1283,6 +1283,20 @@
           <Property Name="Parameter_Add_Date" Type="datetime" />
           <Property Name="SortNum" Type="int" />
         </EntityType>
+        <EntityType Name="icd10_billing_codes_calcualtor">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="cod_parent_id" Type="int" />
+          <Property Name="cod_name" Type="varchar" MaxLength="500" />
+          <Property Name="cod_class_name" Type="varchar" MaxLength="500" />
+          <Property Name="cod_sort_order" Type="int" />
+          <Property Name="cod_is_active" Type="bit" />
+          <Property Name="cod_added_date" Type="datetime" />
+          <Property Name="cod_modified_date" Type="datetime" />
+          <Property Name="cod_linked_id" Type="varchar" MaxLength="200" />
+        </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="MDStaffFacility">
@@ -1432,6 +1446,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <Property Name="mcas_language_exam_repetition_words" Type="bit" />
           <Property Name="mcas_nursing_verbalize_transfer_patient" Type="bit" />
           <Property Name="mcas_connectivity_issue" Type="bit" />
+          <Property Name="mcas_is_nav_blast" Type="bit" />
+          <Property Name="mcas_mock_drill_comments" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="nih_stroke_scale">
           <Key>
@@ -2873,6 +2889,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySet Name="firebase_usersemail" EntityType="Self.firebase_usersemail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="goals_data" EntityType="Self.goals_data" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Hospital_Protocols" EntityType="Self.Hospital_Protocols" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="icd10_billing_codes_calcualtor" EntityType="Self.icd10_billing_codes_calcualtor" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="mock_case" EntityType="Self.mock_case" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="nih_stroke_scale" EntityType="Self.nih_stroke_scale" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="nih_stroke_scale_answer" EntityType="Self.nih_stroke_scale_answer" Schema="dbo" store:Type="Tables" />
@@ -3545,6 +3562,7 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             <End Role="facility" EntitySet="facilities" />
             <End Role="mock_case" EntitySet="mock_case" />
           </AssociationSet>
+          <EntitySet Name="icd10_billing_codes_calcualtor" EntityType="DataModel.icd10_billing_codes_calcualtor" />
           </EntityContainer>
         <EntityType Name="alarm_setting">
           <Key>
@@ -6427,6 +6445,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="mock_case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="mock_case" ToRole="AspNetUser" />
           <NavigationProperty Name="facility" Relationship="DataModel.FK_mock_case_facility" FromRole="mock_case" ToRole="facility" />
+          <Property Name="mcas_is_nav_blast" Type="Boolean" />
+          <Property Name="mcas_mock_drill_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_mock_case_AspNetUsers">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
@@ -6480,6 +6500,20 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="icd10_billing_codes_calcualtor">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="cod_parent_id" Type="Int32" />
+          <Property Name="cod_name" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="cod_class_name" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="cod_sort_order" Type="Int32" />
+          <Property Name="cod_is_active" Type="Boolean" />
+          <Property Name="cod_added_date" Type="DateTime" Precision="3" />
+          <Property Name="cod_modified_date" Type="DateTime" Precision="3" />
+          <Property Name="cod_linked_id" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -8483,6 +8517,8 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
           <EntitySetMapping Name="mock_case">
             <EntityTypeMapping TypeName="DataModel.mock_case">
               <MappingFragment StoreEntitySet="mock_case">
+                <ScalarProperty Name="mcas_mock_drill_comments" ColumnName="mcas_mock_drill_comments" />
+                <ScalarProperty Name="mcas_is_nav_blast" ColumnName="mcas_is_nav_blast" />
                 <ScalarProperty Name="mcas_connectivity_issue" ColumnName="mcas_connectivity_issue" />
                 <ScalarProperty Name="mcas_nursing_verbalize_transfer_patient" ColumnName="mcas_nursing_verbalize_transfer_patient" />
                 <ScalarProperty Name="mcas_language_exam_repetition_words" ColumnName="mcas_language_exam_repetition_words" />
@@ -8588,6 +8624,21 @@ warning 6002: The table/view 'dbTeleSpecialistsDev.dbo.MDStaffFacility' does not
                 <ScalarProperty Name="mcas_associate_id" ColumnName="mcas_associate_id" />
                 <ScalarProperty Name="mcas_ctp_key" ColumnName="mcas_ctp_key" />
                 <ScalarProperty Name="mcas_key" ColumnName="mcas_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="icd10_billing_codes_calcualtor">
+            <EntityTypeMapping TypeName="DataModel.icd10_billing_codes_calcualtor">
+              <MappingFragment StoreEntitySet="icd10_billing_codes_calcualtor">
+                <ScalarProperty Name="cod_linked_id" ColumnName="cod_linked_id" />
+                <ScalarProperty Name="cod_modified_date" ColumnName="cod_modified_date" />
+                <ScalarProperty Name="cod_added_date" ColumnName="cod_added_date" />
+                <ScalarProperty Name="cod_is_active" ColumnName="cod_is_active" />
+                <ScalarProperty Name="cod_sort_order" ColumnName="cod_sort_order" />
+                <ScalarProperty Name="cod_class_name" ColumnName="cod_class_name" />
+                <ScalarProperty Name="cod_name" ColumnName="cod_name" />
+                <ScalarProperty Name="cod_parent_id" ColumnName="cod_parent_id" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

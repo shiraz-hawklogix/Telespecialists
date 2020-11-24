@@ -144,6 +144,7 @@
         <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers_Navigator" />
         <AssociationConnector Association="DataModel.FK_mock_case_AspNetUsers1" />
         <AssociationConnector Association="DataModel.FK_mock_case_facility" />
+        <EntityTypeShape EntityType="DataModel.icd10_billing_codes_calcualtor" Width="1.5" PointX="9.375" PointY="18.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

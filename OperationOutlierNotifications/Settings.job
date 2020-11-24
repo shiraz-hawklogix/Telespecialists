@@ -9,10 +9,10 @@
   //    "schedule": "0 */15 * * * *",
 
   //    Runs every 30 minutes
-  //"schedule": "0,30 0-24 * * *",
+  //   "schedule": "0,30 0-24 * * *",
 
   //    Runs every  minutes from 6 AM to midnight
-   //    "schedule": "0,1 6-24 * * *"
+  //     "schedule": "0,1 6-24 * * *"
 
   //    Runs every hour (i.e. whenever the count of minutes is 0)
   //    "schedule": "0 0 * * * *"

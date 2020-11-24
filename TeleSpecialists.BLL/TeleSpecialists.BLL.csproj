@@ -133,6 +133,7 @@
     <Compile Include="Helpers\VolumeMetricsReport.cs" />
     <Compile Include="Helpers\WebScrapper.cs" />
     <Compile Include="ModelEx\CaseModel.cs" />
+    <Compile Include="ModelEx\mock_case.cs" />
     <Compile Include="ModelEx\PhysicianModel.cs" />
     <Compile Include="Model\alarm_setting.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
@@ -198,6 +199,12 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\Hospital_Protocols.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\icd10_billing_codes_calcualtor.cs">
+      <DependentUpon>DataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\mock_case.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\Onboarded.cs">
@@ -286,7 +293,9 @@
     <Compile Include="Repository\FireBaseUserMailRepository.cs" />
     <Compile Include="Repository\GoalsDataRepository.cs" />
     <Compile Include="Repository\HospitalProtocols.cs" />
+    <Compile Include="Repository\Icd10CodesCalRepository.cs" />
     <Compile Include="Repository\ICwhData.cs" />
+    <Compile Include="Repository\MockCaseRepository.cs" />
     <Compile Include="Repository\NHRepository.cs" />
     <Compile Include="Repository\OnBoardedRepository.cs" />
     <Compile Include="Repository\PostAcuteCareRepository.cs" />
@@ -316,6 +325,7 @@
     <Compile Include="Service\FacilityPIService.cs" />
     <Compile Include="Service\FireBaseUserMailService.cs" />
     <Compile Include="Service\HospitalprotocolServices.cs" />
+    <Compile Include="Service\MockCaseService.cs" />
     <Compile Include="Service\NHService.cs" />
     <Compile Include="Service\OnBoardedServices.cs" />
     <Compile Include="Service\PhysicianCaseTempService.cs" />

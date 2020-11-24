@@ -3512,6 +3512,7 @@
     <Content Include="Views\HospitalProtocols\Index.cshtml" />
     <Content Include="Views\Reports\UserPresenceReport.cshtml" />
     <Content Include="Views\Case\ViewOnBoarding.cshtml" />
+    <Content Include="Views\Case\_Icd10BillingCodes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
