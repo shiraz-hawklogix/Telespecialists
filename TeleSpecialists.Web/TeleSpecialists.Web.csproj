@@ -254,6 +254,7 @@
     <Compile Include="Controllers\BillingController.cs" />
     <Compile Include="Controllers\CaseController.cs" />
     <Compile Include="Controllers\CaseCopyLogController.cs" />
+    <Compile Include="Controllers\CaseRejectController.cs" />
     <Compile Include="Controllers\CaseTypeController.cs" />
     <Compile Include="Controllers\DispatchController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
