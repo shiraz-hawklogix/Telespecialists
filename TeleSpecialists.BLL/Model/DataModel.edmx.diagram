@@ -127,7 +127,7 @@
         <EntityTypeShape EntityType="DataModel.view_facility_physician" Width="1.5" PointX="0.75" PointY="20.75" />
         <EntityTypeShape EntityType="DataModel.view_user_schedule" Width="1.5" PointX="2.75" PointY="20.75" />
         <EntityTypeShape EntityType="DataModel.BCI_ReportData" Width="1.5" PointX="9.375" PointY="18.75" />
-        <EntityTypeShape EntityType="DataModel.case_rejection_reason" Width="1.5" PointX="20.375" PointY="4.75" />
+        <EntityTypeShape EntityType="DataModel.case_rejection_reason" Width="2" PointX="20.375" PointY="4.75" />
         <EntityTypeShape EntityType="DataModel.firebase_users" Width="1.5" PointX="21.375" PointY="0.75" />
         <EntityTypeShape EntityType="DataModel.For_Case" Width="1.5" PointX="20.375" PointY="8.75" />
         <EntityTypeShape EntityType="DataModel.mute_firebase_notification" Width="1.5" PointX="5.375" PointY="21.75" />

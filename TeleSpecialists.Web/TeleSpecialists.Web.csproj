@@ -304,6 +304,7 @@
     <Compile Include="Models\CallHistoryViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PhysicianCaseTempViewModel.cs" />
+    <Compile Include="Models\ProfileAccessViewModel.cs" />
     <Compile Include="Models\SignalRCaseDataModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />

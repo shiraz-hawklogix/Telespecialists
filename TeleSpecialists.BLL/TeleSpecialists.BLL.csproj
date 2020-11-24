@@ -170,9 +170,6 @@
     <Compile Include="Model\BCI_ReportData.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\BCI_ReportData1.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Model\case.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -182,9 +179,6 @@
     <Compile Include="Model\case_rejection_reason.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\case_rejection_reason1.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Model\case_review_template.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -192,9 +186,6 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\CCIReport_Data.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\CCIReport_Data1.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\component.cs">
