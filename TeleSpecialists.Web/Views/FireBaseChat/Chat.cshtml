@@ -62,7 +62,7 @@
                         </div>
                         <div class="type_msg">
                             <div class="input_msg_write">
-                                <textarea cols="1" rows="1" class="write_msg" placeholder="Type a message" id="txtMsg"></textarea>
+                                <textarea cols="1" rows="1" class="write_msg" placeholder="Type a message" id="txtMsg" data-autoresize></textarea>
                                 <button class="msg_send_btn" type="button" id="SendMsg"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
                             </div>
                             @*<div class="input_msg_write">
@@ -177,6 +177,16 @@
     });
 </script>
 <script>
+    $(document).ready(function () {
+        jQuery.each(jQuery('textarea[data-autoresize]'), function () {
+            var offset = this.offsetHeight - this.clientHeight;
+
+            var resizeTextarea = function (el) {
+                jQuery(el).css('height', 'auto').css('height', el.scrollHeight + offset);
+            };
+            jQuery(this).on('keyup input', function () { resizeTextarea(this); }).removeAttr('data-autoresize');
+        });
+    });
    // <<<<<<<<<<<<<<<<<*************  Currently Used Functions In Firebase Start ***************************** >>>>>>>>>>>>>>>>>>>>>>>>
 
     function initApp() {

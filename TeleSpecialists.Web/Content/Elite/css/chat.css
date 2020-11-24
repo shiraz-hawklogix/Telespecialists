@@ -181,6 +181,8 @@ img {
 }
 
 .mesgs {
+    display: flex;
+    flex-direction: column;
     flex: 1;
 }
 
@@ -495,6 +497,7 @@ img {
     min-height: 58px;
     padding-top: 18px;
     outline: none;
+    max-height: 100px;
 }
 
     .write_msg::-webkit-scrollbar {
