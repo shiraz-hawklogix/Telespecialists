@@ -1125,6 +1125,20 @@ namespace TeleSpecialists.BLL.Repository
             }
         }
         #endregion
+        #region Case Rejection Reason
+        private ICaseRejectRepository _casRejectRepository;
+        public ICaseRejectRepository CaseRejectRepository
+        {
+            get
+            {
+                if (this._casRejectRepository == null)
+                {
+                    this._casRejectRepository = new CaseRejectRepository(context);
+                }
+                return _casRejectRepository;
+            }
+        }
+        #endregion
 
         #endregion ----- Repositories -----
 
