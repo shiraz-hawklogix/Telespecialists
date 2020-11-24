@@ -30,6 +30,24 @@ namespace TeleSpecialists.BLL.Service
                                     .Select(m => m.AspNetUser)
                                     .FirstOrDefault();
         }
+
+        public AspNetUser GetDetailForDispatch(string Id)
+        {
+            string strPhysician = UserRoles.Physician.ToDescription().ToLower();
+            string strPartnerPhysician = UserRoles.PartnerPhysician.ToDescription().ToLower();
+            string strPacPhysician = UserRoles.AOC.ToDescription().ToLower();
+            var physicianRoleIds = _unitOfWork.ApplicationRoles
+                                            .Where(m => m.Name.ToLower() == strPartnerPhysician || m.Name.ToLower() == strPhysician || m.Name.ToLower() == strPacPhysician)
+                                            .Select(m => m.Id);
+
+            return _unitOfWork.ApplicationUserRoles
+                                     .Include(m => m.AspNetUser.physician_status)
+                                    .Where(m => physicianRoleIds.Contains(m.RoleId))
+                                    .Where(m => m.UserId == Id)
+                                    .Select(m => m.AspNetUser).AsNoTracking()
+                                    .FirstOrDefault();
+        }
+
         /// <summary>
         /// Returns only those physicians which are on schedule are not updated by physician status service as available 
         /// or those physicians for which the schedule is updated
