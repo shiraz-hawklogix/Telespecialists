@@ -264,8 +264,6 @@
     <Compile Include="Controllers\FacilityUserController.cs" />
     <Compile Include="Controllers\HospitalProtocolsController.cs" />
     <Compile Include="Controllers\MDStaffController.cs" />
-    <Compile Include="Controllers\MenuAccessController.cs" />
-    <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\MockCaseController.cs" />
     <Compile Include="Controllers\PACPhysicianController.cs" />
     <Compile Include="Controllers\PhonebarController.cs" />

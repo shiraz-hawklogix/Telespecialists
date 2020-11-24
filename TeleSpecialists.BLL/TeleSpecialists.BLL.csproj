@@ -379,8 +379,6 @@
     <Compile Include="Repository\GoalsDataRepository.cs" />
     <Compile Include="Repository\HospitalProtocols.cs" />
     <Compile Include="Repository\ICwhData.cs" />
-    <Compile Include="Repository\MenuAccessRepository.cs" />
-    <Compile Include="Repository\MenuRepository.cs" />
     <Compile Include="Repository\MockCaseRepository.cs" />
     <Compile Include="Repository\NHRepository.cs" />
     <Compile Include="Repository\OnBoardedRepository.cs" />
@@ -398,7 +396,6 @@
     <Compile Include="Repository\RootCauseRepository.cs" />
     <Compile Include="Repository\SleepRepository.cs" />
     <Compile Include="Repository\TokenRepository.cs" />
-    <Compile Include="Repository\UserAccessRepository.cs" />
     <Compile Include="Repository\UserProfileRepository.cs" />
     <Compile Include="Repository\UserVerificationRepoistory.cs" />
     <Compile Include="Repository\Web2Campaign_LogRepository.cs" />
@@ -415,7 +412,6 @@
     <Compile Include="Service\FacilityPIService.cs" />
     <Compile Include="Service\FireBaseUserMailService.cs" />
     <Compile Include="Service\HospitalprotocolServices.cs" />
-    <Compile Include="Service\MenuService.cs" />
     <Compile Include="Service\MockCaseService.cs" />
     <Compile Include="Service\NHService.cs" />
     <Compile Include="Service\OnBoardedServices.cs" />

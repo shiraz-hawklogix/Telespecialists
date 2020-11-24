@@ -36,7 +36,7 @@ namespace TeleSpecialists.Controllers
         private readonly UserVerificationService _userVerificationService;
         private readonly user_fcm_notification _user_Fcm_Notification;
         private readonly TokenService _tokenservice;
-        private readonly MenuService _menuService;
+        //private readonly MenuService _menuService;
         //   private readonly RateService _rateService;
         public AccountController()
         {
@@ -46,7 +46,7 @@ namespace TeleSpecialists.Controllers
             _userVerificationService = new UserVerificationService();
             _user_Fcm_Notification = new user_fcm_notification();
             _tokenservice = new TokenService();
-            _menuService = new MenuService();
+           // _menuService = new MenuService();
             //     _rateService = new RateService();
         }
 
