@@ -294,6 +294,7 @@ namespace TeleSpecialists.BLL.Model
         public string cas_premorbid_symptoms_text { get; set; }
         public string cas_premorbid_completed_by { get; set; }
         public Nullable<System.DateTime> cas_premorbid_completed_date { get; set; }
+        public Nullable<int> cas_pat_key { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<case_assign_history> case_assign_history { get; set; }
@@ -316,5 +317,6 @@ namespace TeleSpecialists.BLL.Model
         public virtual AspNetUser AspNetUser2 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<premorbid_correspondnce> premorbid_correspondnce { get; set; }
+        public virtual patient patient { get; set; }
     }
 }

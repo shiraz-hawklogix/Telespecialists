@@ -27,6 +27,7 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<long> psl_uss_key { get; set; }
         public Nullable<int> psl_cas_key { get; set; }
         public string psl_comments { get; set; }
+        public Nullable<System.Guid> psl_fac_key { get; set; }
     
         public virtual physician_status_log physician_status_log1 { get; set; }
         public virtual physician_status_log physician_status_log2 { get; set; }
