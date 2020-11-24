@@ -92,7 +92,7 @@
 
         @Html.Partial("_Icd10BillingCodes")
 
-        <div class="form-group row" id="divImpression">
+        @*<div class="form-group row" id="divImpression">
             <label class="control-label col-12 text-danger">Impression: </label>
             <div class="col-10 col-offset-2">
                 @Html.HiddenFor(m => m.case_template_telestroke_notpa.ctt_impression)
@@ -109,8 +109,8 @@
                     <label>This field is required</label>
                 </div>
             </div>
-        </div>
-        <div class="form-group row">
+        </div>*@
+        @*<div class="form-group row">
             <label class="control-label col-12">Mechanism of Stroke:</label>
             <div class="col-10 col-offset-2 ctt_mechanism_stroke">
                 @Html.HiddenFor(m => m.case_template_telestroke_notpa.ctt_mechanism_stroke)
@@ -121,11 +121,11 @@
                     </div>
                 }
                 <div id="case_template_telestroke_notpa.ctt_mechanism_stroke_freeText">
-                    @Html.TextAreaFor(m => m.case_template_telestroke_notpa.ctt_mechanism_stroke_text, new { @class = "form-control mechanism_stroke_text", style = "width: 100%" }) @*, placeholder = "Max text limit 2000." })*@
+                    @Html.TextAreaFor(m => m.case_template_telestroke_notpa.ctt_mechanism_stroke_text, new { @class = "form-control mechanism_stroke_text", style = "width: 100%" }) @*, placeholder = "Max text limit 2000." })
                     @Html.ValidationMessageFor(model => model.case_template_telestroke_notpa.ctt_mechanism_stroke_text, "", new { @class = "text-danger" })
                 </div>
             </div>
-        </div>
+        </div>*@
 
         @{
             var templateTypes = new List<int>()

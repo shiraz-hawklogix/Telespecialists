@@ -4500,11 +4500,12 @@ EntityTypes.StateAlertTemplate.ToInt()
             padding: 5px;
             font-size: 12px;
             margin-top: 5px;
-            max-width: 400px;
+            /*max-width: 400px;*/
             border-radius: 5px;
             color: white;
             display: flex;
             align-items: center;
+            justify-content:space-between;
         }
 
         #cas_billing_codes, #cas_billing_codes_temp {
@@ -4627,9 +4628,13 @@ EntityTypes.StateAlertTemplate.ToInt()
             color: black;
             cursor: pointer;
         }
-        .icd10SearchKeys:hover{
+        .icd10-ul li:hover {
             cursor:pointer;
             font-weight:500;
+        }
+        .icd10SearchKeys:hover {
+            cursor: pointer;
+            font-weight: 500;
         }
 
         .active-idc10 {
