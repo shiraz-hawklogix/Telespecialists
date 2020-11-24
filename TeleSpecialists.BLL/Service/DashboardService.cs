@@ -29,7 +29,8 @@ namespace TeleSpecialists.BLL.Service
         }
         public dynamic LoadCasesStats(string filter)
         {
-            return _unitOfWork.SqlToList(string.Format("Exec usp_dashboard_stats '{0}'", filter));
+            //return _unitOfWork.SqlToList(string.Format("Exec usp_dashboard_stats '{0}'", filter));
+            return _unitOfWork.SqlToList(string.Format("Exec usp_dashboard_stats_new '{0}'", filter));
         }
         public dynamic GetStrokeAlertChartStats()
         {

@@ -1819,6 +1819,12 @@ namespace TeleSpecialists.BLL.Service
                             obj.STATConsultS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.STATConsult / 3600, (item.STATConsult % 3600) / 60, item.STATConsult % 60);
                             obj.Break = item.Break;
                             obj.BreakS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.Break / 3600, (item.Break % 3600) / 60, item.Break % 60);
+                            obj.PostSAWorkup = item.PostSAWorkup;
+                            obj.PostSAWorkupS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.PostSAWorkup / 3600, (item.PostSAWorkup % 3600) / 60, item.PostSAWorkup % 60);
+                            obj.PostStatWorkup = item.PostStatWorkup;
+                            obj.PostStatWorkupS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.PostStatWorkup / 3600, (item.PostStatWorkup % 3600) / 60, item.PostStatWorkup % 60);
+                            obj.RoundingPrep = item.RoundingPrep;
+                            obj.RoundingPrepS = string.Format("{0:D2}:{1:D2}:{2:D2}", item.RoundingPrep / 3600, (item.RoundingPrep % 3600) / 60, item.RoundingPrep % 60);
                             _list.Add(obj);
                         }
                     }
@@ -1838,7 +1844,10 @@ namespace TeleSpecialists.BLL.Service
                 x.StrokeAlertS,
                 x.RoundingS,
                 x.STATConsultS,
-                x.BreakS
+                x.BreakS,
+                x.PostSAWorkupS,
+                x.PostStatWorkupS,
+                x.RoundingPrepS
             }).AsQueryable();
 
             return Final_list.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
@@ -4127,8 +4136,8 @@ namespace TeleSpecialists.BLL.Service
                 query = query.OrderBy(m => m.on_screen_time);
                 List<QualityMetricsReportCls> final = new List<QualityMetricsReportCls>();
                 List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
-                string guids = "";
-
+                string facguids = "";
+                string phyguids = "";
                 QualityMetricsReportCls cls = new QualityMetricsReportCls();
                 List<double> _meanlist = new List<double>();
                 List<double> _medianlist = new List<double>();
@@ -4177,18 +4186,31 @@ namespace TeleSpecialists.BLL.Service
                 {
                     foreach (var guid in model.Facilities)
                     {
-                        guids += guid + ",";
+                        facguids += guid + ",";
                     }
                 }
+                facguids = facguids.TrimEnd(',');
 
-                guids = guids.TrimEnd(',');
+                if (model.Physicians != null)
+                {
+                    foreach (var guid in model.Physicians)
+                    {
+                        phyguids += guid + ",";
+                    }
+                }
+                phyguids = phyguids.TrimEnd(',');
+
                 result.Add(cls);
 
                 string timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
                 var finalresult = result.Select(x => new
                 {
-                    id = guids,
-                    hospitalname = x.hospitals,
+                    id = facguids,
+                    phy_id = phyguids,
+                    Facility = x.Facility,
+                    Physician = x.Physician,
+                    hospitalcount = x.hospitals,
+                    //hospitalname = x.hospitals,
                     mean = (string.Format("{0:00}:{1:00}:{2:00}", (x._meantime.Hours + x._meantime.Days * 24), x._meantime.Minutes, x._meantime.Seconds)),
                     median = (string.Format("{0:00}:{1:00}:{2:00}", (x._mediantime.Hours + x._mediantime.Days * 24), x._mediantime.Minutes, x._mediantime.Seconds)),
                     timecycle = timeframe
@@ -4197,6 +4219,188 @@ namespace TeleSpecialists.BLL.Service
                 return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
             }
         }
+
+        public DataSourceResult GetOnScreenIND(DataSourceRequest request, QualityMetricsViewModel model, string facilityAdminId)
+        {
+
+            var cases = from ca in _unitOfWork.CaseRepository.Query()
+                        join users in _unitOfWork.UserRepository.Query() on ca.cas_phy_key equals users.Id into physicians
+                        from users in physicians.DefaultIfEmpty()
+                        where ca.cas_is_active == true && ca.cas_cst_key == 20 && ca.cas_billing_bic_key == 1 && ca.cas_ctp_key == 9 &&
+                        ca.cas_metric_wakeup_stroke == model.WakeUpStroke
+                        select (new
+                        {
+                            cas_key = ca.cas_key,
+                            cas_created_date = ca.cas_created_date,
+                            cas_patient_type = ca.cas_patient_type,
+                            cas_ctp_key = ca.cas_ctp_key,
+                            cas_phy_key = ca.cas_phy_key,
+                            physicianname = users.FirstName + " " + users.LastName,
+                            cas_fac_key = ca.cas_fac_key,
+                            facility = ca.facility.fac_name,
+                            qps_number = ca.facility.qps_number,
+                            cas_metric_tpa_consult = ca.cas_metric_tpa_consult,
+                            cas_is_ealert = ca.cas_is_ealert,
+                            cas_metric_video_start_time = ca.cas_metric_video_start_time,
+                            cas_metric_video_end_time = ca.cas_metric_video_end_time,
+                            navigator = ca.cas_created_by_name,
+                        });
+
+            #region ----- Filters -----
+
+            cases = cases.Where(x => DbFunctions.TruncateTime(x.cas_created_date) >= DbFunctions.TruncateTime(model.StartDate) &&
+                                     DbFunctions.TruncateTime(x.cas_created_date) <= DbFunctions.TruncateTime(model.EndDate));
+
+            if (model.WorkFlowType != null)
+                cases = cases.Where(m => model.WorkFlowType.Contains((m.cas_patient_type.HasValue ? m.cas_patient_type.Value : -1)) && m.cas_ctp_key == (int)CaseType.StrokeAlert);
+
+            if (model.Physicians != null)
+                cases = cases.Where(m => model.Physicians.Contains(m.cas_phy_key));
+
+            if (model.Facilities != null && model.Facilities.Count > 0)
+            {
+                if (model.Facilities[0] != Guid.Empty)
+                    cases = cases.Where(m => model.Facilities.Contains(m.cas_fac_key));
+            }
+            else if (model.states != null && model.states.Count > 0)
+            {
+                IQueryable<int?> States = model.states.AsQueryable();
+                model.Facilities = _lookUpService.GetAllFacilityByState(null, States).Select(x => x.fac_key).ToList();
+                if (model.Facilities != null && model.Facilities.Count > 0)
+                {
+                    if (model.Facilities[0] != Guid.Empty)
+                        cases = cases.Where(m => model.Facilities.Contains(m.cas_fac_key));
+                }
+            }
+            else if (!string.IsNullOrEmpty(facilityAdminId))
+            {
+                var facilities = _ealertFacilitiesService.GetAllAssignedFacilities(facilityAdminId)
+                                                        .Select(m => m.Facility).ToList();
+                cases = cases.Where(m => facilities.Contains(m.cas_fac_key));
+            }
+
+
+            if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)
+            {
+                cases = cases.Where(c => model.QPSNumbers.Contains(c.qps_number));//cases = cases.Where(c => c.ca.facility.qps_number.HasValue && model.QPSNumbers.Contains(c.ca.facility.qps_number.Value));
+            }
+
+
+            if (model.tPA != null && model.tPA.Count > 0)
+            {
+                cases = cases.Where(c => model.tPA.Contains(c.cas_metric_tpa_consult));
+            }
+
+            #region TCARE-479
+            if (model.eAlert != null && model.eAlert.Count > 0)
+            {
+                cases = cases.Where(c => model.eAlert.Contains(c.cas_is_ealert));
+            }
+            #endregion
+
+            #endregion
+            #region ----- Calculations -----
+            var query = cases.Select(x => new
+            {
+                id = x.cas_key,
+                facility_key = x.cas_fac_key,
+                facility = (x.facility != null && !String.IsNullOrEmpty(x.facility)) ? x.facility : "",
+                phy_key = x.cas_phy_key,
+                physicianname = x.physicianname,
+                on_screen_time = x.cas_metric_video_end_time < x.cas_metric_video_start_time ? "00:00:00" : DBHelper.FormatSeconds(x.cas_metric_video_end_time, x.cas_metric_video_start_time),
+            });
+
+            #endregion
+
+            var Finalquery = query.Where(x => x.on_screen_time != "00:00:00").OrderBy(m => m.physicianname).ToList();
+            List<QualityMetricsReportCls> result = new List<QualityMetricsReportCls>();
+            if (Finalquery.Count > 0)
+            {
+                List<string> physicianlist = Finalquery.Select(x => x.phy_key).Distinct().ToList();
+                List<Guid> facilitylist = Finalquery.Select(x => x.facility_key).Distinct().ToList();
+                for (var i = 0; i < physicianlist.Count; i++)
+                {
+                    for (var f = 0; f < facilitylist.Count; f++)
+                    {
+                        var Record = Finalquery.Where(x => x.phy_key == physicianlist[i] && x.facility_key == facilitylist[f]).ToList();
+                        if (Record.Count > 0)
+                        {
+                            List<string> onscreen = Record.Select(x => x.on_screen_time).ToList();
+                            if (onscreen.Count > 0)
+                            {
+                                QualityMetricsReportCls cls = new QualityMetricsReportCls();
+                                List<double> _meanlist = new List<double>();
+                                List<double> _medianlist = new List<double>();
+                                int count = 0;
+                                if (onscreen.Count > 0)
+                                {
+                                    foreach (var item in onscreen)
+                                    {
+                                        if (item != "")
+                                        {
+                                            var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
+                                            _meanlist.Add(time);
+                                            _medianlist.Add(time);
+                                            count++;
+                                        }
+                                    }
+                                }
+                                TimeSpan _meantime = new TimeSpan();
+                                TimeSpan _mediantime = new TimeSpan();
+                                if (_meanlist.Count > 0)
+                                {
+                                    double mean = _meanlist.Average();
+                                    _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
+                                }
+                                if (_medianlist.Count > 0)
+                                {
+                                    int numbercount = _medianlist.Count();
+                                    int halfindex = _medianlist.Count() / 2;
+                                    var sortednumbers = _medianlist.OrderBy(x => x);
+                                    double median;
+                                    if ((numbercount % 2) == 0)
+                                    {
+                                        median = ((sortednumbers.ElementAt(halfindex) + sortednumbers.ElementAt(halfindex - 1))) / 2;
+                                    }
+                                    else
+                                    {
+                                        median = sortednumbers.ElementAt(halfindex);
+                                    }
+                                    _mediantime = TimeSpan.FromSeconds(Convert.ToDouble(median));
+                                }
+                                cls.FacilityId = Record[0].facility_key;
+                                cls.Facility = Record[0].facility;
+                                cls.PhysicianId = Record[0].phy_key;
+                                cls.Physician = Record[0].physicianname;
+                                cls.hospitals = count;
+                                cls._meantime = _meantime;
+                                cls._mediantime = _mediantime;
+                                result.Add(cls);
+                            }
+                        }
+                    }
+                }
+            }
+
+            string timeframe = model.StartDate.FormatDate() + " - " + model.EndDate.FormatDate();
+            var finalresult = result.Select(x => new
+            {
+                id = x.FacilityId,
+                Facility = x.Facility,
+                phy_id = x.PhysicianId,
+                Physician = x.Physician,
+                hospitalcount = x.hospitals,
+                mean = (string.Format("{0:00}:{1:00}:{2:00}", (x._meantime.Hours + x._meantime.Days * 24), x._meantime.Minutes, x._meantime.Seconds)),
+                median = (string.Format("{0:00}:{1:00}:{2:00}", (x._mediantime.Hours + x._mediantime.Days * 24), x._mediantime.Minutes, x._mediantime.Seconds)),
+                timecycle = timeframe
+            }).AsQueryable();
+
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+
+        }
+
+
+
         public DataSourceResult GetHandleTime(DataSourceRequest request, QualityMetricsViewModel model, string facilityAdminId)
         {
             using (var context = new Model.TeleSpecialistsContext())
@@ -5672,6 +5876,12 @@ namespace TeleSpecialists.BLL.Service
             }
         }
 
+        public DataSourceResult GetCasesIndirectList(DataSourceRequest request, string period)
+        {
+            var finalresult = _unitOfWork.SqlQuery<IndirectCasesList>(string.Format("Exec usp_dashboard_indirect_cases_box @filter = '{0}'", period)).AsQueryable();
+            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+        }
+
         public DataSourceResult GetCasesCompletedReviewList(DataSourceRequest request, List<string> QPS, string period)
         {
             using (var context = new Model.TeleSpecialistsContext())
@@ -6312,7 +6522,7 @@ namespace TeleSpecialists.BLL.Service
 
             var detail = ColorList.Where(x => x.psl_cas_key == cas_key).FirstOrDefault();
             string html = "<div class='physicianstatusdiv'>";
-            if (detail != null)
+            if (detail.UserInitial != null && detail.psl_status_color != null && detail.psl_status_name != null)
             {
                 string[] status = detail.psl_status_name.Split('/');
                 string[] color = detail.psl_status_color.Split('/');
@@ -7223,7 +7433,7 @@ namespace TeleSpecialists.BLL.Service
                         cases1 = cases1.Where(m => model.CaseType.Contains(m.ca.cas_ctp_key));
                     if (model.BillingCode != null)
                         cases1 = cases1.Where(m => m.ca.cas_billing_bic_key.HasValue && model.BillingCode.Contains(m.ca.cas_billing_bic_key.Value));
-                    if (model.Physicians != null)
+                    if (model.Physicians != null && model.Physicians[0] != "")
                         cases1 = cases1.Where(m => model.Physicians.Contains(m.ca.cas_phy_key));
 
                     if (model.QPSNumbers != null && model.QPSNumbers.Count > 0)

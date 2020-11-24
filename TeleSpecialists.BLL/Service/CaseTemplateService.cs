@@ -171,7 +171,7 @@ namespace TeleSpecialists.BLL.Service
                 strIllnessHistory.AppendItem($"Symptoms: { (!string.IsNullOrEmpty(model.cas_metric_symptoms) ? model.cas_metric_symptoms.Replace("<br/>", "") : "")} <br/>", model.cas_metric_symptoms);
                 strIllnessHistory.AppendItem($"<div class='datetime' >NIHSS Start Assessment Time: {model.cas_metric_assesment_time_est?.FormatDateTime()}</div>", model.cas_metric_assesment_time_est?.FormatDateTime());
                 // Ignoring patient history
-                //strIllnessHistory.AppendItem($"<div class='datetime' >Alteplase/Activase early mix decision: {model.cas_metric_tpa_verbal_order_time_est?.FormatDateTime()}</div>", model.cas_metric_tpa_verbal_order_time_est?.FormatDateTime());
+                strIllnessHistory.AppendItem($"<div class='datetime' >Alteplase Early Mix Decision Time: {model.cas_metric_tpa_verbal_order_time_est?.FormatDateTime()}</div>", model.cas_metric_tpa_verbal_order_time_est?.FormatDateTime());
 
                 if (model.cas_metric_tpa_consult.ToBool())
                     strIllnessHistory.Append($"Patient is a candidate for Alteplase/Activase. <br/>");

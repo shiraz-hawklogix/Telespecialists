@@ -1,4 +1,5 @@
-﻿
+﻿@using TeleSpecialists.BLL.Helpers;
+@using TeleSpecialists.BLL.Extensions;
 @{
     ViewBag.Title = "Inbox";
 }
@@ -25,7 +26,7 @@
     <div id="grid">
     </div>
 </div>
-
+@Html.Partial("_Reports")
 <input type="hidden" id="readEmails" value="0" />
 <input type="hidden" id="maxEmailId" value="0" />
 

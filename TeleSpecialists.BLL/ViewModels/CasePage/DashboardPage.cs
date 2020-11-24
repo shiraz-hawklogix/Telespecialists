@@ -18,6 +18,6 @@ namespace TeleSpecialists.BLL.ViewModels.CasePage
         public string StartToStamp { get; set; }
         public string StartToAccept { get; set; }
         public string CallBackResponseTime { get; set; }
-
+        public string ArrivalToNeedleTime { get; set; }
     }
 }

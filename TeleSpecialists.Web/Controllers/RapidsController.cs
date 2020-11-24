@@ -86,7 +86,36 @@ namespace TeleSpecialists.Controllers
             return Json(new { ArchivePath = archivePath }, JsonRequestBehavior.AllowGet);
         }
         */
+        public JsonResult GetAllSummaries(string filter, string currentuserid, int currentCount = 0)
+        {
+            dynamic caseStats;
 
+            try
+            {
+                caseStats = CaseStats(filter, currentuserid);
+
+                if (caseStats != null)
+                    if (caseStats[0]["TotalCases"] == currentCount)
+                    {
+                        return Json(null, JsonRequestBehavior.AllowGet);
+                    }
+
+                return Json(new { caseStats }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+
+            caseStats = "ERROR";
+            return Json(new { caseStats }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        private dynamic CaseStats(string filter, string currentuserid)
+        {
+            return _rapidsService.LoadCasesStats(filter, currentuserid);
+        }
         #region ----- Disposable -----
 
         private bool disposed = false; // to detect redundant calls

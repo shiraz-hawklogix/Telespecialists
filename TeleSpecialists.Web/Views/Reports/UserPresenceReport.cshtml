@@ -289,6 +289,15 @@
             },
             {
                 field: "BreakS", title: "Break", width: '80px'
+            },
+            {
+                field: "PostSAWorkupS", title: "Post SA Workup", width: '80px'
+            },
+            {
+                field: "PostStatWorkupS", title: "Post Stat Workup", width: '80px'
+            },
+            {
+                field: "RoundingPrepS", title: "Rounding Prep", width: '80px'
             }
         ],
         pageable: {
@@ -355,8 +364,20 @@
                             finalData.push({ value: data.Data[i].diff, valueColor: "#88d5e1"/*, valueName: "Break"*/ });
                             CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Break", data.Data[i].diff, "#88d5e1"]);
                         }
+                        if (data.Data[i].StatusName == 'Post SA Workup') {
+                            finalData.push({ value: data.Data[i].diff, valueColor: "#e41717"/*, valueName: "Break"*/ });
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Post SA Workup", data.Data[i].diff, "#e41717"]);
+                        }
+                        if (data.Data[i].StatusName == 'Post Stat Workup') {
+                            finalData.push({ value: data.Data[i].diff, valueColor: "#2113ea"/*, valueName: "Break"*/ });
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Post Stat Workup", data.Data[i].diff, "#2113ea"]);
+                        }
+                        if (data.Data[i].StatusName == 'Rounding Prep') {
+                            finalData.push({ value: data.Data[i].diff, valueColor: "#9f46ad"/*, valueName: "Break"*/ });
+                            CsvFormat.push([data.Data[i].CreatedDate, data.Data[i].StartTime, SecondstoTimestamp(data.Data[i].diff), "Rounding Prep", data.Data[i].diff, "#9f46ad"]);
+                        }
                     }
-                    debugger
+                    
                     CsvFormat.splice(0,0,["Shift Date","Start Time","Duration", "Status", "Total Seconds","Color"]);
                     var CsvString = "";
                     CsvFormat.forEach(function (RowItem, RowIndex) {

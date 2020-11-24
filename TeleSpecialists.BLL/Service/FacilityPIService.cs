@@ -6735,6 +6735,7 @@ namespace TeleSpecialists.BLL.Service
                         if (times.Count > 0)
                         {
                             List<double> _meanlist = new List<double>();
+                            int DTNAVCount = 0;
                             foreach (var item in times)
                             {
                                 if (item != "")
@@ -6742,6 +6743,7 @@ namespace TeleSpecialists.BLL.Service
                                     var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
                                     _meanlist.Add(time);
                                     count++;
+                                    DTNAVCount++;
                                 }
                             }
                             TimeSpan _meantime = new TimeSpan();
@@ -6751,7 +6753,7 @@ namespace TeleSpecialists.BLL.Service
                                 _meantime = TimeSpan.FromSeconds(Convert.ToDouble(mean));
                             }
 
-                            catgory.Add(monthName);
+                            catgory.Add(monthName + "\n" + "N=" + DTNAVCount);
                             list.Add(_meantime.ToString());
                         }
                     }
@@ -6762,6 +6764,7 @@ namespace TeleSpecialists.BLL.Service
                         if (times.Count > 0)
                         {
                             List<double> _medianlist = new List<double>();
+                            int DTNMCount = 0;
                             foreach (var item in times)
                             {
                                 if (item != "")
@@ -6769,6 +6772,7 @@ namespace TeleSpecialists.BLL.Service
                                     var time = new TimeSpan(int.Parse(item.Split(':')[0]), int.Parse(item.Split(':')[1]), int.Parse(item.Split(':')[2])).TotalSeconds;
                                     _medianlist.Add(time);
                                     count++;
+                                    DTNMCount++;
                                 }
                             }
                             TimeSpan _mediantime = new TimeSpan();
@@ -6790,7 +6794,7 @@ namespace TeleSpecialists.BLL.Service
                             }
 
                             list.Add(_mediantime.ToString());
-                            catgory.Add(monthName);
+                            catgory.Add(monthName + "\n" + "N=" + DTNMCount);
                         }
                     }
                     else if (status == "Alteplase early mix decision to Administration Average Minutes")
@@ -7462,6 +7466,7 @@ namespace TeleSpecialists.BLL.Service
                     {
                         List<double> _meanlist = new List<double>();
                         List<double> _medianlist = new List<double>();
+                        int DTNCount = 0;
                         foreach (var item in doortoneedletime)
                         {
                             if (item != "")
@@ -7470,6 +7475,7 @@ namespace TeleSpecialists.BLL.Service
                                 _meanlist.Add(time);
                                 _medianlist.Add(time);
                                 count++;
+                                DTNCount++;
                             }
                         }
                         TimeSpan _meantime = new TimeSpan();
@@ -7498,7 +7504,7 @@ namespace TeleSpecialists.BLL.Service
                         }
                         doortoneedlemed.Add(_mediantime.ToString());
                         doortoneedleave.Add(_meantime.ToString());
-                        doortoneedleCatgory.Add(monthName);
+                        doortoneedleCatgory.Add(monthName + "\n" + "N=" + DTNCount);
                     }
 
                     verbalordertoadmingraph.Mean = "Mean";

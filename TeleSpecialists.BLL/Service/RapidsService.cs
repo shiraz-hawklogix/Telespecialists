@@ -98,5 +98,11 @@ namespace TeleSpecialists.BLL.Service
         {
             return _unitOfWork.RapidsMailboxRepository.Query().Where(x => x.rpd_uid == uid).Any();
         }
+
+        public dynamic LoadCasesStats(string filter, string currentuserid)
+        {
+            return _unitOfWork.SqlToList(string.Format("Exec usp_dashboard_stats_individual_physician '{0}','{1}'", filter, currentuserid));
+        }
+
     }
 }

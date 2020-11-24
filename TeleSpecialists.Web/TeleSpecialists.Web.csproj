@@ -3545,6 +3545,25 @@
     <Content Include="Views\Reports\Daily_forecast.cshtml" />
     <Content Include="Views\Reports\MOnth_forecast.cshtml" />
     <Content Include="Views\Case\_Icd10BillingCodes.cshtml" />
+    <Content Include="Views\Reports\CCIReport.cshtml" />
+    <Content Include="Views\MenuAccess\_GetUserBasedAccess.cshtml" />
+    <Content Include="Views\MenuAccess\UserBasedMenuAccess.cshtml" />
+    <Content Include="Views\Reports\StatusSnapshot.cshtml" />
+    <Content Include="Views\Dispatch\Index.cshtml" />
+    <Content Include="Views\Patient\Create.cshtml" />
+    <Content Include="Views\Patient\Edit.cshtml" />
+    <Content Include="Views\Patient\Index.cshtml" />
+    <Content Include="Views\Patient\_EditLineItem.cshtml" />
+    <Content Include="Views\Dispatch\_dispatchCopyPopup.cshtml" />
+    <Content Include="Views\Dispatch\_dispatchPhysicianStatusList.cshtml" />
+    <Content Include="Views\Dispatch\_firebaseChat.cshtml" />
+    <Content Include="Views\CaseReject\CreateReason.cshtml" />
+    <Content Include="Views\CaseReject\EditReason.cshtml" />
+    <Content Include="Views\CaseReject\Index.cshtml" />
+    <Content Include="Views\CaseReject\_FormRejectionReason.cshtml" />
+    <Content Include="Views\Case\_CaseRejectionReason.cshtml" />
+    <Content Include="Views\Rapids\_Reports.cshtml" />
+    <Content Include="Views\Home\_IndirectCasesList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

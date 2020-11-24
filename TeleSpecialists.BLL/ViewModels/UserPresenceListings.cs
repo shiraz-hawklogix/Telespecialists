@@ -24,6 +24,12 @@ namespace TeleSpecialists.BLL.ViewModels
         public string STATConsultS { get; set; }
         public int Break { get; set; }
         public string BreakS { get; set; }
+        public int PostSAWorkup { get; set; }
+        public string PostSAWorkupS { get; set; }
+        public int RoundingPrep { get; set; }
+        public string RoundingPrepS { get; set; }
+        public int PostStatWorkup { get; set; }
+        public string PostStatWorkupS { get; set; }
         public long PhysicianId { get; set; }
     }
     public class UserPresenceGraph {

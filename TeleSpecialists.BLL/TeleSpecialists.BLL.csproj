@@ -128,6 +128,7 @@
     <Compile Include="Helpers\Functions.cs" />
     <Compile Include="Helpers\GetAllPhycision.cs" />
     <Compile Include="Helpers\HourlyMeanReport.cs" />
+    <Compile Include="Helpers\IndirectCasesList.cs" />
     <Compile Include="Helpers\Monthly_Forecast.cs" />
     <Compile Include="Helpers\PredicateUtils.cs" />
     <Compile Include="Helpers\PremorbidCorrespondnce.cs" />

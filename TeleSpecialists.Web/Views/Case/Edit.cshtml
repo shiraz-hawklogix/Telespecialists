@@ -1973,6 +1973,47 @@ EntityTypes.StateAlertTemplate.ToInt()
         //});
 
         //cas_callback_response_time_est  metric_cas_callback_responsetime
+        /////ahmad work on video start to end time box 11/24/2020
+
+        $("#cas_metric_video_end_time_est").off("change").change(function () {
+            videoendtimebox();
+        });
+        function videoendtimebox() {
+            var value = $.trim($("#cas_metric_video_end_time_est").val());
+            if (value != "") {
+                var videostarttime = moment($("#cas_metric_video_start_time_est").val());
+                var videoendtime = moment(value);
+                var duration = moment.duration(videoendtime.diff(videostarttime.format("YYYY-MM-DD HH:mm:ss")));
+                var difference = duration.asMinutes();
+                if (duration.asMinutes() > 60.0) {
+                    $("#divModelPopUp").empty().showConfirmPopUpWithYesNo("Confirm",
+                        "Your Video start to end time is greater than 60 minutes, Are you sure this is correct?",
+                        function () {
+                            $("#divModelPopUp").modal("hide");
+                        },
+                        function () {
+                            $("#cas_metric_video_end_time_est").val("");
+                        }
+                    );
+                    // Changing the Cancel button text to No.
+                    $("#divModelPopUp").find(".modal-dialog").find(".modal-footer").find(".cancel").text("No");
+                } else if (duration.asMinutes() < 5.0) {
+                    $("#divModelPopUp").empty().showConfirmPopUpWithYesNo("Confirm",
+                        "Your video start to end time is less than 5 minutes, Are you sure this is correct?",
+                        function () {
+                            $("#divModelPopUp").modal("hide");
+                        },
+                        function () {
+                            $("#cas_metric_video_end_time_est").val("");
+                        }
+                    );
+                    // Changing the Cancel button text to No.
+                    $("#divModelPopUp").find(".modal-dialog").find(".modal-footer").find(".cancel").text("No");
+                }
+            }
+        }
+
+        ///////11/24/2020
 
         $("#metric_cas_callback_notes").off("change").change(function () {
             $("#cas_callback_notes").val($(this).val());
@@ -2137,6 +2178,12 @@ EntityTypes.StateAlertTemplate.ToInt()
 
                     //if (this.element.first().attr("id") == "cas_metric_door_time_est")
                     //    $("#cas_metric_door_time_est_copy").val(currentDateTime);
+
+                    ///ahmad work 11/24/2020
+                    if (this.element.first().attr("id") == "cas_metric_video_end_time_est") {
+                        videoendtimebox();
+                    }
+                    ///ahmad work 11/24/2020
 
                     if (this.element.first().attr("id") == "cas_response_first_atempt") {
                         $("#cas_metric_video_start_time_est").val(currentDateTime);
