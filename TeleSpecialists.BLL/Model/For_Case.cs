@@ -12,13 +12,9 @@ namespace TeleSpecialists.BLL.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class token
+    public partial class For_Case
     {
-        public int tok_key { get; set; }
-        public string tok_phy_key { get; set; }
-        public string tok_phy_token { get; set; }
-        public string tok_device_type { get; set; }
-    
-        public virtual AspNetUser AspNetUser { get; set; }
+        public int fcs_key { get; set; }
+        public Nullable<bool> refresh_requried { get; set; }
     }
 }

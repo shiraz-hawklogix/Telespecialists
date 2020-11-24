@@ -12,13 +12,11 @@ namespace TeleSpecialists.BLL.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class token
+    public partial class firebase_users
     {
-        public int tok_key { get; set; }
-        public string tok_phy_key { get; set; }
-        public string tok_phy_token { get; set; }
-        public string tok_device_type { get; set; }
-    
-        public virtual AspNetUser AspNetUser { get; set; }
+        public int frb_key { get; set; }
+        public string frb_userId { get; set; }
+        public string frb_user_firebaseId { get; set; }
+        public string frb_deviceTokenId { get; set; }
     }
 }

@@ -255,6 +255,7 @@
     <Compile Include="Controllers\CaseController.cs" />
     <Compile Include="Controllers\CaseCopyLogController.cs" />
     <Compile Include="Controllers\CaseTypeController.cs" />
+    <Compile Include="Controllers\DispatchController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FacilityQuestionnaireController.cs" />
     <Compile Include="Controllers\FacilityPIController.cs" />
@@ -3551,6 +3552,11 @@
     <Content Include="Views\MenuAccess\_GetUserBasedAccess.cshtml" />
     <Content Include="Views\MenuAccess\UserBasedMenuAccess.cshtml" />
     <Content Include="Views\Reports\StatusSnapshot.cshtml" />
+    <Content Include="Views\Dispatch\Index.cshtml" />
+    <Content Include="Views\Patient\Create.cshtml" />
+    <Content Include="Views\Patient\Edit.cshtml" />
+    <Content Include="Views\Patient\Index.cshtml" />
+    <Content Include="Views\Patient\_EditLineItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -12,13 +12,13 @@ namespace TeleSpecialists.BLL.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class token
+    public partial class mute_firebase_notification
     {
-        public int tok_key { get; set; }
-        public string tok_phy_key { get; set; }
-        public string tok_phy_token { get; set; }
-        public string tok_device_type { get; set; }
-    
-        public virtual AspNetUser AspNetUser { get; set; }
+        public int mfn_key { get; set; }
+        public string mfn_user_key { get; set; }
+        public string mfn_firebase_uid { get; set; }
+        public Nullable<System.DateTime> mfn_created_on { get; set; }
+        public Nullable<System.DateTime> mfn_start_from { get; set; }
+        public Nullable<System.DateTime> mfn_to_end { get; set; }
     }
 }

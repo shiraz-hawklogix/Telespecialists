@@ -12,13 +12,15 @@ namespace TeleSpecialists.BLL.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class token
+    public partial class OperationOutlierNotificationLog
     {
-        public int tok_key { get; set; }
-        public string tok_phy_key { get; set; }
-        public string tok_phy_token { get; set; }
-        public string tok_device_type { get; set; }
-    
-        public virtual AspNetUser AspNetUser { get; set; }
+        public int Id { get; set; }
+        public string cas_case_number { get; set; }
+        public string cas_case_type { get; set; }
+        public string cas_case_color { get; set; }
+        public Nullable<System.DateTime> cas_created_date { get; set; }
+        public Nullable<System.DateTime> cas_modified_date { get; set; }
+        public string cas_case_fac_name { get; set; }
+        public string cas_case_assign_phy_initial { get; set; }
     }
 }
