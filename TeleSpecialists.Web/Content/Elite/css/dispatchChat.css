@@ -197,9 +197,10 @@ img {
 }
 
 .mesgs {
-    float: left;
     width: 60%;
-    height:510px;
+    height: 560px;
+    display: flex;
+    flex-direction: column;
 }
 
 .sent_msg p {
@@ -265,10 +266,10 @@ img {
 }
 
 .msg_history {
-    height: 440px;
     overflow-y: auto;
     border-top: 1px solid #c4c4c4;
     padding: 0 15px;
+    flex: 1;
 }
 
 .incoming_msg {
@@ -444,6 +445,7 @@ img {
     min-height: 58px;
     padding-top: 18px;
     outline: none;
+    max-height: 102px;
 }
 
     .write_msg::-webkit-scrollbar {
