@@ -3557,6 +3557,9 @@
     <Content Include="Views\Patient\Edit.cshtml" />
     <Content Include="Views\Patient\Index.cshtml" />
     <Content Include="Views\Patient\_EditLineItem.cshtml" />
+    <Content Include="Views\Dispatch\_dispatchCopyPopup.cshtml" />
+    <Content Include="Views\Dispatch\_dispatchPhysicianStatusList.cshtml" />
+    <Content Include="Views\Dispatch\_firebaseChat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
