@@ -283,7 +283,7 @@
                 <strong>Physician: </strong>
                 @if (caseModel.PhysicianUser != null)
                 {
-                    <span>
+                    <span id="RejectPhyName">
                         @caseModel.PhysicianUser.FirstName @caseModel.PhysicianUser.LastName
                     </span>
                 }
@@ -389,6 +389,14 @@ EntityTypes.StateAlertTemplate.ToInt()
         hideTemplates = true;
     }
 }
+@if (User.IsInRole(UserRoles.Physician.ToDescription()) && DifferenceInMinutes.Minutes < 5)// 5 minutes check
+    {
+<ul class="nav nav-tabs" style="float:right">
+    <li class="nav-item"> <button class="btn btn-danger" style="padding:7px 30px;" id="rejectCaseButton">Reject Case</button></li>
+</ul>
+@*<select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation d-none" data-selectedValue="@(Model != null ? Model.cas_phy_key : "0")"></select>*@
+    @*@Html.HiddenFor(x => x.cas_phy_key, new { id = "cas_phy_key", @class = "d-none" })*@
+  }
 <ul class="nav nav-tabs" role="tablist" id="menuTabs">
     @if (!(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription())))
     {
@@ -441,9 +449,14 @@ EntityTypes.StateAlertTemplate.ToInt()
 }
 <div class="ajaxForm">
     <form method="post" class="form-horizontal" id="createForm" action="@editUrl">
-        <input type="hidden" name="cas_cancelled_type" id="cas_cancelled_type" value="@Model.cas_cancelled_type" />
+      @if (User.IsInRole(UserRoles.Physician.ToDescription()))
+      {
+        <select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation d-none"></select>
+      }
+        <input type = "hidden" name="cas_cancelled_type" id="cas_cancelled_type" value="@Model.cas_cancelled_type" />
         @Html.HiddenFor(x => x.cas_billing_bic_key_initial, new { @id = "key_revised" })
         @Html.Partial("_caseCancellationReason")
+        @Html.Partial("_caseRejectionReason")
         <div class="tab-content" style="margin-top:27px;">
             <div id="basic" role="tabpanel" class="tab-pane fade @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()) ? "d-none" : "")
                          && @((User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))&& isMetricsVisible? "" : "in active show")">
@@ -691,6 +704,24 @@ EntityTypes.StateAlertTemplate.ToInt()
 <script src="~/Content/case/pdf/jspdf.min.js"></script>
 <script src="~/Content/case/pdf/html2canvas.min.js"></script>
 <script src="~/Content/case/pdf/html2pdf.bundle.min.js"></script>
+
+<script>
+
+    
+    //function _CreateGroupNew(name, grptype) {
+    //    GrpCreate(name, grptype);
+    //}
+</script>
+<script>
+    function _CreateGroupNew(name, grptype, msg, physician, navArr) {
+        if (physician) {
+            GrpCreate(name, grptype, msg, physician, navArr);
+        }
+        else {
+            CreatNewGrp(name, grptype, msg, physician, navArr);
+        }
+    }
+</script>
 <script type="text/javascript">
         var AutoSaveBool = @enableAutoSave.ToString().ToLower();
 
@@ -4003,6 +4034,111 @@ EntityTypes.StateAlertTemplate.ToInt()
                 $("#onboadedgraphmodal").modal('show');
                 HideLoading();
             }
+
+        });
+
+    }
+
+
+
+
+
+
+                                                                                                                 $("#rejectCaseButton").click(function () {
+                                                                                                                        $("#popupModelCaseRejection").modal("show");
+                                                                                                                    });
+
+                                                                                                                    //function RemovePreviousAssignedPhysician(arr, value) {
+
+                                                                                                                    //    return arr.filter(function (ele) {
+                                                                                                                    //        ele.AspNetUser_Id != value;
+                                                                                                                    //    });
+                                                                                                                    //}
+                                                                                                                    // Assigning Next Scheduled Physician After Case Rejection
+
+
+    function caseRejected(cas_key, reason) {
+        var baseurl = "@Url.Action("RejectCase","Dispatch")";
+            $.ajax({
+                url: baseurl + "?casKey=" + cas_key + "&casReasonId=" + reason + "&caseRejectionType=" + "",
+                type: 'POST',
+                success: function (e) {
+                    console.log("Success Result Received: " + e);
+                    $('#popupModelCaseRejection').modal("hide");
+
+                    if (e !== 'true') {
+                       // ******* TEMPORARY COMMENT *******
+                        /*var grpForRejectCase = [];
+                        var dataArrray = e.list;
+                        for (var i = 0; i < dataArrray.length; i++) {
+                            grpForRejectCase.push({ user_id: dataArrray[i].user_id, email: dataArrray[i].email, name: dataArrray[i].name, firbaseuid: dataArrray[i].UserName, ImgPath: dataArrray[i].ImgPath });
+                        }
+
+                        console.log('chat going to be initait : ', grpForRejectCase);
+                        let grpName = 'Technical Discussion ' + e.initials;//'Technical Discussion Case# ' + e.caseNumber;
+                        let automsg = 'Lets start Discussion on technical issues with reason ' + reasonText + ' of Case# ' + e.caseNumber + ' with ' + e.physicianName;
+                        let grpfor = 'TD_' + e.phy_key + '_' + e.initials;
+                        _CreateGroupNew(grpName, 'Private', automsg, grpfor, grpForRejectCase);
+                        */
+                    }
+
+
+                },
+            data: {
+                format: 'json'
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+        window.location.href = "";
+     };
+
+
+    $('#SaveCaseReject').click(function () {
+        var rejectionType = $('#cas_rejection_type').val();
+        var cas_key = "@Model.cas_key";
+        //SendRejectedMessage();
+        caseRejected(cas_key, rejectionType);
+    });
+
+
+    function SendRejectedMessage() {
+        var phy_name = $("#RejectPhyName").text();
+        var cas_number = $("#spnCaseNumber").text();
+        var physician = $("#cas_phy").val();
+
+        var msg = 'Dr ' + phy_name + ' has Rejected the Case # ' + cas_number;
+        var physician = $("#cas_phy").val();
+        //AcceptCase(msg, physician); *******TEMPORARY COMMENT*******
+        rejectCaseWithNoQueue(false);
+    };
+
+
+                                                                                                                    @*var rejectionText = $('#cas_rejection_text').val();
+                                                                                                                        var caseTypeValue = "";
+                                                                                                                        var fac_key = $("#cas_fac_key").val();
+                                                                                                                        if ($("#cas_ctp_key").val() != null) {
+                                                                                                                            caseTypeValue = $("#cas_ctp_key").val();
+                                                                                                                        }
+                                                                                                                        else {
+                                                                                                                            caseTypeValue = "@Model.cas_ctp_key";
+                                                                                                                        }
+
+                                                                                                                        if (fac_key != undefined && fac_key != "00000000-0000-0000-0000-000000000000") {
+                                                                                                                            var url = "@Url.Action("GetPhysiciansForCases")";
+                                                                                                                            url = url + "?fac_key=" + fac_key + "&cType_key=" + caseTypeValue;
+                                                                                                                            $.get(url, function (response) {
+                                                                                                                                var schedulePhy = [];
+                                                                                                                                if (response != undefined && response != null) {
+                                                                                                                                    if (response.data != null) {
+                                                                                                                                        schedulePhy = response.data.filter(function (el) {
+                                                                                                                                            return el.FinalSorted
+                                                                                                                                        });
+                                                                                                                                    }
+                                                                                                                                if (schedulePhy.length > 0) {
+                                                                                                                                    console.log("Physicians Final Sorted Exist.");
+                                                                                                                                    // Remove Previous Assigned Physicians From List
 
         });
 
