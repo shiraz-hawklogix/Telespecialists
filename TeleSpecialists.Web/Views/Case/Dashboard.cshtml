@@ -755,7 +755,7 @@
                         }
                     }
 
-                } else if (CaseType == "STAT Consult") {
+                } else if (CaseType.trim() == "STAT Consult") {
                     var callback = row.find(".case-grid-callbackresponse-time").text();
                     if (callback != undefined && callback != '') {
                         var callrespTimeArray = callback.split(':');
