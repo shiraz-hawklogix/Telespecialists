@@ -9,17 +9,17 @@ img {
 
 .inbox_people {
     background: #f8f8f8 none repeat scroll 0 0;
-    float: left;
     overflow: hidden;
-    width: 22%;
     border-right: 1px solid #c4c4c4;
     height: 100%;
+    min-width: 370px;
 }
 
 .inbox_msg {
     border: 1px solid #c4c4c4;
     clear: both;
     overflow: hidden;
+    display: flex;
 }
 
 .top_spac {
@@ -181,8 +181,7 @@ img {
 }
 
 .mesgs {
-    float: left;
-    width: 78%;
+    flex: 1;
 }
 
 .sent_msg p {
