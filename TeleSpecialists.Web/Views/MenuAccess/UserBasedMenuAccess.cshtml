@@ -85,6 +85,7 @@
 
     function AllowAccessViewChanged(thisCTRL) {
         ShowLoading();
+        debugger
         var _menuId = $(thisCTRL).attr("data-action");
         var _checkboxStatus = $(thisCTRL).prop("checked")
         var roleid = $("#roleId").val();

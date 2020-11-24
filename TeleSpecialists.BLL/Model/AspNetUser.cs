@@ -98,8 +98,8 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<bool> IsTwoFactVerified { get; set; }
         public string TwoFactVerifyCode { get; set; }
         public Nullable<System.DateTime> CodeExpiryTime { get; set; }
+
         public long PhysicianId { get; set; }
-    
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetUserClaim> AspNetUserClaims { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

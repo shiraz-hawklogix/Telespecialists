@@ -103,8 +103,17 @@ namespace TeleSpecialists.Web.Controllers
             for (int i = 0; i < useraccess.Count; i++)
             {
                 var bit = useraccess[i].user_isAllowed;
-                var result2 = result.Where(x => x.com_key == useraccess[i].user_com_key).FirstOrDefault();
-                result.Where(x => x.cac_key == result2.cac_key).FirstOrDefault().cac_isAllowed = bit;
+                var user_com_key = useraccess[i].user_com_key;
+                var result2 = result.Where(x => x.com_key == user_com_key).FirstOrDefault();
+                if (result2.cac_roleid == null)
+                {
+                    result2.cac_roleid = roleId;
+                }
+                if (result2.com_key < 0 || result2.com_key == null)
+                {
+                    result2.cac_key = (int)user_com_key;
+                }
+                result.Where(x => x.com_key == user_com_key).FirstOrDefault().cac_isAllowed = bit;
             }
           
             return PartialView(result);

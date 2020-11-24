@@ -30,6 +30,7 @@ namespace TeleSpecialists.Controllers
         private readonly AspNetUsersLogService _userLogService;
         private readonly AlarmTuneService _alarmTuneService;
         private readonly UserVerificationService _userVerificationService;
+        private readonly MenuService _menuService;
 
         public AdminController()
         {
@@ -40,6 +41,7 @@ namespace TeleSpecialists.Controllers
             _userLogService = new AspNetUsersLogService();
             _alarmTuneService = new AlarmTuneService();
             _userVerificationService = new UserVerificationService();
+            _menuService = new MenuService();
         }
 
         public ActionResult Index()
@@ -102,6 +104,19 @@ namespace TeleSpecialists.Controllers
                     #region Signout entry before remote login
                     string PCName = GetUniqueMachineInfo(currentUserId.ToString());
                     _userVerificationService.userSignOut(currentUserId.ToString(), PCName, "");
+                    #endregion
+
+                    #region adding roles for new login User and clearing previous session
+                    Session["RoleAccess"] = "";
+                    var rolesaccess = _menuService.getMenuAccess(userToSighnIn.Roles.Select(x => x.RoleId).FirstOrDefault());
+                    var useraccess = _menuService.getUserBasedMenu(userToSighnIn.Roles.Select(x => x.RoleId).FirstOrDefault(), userToSighnIn.Roles.Select(x => x.UserId).FirstOrDefault());
+                    for (int i = 0; i < useraccess.Count; i++)
+                    {
+                        var bit = useraccess[i].user_isAllowed;
+                        var result2 = rolesaccess.Where(x => x.com_key == useraccess[i].user_com_key).FirstOrDefault();
+                        rolesaccess.Where(x => x.cac_key == result2.cac_key).FirstOrDefault().cac_isAllowed = bit;
+                    }
+                    Session["RoleAccess"] = rolesaccess;
                     #endregion
 
                     return RedirectToAction("Index", "Home");

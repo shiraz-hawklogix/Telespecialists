@@ -1607,5 +1607,131 @@ namespace TeleSpecialists.BLL.Helpers
     }
     #endregion
 
+    #region Added by Awais
+    public enum MenuItems
+    {
+        [Description("Physician Dashboard")]
+        PhysicianDashboard,
+
+        [Description("Home Dashboard")]
+        HomeDashboard,
+
+        [Description("Case")]
+        Case,
+
+        [Description("Case Dashboard")]
+        CaseDashboard,
+
+        [Description("Facility PI")]
+        FacilityPi,
+
+        [Description("Sign Out")]
+        SignoutListing,
+
+        [Description("Physician Status")]
+        PhysicianStatus,
+
+        [Description("Schedule")]
+        Schedule,
+
+        [Description("Protocol")]
+        Protocol,
+
+        [Description("Report")]
+        Report,
+
+        [Description("Administrator")]
+        Administrator,
+
+        [Description("ErrorConsole")]
+        ErrorConsole,
+
+        [Description("Facilities")]
+        Facilities,
+
+        [Description("Contact Role")]
+        Contactrole,
+
+        [Description("Coverage Type")]
+        CoverageType,
+
+        [Description("Facility Type")]
+        FacilityType,
+
+        [Description("EMR Type")]
+        EMRType,
+
+        [Description("UCL facility Type")]
+        UclFacilityType,
+
+        [Description("Note Type")]
+        NoteType,
+
+        [Description("Service Type")]
+        ServiceType,
+
+        [Description("Stroke Designation")]
+        StrokeDesignation,
+
+        [Description("System")]
+        System,
+
+        [Description("Regional")]
+        Regional,
+
+        [Description("Facility AI")]
+        FacilityAI,
+
+        [Description("Physician Password")]
+        PhysicianPassword,
+
+        [Description("Import Management")]
+        ImportManagement,
+
+        [Description("Physicians Rate")]
+        PhysiciansRate,
+
+        [Description("Physicians Current Status")]
+        PhysicianscurrentStatus,
+
+        [Description("Role Based Menu Access")]
+        RoleBasedMenuAccess,
+
+        [Description("Profile Based Menu Access")]
+        ProfileBasedMenuAccess,
+
+        [Description("Dispatch")]
+        Dispatch,
+
+        [Description("Facility Management")]
+        FacilityManagement,
+
+        [Description("Alarm Setting")]
+        AlarmSetting,
+
+        [Description("Inbox")]
+        Inbox,
+
+    }
+
+    public enum HideTabs
+    {
+        [Description("Emergent Consults case Tab")]
+        EmergentConsultCaseTab,
+
+        [Description("Routine Consults case Tab")]
+        RoutineConsultCaseTab,
+
+        [Description("EEGs case Tab")]
+        EEGCaseTab,
+
+        [Description("Mock Drill case Tab")]
+        MockDrillCaseTab,
+
+        [Description("Sleep case Tab")]
+        SleepCaseTab,
+    }
+    #endregion
+
 }
 

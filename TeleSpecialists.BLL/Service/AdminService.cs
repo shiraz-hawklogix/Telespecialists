@@ -5,6 +5,7 @@ using System.Linq;
 using TeleSpecialists.BLL.Extensions;
 using TeleSpecialists.BLL.Helpers;
 using TeleSpecialists.BLL.Model;
+using TeleSpecialists.BLL.ViewModels;
 
 namespace TeleSpecialists.BLL.Service
 {
@@ -126,6 +127,11 @@ namespace TeleSpecialists.BLL.Service
         {
             var result = _unitOfWork.ApplicationRoles;
             return result;
+        }
+        public IQueryable<UserRoleViewModel> GetRoleByUserId(string userId)
+        {
+            var result = _unitOfWork.SqlQuery<UserRoleViewModel>(string.Format("Exec sp_GetRoleByUserId @Id = '{0}'", userId)).ToList();
+            return result.AsQueryable();
         }
     }
 }

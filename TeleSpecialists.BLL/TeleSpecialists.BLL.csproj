@@ -435,6 +435,7 @@
     <Compile Include="ViewModels\Schedule\ScheduleExportVM.cs" />
     <Compile Include="ViewModels\UserLoggedInVerification.cs" />
     <Compile Include="ViewModels\UserPresenceListings.cs" />
+    <Compile Include="ViewModels\UserRoleViewModel.cs" />
     <Compile Include="ViewModels\user_alarm_setting.cs" />
     <Compile Include="ViewModels\PACgridVM.cs" />
     <Compile Include="Model\AspNetRole.cs">

@@ -164,10 +164,14 @@ namespace TeleSpecialists.BLL.Service
                         .FirstOrDefault();
             if (result != null)
             {
-                user_access entity = new user_access();
-               // result.cac_roleid = roleId;
+                //user_access entity = new user_access();
+                result.user_role_key = RoleId;
                 result.user_isAllowed = CheckboxStatus;
-                //result.cac_com_key = item;
+                result.user_com_key = MenuId;
+                result.user_createdBy = result.user_createdBy;
+                result.user_createddate = result.user_createddate;
+                result.user_id = userId;
+               // result.user_key = result.user_key;
                 result.user_updatedBy = loggedInUserId;
                 result.user_updateddate = DateTime.Now;
                 _unitOfWork.UserAccessRepository.Update(result);

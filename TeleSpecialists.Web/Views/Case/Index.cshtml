@@ -19,7 +19,11 @@
     {
         isPhysicianOrPatnerPhysician = true;
     }
-    var isSleepAllow = ViewBag.isSleepAllow;  
+    var isSleepAllow = ViewBag.isSleepAllow;
+    if (Session["RoleAccess"] != null) 
+    { 
+     var result = (List<TeleSpecialists.BLL.Model.sp_getMenuAccess_Result>)Session["RoleAccess"];
+    }
 }
 
 
@@ -319,44 +323,44 @@
         }
 
         @if (!User.IsInRole(UserRoles.MockPhysician.ToDescription()) && isSleepAllow || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription())@*|| User.IsInRole(UserRoles.FacilityAdmin.ToDescription())*@ /**/
-                                                                                                                                                                                                                                                                                                                                                /**/
-                                                                                                                                                                                                                                                                                                                                                /**/
-                                                                                                                                                                                                                                                                                                                                                /**/
-                                                                                                                                                                                                                                                                                                                                                /**/
-                                                                                                                                                                                                                                                                                                                                                /**/
-                                                                                                                                                                                                                                                                                                                                                /**/
-                                                                                                                                                                                                                                                                                                                                                /**/
-                                                                                                                                                                                                                                                                                                                                                || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription())
-                                                                                                                                                     || User.IsInRole(UserRoles.AOC.ToDescription())
-                                                                                                                                                      || User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
-                                                                                                                                                       || User.IsInRole(UserRoles.Finance.ToDescription())
-                                                                                                                                                        || User.IsInRole(UserRoles.MedicalStaff.ToDescription())
-                                                                                                                                                         || User.IsInRole(UserRoles.QPS.ToDescription())
-                                                                                                                                                          || User.IsInRole(UserRoles.QualityDirector.ToDescription())
-                                                                                                                                                           || User.IsInRole(UserRoles.VPQuality.ToDescription())
-                                                                                                                                                        || User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())
-                                                                                                                                                        || User.IsInRole(UserRoles.RRCDirector.ToDescription())
-                                                                                                                                                        || User.IsInRole(UserRoles.RRCManager.ToDescription()))
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link bold font-md" onclick="hideOtherTabs('homehealthtab')" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Sleep</span></a>
-                                    </li>
-                                }
-                                @*@if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()))
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
-                                    </li>
-                                }*@
-                                @*@if (User.IsInRole(UserRoles.PACPhysician.ToDescription()))
-                                {
-                                    cls = "show active";
-                                    <li class="nav-item">
-                                        <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
-                                    </li>
-                                }*@
+        /**/
+        /**/
+        /**/
+        /**/
+        /**/
+        /**/
+        /**/
+        || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription())
+|| User.IsInRole(UserRoles.AOC.ToDescription())
+|| User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
+|| User.IsInRole(UserRoles.Finance.ToDescription())
+|| User.IsInRole(UserRoles.MedicalStaff.ToDescription())
+|| User.IsInRole(UserRoles.QPS.ToDescription())
+|| User.IsInRole(UserRoles.QualityDirector.ToDescription())
+|| User.IsInRole(UserRoles.VPQuality.ToDescription())
+|| User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())
+|| User.IsInRole(UserRoles.RRCDirector.ToDescription())
+|| User.IsInRole(UserRoles.RRCManager.ToDescription()))
+{
+<li class="nav-item">
+    <a class="nav-link bold font-md" onclick="hideOtherTabs('homehealthtab')" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Sleep</span></a>
+</li>
+}
+@*@if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()))
+    {
+        <li class="nav-item">
+            <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
+        </li>
+    }*@
+@*@if (User.IsInRole(UserRoles.PACPhysician.ToDescription()))
+    {
+        cls = "show active";
+        <li class="nav-item">
+            <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
+        </li>
+    }*@
 
-        </ul>
+    </ul>
     <div class="tab-content" id="caseListTabsContent">
 
         @if (!User.IsInRole(UserRoles.MockPhysician.ToDescription()))

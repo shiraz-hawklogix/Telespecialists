@@ -121,6 +121,7 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<bool> mcas_connectivity_issue { get; set; }
         public Nullable<bool> mcas_is_nav_blast { get; set; }
         public string mcas_mock_drill_comments { get; set; }
+        public string mcas_navigator_stamp_notes { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual AspNetUser AspNetUser1 { get; set; }

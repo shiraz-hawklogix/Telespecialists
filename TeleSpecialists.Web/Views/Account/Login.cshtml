@@ -49,264 +49,297 @@
 }
 else if (login == "CodeVerify")
 {
-        <form action="Login" method="post" id="CodeVerifyForm">
-            @Html.AntiForgeryToken()
+    <form action="Login" method="post" id="CodeVerifyForm">
+        @Html.AntiForgeryToken()
 
-            @Html.HiddenFor(x => x.UserId)
-            @Html.HiddenFor(x => x.Username)
-            @Html.HiddenFor(x => x.Password)
-            @Html.HiddenFor(x => x.isAuthenticationChecked)
-            @Html.HiddenFor(x => x.isLogout)
+        @Html.HiddenFor(x => x.UserId)
+        @Html.HiddenFor(x => x.Username)
+        @Html.HiddenFor(x => x.Password)
+        @Html.HiddenFor(x => x.isAuthenticationChecked)
+        @Html.HiddenFor(x => x.isLogout)
 
-            <div class="form-group row mb-0" style="font-size:14px">
-                <label class="input-validation mb-1" style="font-size:13px;" id="InputCodeVerifyVal"></label>
-                <label class="col-12 pl-0" style="font-size:13px"><strong>Verification method</strong></label>
-                <div class="col-12 row" style="font-size:13px;">
-                    <div class="col-1 pl-0"><input type="radio" id="isSmsId" name="radioGroup" value="sms" checked="" autocomplete="off"></div>
-                    <div class="col-11 pl-1" style=" margin-top: -3px;">
-                        <span><i class="fa fa-mobile" style="font-size:20px"></i></span>
-                        <span style="margin-left: 5px;position: absolute;margin-top: 1px;"><strong>Send code via text</strong> </span>
-                    </div>
-                </div>
-                <div class="col-12 mb-2" style="margin-left:8px;font-size:13px;">
-                    <span>@Model.PhoneNumber</span>
-                </div>
-
-                <div class="col-12 row" style="font-size:13px;">
-                    <div class="col-1 pl-0"><input type="radio" id="isEmailId" name="radioGroup" value="email"></div>
-                    <div class="col-11 pl-1" style=" margin-top: -1px;">
-                        <span><i class="fa fa-envelope" style="font-size:15px"></i></span>                       
-                        <span style="margin-left: 5px;position: absolute;margin-top: 1px;"><strong>Send code via email</strong></span>
-                    </div>
-                </div>
-          
-                <div class="col-12 mb-2" style="margin-left:8px;font-size:13px;">
-                    <span>@Model.Email</span>
+        <div class="form-group row mb-0" style="font-size:14px">
+            <label class="input-validation mb-1" style="font-size:13px;" id="InputCodeVerifyVal"></label>
+            <label class="col-12 pl-0" style="font-size:13px"><strong>Verification method</strong></label>
+            <div class="col-12 row" style="font-size:13px;">
+                <div class="col-1 pl-0"><input type="radio" id="isSmsId" name="radioGroup" value="sms" checked="" autocomplete="off"></div>
+                <div class="col-11 pl-1" style=" margin-top: -3px;">
+                    <span><i class="fa fa-mobile" style="font-size:20px"></i></span>
+                    <span style="margin-left: 5px;position: absolute;margin-top: 1px;"><strong>Send code via text</strong> </span>
                 </div>
             </div>
-            <div class="form-group row mb-0">
-                @Html.TextBoxFor(m => m.TwoFactVerifyCode, new { placeholder = @Html.DisplayNameFor(m => m.TwoFactVerifyCode), @class = "form-control mb-3 verify-body mt-2", @autocomplete = "off", @maxlength = 6 })
-                @Html.ValidationMessageFor(m => m.TwoFactVerifyCode, "", new { @class = "text-danger verify-body" })
+            <div class="col-12 mb-2" style="margin-left:8px;font-size:13px;">
+                <span>@Model.PhoneNumber</span>
             </div>
 
-            <div class="form-group row mb-0">
-                <div class="col-md-offset-2 col-md-10 pl-0 mb-0 verify-body">
-                    @Html.CheckBoxFor(m => m.RememberMeSms)
-                    @Html.LabelFor(m => m.RememberMeSms, new { @id = "RememberMeSms" })
-                </div>
-            </div>
-            <div class="form-group row" style="font-size:14px;">
-                <div class="">
-                    <a id="SendCodeID" onclick="SendVerificationCode()" class="btn btn-primary" style="color:white;font-size:14px;">Send Code</a>
-                </div>
-                <div class="text-right">
-                    <button id="SubmitVerifyBtnId" class="btn btn-primary ml-2" style="font-size:14px;">Verify</button>
+            <div class="col-12 row" style="font-size:13px;">
+                <div class="col-1 pl-0"><input type="radio" id="isEmailId" name="radioGroup" value="email"></div>
+                <div class="col-11 pl-1" style=" margin-top: -1px;">
+                    <span><i class="fa fa-envelope" style="font-size:15px"></i></span>
+                    <span style="margin-left: 5px;position: absolute;margin-top: 1px;"><strong>Send code via email</strong></span>
                 </div>
             </div>
 
-            @*<div class="form-group row" style="font-size:14px">
-            <a id="ReVerifyId" onclick="SendVerificationCode()">Resend Pin Code</a>
-        </div>*@
-        </form>
+            <div class="col-12 mb-2" style="margin-left:8px;font-size:13px;">
+                <span>@Model.Email</span>
+            </div>
+        </div>
+        <div class="form-group row mb-0">
+            @Html.TextBoxFor(m => m.TwoFactVerifyCode, new { placeholder = @Html.DisplayNameFor(m => m.TwoFactVerifyCode), @class = "form-control mb-3 verify-body mt-2", @autocomplete = "off", @maxlength = 6 })
+            @Html.ValidationMessageFor(m => m.TwoFactVerifyCode, "", new { @class = "text-danger verify-body" })
+        </div>
+
+        <div class="form-group row mb-0">
+            <div class="col-md-offset-2 col-md-10 pl-0 mb-0 verify-body">
+                @Html.CheckBoxFor(m => m.RememberMeSms)
+                @Html.LabelFor(m => m.RememberMeSms, new { @id = "RememberMeSms" })
+            </div>
+        </div>
+        <div class="form-group row" style="font-size:14px;">
+            <div class="">
+                <a id="SendCodeID" onclick="SendVerificationCode()" class="btn btn-primary" style="color:white;font-size:14px;">Send Code</a>
+            </div>
+            <div class="text-right">
+                <button id="SubmitVerifyBtnId" class="btn btn-primary ml-2" style="font-size:14px;">Verify</button>
+            </div>
+        </div>
+
+        @*<div class="form-group row" style="font-size:14px">
+                <a id="ReVerifyId" onclick="SendVerificationCode()">Resend Pin Code</a>
+            </div>*@
+    </form>
 
 }
 else if (login == "LogoutMachines")
 {
-        <form action="Login" method="post" id="LogoutForm">
-            @Html.AntiForgeryToken()
-            @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+    <form action="Login" method="post" id="LogoutForm">
+        @Html.AntiForgeryToken()
+        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
 
-            @Html.HiddenFor(x => x.Username)
-            @Html.HiddenFor(x => x.Password)
-            @Html.HiddenFor(x => x.UserId)
-            @Html.HiddenFor(x => x.isAuthenticationChecked)
-            @Html.HiddenFor(x => x.isLogout)
+        @Html.HiddenFor(x => x.Username)
+        @Html.HiddenFor(x => x.Password)
+        @Html.HiddenFor(x => x.UserId)
+        @Html.HiddenFor(x => x.isAuthenticationChecked)
+        @Html.HiddenFor(x => x.isLogout)
 
-            <p class="logout-text">
-                <i class="fa fa-sign-out" aria-hidden="true"></i> <span class="ml-2">Logout from all other devices. Click yes to logout.</span>
-            </p>
-            <div class="form-group row">
-                <div class="col-4">
-                    <button id="LogoutSubmitId" class="btn btn-primary">Yes</button>
-                </div>
-                <div class="col-4">
-                    <a class="btn btn-secondary" id="LogoutNoId">No</a>
-                </div>
+        <p class="logout-text">
+            <i class="fa fa-sign-out" aria-hidden="true"></i> <span class="ml-2">Logout from all other devices. Click yes to logout.</span>
+        </p>
+        <div class="form-group row">
+            <div class="col-4">
+                <button id="LogoutSubmitId" class="btn btn-primary">Yes</button>
             </div>
-        </form>
+            <div class="col-4">
+                <a class="btn btn-secondary" id="LogoutNoId">No</a>
+            </div>
+        </div>
+    </form>
 }
+else if (login == "userRoles")
+{
+<form action="Login" method="post" id="userRole">
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @Html.HiddenFor(x => x.UserId)
+    @Html.HiddenFor(x => x.Username)
+    @Html.HiddenFor(x => x.Password)
+    @Html.HiddenFor(x => x.isAuthenticationChecked)
+    @Html.HiddenFor(x => x.isLogout)
 
 
+    <div class="form-group row">
+        @Html.DropDownListFor(model => model.RoleId, new SelectList(ViewBag.userRoles, "RoleId", "RoleName"), "Please select", new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(model => model.RoleId, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-group row">
+        <div class="text-right">
+            <input type="submit" value="Submit" class="btn btn-primary" />
+        </div>
+    </div>
 
 
-<script type="text/javascript">
-    function enableSmsCode() {
-        if ($('#isSmsId').length > 0) {
-            $('#isSmsId').prop("checked", true);
-        }
-    }
-    function preventBack() { window.history.forward(); }
-    setTimeout("preventBack()", 0);
-    window.onunload = function () { null };
+</form>
 
-</script>
-
-<style>
-    .verify-body {
-        font-size: 0.83em !important;
-    }
-
-    #ReVerifyId {
-        cursor: pointer !important;
-    }
-
-        #ReVerifyId:hover {
-            cursor: pointer !important;
-            color: blue;
-            text-decoration: underline;
-        }
-
-    .input-validation {
-        font-size: 15px;
-        color: red;
     }
 
-    .btn-secondary {
-        border-radius: 0;
-        border: none;
-        color: #fff;
-        display: block;
-        min-width: 80px;
-    }
 
-    .logout-text {
-        font-size: 13px;
-    }
-    #RememberMeSms {
-        font-size:13px;
-    }
-</style>
-<script>
 
-    function SendVerificationCode() {
-        $('#InputCodeVerifyVal').text('');
-        var veriMethod = $('#isSmsId').prop("checked") ? "sms" : $('#isEmailId').prop("checked") ? "email" : "";
-        if (veriMethod == "") {
-            $('#TwoFactVerifyCode').focus();
-            $('#InputCodeVerifyVal').text("Select verfication method.");
-            return false;
-        }
-
-        var btnSendCodeText = $('#SendCodeID').text();
-        $('#SendCodeID').text('Sending...');
-        $('#SubmitVerifyBtnId').attr('disabled', true);
-        $('#SendCodeID').attr('disabled', true);
-        $('#TwoFactVerifyCode').val('');       
-        var UserId = $('#UserId').val();
-
-        $.ajax({
-            cache: false,
-            async: true,
-            type: "POST",
-            url: "/Account/SendTwoFactCode",
-            data: { Id: UserId, verificationMethod: veriMethod },
-            success: function (e) {
-                $('#TwoFactVerifyCode').focus();
-                $('#InputCodeVerifyVal').text(e.Message);
-                $('#SendCodeID').text('Re-send code');
-                $('#SubmitVerifyBtnId').attr('disabled', false);
-                $('#SendCodeID').attr('disabled', false);
-            },
-            error: function (data) {
-                $('#TwoFactVerifyCode').focus();
-                $('#InputCodeVerifyVal').text(e.Message);
-                $('#SendCodeID').text(btnSendCodeText);
-                $('#SubmitVerifyBtnId').attr('disabled', false);
-                $('#SendCodeID').attr('disabled', false);
+    <script type="text/javascript">
+        function enableSmsCode() {
+            if ($('#isSmsId').length > 0) {
+                $('#isSmsId').prop("checked", true);
             }
-        });
-    }
+        }
+        function preventBack() { window.history.forward(); }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () { null };
 
-    function BackToLogInPage() {
-        window.location.href = "/Account/Login";
-    }
+    </script>
 
-    $(document).ready(function () {
+    <style>
+        .verify-body {
+            font-size: 0.83em !important;
+        }
 
-        $('#SubmitVerifyBtnId').click(function () {          
+        #ReVerifyId {
+            cursor: pointer !important;
+        }
+
+            #ReVerifyId:hover {
+                cursor: pointer !important;
+                color: blue;
+                text-decoration: underline;
+            }
+
+        .input-validation {
+            font-size: 15px;
+            color: red;
+        }
+
+        .btn-secondary {
+            border-radius: 0;
+            border: none;
+            color: #fff;
+            display: block;
+            min-width: 80px;
+        }
+
+        .logout-text {
+            font-size: 13px;
+        }
+
+        #RememberMeSms {
+            font-size: 13px;
+        }
+    </style>
+    <script>
+
+        function SendVerificationCode() {
+            debugger
             $('#InputCodeVerifyVal').text('');
-            if ($('#TwoFactVerifyCode').val() == null || $('#TwoFactVerifyCode').val().trim() == "") {
-                $('#InputCodeVerifyVal').text('Pin code is required.');
+            var veriMethod = $('#isSmsId').prop("checked") ? "sms" : $('#isEmailId').prop("checked") ? "email" : "";
+            if (veriMethod == "") {
+                $('#TwoFactVerifyCode').focus();
+                $('#InputCodeVerifyVal').text("Select verfication method.");
                 return false;
-            } else {               
-                var model = { UserId: $('#UserId').val(), Username: $('#Username').val(), Password: $('#Password').val(), TwoFactVerifyCode: $('#TwoFactVerifyCode').val(), RememberMeSms: $('#RememberMeSms').is(":checked"), isAuthenticationChecked: "false" };
-                $('#SubmitVerifyBtnId').text('Verifying...');
-                $('#SubmitVerifyBtnId').attr('disabled', true);
-                $('#SendCodeID').attr('disabled', true);
-                $.ajax({
-                    cache: false,
-                    async: true,
-                    type: "POST",
-                    url: "/Account/CodeVerify",
-                    data: { model: model },
-                    success: function (e) {
-                        if (e.Status == false) {
+            }
+
+            var btnSendCodeText = $('#SendCodeID').text();
+            $('#SendCodeID').text('Sending...');
+            $('#SubmitVerifyBtnId').attr('disabled', true);
+            $('#SendCodeID').attr('disabled', true);
+            $('#TwoFactVerifyCode').val('');
+            var UserId = $('#UserId').val();
+
+            $.ajax({
+                cache: false,
+                async: true,
+                type: "POST",
+                url: "/Account/SendTwoFactCode",
+                data: { Id: UserId, verificationMethod: veriMethod },
+                success: function (e) {
+                    $('#TwoFactVerifyCode').focus();
+                    $('#InputCodeVerifyVal').text(e.Message);
+                    $('#SendCodeID').text('Re-send code');
+                    $('#SubmitVerifyBtnId').attr('disabled', false);
+                    $('#SendCodeID').attr('disabled', false);
+                },
+                error: function (data) {
+                    $('#TwoFactVerifyCode').focus();
+                    $('#InputCodeVerifyVal').text(e.Message);
+                    $('#SendCodeID').text(btnSendCodeText);
+                    $('#SubmitVerifyBtnId').attr('disabled', false);
+                    $('#SendCodeID').attr('disabled', false);
+                }
+            });
+        }
+
+        function BackToLogInPage() {
+            window.location.href = "/Account/Login";
+        }
+
+        $(document).ready(function () {
+
+            $('#SubmitVerifyBtnId').click(function () {
+                debugger
+                $('#InputCodeVerifyVal').text('');
+                if ($('#TwoFactVerifyCode').val() == null || $('#TwoFactVerifyCode').val().trim() == "") {
+                    $('#InputCodeVerifyVal').text('Pin code is required.');
+                    return false;
+                } else {
+                    var model = { UserId: $('#UserId').val(), Username: $('#Username').val(), Password: $('#Password').val(), TwoFactVerifyCode: $('#TwoFactVerifyCode').val(), RememberMeSms: $('#RememberMeSms').is(":checked"), isAuthenticationChecked: "false" };
+                    $('#SubmitVerifyBtnId').text('Verifying...');
+                    $('#SubmitVerifyBtnId').attr('disabled', true);
+                    $('#SendCodeID').attr('disabled', true);
+                    $.ajax({
+                        cache: false,
+                        async: true,
+                        type: "POST",
+                        url: "/Account/CodeVerify",
+                        data: { model: model },
+                        success: function (e) {
+                            if (e.Status == false) {
+                                debugger
+                                $('#SubmitVerifyBtnId').text('Verify');
+                                $('#TwoFactVerifyCode').focus();
+                                $('#InputCodeVerifyVal').text(e.Message)
+                                $('#SubmitVerifyBtnId').attr('disabled', false);
+                                $('#SendCodeID').attr('disabled', false);
+                                return false
+                            } else {
+                                debugger
+                                $('#isAuthenticationChecked').val('true');
+                                $('#isLogout').val('true');
+                                $("#CodeVerifyForm").submit();
+                            }
+                        },
+                        error: function (data) {
                             $('#SubmitVerifyBtnId').text('Verify');
-                            $('#TwoFactVerifyCode').focus();
-                            $('#InputCodeVerifyVal').text(e.Message)
                             $('#SubmitVerifyBtnId').attr('disabled', false);
                             $('#SendCodeID').attr('disabled', false);
-                            return false
-                        } else {
-                            $('#isAuthenticationChecked').val('true');
-                            $('#isLogout').val('true');
-                            $("#CodeVerifyForm").submit();
+                        }
+                    });
+                }
+                return false;
+            });
+
+            $('#LogoutSubmitId').click(function () {
+                $('#LogoutSubmitId').attr('disabled', true)
+                $('#LogoutNoId').attr('disabled', true)
+                var model = { UserId: $('#UserId').val(), Username: $('#Username').val(), Password: $('#Password').val(), TwoFactVerifyCode: '', RememberMeSms: false, isAuthenticationChecked: "false" }
+                $.ajax({
+                    cache: false,
+                    url: "/Account/LogOutOtherLoggedInUser",
+                    type: "POST",
+                    data: model,
+                    success: function (e) {
+                        console.log(e.result);
+                        $('#LogoutSubmitId').attr('disabled', false)
+                        $('#LogoutNoId').attr('disabled', false)
+                        if (e.result == true) {
+                            $('#isAuthenticationChecked').val('false')
+                            $('#isLogout').val('true')
+                            $("#LogoutForm").submit();
                         }
                     },
                     error: function (data) {
-                        $('#SubmitVerifyBtnId').text('Verify');
-                        $('#SubmitVerifyBtnId').attr('disabled', false);
-                        $('#SendCodeID').attr('disabled', false);
                     }
                 });
-            }
-            return false;
-        });
-
-        $('#LogoutSubmitId').click(function () {    
-            $('#LogoutSubmitId').attr('disabled', true)
-            $('#LogoutNoId').attr('disabled', true)
-            var model = { UserId: $('#UserId').val(), Username: $('#Username').val(), Password: $('#Password').val(), TwoFactVerifyCode: '', RememberMeSms: false, isAuthenticationChecked: "false" }
-            $.ajax({
-                cache: false,
-                url: "/Account/LogOutOtherLoggedInUser",
-                type: "POST",
-                data: model,
-                success: function (e) {
-                    console.log(e.result);
-                    $('#LogoutSubmitId').attr('disabled', false)
-                    $('#LogoutNoId').attr('disabled', false)
-                    if (e.result == true) {
-                        $('#isAuthenticationChecked').val('false')
-                        $('#isLogout').val('true')
-                        $("#LogoutForm").submit();
-                    }
-                },
-                error: function (data) {
-                }
+                return false;
             });
-            return false;
-        });
 
-        $('#LogoutNoId').click(function () {
-            $('#LogoutSubmitId').attr('disabled', true)
-            $('#LogoutNoId').attr('disabled', true)
-            $('#isAuthenticationChecked').val('false');
-            $('#isLogout').val('true');
-            $("#LogoutForm").submit();
+            $('#LogoutNoId').click(function () {
+                $('#LogoutSubmitId').attr('disabled', true)
+                $('#LogoutNoId').attr('disabled', true)
+                $('#isAuthenticationChecked').val('false');
+                $('#isLogout').val('true');
+                $("#LogoutForm").submit();
+            });
         });
-    });
-</script>
+    </script>
 
 
 

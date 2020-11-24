@@ -38,8 +38,6 @@ namespace TeleSpecialists.BLL.Service
         {
             return GetFacilities(phoneNumber);
         }
-        public IQueryable<facility> GetAllActnNonActFacility(string phoneNumber)
-
 
 		public IQueryable<facility> GetAllActnNonActFacility(string phoneNumber)
 

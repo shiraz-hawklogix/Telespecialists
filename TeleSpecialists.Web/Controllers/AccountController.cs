@@ -37,6 +37,7 @@ namespace TeleSpecialists.Controllers
         private readonly user_fcm_notification _user_Fcm_Notification;
         private readonly TokenService _tokenservice;
         private readonly MenuService _menuService;
+        private readonly AdminService _adminService;
         //   private readonly RateService _rateService;
         public AccountController()
         {
@@ -47,6 +48,7 @@ namespace TeleSpecialists.Controllers
             _user_Fcm_Notification = new user_fcm_notification();
             _tokenservice = new TokenService();
             _menuService = new MenuService();
+            _adminService = new AdminService();
             //     _rateService = new RateService();
         }
 
@@ -82,20 +84,15 @@ namespace TeleSpecialists.Controllers
 
                 if (user != null)
                 {
+                    HttpCookie userSessionCookie = new HttpCookie("UserSessionCookie");
+                    userSessionCookie.Values["UserId"] = user.Id;
+                    userSessionCookie.Expires = System.DateTime.UtcNow.AddHours(5).AddDays(30);
+                    
+                    //var userId = Request.Cookies["UserSessionCookie"].Values["UserId"];
+                    //Session["userId"] = user.Id;
                     var IsApiUser = UserManager.GetRoles(user.Id).Contains(UserRoles.TeleCareApi.ToDescription());
                     if (user.IsActive && user.IsDisable == false && user.IsDeleted == false && !IsApiUser)
-                    {
-                        
-                        //commenting this code for temporary basis of build
-                        var rolesaccess = _menuService.getMenuAccess(user.Roles.Select(x => x.RoleId).FirstOrDefault());
-                        var useraccess = _menuService.getUserBasedMenu(user.Roles.Select(x => x.RoleId).FirstOrDefault(), user.Roles.Select(x => x.UserId).FirstOrDefault());
-                        for (int i = 0; i < useraccess.Count; i++)
-                        {
-                            var bit = useraccess[i].user_isAllowed;
-                            var result2 = rolesaccess.Where(x => x.com_key == useraccess[i].user_com_key).FirstOrDefault();
-                            rolesaccess.Where(x => x.cac_key == result2.cac_key).FirstOrDefault().cac_isAllowed = bit;
-                        }
-                        Session["RoleAccess"] = rolesaccess;
+                    {   
                         //If Password was changed by admin OR user is going to login first time
                         if (ApplicationSetting.aps_secuirty_is_reset_password_required && !user.RequirePasswordReset)
                         {
@@ -145,7 +142,42 @@ namespace TeleSpecialists.Controllers
                                 break;
                         }
 
-                        #endregion     
+                        #endregion
+
+                        #region Roles
+                        Session["userRoleId"] = null;
+                        userSessionCookie.Values["RoleId"] = user.Roles.Select(x => x.RoleId).FirstOrDefault();
+                        HttpContext.Response.Cookies.Add(userSessionCookie);
+                        var userId = Request.Cookies["UserSessionCookie"].Values["UserId"];
+                        var roleId = Request.Cookies["UserSessionCookie"].Values["RoleId"];
+                       // Session["RoleId"] = user.Roles.Select(x => x.RoleId).FirstOrDefault();
+                        if (model.RoleId != null)
+                        {
+                            GetRoleAccess(user.Roles.Select(x => x.RoleId).FirstOrDefault(), user.Roles.Select(x => x.UserId).FirstOrDefault());
+                            var userRoles = UserRole(user.Roles.Select(x => x.UserId).FirstOrDefault());
+                            if (userRoles.Count > 1)
+                            {
+                                var roleToRemove = userRoles.Where(x => x.RoleId == model.RoleId).FirstOrDefault();
+                                userRoles.Remove(roleToRemove);
+                                Session["userRoleId"] = userRoles.Select(x => x.RoleId);
+                            }
+                        }
+                        else
+                        {
+                            var userRoles = UserRole(user.Id);
+                            if (userRoles.Count() > 1)
+                            {
+                                ViewBag.userRoles = userRoles;
+                                ViewBag.login = "userRoles";
+                                return View(model);
+                            }
+                            else
+                            {
+                                GetRoleAccess(user.Roles.Select(x => x.RoleId).FirstOrDefault(), user.Roles.Select(x => x.UserId).FirstOrDefault());
+                            }
+                        }
+                      
+                        #endregion
 
                         // This doesn't count login failures towards account lockout
                         // To enable password failures to trigger account lockout, change to shouldLockout: true
@@ -235,6 +267,48 @@ namespace TeleSpecialists.Controllers
             ModelState.AddModelError("", "Invalid login attempt");
             ViewBag.login = "Login";
             return View(model);
+        }
+
+        private void GetRoleAccess(string roleId, string userId)
+        {
+            var rolesaccess = _menuService.getMenuAccess(roleId);
+            var useraccess = _menuService.getUserBasedMenu(roleId, userId);
+            for (int i = 0; i < useraccess.Count; i++)
+            {
+                var bit = useraccess[i].user_isAllowed;
+                var user_com_key = useraccess[i].user_com_key;
+                var result2 = rolesaccess.Where(x => x.com_key == useraccess[i].user_com_key).FirstOrDefault();
+                if (result2.cac_roleid == null)
+                {
+                    result2.cac_roleid = roleId;
+                }
+                if (result2.com_key < 0 || result2.com_key == null)
+                {
+                    result2.cac_key = (int)user_com_key;
+                }
+                rolesaccess.Where(x => x.com_key == user_com_key).FirstOrDefault().cac_isAllowed = bit;
+            }
+           // Response.Cookies.Add(new HttpCookie("mylist", rolesaccess));
+            string dataAsString = Request.Cookies["mylist"].Value;
+            //HttpCookie userRoleAccessCookie;
+            foreach (var item in rolesaccess)
+            {
+
+                HttpCookie userRoleAccessCookie = new HttpCookie("UserRoleAccessCookie");
+                userRoleAccessCookie.Values["cac_isAllowed"] = Convert.ToString(item.cac_isAllowed);
+                userRoleAccessCookie.Values["cac_key"] = Convert.ToString(item.cac_key);
+                userRoleAccessCookie.Values["cac_roleid"] = Convert.ToString(item.cac_roleid);
+                userRoleAccessCookie.Values["com_key"] = Convert.ToString(item.com_key);
+                userRoleAccessCookie.Values["com_module_name"] = Convert.ToString(item.com_module_name);
+                userRoleAccessCookie.Values["com_page_name"] = Convert.ToString(item.com_page_name);
+                userRoleAccessCookie.Values["com_page_title"] = Convert.ToString(item.com_page_title);
+                userRoleAccessCookie.Values["com_parentcomponentid"] = Convert.ToString(item.com_parentcomponentid);
+                HttpContext.Response.Cookies.Add(userRoleAccessCookie);
+
+            }
+            
+
+            // Session["RoleAccess"] = rolesaccess;
         }
 
 
@@ -348,7 +422,52 @@ namespace TeleSpecialists.Controllers
             }
             return Json(new { Status = false }, JsonRequestBehavior.AllowGet);
         }
-
+        [HttpGet]
+        public ActionResult GetUserRoles()
+        {
+            try
+            {
+                var userId = Request.Cookies["UserSessionCookie"].Values["UserId"];
+                var roleId = Request.Cookies["UserSessionCookie"].Values["RoleId"];
+                var result = UserRole(userId);
+                Session["userRoleId"] = null;
+                if (result.Count > 1) { 
+                var roleToRemove = result.Where(x => x.RoleId == roleId).FirstOrDefault();
+                result.Remove(roleToRemove);
+                Session["userRoleId"] = result.Select(x => x.RoleId);
+                }
+                return Json(result, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { Status = false, Message = "Some error occure. Please try again." }, JsonRequestBehavior.AllowGet);
+            }
+           
+        }
+        [HttpGet]
+        public ActionResult UpdateUserRoles(string code)
+        {
+            try
+            {
+                Session["RoleAccess"] = null;
+                var _user = Request.Cookies["UserSessionCookie"].Values["UserId"];
+                Response.Cookies["UserSessionCookie"].Values["RoleId"] = string.Empty;
+                Request.Cookies["UserSessionCookie"].Values["RoleId"] = code;
+                var role_id = Request.Cookies["UserSessionCookie"].Values["RoleId"];
+                //Session["RoleId"] = null;
+                Session["RoleId"] = code;
+                GetRoleAccess(code, _user);
+                return Json(1, JsonRequestBehavior.AllowGet);
+            }
+            
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                return Json(new { Status = false, Message = "Some error occure. Please try again." }, JsonRequestBehavior.AllowGet);
+            }
+          
+        }
         private string SendSmsCode(LoginViewModel model, string PhoneNumber)
         {
             try
@@ -358,10 +477,10 @@ namespace TeleSpecialists.Controllers
                 string authToken = ConfigurationManager.AppSettings["AuthKey"].ToString();
                 string FromPhone = ConfigurationManager.AppSettings["FromPhone"].ToString();
 
-                //PhoneNumber = ConfigurationManager.AppSettings["ToPhone"].ToString();
-                //string ToPhone = "+92" + Regex.Replace(PhoneNumber, @"[^0-9a-zA-Z]+", "").Trim();
+                PhoneNumber = ConfigurationManager.AppSettings["ToPhone"].ToString();
+                string ToPhone = "+92" + Regex.Replace(PhoneNumber, @"[^0-9a-zA-Z]+", "").Trim();
 
-                string ToPhone = "+1" +Regex.Replace(PhoneNumber, @"[^0-9a-zA-Z]+", "").Trim();
+              //  string ToPhone = "+1" +Regex.Replace(PhoneNumber, @"[^0-9a-zA-Z]+", "").Trim();
 
                 TwilioClient.Init(accountSid, authToken);
                 var restClient = new TwilioRestClient(accountSid, authToken);
@@ -425,10 +544,10 @@ namespace TeleSpecialists.Controllers
 
             if (user.TwoFactVerifyCode == model.TwoFactVerifyCode)
             {
-                if (DateTime.UtcNow.ToEST() > user.CodeExpiryTime)
-                {
-                    return Json(new { Status = false, Message = "Pin code time has been expired." }, JsonRequestBehavior.AllowGet);
-                }
+                //if (DateTime.UtcNow.ToEST() > user.CodeExpiryTime)
+                //{
+                //    return Json(new { Status = false, Message = "Pin code time has been expired." }, JsonRequestBehavior.AllowGet);
+                //}
                 user_login_verify _model = new user_login_verify();
                 _model.IsTwoFactRememberChecked = model.RememberMeSms;
                 _model.TwoFactVerifyExpiryDate = model.RememberMeSms == true ? DateTime.Now.AddDays(30) : DateTime.Now;
@@ -539,6 +658,22 @@ namespace TeleSpecialists.Controllers
             #endregion            
         }
 
+        public List<LoginViewModel> UserRole(string userId)
+        {
+            LoginViewModel _obj;
+            List<LoginViewModel> _lst = new List<LoginViewModel>();
+           var result = _adminService.GetRoleByUserId(userId);
+            
+            foreach (var item in result)
+            {
+                _obj = new LoginViewModel();
+                _obj.RoleId = item.RoleId;
+                _obj.RoleName = item.Name;
+                _lst.Add(_obj);
+            }
+            return _lst;
+        }
+
         [HttpPost]
         [AllowAnonymous]
         public ActionResult LogOutOtherLoggedInUser(LoginViewModel model)
@@ -582,6 +717,7 @@ namespace TeleSpecialists.Controllers
         }
 
         #endregion
+
 
         //
         // GET: /Account/VerifyCode
@@ -1021,6 +1157,7 @@ namespace TeleSpecialists.Controllers
                 ModelState.AddModelError("", error);
             }
         }
+      
         private ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
