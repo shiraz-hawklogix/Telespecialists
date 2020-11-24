@@ -178,6 +178,7 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
         });
         firebase.database().ref("TeleUsers/" + SenderId + "/Connections").child(groupID).set({
             lastOnline: firebase.database.ServerValue.TIMESTAMP,
+            lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
             name: name,
             image: _receiverPhoto,
             lastMessage: shortmsg,
@@ -200,6 +201,7 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
         //child(_receiverId).set(
         ref.child(_receiverId).update({
             lastOnline: firebase.database.ServerValue.TIMESTAMP,
+            lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
             name: _receiverName,
             image: _receiverPhoto,
             lastMessage: shortmsg,
@@ -304,6 +306,7 @@ function addNavigators(name, grptype, msg, physician, navArr, getkey, shortmsg) 
             var ref = firebase.database().ref("TeleUsers/" + _userid + "/Connections");
             ref.child(grpId).set({
                 lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
                 name: grpname,
                 image: _receiverPhoto,
                 lastMessage: shortmsg,
@@ -424,6 +427,7 @@ function UserConnectionsForCall(shortmsg) {
     //child(_receiverId).set(
     ref.child(_receiverId).update({
         lastOnline: firebase.database.ServerValue.TIMESTAMP,
+        lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
         name: _receiverName,
         image: _receiverPhoto,
         lastMessage: shortmsg,
@@ -458,6 +462,7 @@ function UserConnectionsForCall(shortmsg) {
         let refConn = firebase.database().ref("TeleUsers/" + _receiverId + '/Connections');
         refConn.child(SenderId).update({
             lastOnline: firebase.database.ServerValue.TIMESTAMP,
+            lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
             name: _senderName,
             image: _senderPhoto,
             lastMessage: shortmsg,
@@ -543,6 +548,7 @@ function LoadGrpUsers(shortmsg) {
             var refCon = firebase.database().ref("TeleUsers/" + id + '/Connections');
             refCon.child(grpId).update({
                 lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
                 lastMessage: shortmsg,
                 type: 'Public'
             }).then(function () {
@@ -675,7 +681,8 @@ function SignInStatus(userid) {
                 var _ref = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
                 _ref.child(userid).update({
                     Online: true,
-                    lastOnline: firebase.database.ServerValue.TIMESTAMP
+                    lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                    lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP
                 }).then(function () {
                     return _ref.child(userid).once("value");
                 }).then(function (childSnapshot) {
@@ -743,7 +750,8 @@ function UserConnectionFB(grpid, shortmsg, grpName, grpimg) {
                 console.log('record found in connections');
                 userConn.child(grpid).update({
                     lastMessage: shortmsg,
-                    lastOnline: firebase.database.ServerValue.TIMESTAMP
+                    lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                    lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP
                 }).then(function () {
                     return userConn.child(grpid).once("value");
                 }).then(function (childSnapshot) {
@@ -772,6 +780,7 @@ function AddUserConnections(userid, groupID, shortmsg, grpName, grpimg) {
     let ref = firebase.database().ref("TeleUsers/" + userid + "/Connections");
     ref.child(groupID).set({
         lastOnline: firebase.database.ServerValue.TIMESTAMP,
+        lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
         name: grpName,
         image: grpimg,
         lastMessage: shortmsg,
@@ -805,7 +814,8 @@ function SignOutStatus() {
                 var _ref = firebase.database().ref("TeleUsers/" + snapshot.key + "/Connections");
                 _ref.child(SenderId).update({
                     Online: false,
-                    lastOnline: firebase.database.ServerValue.TIMESTAMP
+                    lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                    lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP
                 }).then(function () {
                     return _ref.child(SenderId).once("value");
                 }).then(function (childSnapshot) {

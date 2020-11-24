@@ -6019,6 +6019,11 @@ ViewBag.StatConsultOtherWork = _uclService.GetUclData(UclTypes.OtherWorkUp)
                     detail = _fireBaseUserMailService.CreateAndReturn(_firebase_Usersemail);
 
                 }
+                else
+                {
+                    if (detail.fre_profileimg == "/Content/images/M.png" && getuser.User_Image != null)
+                        detail.fre_profileimg = getuser.User_Image;
+                }
                 return Json(detail, JsonRequestBehavior.AllowGet);
             }
             #endregion

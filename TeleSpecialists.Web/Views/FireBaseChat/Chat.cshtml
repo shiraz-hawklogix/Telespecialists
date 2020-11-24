@@ -362,12 +362,13 @@
                 onlineStatus = "online_icon offline";
             }
             //var _count = ReadMessageStatus(SenderId, friends.key);
-            var date = new Date(friends.val().lastOnline);
+            var date = new Date(friends.val().lastMsgDateTime);
             var serverTime = date.toLocaleString();
             // temp hide serverTime
-            serverTime = '';
 
-            //console.log('user is:  ' + friends.val().name + ' ,  by husnain');
+            let connectionName = friends.val().name;
+            if (connectionName.length > 25)
+                connectionName = connectionName.substring(0, 25) + '...';
 
             totalNotifications += friends.val().unread;
             var unreadmsg = '';
@@ -385,10 +386,10 @@
                 activeCls = 'active_chat';
 
             if (friends.val().type === 'Private') {
-                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest' class='btnRequest'  data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false'><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='" + onlineStatus + "'> </div><div class='chat_ib'><h5> " + friends.val().name + " <span class='chat_date'> " + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span > " + onlineTag + spanUnread + "</span></span></p></div></a></div></div>"
+                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest' class='btnRequest'  data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false'><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='" + onlineStatus + "'> </div><div class='chat_ib'><h5> " + connectionName + " <span class='chat_date'> " + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span > " + onlineTag + spanUnread + "</span></span></p></div></a></div></div>"
             }
             else {
-                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest'  class='btnRequest' data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false' ><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='online_icon'> </div><div class='chat_ib'><h5>" + friends.val().name + "<span class='chat_date'>" + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span class='grpTextClr'> (GROUP) </span>" + spanUnread + "</p> </div></div></div>"
+                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest'  class='btnRequest' data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false' ><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='online_icon'> </div><div class='chat_ib'><h5>" + connectionName + "<span class='chat_date'>" + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span class='grpTextClr'> (GROUP) </span>" + spanUnread + "</p> </div></div></div>"
             }
 
 
@@ -1230,6 +1231,7 @@
         var ref = firebase.database().ref("TeleUsers/" + SenderId + '/Connections');
         ref.child(_receiverId).update({
             lastOnline: firebase.database.ServerValue.TIMESTAMP,
+            lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
             name: _receiverName,
             image: _receiverPhoto,
             lastMessage: shortmsg,
@@ -1241,10 +1243,8 @@
             else
                 return ref.child(_receiverId).once("value");
         }).then(function (snapshot) {
-            //debugger;
             var data = snapshot.val();
             var time = snapshot.val().lastOnline;
-            //console.log('my local time is : ' + time);
             var reff = firebase.database().ref("TeleUsers/" + SenderId + '/Connections');
             reff.child(_receiverId).update({
                 lastOnline: time * -1
@@ -1265,6 +1265,7 @@
             var ref = firebase.database().ref("TeleUsers/" + _receiverId + '/Connections');
             ref.child(SenderId).update({
                 lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
                 name: _senderName,
                 image: _senderPhoto,
                 lastMessage: shortmsg,
@@ -1461,6 +1462,7 @@
                 var ref = firebase.database().ref("TeleUsers/" + id + '/Connections');
                 ref.child(grpId).update({
                     lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                    lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
                     lastMessage: shortmsg,
                     type: 'Public'
                 }).then(function () {
@@ -1538,6 +1540,7 @@
         var ref = firebase.database().ref("TeleUsers/" + userid + "/Connections");
         ref.child(grpid).set({
             lastOnline: firebase.database.ServerValue.TIMESTAMP,
+            lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
             name: grpname,
             image: _receiverPhoto,
             lastMessage: '',
@@ -2181,6 +2184,7 @@
                 var ref = firebase.database().ref("TeleUsers/" + id + '/Connections');
                 ref.child(grpId).update({
                     lastOnline: firebase.database.ServerValue.TIMESTAMP,
+                    lastMsgDateTime: firebase.database.ServerValue.TIMESTAMP,
                     lastMessage: shortmsg,
                     type: 'Public'
                 }).then(function () {
