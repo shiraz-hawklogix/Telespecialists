@@ -424,7 +424,7 @@
                 var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest' class='btnRequest'  data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false'><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='" + onlineStatus + "'> </div><div class='chat_ib'><h5> " + connectionName + " <span class='chat_date'> " + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span > " + onlineTag + spanUnread + "</span></span></p></div></a></div></div>"
             }
             else {
-                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest'  class='btnRequest' data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false' ><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='online_icon'> </div><div class='chat_ib'><h5>" + connectionName + "<span class='chat_date'>" + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span class='grpTextClr'> (GROUP) </span>" + spanUnread + "</p> </div></div></div>"
+                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest'  class='btnRequest' data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false' ><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='online_icon'> </div><div class='chat_ib'><h5>" + connectionName + "<span class='chat_date'>" + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span class='grpTextClr'> (GRP) </span>" + spanUnread + "</p> </div></div></div>"
             }
 
 
@@ -546,7 +546,7 @@
         if (msg) {
             var id = SenderId + '-' + _receiverId;
             var _id = _receiverId + '-' + SenderId;
-            var shortMsg = msg.substring(0, 10) + '...';
+            var shortMsg = msg.substring(0, 30) + '...';
             UserConnections(shortMsg);
             if (isGroup) {
                 _GroupMessages(_receiverId, msg, 'text');
@@ -576,7 +576,7 @@
             if (msg) {
                 var id = SenderId + '-' + _receiverId;
                 var _id = _receiverId + '-' + SenderId;
-                var shortMsg = msg.substring(0, 10) + '...';
+                var shortMsg = msg.substring(0, 30) + '...';
 
                 UserConnections(shortMsg);
 

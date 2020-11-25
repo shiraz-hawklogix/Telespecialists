@@ -1218,7 +1218,7 @@ namespace TeleSpecialists.Web.Controllers
                     phy_ids.Add(id);
                     item.firebaseId = userDetail.fre_firebase_uid;
                     item.firebaseEmail = userDetail.fre_firebase_email;
-                    item.img = "/Content/images/M.png";
+                    item.img = userDetail.fre_profileimg;  
                 }
             }
 

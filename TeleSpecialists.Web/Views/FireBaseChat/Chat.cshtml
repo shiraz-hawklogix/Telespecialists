@@ -415,10 +415,10 @@
                 activeCls = 'active_chat';
 
             if (friends.val().type === 'Private') {
-                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest' class='btnRequest'  data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false'><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='" + onlineStatus + "'> </div><div class='chat_ib'><h5> " + connectionName + " <span class='chat_date'> " + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span > " + onlineTag + spanUnread + "</span></span></p></div></a></div></div>"
+                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest' class='btnRequest'  data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false' data-muted='" + friends.val().muted + "'><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='" + onlineStatus + "'> </div><div class='chat_ib'><h5> " + connectionName + " <span class='chat_date'> " + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span > " + onlineTag + spanUnread + "</span></span></p></div></a></div></div>"
             }
             else {
-                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest'  class='btnRequest' data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false' ><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='online_icon'> </div><div class='chat_ib'><h5>" + connectionName + "<span class='chat_date'>" + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span class='grpTextClr'> (GROUP) </span>" + spanUnread + "</p> </div></div></div>"
+                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest'  class='btnRequest' data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false' data-muted='" + friends.val().muted + "'><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='online_icon'> </div><div class='chat_ib'><h5>" + connectionName + "<span class='chat_date'>" + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span class='grpTextClr'> (GRP) </span>" + spanUnread + "</p> </div></div></div>"
             }
 
 
@@ -527,10 +527,10 @@
         var type = $(this).attr("data-type");
         var isGrpPublic = $(this).attr('data-isgrpPublic');
         if (isGrpPublic === 'true') { type = 'Public'; }
+        var isMuted = $(this).attr('data-muted');
 
         _isOnline = $(this).attr("data-onlineStatus");
         _msgType = type;
-        // debugger;
         activeFriendId = receiverid;
         _receiverId = receiverid;
         _receiverName = receiverName;
@@ -541,9 +541,10 @@
         // ReadMessageStatus(SenderId, receiverid);
         if (type)
             UpdateReadStatus(type);
+        if (isMuted === 'undefined')
+            isMuted = false;
 
-
-        GetPerson(type);
+        GetPerson(type, isMuted);
         var count = unreadMsg.length;
         if (type === 'Public') {
             isGroup = true;
@@ -566,7 +567,7 @@
         if (msg) {
             var id = SenderId + '-' + _receiverId;
             var _id = _receiverId + '-' + SenderId;
-            var shortMsg = msg.substring(0, 10) + '...';
+            var shortMsg = msg.substring(0, 30) + '...';
             UserConnections(shortMsg);
             if (isGroup) {
                 _GroupMessages(_receiverId, msg, 'text');
@@ -596,7 +597,7 @@
             if (msg) {
                 var id = SenderId + '-' + _receiverId;
                 var _id = _receiverId + '-' + SenderId;
-                var shortMsg = msg.substring(0, 10) + '...';
+                var shortMsg = msg.substring(0, 30) + '...';
 
                 UserConnections(shortMsg);
 
@@ -774,7 +775,7 @@
         });
 
     }
-    function GetPerson(type) {
+    function GetPerson(type, muted) {
         var index = _allGroup.map(e => e.grpid).indexOf(_receiverId);
         var record = _allGroup[index];
         if (record) {
@@ -824,6 +825,19 @@
             let _leave = "<a href='javacript:void(0)' class='leave-group' id='leaveGrp' data-userid='" + SenderId + "' data-grpid='" + _receiverId + "' >Leave Group</a>";
             $("#AttachmentDiv").append(_leave);
         }
+        let mutedStatus = muted;
+        let muteText = '';
+        if (mutedStatus === 'true') {
+            mutedStatus = false;
+            muteText = 'UnMute Notification';
+        }
+        else {
+            mutedStatus = true;
+            muteText = 'Mute Notification';
+        }
+           
+        let mute_notification = "<a href='javacript:void(0)' class='leave-group' id='mute_notification' data-userid='" + SenderId + "' data-grpid='" + _receiverId + "' data-value='" + mutedStatus + "' >" + muteText+"</a>";
+        $("#AttachmentDiv").append(mute_notification);
         $("#AttachmentDiv").addClass('attachment-div');
         GetAttachmentEvent();
     }
@@ -1595,7 +1609,7 @@
     function SendAutoMsgToTeam() {
         let newArray = [];
         newArray.push({ user_id: '9256e0b0-7fb2-4b27-ad0d-b3c359eb547a', email: 'hmauceri@tstelemed.com', name: 'Heather Mauceri', firbaseuid: 'K2m19pqahoTP6g24BDw8waubC9p1', ImgPath: '/Content/Images/M.png' });
-        newArray.push({ user_id: 'df79577f-3d6c-40f2-a752-85dc1ce21ca1', email: 'mmasud@tstelemed.com', name: 'Muhammad Masud', firbaseuid: 'thusmIlApVOyx9M8zrGe9CgsKTC3', ImgPath: '/Content/Images/M.png' });
+        newArray.push({ user_id: 'df79577f-3d6c-40f2-a752-85dc1ce21ca1', email: 'mmasud@tstelemed.com', name: 'Muhammad Masud', firbaseuid: 'thusmIlApVOyx9M8zrGe9CgsKTC3', ImgPath: 'https://prdresources.blob.core.windows.net/onboarding/202056270716401.jpg' });
         console.log('chat going to be initait : ', newArray);
         let grpName = 'Telespecialists Team';// + e.initials;//'Technical Discussion Case# ' + e.caseNumber;
         let automsg = 'This is auto message to Telespecialists  team';
@@ -1607,6 +1621,7 @@
         console.log(muteDuration);
         SaveMuteDuration(muteDuration);
     });
+   
     function SaveMuteDuration(muteDuration) {
         $.ajax({
             type: 'POST',
@@ -2329,7 +2344,20 @@
             DeleteUserFromGroup(grpid, userid);
             AfterModify();
         });
-
+        $('#mute_notification').click(function () {
+            let _status = $(this).attr('data-value');
+            firebase.database().ref("TeleUsers/" + SenderId + "/Connections").child(_receiverId).update({
+                muted: _status
+            });
+            if (_status === 'true') {
+                $(this).data('value', 'false');
+                $(this).html('UnMute Notification');
+            }
+            else {
+                $(this).data('value', 'true');
+                $(this).html('Mute Notification');
+            }
+        });
     }
 
 
