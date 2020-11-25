@@ -90,7 +90,7 @@
             <div class="form-group row">
                 <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Header: </label>
                 <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
-                    @Html.TextBoxFor(m => Model.ParameterName, new { @class = "form-control lenghts", @id = "ParameterName" })
+                    @Html.TextBoxFor(m => Model.ParameterName, new { @class = "form-control lenghts", @id = "ParameterNamem" })
 
                     <div id="ParameterName-error" class="error_msg" style="display:none;">
                         <label for="ParameterName">This field is required</label>
@@ -101,13 +101,16 @@
             <div class="form-group row">
                 <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Upload Images: </label>
                 <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
-                    @Html.TextBoxFor(model => model.ParameterName_Image, new { @type = "file", @class = "form-control lenghts", @multiple = "multiple"@*, @accept = "image/*"*@, @id = "ParameterName_Image", @onclick = "removedivdata();" })
+                    @Html.TextBoxFor(model => model.ParameterName_Image, new { @type = "file", @class = "form-control lenghts", @multiple = "multiple"@*, @accept = "image/*"*@,
+@id = "ParameterName_Image2",
+@onclick = "removedivdata();"
+})
                 </div>
             </div>
             <div class="form-group row divshowimages" style="display:none!important;">
                 <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4">Selected Images: </label>
                 <div class="col-lg-12 col-xl-8 col-md-8 col-sm-8 col-xs-12">
-                    <div style="width:1475px;height:150px; overflow-y: scroll;resize:both;overflow:auto;border-color:black;border:solid;" class="preview" id="divimages2"></div>
+                    <div style="width:1475px;height:150px; overflow-y: scroll;resize:both;overflow:auto;border-color:black;border:solid;" class="previewm" id="divimages2"></div>
                 </div>
             </div>
         </div>
@@ -115,7 +118,7 @@
     <div class="form-group">
         <label class="control-label col-xl-4 col-lg-4 col-md-4 col-sm-4" style="padding-left: 0px;">Details: </label>
         <div style="padding-left: 152px;">
-            <textarea class="form-control " id="ParameterName_Info" name="ParameterName_Info">
+            <textarea class="form-control " id="ParameterName_Info2" name="ParameterName_Info2">
 
 
 </textarea>
@@ -127,7 +130,7 @@
             <input type="button" class="btn btn-dark bthhideprotocolss" style="display:none!important" value="Add Protocols" onclick="addProtocolsData('@ViewBag.fac_keys','1','/HospitalProtocols/Create')" />
             @*<a href="/Facility/Edit/@ViewBag.fac_keys" class="btn btn-dark loadLinkAsync" id="backpage" onclick="funlatecall();">Cancel</a>*@
             <input type="button" class="btn btn-dark loadLinkAsync" id="backpageprotocols" onclick="funlatecall();" value="Cancel" />
-            <input type="button" value="Preview Protocols" onclick="openpopup()" ; class="btn btn-dark" id="Previewbtn" />
+            <input type="button" value="Previewm Protocols" onclick="openpopup()" ; class="btn btn-dark" id="Previewbtn" />
             <input type="button" value="Save" onclick="uplaod()" ; class="btn btn-dark" id="savebtn" />
         </div>
     </div>
@@ -197,8 +200,8 @@
                     </div>
                 }
                 <div style="padding-bottom: 55px;">
-                    <h2><b><span id="submittername2"></span></b></h2>
-                    <span id="infovalue"></span>
+                    <h2><b><span id="submittername3"></span></b></h2>
+                    <span id="infovaluem"></span>
                     <div class="row">
                         <div class="col-md-4">
                             <div class="thumbnail">
@@ -222,8 +225,8 @@
 <script>
     $(document).ready(function () {
         $(function () {
-            $("#divimages, #divimages2").sortable({
-                connectWith: ".preview",
+            $("#divimages2").sortable({
+                connectWith: ".previewm",
                 cursor: "move"
             }).disableSelection();
         });
@@ -236,7 +239,7 @@
         $.each(values.split(","), function (i, e) {
             $(".Facilities option[value='" + e + "']").prop("selected", true);
         });
-        $('#ParameterName').trigger("click");
+        $('#ParameterNamem').trigger("click");
     });
     function removedivdata() {
         $("#divimages2").empty();
@@ -250,7 +253,7 @@
 <script>
     $(function () {
         function previewImages() {
-            var preview = document.querySelector('.preview');
+            var preview = document.querySelector('.previewm');
             if (this.files) {
                 [].forEach.call(this.files, readAndPreview);
             }
@@ -274,7 +277,7 @@
 
             }
         }
-        document.querySelector('#ParameterName_Image').addEventListener("change", previewImages);
+        document.querySelector('#ParameterName_Image2').addEventListener("change", previewImages);
     });
 
 </script>
@@ -283,7 +286,7 @@
 
 <script>
     $(document).ready(function () {
-        showCKEditoronboard("ParameterName_Info");
+        showCKEditoronboard("ParameterName_Info2");
         $('.Facilities').multiselect({
             columns: 1,
             placeholder: 'Select Facility',
@@ -293,7 +296,7 @@
                 'default': 'Search Facility'
             }
         });
-        $('#ParameterName').trigger("click");
+        $('#ParameterNamem').trigger("click");
         function showCKEditoronboard(elementId) {
 
             destryCkEditorField(elementId);
@@ -333,20 +336,20 @@
         $(".error_msg").hide();
         if (validateFormData() == true) {
             var formData = new FormData();
-            var totalFiles = document.getElementById("ParameterName_Image").files.length;
+            var totalFiles = document.getElementById("ParameterName_Image2").files.length;
             for (var i = 0; i < totalFiles; i++) {
-                var file = document.getElementById("ParameterName_Image").files[i];
-                formData.append("ParameterName_Image", file);
+                var file = document.getElementById("ParameterName_Image2").files[i];
+                formData.append("ParameterName_Image2", file);
             }
             var images = [];
             $("#divimages2 img").each(function () {
                 images.push($(this).attr('title'))
             });
             formData.append("Div_Image", images);
-            var names = $('#ParameterName').val();
-            formData.append("ParameterName", names);
-            var info = Base64.encode(CKEDITOR.instances["ParameterName_Info"].getData());
-            formData.append("parameterinfo", info);
+            var names = $('#ParameterNamem').val();
+            formData.append("ParameterNamem", names);
+            var info = Base64.encode(CKEDITOR.instances["ParameterName_Info2"].getData());
+            formData.append("ParameterName_Info2", info);
             var cas_fac_Name_arrays = [];
             $.each($(".protocol_fac_key option:selected"), function () {
                 cas_fac_Name_arrays.push($(this).text());
@@ -365,7 +368,7 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    $('#ParameterName').val('');
+                    $('#ParameterNamem').val('');
                     $("#message").html("");
                     $(".bthhideprotocolss").trigger("click");
                 },
@@ -384,27 +387,27 @@
 </script>
 
 <script>
-        function openpopup() {
-            $("#hospitalprotocolmodal").modal('show');
-            var ParameterName2 = $('#ParameterName').val();
-            $("#submittername").text(ParameterName2);
-            $("#submittername2").text(ParameterName2);
+    function openpopup() {
+        $("#hospitalprotocolmodal").modal('show');
+        var ParameterName2 = $('#ParameterNamem').val();
+        $("#submittername").text(ParameterName2);
+        $("#submittername3").text(ParameterName2);
 
 
-            var data = {};
-            data.bodyText = CKEDITOR.instances["ParameterName_Info"].getData();
-            $("#infovalue").html(data.bodyText);
-            abc();
-        }
-
-
-        function abc() {
-            var $button = $('.preview').clone();
-            $('.preview2').html($button);
+        var data = {};
+        data.bodyText = CKEDITOR.instances["ParameterName_Info2"].getData();
+        $("#infovaluem").html(data.bodyText);
+        abc();
     }
-    
+
+
+    function abc() {
+        var $button = $('.previewm').clone();
+        $('.preview2').html($button);
+    }
+
     $("#backpageprotocols").off('click').click(function () {
         GetProtocolsData();
     });
-    </script>
+</script>
 

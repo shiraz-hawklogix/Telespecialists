@@ -10263,7 +10263,92 @@ namespace TeleSpecialists.BLL.Service
 
         }
 
+        public DataSourceResult GetBCIGraph(DataSourceRequest request)
+        {
+            using (var context = new Model.TeleSpecialistsContext())
+            {
+                context.Configuration.AutoDetectChangesEnabled = false;
+                context.Configuration.ProxyCreationEnabled = false;
+                context.Configuration.LazyLoadingEnabled = false;
+                BCIGraphReport graph = new BCIGraphReport();
+                graph.Mean = "Base Credentional Index Report";
+                List<string> catgory = new List<string>();
+                List<string> meanlist = new List<string>();
+                List<BCI_ReportData> Finallist = new List<BCI_ReportData>();
+                Finallist = _unitOfWork.SqlQuery<BCI_ReportData>(string.Format("Exec UspGetAllPhyDataForBCI")).ToList();
+                foreach (var item in Finallist)
+                {
+                    meanlist.Add(item.Phy_Bci_Value);
+                    catgory.Add(item.Phy_Name);
+                }
+                if (catgory.Count > 0)
+                {
 
+                    graph.Title = "BCI Graph";
+                    DateTime date = DateTime.Now;
+                    graph.MinDate = DateTime.Now.ToString();
+                    graph.Category = catgory;
+                    graph.MeanCalculation = meanlist;
+                }
+
+                List<BCIGraphReport> list = new List<BCIGraphReport>();
+                list.Add(graph);
+                var finalresult = list.Select(x => new
+                {
+                    x.Title,
+                    x.Mean,
+                    x.Median,
+                    x.MinDate,
+                    x.MeanCalculation,
+                    x.Category
+                }).AsQueryable();
+
+                return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+            }
+        }
+        public DataSourceResult GetCCIGraph(DataSourceRequest request)
+        {
+            using (var context = new Model.TeleSpecialistsContext())
+            {
+                context.Configuration.AutoDetectChangesEnabled = false;
+                context.Configuration.ProxyCreationEnabled = false;
+                context.Configuration.LazyLoadingEnabled = false;
+                BCIGraphReport graph = new BCIGraphReport();
+                graph.Mean = "Composite Credentional Index Report";
+                List<string> catgory = new List<string>();
+                List<string> meanlist = new List<string>();
+                List<CCIReport_Data> Finallist = new List<CCIReport_Data>();
+                Finallist = _unitOfWork.SqlQuery<CCIReport_Data>(string.Format("Exec UspGetAllPhyDataForCCI")).ToList();
+                foreach (var item in Finallist)
+                {
+                    meanlist.Add(item.Physician_CCI);
+                    catgory.Add(item.Physician_Name);
+                }
+                if (catgory.Count > 0)
+                {
+
+                    graph.Title = "CCI Graph";
+                    DateTime date = DateTime.Now;
+                    graph.MinDate = DateTime.Now.ToString();
+                    graph.Category = catgory;
+                    graph.MeanCalculation = meanlist;
+                }
+
+                List<BCIGraphReport> list = new List<BCIGraphReport>();
+                list.Add(graph);
+                var finalresult = list.Select(x => new
+                {
+                    x.Title,
+                    x.Mean,
+                    x.Median,
+                    x.MinDate,
+                    x.MeanCalculation,
+                    x.Category
+                }).AsQueryable();
+
+                return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+            }
+        }
 
     }
 }

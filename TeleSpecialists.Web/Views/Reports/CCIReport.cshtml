@@ -22,11 +22,13 @@
     <div class="col-auto">
         <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
         <button type="button" class="btn btn-dark" id="btnClear" style="display: none">Clear Search</button>
+        <input type='button' class='btn btn-dark' onclick="showgraph();" value="View CCI Graph" />
+        @*<input type='button' class='btn btn-dark' onclick="showgraph2();" value="View CCI VS BCI Graph" />*@
     </div>
 </div>
 
 <div class="modal" id="graphmodal" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-lg" style=" max-width: 1000px; width: 1000px; ">
+    <div class="modal-dialog modal-lg" style="max-width: 1350px;width: 1350px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="export-pdf k-button">Save as PDF</button>
@@ -40,6 +42,22 @@
         </div>
     </div>
 </div>
+<div class="modal" id="graphmodal2" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg" style="max-width: 1400px;width: 1400px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="export-pdf k-button">Save as PDF</button>
+            </div>
+            <div class="modal-body">
+                <div id="chart"></div>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-link" data-dismiss="modal">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="~/Scripts/Custom/inputMask.js"></script>
 <script>
     $(document).ready(function () {
@@ -211,5 +229,275 @@
 
     }
 </script>
+<script>
+    function showgraph() {
 
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/Reports/GetCCIGraphModal',
+            //data: { model: model },
+            success: function (data) {
+                var title;
+                var mean;
+                var median;
+                var meancal = [];
+                var mediancal = [];
+                var mindate;
+                var catgory;
+                $.each(data, function (key, value) {
+                    debugger
+                    $.each(value, function (id, dat) {
+                        if (id == "Title") {
+                            title = dat;
+                        }
+                        else if (id == "Mean") {
+                            mean = dat;
+                        }
+                        else if (id == "Median") {
+                            median = dat;
+                        }
+                        else if (id == "MinDate") {
+                            mindate = dat;
+                        }
+                        else if (id == "MeanCalculation") {
+                            $.each(dat, function (keys, vals) {
+                                meancal.push(vals);
+                            })
+                        }
+                        else if (id == "MedianCalculation") {
+                            $.each(dat, function (keys, vals) {
+                                mediancal.push(new Date(mindate + " " + vals).getTime());
+                            })
+                        }
+                        else if (id == "Category") {
+                            catgory = dat;
+                        }
+                    });
+                });
+                createChart(title, mean, median, meancal, mediancal, mindate, catgory);
+                $(document).bind("kendo:skinChange", createChart);
+                $("#graphmodal").modal('show');
+            },
+            error: function () {
+
+            }
+
+        });
+    }
+
+    function createChart(title, mean, median, meancal = [], mediancal = [], mindate, catgory = []) {
+        debugger
+        $("#chart").kendoChart({
+            title: {
+                text: title,
+                color: "black"
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 1300
+            },
+            seriesDefaults: {
+                type: "column",
+                labels: {
+                    visible: true,
+                    template: "#= value #",
+                    format: "{0}",
+                    margin: 20
+                }
+            },
+            // series: meancal,
+            series: [{
+                labels: {
+                    template: "#= value #",
+                    visible: true,
+                    format: "{0}",
+                },
+                name: mean,
+                data: meancal,
+                color: "purple"
+
+            }
+            ],
+
+            valueAxis: {
+                labels: {
+                    format: "{0}"
+                },
+                line: {
+                    visible: false
+                },
+                axisCrossingValue: 0
+            },
+            categoryAxis: {
+                categories: catgory,
+                line: {
+                    visible: false
+                },
+                majorGridLines: {
+                    visible: false
+                },
+                labels: {
+                    rotation: "auto"
+                }
+            },
+            pannable: {
+                lock: "y"
+            },
+            zoomable: {
+                mousewheel: {
+                    lock: "y"
+                },
+                selection: {
+                    lock: "y"
+                }
+            }
+            //tooltip: {
+            //    visible: true,
+            //    format: "{0}",
+            //    template: "#= value #"
+            //}
+        });
+    }
+    $(".export-pdf").click(function () {
+        $("#chart").getKendoChart().saveAsPDF();
+    })
+</script>
+<script>
+    function showgraph2() {
+
+        $.ajax({
+            cache: false,
+            async: true,
+            type: "POST",
+            url: '/Reports/GetCCIVSBCIGraphModal',
+            //data: { model: model },
+            success: function (data) {
+                var title;
+                var mean;
+                var median;
+                var meancal = [];
+                var mediancal = [];
+                var mindate;
+                var catgory;
+                $.each(data, function (key, value) {
+                    debugger
+                    $.each(value, function (id, dat) {
+                        if (id == "Title") {
+                            title = dat;
+                        }
+                        else if (id == "Mean") {
+                            mean = dat;
+                        }
+                        else if (id == "Median") {
+                            median = dat;
+                        }
+                        else if (id == "MinDate") {
+                            mindate = dat;
+                        }
+                        else if (id == "MeanCalculation") {
+                            $.each(dat, function (keys, vals) {
+                                meancal.push(vals);
+                            })
+                        }
+                        else if (id == "MedianCalculation") {
+                            $.each(dat, function (keys, vals) {
+                                mediancal.push(new Date(mindate + " " + vals).getTime());
+                            })
+                        }
+                        else if (id == "Category") {
+                            catgory = dat;
+                        }
+                    });
+                });
+                createChart(title, mean, median, meancal, mediancal, mindate, catgory);
+                $(document).bind("kendo:skinChange", createChart);
+                $("#graphmodal2").modal('show');
+            },
+            error: function () {
+
+            }
+
+        });
+    }
+
+    function createChart(title, mean, median, meancal = [], mediancal = [], mindate, catgory = []) {
+        debugger
+        $("#chart").kendoChart({
+            title: {
+                text: title,
+                color: "black"
+            },
+            legend: {
+                position: "bottom"
+            },
+            chartArea: {
+                background: "",
+                width: 1300
+            },
+            seriesDefaults: {
+                type: "column",
+                labels: {
+                    visible: true,
+                    template: "#= value #",
+                    format: "{0}",
+                    margin: 20
+                }
+            },
+            // series: meancal,
+            series: [{
+                labels: {
+                    template: "#= value #",
+                    visible: true,
+                    format: "{0}",
+                },
+                name: mean,
+                data: meancal,
+                color: "purple"
+
+            }
+            ],
+
+            valueAxis: {
+                labels: {
+                    format: "{0}"
+                },
+                line: {
+                    visible: false
+                },
+                axisCrossingValue: 0
+            },
+            categoryAxis: {
+                categories: catgory,
+                line: {
+                    visible: false
+                },
+                majorGridLines: {
+                    visible: false
+                },
+                labels: {
+                    rotation: "auto"
+                }
+            },
+            pannable: {
+                lock: "y"
+            },
+            zoomable: {
+                mousewheel: {
+                    lock: "y"
+                },
+                selection: {
+                    lock: "y"
+                }
+            }
+        });
+    }
+    $(".export-pdf").click(function () {
+        $("#chart").getKendoChart().saveAsPDF();
+    })
+</script>
 

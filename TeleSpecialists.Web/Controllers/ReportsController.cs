@@ -3787,6 +3787,18 @@ namespace TeleSpecialists.Controllers
                 return JsonMax(new { success = false }, JsonRequestBehavior.AllowGet);
             }
         }
+        public ActionResult GetBCIGraphModal(DataSourceRequest request)
+        {
+            var result = _reportService.GetBCIGraph(request);
+            var _result = result.Data;
+            return Json(_result, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetCCIGraphModal(DataSourceRequest request)
+        {
+            var result = _reportService.GetCCIGraph(request);
+            var _result = result.Data;
+            return Json(_result, JsonRequestBehavior.AllowGet);
+        }
 
 
 

@@ -112,8 +112,10 @@ namespace TeleSpecialists.Controllers
             var result = RenderPartialViewToString("Edit", model);
             return Json(new { success = true, data = result });
         }
+
+
         [HttpPost]
-        public ActionResult Upload(string ParameterName, string parameterinfo, string cas_fac_key_arrays, string cas_fac_Name_array, string Div_Image)
+        public ActionResult Upload(string ParameterNamem, string ParameterName_Info2, string cas_fac_key_arrays, string cas_fac_Name_array, string Div_Image)
         {
 
             Hospital_Protocols Protocols = new Hospital_Protocols();
@@ -174,8 +176,8 @@ namespace TeleSpecialists.Controllers
                 foreach (var item in cas_fac_key_arrays.Split(','))
                 {
                     var sortnum = _Protocols.GetSortNumMaxByFacility(item);
-                    var encode_value = Functions.DecodeFrom64(parameterinfo);
-                    Protocols.ParameterName = ParameterName;
+                    var encode_value = Functions.DecodeFrom64(ParameterName_Info2);
+                    Protocols.ParameterName = ParameterNamem;
                     Protocols.ParameterName_Info = encode_value;
                     Protocols.ParameterName_Image = Imagepath;
                     Protocols.Facility_Name = _facilityService.GetFacilityName(item);
@@ -204,6 +206,10 @@ namespace TeleSpecialists.Controllers
             return ShowSuccessMessageOnly("Hospital Protocols SuccessFuly Added.", Protocols);
 
         }
+
+
+
+
         public ActionResult GetAllData(DataSourceRequest request, string id)
         {
             var result = _Protocols.GetAll(request, id);

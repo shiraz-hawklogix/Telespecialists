@@ -113,6 +113,7 @@
     <Compile Include="Extensions\HtmlExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Helpers\AttributeHelper.cs" />
+    <Compile Include="Helpers\BCIGraphReport.cs" />
     <Compile Include="Helpers\BCIPhysicion.cs" />
     <Compile Include="Helpers\BCIReport.cs" />
     <Compile Include="Helpers\CaseReviewTrends.cs" />
