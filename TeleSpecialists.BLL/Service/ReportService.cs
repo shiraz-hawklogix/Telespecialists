@@ -1886,9 +1886,16 @@ namespace TeleSpecialists.BLL.Service
                                 ca.cas_ctp_key,
                                 ca.cas_billing_bic_key,
                                 ca.cas_metric_wakeup_stroke,
+                                ca.cas_phy_key,
                                 datetime = model.DefaultType == "casetype" ? ca.cas_ctp_key == 9 || ca.cas_ctp_key == 10 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult : ca.cas_billing_bic_key == 1 || ca.cas_billing_bic_key == 2 ? ca.cas_response_ts_notification : ca.cas_billing_date_of_consult,
                             });
                 #region ----- Filters -----
+
+                if (model.Physicians != null)
+                {
+                    cases = cases.Where(m => model.Physicians.Contains(m.cas_phy_key));
+                }
+
                 if (model.TimeFrame == "monthly")
                 {
                     model.EndDate = model.EndDate.AddMonths(1).AddDays(-1);

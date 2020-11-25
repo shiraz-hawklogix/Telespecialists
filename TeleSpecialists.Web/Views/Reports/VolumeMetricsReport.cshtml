@@ -30,6 +30,10 @@
                     <label for="Facilities">Facility</label>
                     <select id="Facilities" name="Facilities" class="form-control Facilities" multiple="multiple"></select>
                 </div>
+                <div class="form-group col-xl-4 col-8">
+                    <label for="Physicians">Physician</label>
+                    @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
+                </div>
                 <div class="form-group col-xl-4 col-6">
                     <label>Wake Up Stroke</label>
                     <div id="divCaseWakeUpStroke">
@@ -160,6 +164,15 @@
                 search: true,
                 searchOptions: {
                     'default': 'Search State'
+                }
+            });
+            $('#Physicians').multiselect({
+                columns: 1,
+                placeholder: 'Select Physician',
+                selectAll: true,
+                search: true,
+                searchOptions: {
+                    'default': 'Search Physician'
                 }
             });
             var state = 0;
@@ -350,7 +363,9 @@
                 unCheckAllColumns();
                 localStorage.setItem('QualityMetricsReport.SearchApplied', false);
                 $('.Facilities').val("");
+                $('#Physicians').val("");
                 $('.Facilities').multiselect('reload');
+                $('#Physicians').multiselect('reload');
                 $('#ddlTimeFrame').val("Last48Hours").change();
                 $('.cb_benchMarck').each(function () {
                     $(this).prop("checked", false);
@@ -418,6 +433,7 @@
 
                                 var model = {
                                     Facilities: "",
+                                    Physicians:"",
                                     TimeFrame: "",
                                     StartDate: null,
                                     EndDate: null,
@@ -427,6 +443,7 @@
                                     WakeUpStroke: false
                                 };
                                 model.Facilities = $(".Facilities").val();
+                                model.Physicians = $("#Physicians").val();
                                 model.states = $("#fac_stt_key").val();
                                 model.CaseStatus = 20;
                                 var checktype = $("#ddlDefaultType").val();
@@ -587,6 +604,7 @@
             var Graphstatus = $(this).data("graphid");
             var model = {
                 Facilities: "",
+                Physicians: "",
                 StartDate: null,
                 EndDate: null,
                 TimeFrame: "",
@@ -594,6 +612,7 @@
                 WakeUpStroke: false
             };
             model.Facilities = $(".Facilities").val();
+            model.Physicians = $("#Physicians").val();
             model.states = $("#fac_stt_key").val();
             model.CaseStatus = 20;
             var checktype = $("#ddlDefaultType").val();
@@ -743,6 +762,8 @@
                 WakeUpStroke: false
             };
             model.Facilities = $(".Facilities").val();
+            model.Physicians = $("#Physicians").val();
+            
             model.states = $("#fac_stt_key").val();
             model.CaseStatus = 20;
             var checktype = $("#ddlDefaultType").val();

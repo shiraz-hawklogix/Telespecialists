@@ -211,6 +211,14 @@ namespace TeleSpecialists.Web.Controllers
             {
                 case_rejection_reason reason = _caseRejectService.GetDetails(casReasonId.ToInt());
 
+                if(reason.crr_key == 1) // Technical Difficulties Check
+                {
+                    model.cas_phy_has_technical_issue = true;
+                    model.cas_phy_technical_issue_date = DateTime.Now;
+                    model.cas_phy_technical_issue_date_est = DateTime.Now.ToEST();
+
+                }
+
                 if (reason.crr_troubleshoot)
                 {
                     // Rejection Reason is Troubleshoot Reason
