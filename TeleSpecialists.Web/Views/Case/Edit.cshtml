@@ -4,169 +4,171 @@
 @using TeleSpecialists.BLL;
 @model @case
 @{
-    /**/
+                /**/
 
-    //var currentDate = DateTime.Now.ToEST();
-    var enableControlsInReadOnly = User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription());
-    var previousphysicians = Model.case_assign_history.Select(cah => cah.cah_phy_key).ToList();
-    var CaseAssignedTime = Model.case_assign_history.Where(mc => mc.cah_phy_key == Model.cas_phy_key).Select(m => m.cah_created_date).FirstOrDefault();
-    var DifferenceInMinutes = DateTime.Now.ToEST() - CaseAssignedTime;
+                /**/
 
-    //bool userFacilityAdmin = false;
-    //if (User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))
-    //{
-    //    userFacilityAdmin = true;
-    //}
-    var userFacilityAdmin = User.IsInRole(UserRoles.FacilityAdmin.ToDescription());
-    var userFacilityPhysician = User.IsInRole(UserRoles.FacilityPhysician.ToDescription());
+                //var currentDate = DateTime.Now.ToEST();
+                var enableControlsInReadOnly = User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.QualityTeam.ToDescription());
+                var previousphysicians = Model.case_assign_history.Select(cah => cah.cah_phy_key).ToList();
+                var CaseAssignedTime = Model.case_assign_history.Where(mc => mc.cah_phy_key == Model.cas_phy_key).Select(m => m.cah_created_date).FirstOrDefault();
+                var DifferenceInMinutes = DateTime.Now.ToEST() - CaseAssignedTime;
 
-    //bool userFacilityPhysician = false;
-    //if (User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))
-    //{
-    //    userFacilityPhysician = true;
-    //}
-    var userRegionalMD = User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription());
-    var userCredentialingTeam = User.IsInRole(UserRoles.CredentialingTeam.ToDescription());
-    var userQPS = User.IsInRole(UserRoles.QPS.ToDescription());
-    var userVPQuality = User.IsInRole(UserRoles.VPQuality.ToDescription());
-    var userQualityDirector = User.IsInRole(UserRoles.QualityDirector.ToDescription());
-    var userMedicalStaff = User.IsInRole(UserRoles.MedicalStaff.ToDescription());
-    var userFinance = User.IsInRole(UserRoles.Finance.ToDescription());
+                //bool userFacilityAdmin = false;
+                //if (User.IsInRole(UserRoles.FacilityAdmin.ToDescription()))
+                //{
+                //    userFacilityAdmin = true;
+                //}
+                var userFacilityAdmin = User.IsInRole(UserRoles.FacilityAdmin.ToDescription());
+                var userFacilityPhysician = User.IsInRole(UserRoles.FacilityPhysician.ToDescription());
 
-
-    var userRRCDirector = User.IsInRole(UserRoles.RRCDirector.ToDescription());
-
-    bool isReadOnlyCase = ViewBag.IsReadOnlyCase;
-    TeleSpecialists.Models.ApplicationUser loggedInUser = ViewBag.loggedInUser;
-    ViewBag.LoggedInName = loggedInUser.FullName;
-    ViewBag.Title = "Edit Case";
-    ViewBag.CurrentView = "Edit";
-    var caseModel = (@case)ViewBag.CaseModel;
-    ViewBag.ShowTab = true;
-    var defualtBillingFollowUpDate = "";
-    string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
-    var isTeleNeuroFacility = false;
-
-    if (Model.facility != null)
-    {
-        if (Model.facility.facility_contract != null)
-        {
-            if (Model.facility.facility_contract.fct_service_calc != null
-                && Model.facility.facility_contract.fct_service_calc != ""
-                && Model.facility.facility_contract.fct_service_calc.Contains(ContractServiceTypes.TeleNeuro.ToString()))
-            {
-                isTeleNeuroFacility = true;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(Model.facility.fac_timezone))
-        {
-            facilityTimeZone = Model.facility.fac_timezone;
-        }
-    }
-
-    var timeSpan = "";
-    var showRed = 0;
-    var disableControlsForPartnerPhysician = 0;
-    var disableControlsForPhysician = 0;
-    TimeSpan? elapsedTimeSpan = null;
-    var startTime = Model.cas_metric_stamp_time_est;
-    var endTime = Model.cas_metric_documentation_end_time_est ?? null;
-    if (startTime.HasValue && endTime.HasValue)
-    {
-        elapsedTimeSpan = endTime.Value - startTime;
-    }
-    if (elapsedTimeSpan.HasValue)
-    {
-        timeSpan = elapsedTimeSpan.FormatTimeSpan();
-        if (elapsedTimeSpan.Value.Hours > 0)
-        {
-            showRed = 1;
-        }
-
-        else if (elapsedTimeSpan.Value.TotalMinutes > 7)
-        {
-            showRed = 1;
-        }
-    }
-    if (User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
-    {
-        disableControlsForPartnerPhysician = 1;
-    }
-    if (User.IsInRole(UserRoles.Physician.ToDescription()))
-    {
-        disableControlsForPhysician = 1;
-    }
-
-    var dictCaseTypes = new Dictionary<int, string>();
-    if (ViewBag.CaseTypes != null)
-    {
-        dictCaseTypes = ViewBag.CaseTypes;
-    }
-    var ShowPopup = false;
-    var initialSave = false;
-
-    if (Request.Params["isInitialSave"] != null)
-    {
-        initialSave = Request.Params["isInitialSave"].ToString().ToLower() == "true" ? true : false;
-    }
-
-    if (initialSave)
-    {
-        ShowPopup = true;
-    }
-    else if (ViewBag.ShowNotesPopup)
-    {
-        if (Request.Params["showPopupOnLoad"] != null)
-        {
-
-            ShowPopup = Request.Params["showPopupOnLoad"].ToString().ToLower() == "false" ? false : true;
-
-        }
-    }
+                //bool userFacilityPhysician = false;
+                //if (User.IsInRole(UserRoles.FacilityPhysician.ToDescription()))
+                //{
+                //    userFacilityPhysician = true;
+                //}
+                var userRegionalMD = User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription());
+                var userCredentialingTeam = User.IsInRole(UserRoles.CredentialingTeam.ToDescription());
+                var userQPS = User.IsInRole(UserRoles.QPS.ToDescription());
+                var userVPQuality = User.IsInRole(UserRoles.VPQuality.ToDescription());
+                var userQualityDirector = User.IsInRole(UserRoles.QualityDirector.ToDescription());
+                var userMedicalStaff = User.IsInRole(UserRoles.MedicalStaff.ToDescription());
+                var userFinance = User.IsInRole(UserRoles.Finance.ToDescription());
 
 
+                var userRRCDirector = User.IsInRole(UserRoles.RRCDirector.ToDescription());
 
-    // Billing default followup date.
-    if (Model.cas_follow_up_date.HasValue)
-    {
-        defualtBillingFollowUpDate = Model.cas_follow_up_date.Value.FormatDate();
-    }
-    else if (Model.cas_billing_date_of_consult.HasValue)
-    {
-        defualtBillingFollowUpDate = Model.cas_billing_date_of_consult.Value.AddDays(1).FormatDate();
-    }
-    else
-    {
-        defualtBillingFollowUpDate = null;
-    }
+                bool isReadOnlyCase = ViewBag.IsReadOnlyCase;
+                TeleSpecialists.Models.ApplicationUser loggedInUser = ViewBag.loggedInUser;
+                ViewBag.LoggedInName = loggedInUser.FullName;
+                ViewBag.Title = "Edit Case";
+                ViewBag.CurrentView = "Edit";
+                var caseModel = (@case)ViewBag.CaseModel;
+                ViewBag.ShowTab = true;
+                var defualtBillingFollowUpDate = "";
+                string facilityTimeZone = TeleSpecialists.BLL.Settings.DefaultTimeZone;
+                var isTeleNeuroFacility = false;
 
-    var dictContractType = new Dictionary<int, string>();
-    string serviceType = "";
+                if (Model.facility != null)
+                {
+                    if (Model.facility.facility_contract != null)
+                    {
+                        if (Model.facility.facility_contract.fct_service_calc != null
+                            && Model.facility.facility_contract.fct_service_calc != ""
+                            && Model.facility.facility_contract.fct_service_calc.Contains(ContractServiceTypes.TeleNeuro.ToString()))
+                        {
+                            isTeleNeuroFacility = true;
+                        }
+                    }
 
-    if (Model.facility?.facility_contract != null)
-    {
-        serviceType = Model.facility.facility_contract.fct_service_calc;
-    }
-    bool isMetricsVisible = false;
+                    if (!string.IsNullOrEmpty(Model.facility.fac_timezone))
+                    {
+                        facilityTimeZone = Model.facility.fac_timezone;
+                    }
+                }
 
-    bool enableAutoSave = ViewBag.EnableAutoSave;
+                var timeSpan = "";
+                var showRed = 0;
+                var disableControlsForPartnerPhysician = 0;
+                var disableControlsForPhysician = 0;
+                TimeSpan? elapsedTimeSpan = null;
+                var startTime = Model.cas_metric_stamp_time_est;
+                var endTime = Model.cas_metric_documentation_end_time_est ?? null;
+                if (startTime.HasValue && endTime.HasValue)
+                {
+                    elapsedTimeSpan = endTime.Value - startTime;
+                }
+                if (elapsedTimeSpan.HasValue)
+                {
+                    timeSpan = elapsedTimeSpan.FormatTimeSpan();
+                    if (elapsedTimeSpan.Value.Hours > 0)
+                    {
+                        showRed = 1;
+                    }
 
-    var isCompleted = ViewBag.CaseStatus;
-    if (isCompleted == @CaseStatus.Complete.ToInt())
-    {
-        enableAutoSave = false;
-    }
+                    else if (elapsedTimeSpan.Value.TotalMinutes > 7)
+                    {
+                        showRed = 1;
+                    }
+                }
+                if (User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
+                {
+                    disableControlsForPartnerPhysician = 1;
+                }
+                if (User.IsInRole(UserRoles.Physician.ToDescription()))
+                {
+                    disableControlsForPhysician = 1;
+                }
 
-    var caseTypeList = new List<CaseType>() { CaseType.LongTermEEG, CaseType.StatEEG, CaseType.RoutineEEG, CaseType.RoutineConsultNew, CaseType.RoutineConsultFollowUp }.Select(m => new { ucd_key = m.ToInt(), ucd_title = m.ToDescription() }).OrderBy(m => m.ucd_title);
-    var cas_status = Model.cas_cst_key;
+                var dictCaseTypes = new Dictionary<int, string>();
+                if (ViewBag.CaseTypes != null)
+                {
+                    dictCaseTypes = ViewBag.CaseTypes;
+                }
+                var ShowPopup = false;
+                var initialSave = false;
 
-    var textfreeExam = "false";
-    DateTime examdate = Convert.ToDateTime("09/22/2020");
-    if (Model.cas_created_date > examdate)
-    {
-        textfreeExam = "true";
-    }
+                if (Request.Params["isInitialSave"] != null)
+                {
+                    initialSave = Request.Params["isInitialSave"].ToString().ToLower() == "true" ? true : false;
+                }
+
+                if (initialSave)
+                {
+                    ShowPopup = true;
+                }
+                else if (ViewBag.ShowNotesPopup)
+                {
+                    if (Request.Params["showPopupOnLoad"] != null)
+                    {
+
+                        ShowPopup = Request.Params["showPopupOnLoad"].ToString().ToLower() == "false" ? false : true;
+
+                    }
+                }
+
+
+
+                // Billing default followup date.
+                if (Model.cas_follow_up_date.HasValue)
+                {
+                    defualtBillingFollowUpDate = Model.cas_follow_up_date.Value.FormatDate();
+                }
+                else if (Model.cas_billing_date_of_consult.HasValue)
+                {
+                    defualtBillingFollowUpDate = Model.cas_billing_date_of_consult.Value.AddDays(1).FormatDate();
+                }
+                else
+                {
+                    defualtBillingFollowUpDate = null;
+                }
+
+                var dictContractType = new Dictionary<int, string>();
+                string serviceType = "";
+
+                if (Model.facility?.facility_contract != null)
+                {
+                    serviceType = Model.facility.facility_contract.fct_service_calc;
+                }
+                bool isMetricsVisible = false;
+
+                bool enableAutoSave = ViewBag.EnableAutoSave;
+
+                var isCompleted = ViewBag.CaseStatus;
+                if (isCompleted == @CaseStatus.Complete.ToInt())
+                {
+                    enableAutoSave = false;
+                }
+
+                var caseTypeList = new List<CaseType>() { CaseType.LongTermEEG, CaseType.StatEEG, CaseType.RoutineEEG, CaseType.RoutineConsultNew, CaseType.RoutineConsultFollowUp }.Select(m => new { ucd_key = m.ToInt(), ucd_title = m.ToDescription() }).OrderBy(m => m.ucd_title);
+                var cas_status = Model.cas_cst_key;
+
+                var textfreeExam = "false";
+                DateTime examdate = Convert.ToDateTime("09/22/2020");
+                if (Model.cas_created_date > examdate)
+                {
+                    textfreeExam = "true";
+                }
 }
 @Html.Partial("_facilityInfoPopover", caseModel)
 <div class="col-md-12">
@@ -734,7 +736,7 @@ EntityTypes.StateAlertTemplate.ToInt()
 </script>
 <script type="text/javascript">
 
-    fillDignosesCode(); 
+    fillDignosesCode();
 
         var AutoSaveBool = @enableAutoSave.ToString().ToLower();
 
@@ -1222,12 +1224,24 @@ EntityTypes.StateAlertTemplate.ToInt()
         });
     }
 
+    function GetAllDiagnosisCodes() {
+        $.ajax({
+            type: "GET",
+            url: "/Case/GetAllDiagnosisCodes",
+            error: function (xhr, error) {
+            },
+            success: function (response) {                              
+            }
+        });
+    }
+
     $(document).ready(function () {
 
-        $('#templatesTabLink').click(function () {
+        $('#templatesTabLink').click(function () {          
             getIcd10SearchKeys();
             fillDignosesCode();
             fillDignosesCodeTemp();
+            GetAllDiagnosisCodes();
             //fillImpressionDropdown();
             //fillRecentUsedDiagnosisCodes();
         });
@@ -1272,6 +1286,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
             if ($('#icd10diagnosis').val().length < 3) {
                 emptyIcd10Cal();
+                $('#IcdDiagnoseCodesId').hide();
                 return false;
             }
             getIcd10Codes();

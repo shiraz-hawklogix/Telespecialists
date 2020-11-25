@@ -49,4 +49,15 @@ namespace TeleSpecialists.BLL.ViewModels.CasePage
         public string cod_class_name { get; set; }
         public int? cod_sort_order { get; set; }
     }
+
+    public class Icd10BillingCodes
+    {
+        public  int code_id { get; set; }
+        public  int? diag_cat_parent_id { get; set; }
+        public  string icd_code { get; set; }
+        public  string icd_code_title { get; set; }
+        public  string icd_code_description { get; set; }
+        public  string icd_code_impression { get; set; }
+        public  int? sort_order { get; set; }
+    }
 }

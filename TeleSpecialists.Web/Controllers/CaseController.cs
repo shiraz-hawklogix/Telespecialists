@@ -5926,6 +5926,13 @@ namespace TeleSpecialists.Controllers
             return Json(new { status = true, codes = result }, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
+
+        public ActionResult GetAllDiagnosisCodes()
+        {
+            var result = _diagnosisCodesService.GetAllDiagnosisCodes();
+            return Json(new { result = true }, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult SearchRecentDiagnosisCodes(string Id = "", string UserId = "")
         {
             if (string.IsNullOrEmpty(Id) && Id != "123")

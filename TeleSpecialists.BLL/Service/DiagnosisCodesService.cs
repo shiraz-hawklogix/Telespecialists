@@ -10,8 +10,32 @@ namespace TeleSpecialists.BLL.Service
 {
     public class DiagnosisCodesService : BaseService
     {
+        static List<Icd10BillingCodes> listIcd10BillingCodes;
+
+
+        public bool GetAllDiagnosisCodes()
+        {
+            listIcd10BillingCodes = new List<Icd10BillingCodes>();
+            Icd10BillingCodes ojIcd10BillingCodes;
+            var result = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.is_active == true).ToList();
+            foreach (var item in result)
+            {
+                ojIcd10BillingCodes = new Icd10BillingCodes();
+                ojIcd10BillingCodes.code_id = item.code_id;
+                ojIcd10BillingCodes.diag_cat_parent_id = item.diag_cat_parent_id;
+                ojIcd10BillingCodes.icd_code = item.icd_code;
+                ojIcd10BillingCodes.icd_code_description = item.icd_code_description;
+                ojIcd10BillingCodes.icd_code_impression = item.icd_code_impression;
+                ojIcd10BillingCodes.icd_code_title = item.icd_code_title;
+                ojIcd10BillingCodes.sort_order = item.sort_order;
+
+                listIcd10BillingCodes.Add(ojIcd10BillingCodes);
+            }
+            return true;
+        }
         public Icd10Codes SearchDiagnosisCodes(string Name, bool isImpressionChecked)
         {
+            Name = Name.ToLower();
             Icd10Codes objIcd = new Icd10Codes();
 
             DiagnosisCodesViewModel obj;
@@ -21,52 +45,56 @@ namespace TeleSpecialists.BLL.Service
             List<Icd10CodeChilds> _listIcd10Childs = new List<Icd10CodeChilds>();
             Icd10CodeChilds objIcd10Child;
 
+            #region commented
+            //if (isImpressionChecked)
+            //{
+            //    var diagnosisCodes = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.diag_cat_parent_id != null && Name.Contains(x.icd_code_impression)).OrderBy(x => x.sort_order).ToList();
+            //    foreach (var _code in diagnosisCodes)
+            //    {
+            //        obj = new DiagnosisCodesViewModel();
+            //        obj.Id = _code.code_id;
+            //        obj.icd_code = _code.icd_code;
+            //        obj.title = _code.icd_code + " - " + _code.icd_code_title;
+            //        _list.Add(obj);
+            //    }
+            //}
+            //else
+            //{                
+            //var categoryList = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.diag_cat_parent_id == null && x.icd_code_title.Contains(Name)).OrderBy(x => x.sort_order).ToList();
+            #endregion
 
-            if (isImpressionChecked)
+            var sp_value_diag = new SqlParameter("value", SqlDbType.VarChar) { Value = Name.ToString().Trim() };
+            var sp_table_name_diag = new SqlParameter("@table_name", SqlDbType.VarChar) { Value = "" };
+            var categoryList = _unitOfWork.ExecuteStoreProcedure<int>("sp_get_search_parent_id @value,@table_name", sp_value_diag, sp_table_name_diag).FirstOrDefault();
+
+            string ids = "";
+            if (categoryList > 0)
             {
-                var diagnosisCodes = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.diag_cat_parent_id != null && Name.Contains(x.icd_code_impression)).OrderBy(x => x.sort_order).ToList();
-                foreach (var _code in diagnosisCodes)
+                var codeList = listIcd10BillingCodes.Where(x => x.diag_cat_parent_id == categoryList).OrderBy(x => x.sort_order).ToList();
+                //var codeList = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.diag_cat_parent_id == categoryList).OrderBy(x => x.sort_order).ToList();
+                foreach (var code in codeList)
                 {
+                    ids = ids + "," + code.code_id;
                     obj = new DiagnosisCodesViewModel();
-                    obj.Id = _code.code_id;
-                    obj.icd_code = _code.icd_code;
-                    obj.title = _code.icd_code + " - " + _code.icd_code_title;
+                    obj.Id = code.code_id;
+                    obj.icd_code = code.icd_code;
+                    obj.title = code.icd_code + " - " + code.icd_code_title;
                     _list.Add(obj);
                 }
             }
-            else
-            {                
-                //var categoryList = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.diag_cat_parent_id == null && x.icd_code_title.Contains(Name)).OrderBy(x => x.sort_order).ToList();
 
-                var sp_value_diag = new SqlParameter("value", SqlDbType.VarChar) { Value = Name.ToString().Trim() };
-                var sp_table_name_diag = new SqlParameter("@table_name", SqlDbType.VarChar) { Value = "" };
-                var categoryList = _unitOfWork.ExecuteStoreProcedure<int>("sp_get_search_parent_id @value,@table_name", sp_value_diag, sp_table_name_diag).FirstOrDefault();
-
-                string ids = "";
-                if (categoryList > 0)
-                {
-                    var codeList = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.diag_cat_parent_id == categoryList).OrderBy(x => x.sort_order).ToList();
-                    foreach (var code in codeList)
-                    {
-                        ids = ids + "," + code.code_id;
-                        obj = new DiagnosisCodesViewModel();
-                        obj.Id = code.code_id;
-                        obj.icd_code = code.icd_code;
-                        obj.title = code.icd_code + " - " + code.icd_code_title;
-                        _list.Add(obj);
-                    }
-                }
-                var otherList = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.diag_cat_parent_id != null && !ids.Contains(x.code_id.ToString()) && (x.icd_code_title.Contains(Name) || x.icd_code.Contains(Name))).OrderBy(x => x.sort_order).ToList();
-                foreach (var otherCode in otherList)
-                {
-                    obj = new DiagnosisCodesViewModel();
-                    obj.Id = otherCode.code_id;
-                    obj.icd_code = otherCode.icd_code;
-                    obj.title = otherCode.icd_code + " - " + otherCode.icd_code_title;
-                    _list.Add(obj);
-                }
-
+            var otherList = listIcd10BillingCodes.Where(x => x.diag_cat_parent_id != null && !ids.Contains(x.code_id.ToString()) && (x.icd_code_title.ToLower().Contains(Name) || x.icd_code.Contains(Name))).OrderBy(x => x.sort_order).ToList();
+            //var otherList = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.diag_cat_parent_id != null && !ids.Contains(x.code_id.ToString()) && (x.icd_code_title.Contains(Name) || x.icd_code.Contains(Name))).OrderBy(x => x.sort_order).ToList();
+            foreach (var otherCode in otherList)
+            {
+                obj = new DiagnosisCodesViewModel();
+                obj.Id = otherCode.code_id;
+                obj.icd_code = otherCode.icd_code;
+                obj.title = otherCode.icd_code + " - " + otherCode.icd_code_title;
+                _list.Add(obj);
             }
+
+            //  }
 
             //var icd10cal = _unitOfWork.Icd10CodesCalRepository.Query().Where(x => x.cod_parent_id == null && x.cod_name.Contains(Name.Trim())).FirstOrDefault();
             var sp_value = new SqlParameter("value", SqlDbType.VarChar) { Value = Name.ToString().Trim() };
@@ -76,7 +104,7 @@ namespace TeleSpecialists.BLL.Service
             if (icd10cal > 0)
             {
                 var icd10Calresult = _unitOfWork.Icd10CodesCalRepository.Query().Where(x => x.cod_parent_id == icd10cal).FirstOrDefault();
-                
+
                 if (icd10Calresult != null)
                 {
                     objIcd10cal.Id = icd10Calresult.Id;
@@ -158,9 +186,9 @@ namespace TeleSpecialists.BLL.Service
             Icd10CodeChilds objIcd10Child;
 
             var result = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.icd_code_impression == code_id.Trim()).FirstOrDefault();
-            
+
             if (result == null)
-            {                
+            {
                 var sp_value = new SqlParameter("value", SqlDbType.VarChar) { Value = Name.ToString().Trim() };
                 var sp_table_name = new SqlParameter("table_name", SqlDbType.VarChar) { Value = "Billing_Cal" };
                 var icd10cal = _unitOfWork.ExecuteStoreProcedure<int>("sp_get_search_parent_id @value,@table_name", sp_value, sp_table_name).FirstOrDefault();
@@ -170,7 +198,7 @@ namespace TeleSpecialists.BLL.Service
                     var sp_table_P = new SqlParameter("table_name", SqlDbType.VarChar) { Value = "Billing_Cal_Child" };
                     var sp_linked_code_id_P = new SqlParameter("linked_code_id", SqlDbType.VarChar) { Value = Id };
                     var icd10Calresult = _unitOfWork.ExecuteStoreProcedure<Icd10CodeCalParent>("sp_get_search_parent_id @value,@table_name,@linked_code_id", sp_value_P, sp_table_P, sp_linked_code_id_P).FirstOrDefault();
-                    
+
                     if (icd10Calresult != null)
                     {
                         objIcd10cal.Id = icd10Calresult.Id;
@@ -181,7 +209,7 @@ namespace TeleSpecialists.BLL.Service
                         var sp_table_Child = new SqlParameter("table_name", SqlDbType.VarChar) { Value = "Billing_Cal_Child" };
                         var sp_linked_code_id = new SqlParameter("linked_code_id", SqlDbType.VarChar) { Value = Id };
                         var icd10CalChilds = _unitOfWork.ExecuteStoreProcedure<Icd10CodeCalParent>("sp_get_search_parent_id @value,@table_name,@linked_code_id", sp_value_Child, sp_table_Child, sp_linked_code_id).ToList();
-                        
+
                         foreach (var item in icd10CalChilds)
                         {
                             objIcd10Child = new Icd10CodeChilds();
