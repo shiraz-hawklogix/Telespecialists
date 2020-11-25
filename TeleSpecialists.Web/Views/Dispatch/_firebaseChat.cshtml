@@ -1,4 +1,6 @@
-﻿
+﻿@{
+    bool isroleAdmin = ViewBag.isroleAdmin;
+}
 
 <link href="~/Content/Elite/css/dispatchChat.css" rel="stylesheet" />
 <div>
@@ -6,11 +8,11 @@
         @*<h3 class=" text-center">Messaging</h3>*@
         <div class="row">
             <div class="col-md-12">
-				<a href="#" target="_blank" data-toggle="modal" data-target=".bs-example-modal-lg" class="grp-create-link ml-3" title="Add New Group"><i class="fa fa-audio-description"></i></a>
-				<ol class="breadcrumb" style="display:none">
-					<li> <div id="userInfo">  </div>  </li>
-				</ol>
-			</div>
+                <a href="#" target="_blank" data-toggle="modal" data-target=".bs-example-modal-lg" class="grp-create-link ml-3" title="Add New Group"><i class="fa fa-audio-description"></i></a>
+                <ol class="breadcrumb" style="display:none">
+                    <li> <div id="userInfo">  </div>  </li>
+                </ol>
+            </div>
         </div>
         <div class="messaging w-100">
             <div class="inbox_msg">
@@ -39,16 +41,16 @@
                 </div>
                 <div class="mesgs">
                     <div class="row">
-						<div class="col-md-12">
-							<div class="chat-header-wrapper">
-								<h6 class="box-title">Chat Message</h6>
-								<div class="person-wrapper" id="person">
-								</div>
-								<div class="file-insert">
-									<a href="javacript:void(0)" style="float:right" id="file" class="cst-icon" data-toggle="tooltip" title="File Attachment"><i class="fa fa-paperclip"></i></a>
-								</div>
-							</div>
-						</div>
+                        <div class="col-md-12">
+                            <div class="chat-header-wrapper">
+                                <h6 class="box-title">Chat Message</h6>
+                                <div class="person-wrapper" id="person">
+                                </div>
+                                <div class="file-insert">
+                                    <a href="javacript:void(0)" style="float:right" id="file" class="cst-icon" data-toggle="tooltip" title="File Attachment"><i class="fa fa-paperclip"></i></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="msg_history" id="msgDetail">
                         <div id="msgDetail"></div>
@@ -85,8 +87,13 @@
                     <br>
                     @Html.RadioButton("grpType", "Private", new { @class = "lbltype", @checked = "true" })
                     <span class="font-style-custome">Private (Only allowed members can chat)</span> <br>
-                    @Html.RadioButton("grpType", "Public", new { @class = "lbltype" })
-                    <span class="font-style-custome">Public (Anyone can send msg )</span>
+                    @{
+                        if (isroleAdmin)
+                        {
+                            @Html.RadioButton("grpType", "Public", new { @class = "lbltype" })
+                            <span class="font-style-custome">Public (Anyone can send msg )</span>
+                        }
+                    }
                 </div>
             </div>
             <div class="modal-footer">
@@ -196,9 +203,9 @@
     }
     function Save(name, email, teleid, img) {
         //logout();
-        var email = email; 
+        var email = email;
         var username = name;
-        var tele_id = teleid; 
+        var tele_id = teleid;
         var img = img;
         loginUsername(email, email, tele_id, username, img);
     }
@@ -307,7 +314,7 @@
                 }
             }
         });
-    }           
+    }
     function AfterChanged() {
         $("#binduser").html('');
         totalNotifications = 0;
@@ -417,7 +424,7 @@
                 var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest' class='btnRequest'  data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false'><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='" + onlineStatus + "'> </div><div class='chat_ib'><h5> " + connectionName + " <span class='chat_date'> " + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span > " + onlineTag + spanUnread + "</span></span></p></div></a></div></div>"
             }
             else {
-                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest'  class='btnRequest' data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false' ><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='online_icon'> </div><div class='chat_ib'><h5>" + connectionName + "<span class='chat_date'>" + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span class='grpTextClr'> (GROUP) </span>" + spanUnread + "</p> </div></div></div>"
+                var liTag = "<div class='chat_list " + friends.key + ' ' + activeCls + "'><div class='chat_people'><a href = 'javascript:void(0)' id='btnRequest'  class='btnRequest' data-senderid = '" + SenderId + "' data-type=" + friends.val().type + " data-receiverid = '" + friends.key + "' data-receiverName = '" + friends.val().name + "' data-receiverPhoto = '" + friends.val().image + "' data-onlineStatus = '" + friends.val().Online + "' data-isgrpPublic = 'false' ><div class='chat_img'> <img src='" + friends.val().image + "' alt='user-img' class='rounded-circle user_img'><span class='online_icon'> </div><div class='chat_ib'><h5>" + connectionName + "<span class='chat_date'>" + serverTime + "</span></h5><p>" + friends.val().lastMessage + " <span class='grpTextClr'> (GRP) </span>" + spanUnread + "</p> </div></div></div>"
             }
 
 
@@ -539,7 +546,7 @@
         if (msg) {
             var id = SenderId + '-' + _receiverId;
             var _id = _receiverId + '-' + SenderId;
-            var shortMsg = msg.substring(0, 10) + '...';
+            var shortMsg = msg.substring(0, 30) + '...';
             UserConnections(shortMsg);
             if (isGroup) {
                 _GroupMessages(_receiverId, msg, 'text');
@@ -569,7 +576,7 @@
             if (msg) {
                 var id = SenderId + '-' + _receiverId;
                 var _id = _receiverId + '-' + SenderId;
-                var shortMsg = msg.substring(0, 10) + '...';
+                var shortMsg = msg.substring(0, 30) + '...';
 
                 UserConnections(shortMsg);
 
@@ -970,7 +977,7 @@
 
                     $("." + snapshot.key).remove();
                     $("#msgDetail").append(liTag);
-                    
+
                     var users = '';
                     ref.child(snapshot.key).child('read').on('child_added', function (seenUser) {
                         users += seenUser.val().name + ', ';
@@ -1545,7 +1552,7 @@
 
 </script>
 <script>
-     // <<<<<<<<<<<<<<<<<*************  Currently Not Used Functions In Firebase  Or Can be used in future  Start***************************** >>>>>>>>>>>>>>>>>>>>>>>>
+    // <<<<<<<<<<<<<<<<<*************  Currently Not Used Functions In Firebase  Or Can be used in future  Start***************************** >>>>>>>>>>>>>>>>>>>>>>>>
     var _ab;
     function PassValues(myArr) {
         for (var i = 0; i < myArr.length; i++) {

@@ -109,7 +109,7 @@ function GrpCreate(name, grptype, msg, physician, navArr) {
         console.log('nva arr is  : ', navArr);
         autoSenderId = 'lvB46mLF5qbQuIIAm5eqHxDdMBv1';
         autoSenderName = 'Muhammad Masud Admin';
-        autoSenderImage = '/Content/images/M.png';
+        autoSenderImage = 'https://prdresources.blob.core.windows.net/onboarding/202056270716401.jpg';
         var refGrp = firebase.database().ref("Groups");
         refGrp.orderByChild("grpFor").equalTo(physician).once("value", snapshot => {
             console.log(snapshot);
@@ -135,7 +135,7 @@ function CreatNewGrp(name, grptype, msg, physician, navArr) {
         _receiverPhoto = '/Content/images/group.png';
 
         //let msg = msg//'Dr Masud Stroke Sent To you';
-        let shortmsg = msg.substring(0, 10) + '...';
+        let shortmsg = msg.substring(0, 30) + '...';
 
         var _type = '';
         if (isGroup)
@@ -275,7 +275,7 @@ function ExistingGroup(name, grptype, msg, physician, navArr, _autosenderid, _au
             type: 'Public',
             msgType: 'text'
         });
-        var shortmsg = msg.substring(0, 10) + '...';
+        var shortmsg = msg.substring(0, 30) + '...';
         UserConnectionFB(grpid, shortmsg, name, _autophoto);
     });
 }
@@ -355,7 +355,7 @@ function AcceptCase(msg, userId) {
             type: 'Public',
             msgType: 'text'
         });
-        var shortmsg = msg.substring(0, 10) + '...';
+        var shortmsg = msg.substring(0, 30) + '...';
         UserConnectionFB(grpid, shortmsg);
     });
 
