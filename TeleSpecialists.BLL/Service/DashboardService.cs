@@ -17,7 +17,8 @@ namespace TeleSpecialists.BLL.Service
         }
         public List<ChartDataModel> LoadCaseStatusSummary(string filter)
         {
-            return _unitOfWork.SqlQuery<ChartDataModel>(string.Format("Exec usp_dashboard_cases_by_status '{0}'", filter)).ToList();
+            //return _unitOfWork.SqlQuery<ChartDataModel>(string.Format("Exec usp_dashboard_cases_by_status '{0}'", filter)).ToList();
+            return _unitOfWork.SqlQuery<ChartDataModel>(string.Format("Exec usp_dashboard_cases_by_status_new '{0}'", filter)).ToList();
         }
         public List<ChartDataModel> LoadPhysicianStatusSummary(string filter)
         {
