@@ -11,12 +11,15 @@ namespace TeleSpecialists.BLL.Service
     public class DiagnosisCodesService : BaseService
     {
         static List<Icd10BillingCodes> listIcd10BillingCodes;
+        static List<Icd10BillingCodeKeys> listIcd10BillingCodeKeys;
 
 
         public bool GetAllDiagnosisCodes()
         {
             listIcd10BillingCodes = new List<Icd10BillingCodes>();
+            listIcd10BillingCodeKeys = new List<Icd10BillingCodeKeys>();
             Icd10BillingCodes ojIcd10BillingCodes;
+            Icd10BillingCodeKeys objIcd10BillingCodeKeys;
             var result = _unitOfWork.DiagnosisCodesRepoistory.Query().Where(x => x.is_active == true).ToList();
             foreach (var item in result)
             {
@@ -31,6 +34,20 @@ namespace TeleSpecialists.BLL.Service
 
                 listIcd10BillingCodes.Add(ojIcd10BillingCodes);
             }
+
+            var codeKeys = _unitOfWork.Icd10CodesCalRepository.Query().Where(x => x.cod_is_active == true).ToList();
+            foreach (var item in codeKeys)
+            {
+                objIcd10BillingCodeKeys = new Icd10BillingCodeKeys();
+                objIcd10BillingCodeKeys.Id = item.Id;
+                objIcd10BillingCodeKeys.cod_parent_id = item.cod_parent_id;
+                objIcd10BillingCodeKeys.cod_name = item.cod_name;
+                objIcd10BillingCodeKeys.cod_sort_order = item.cod_sort_order;
+                objIcd10BillingCodeKeys.cod_class_name = item.cod_class_name;
+                objIcd10BillingCodeKeys.cod_linked_id = item.cod_linked_id;
+                listIcd10BillingCodeKeys.Add(objIcd10BillingCodeKeys);
+            }
+            
             return true;
         }
         public Icd10Codes SearchDiagnosisCodes(string Name, bool isImpressionChecked)
@@ -103,7 +120,8 @@ namespace TeleSpecialists.BLL.Service
 
             if (icd10cal > 0)
             {
-                var icd10Calresult = _unitOfWork.Icd10CodesCalRepository.Query().Where(x => x.cod_parent_id == icd10cal).FirstOrDefault();
+                //var icd10Calresult = _unitOfWork.Icd10CodesCalRepository.Query().Where(x => x.cod_parent_id == icd10cal).FirstOrDefault();
+                var icd10Calresult = listIcd10BillingCodeKeys.Where(x => x.cod_parent_id == icd10cal).FirstOrDefault();
 
                 if (icd10Calresult != null)
                 {
@@ -111,7 +129,8 @@ namespace TeleSpecialists.BLL.Service
                     objIcd10cal.name = icd10Calresult.cod_name;
                     objIcd10cal.class_name = icd10Calresult.cod_class_name;
 
-                    var icd10CalChilds = _unitOfWork.Icd10CodesCalRepository.Query().Where(x => x.cod_parent_id == icd10Calresult.Id).ToList();
+                    //var icd10CalChilds = _unitOfWork.Icd10CodesCalRepository.Query().Where(x => x.cod_parent_id == icd10Calresult.Id).ToList();
+                    var icd10CalChilds = listIcd10BillingCodeKeys.Where(x => x.cod_parent_id == icd10Calresult.Id).ToList();
                     foreach (var item in icd10CalChilds)
                     {
                         objIcd10Child = new Icd10CodeChilds();

@@ -60,4 +60,14 @@ namespace TeleSpecialists.BLL.ViewModels.CasePage
         public  string icd_code_impression { get; set; }
         public  int? sort_order { get; set; }
     }
+
+    public class Icd10BillingCodeKeys
+    {
+        public int Id { get; set; }
+        public int? cod_parent_id { get; set; }
+        public string cod_name { get; set; }
+        public string cod_class_name { get; set; }
+        public int? cod_sort_order { get; set; }
+        public string cod_linked_id { get; set; }
+    }
 }
