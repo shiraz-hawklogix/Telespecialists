@@ -71,17 +71,17 @@
      var isPhysician = @User.IsInRole("Physician").ToString().ToLower();
 
     $(".update-Status").off("click").click(function () {
+        debugger
         $("#changePhysicianStatus").find(".round-button").removeClass("poup-current-status");
         $(this).addClass("poup-current-status");
         $("#changePhysicianStatus").find("#validationSummary").empty();
         $("#changePhysicianStatus").find("#btnChangeStatusSave").enable();
 
-    });
 
     var elementRound = $("#changePhysicianStatus").find(".poup-current-status");
-
+    debugger
     var selectedElementValue = elementRound.data("status");
-
+    debugger
     if (selectedElementValue != 1 && selectedElementValue != 4 && selectedElementValue != 5 && selectedElementValue != 19 && selectedElementValue != 16) {
         $("#facility_FORMGROUP").css("display", "none");
         $("#casNumber_FORMGROUP").css("display", "block");
@@ -95,13 +95,16 @@
         $("#facility_FORMGROUP").css("display", "block");
     }
 
-    $("#btnChangeStatusSave").off("click").click(function () {      
+    });
+    $("#btnChangeStatusSave").off("click").click(function () {   
+        debugger
         var element = $("#changePhysicianStatus").find(".poup-current-status");
         $("#changePhysicianStatus").find("#validationSummary").empty();
 
         if (element.length == 0) {
             $("#changePhysicianStatus").find("#validationSummary").empty().showBSDangerAlert("", "Select a status to proceed");
         }
+        
         var selectedValue = element.data("status");
         var facility = "";
         var casNum = "";

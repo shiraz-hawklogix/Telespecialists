@@ -3553,10 +3553,6 @@
     <Content Include="Views\MenuAccess\UserBasedMenuAccess.cshtml" />
     <Content Include="Views\Reports\StatusSnapshot.cshtml" />
     <Content Include="Views\Dispatch\Index.cshtml" />
-    <Content Include="Views\Patient\Create.cshtml" />
-    <Content Include="Views\Patient\Edit.cshtml" />
-    <Content Include="Views\Patient\Index.cshtml" />
-    <Content Include="Views\Patient\_EditLineItem.cshtml" />
     <Content Include="Views\Dispatch\_dispatchCopyPopup.cshtml" />
     <Content Include="Views\Dispatch\_dispatchPhysicianStatusList.cshtml" />
     <Content Include="Views\Dispatch\_firebaseChat.cshtml" />
