@@ -4206,10 +4206,11 @@ namespace TeleSpecialists.BLL.Service
                 var finalresult = result.Select(x => new
                 {
                     id = facguids,
-                    phy_id = phyguids,
-                    Facility = x.Facility,
-                    Physician = x.Physician,
+                    phy_key = phyguids,
+                    //Facility = x.Facility,
+                    //Physician = x.Physician,
                     hospitalcount = x.hospitals,
+                    //PhysicianId = x.PhysicianId,
                     //hospitalname = x.hospitals,
                     mean = (string.Format("{0:00}:{1:00}:{2:00}", (x._meantime.Hours + x._meantime.Days * 24), x._meantime.Minutes, x._meantime.Seconds)),
                     median = (string.Format("{0:00}:{1:00}:{2:00}", (x._mediantime.Hours + x._mediantime.Days * 24), x._mediantime.Minutes, x._mediantime.Seconds)),
@@ -4236,6 +4237,7 @@ namespace TeleSpecialists.BLL.Service
                             cas_ctp_key = ca.cas_ctp_key,
                             cas_phy_key = ca.cas_phy_key,
                             physicianname = users.FirstName + " " + users.LastName,
+                            physicianid = users.PhysicianId,
                             cas_fac_key = ca.cas_fac_key,
                             facility = ca.facility.fac_name,
                             qps_number = ca.facility.qps_number,
@@ -4307,6 +4309,7 @@ namespace TeleSpecialists.BLL.Service
                 facility = (x.facility != null && !String.IsNullOrEmpty(x.facility)) ? x.facility : "",
                 phy_key = x.cas_phy_key,
                 physicianname = x.physicianname,
+                PhysicianId = x.physicianid,
                 on_screen_time = x.cas_metric_video_end_time < x.cas_metric_video_start_time ? "00:00:00" : DBHelper.FormatSeconds(x.cas_metric_video_end_time, x.cas_metric_video_start_time),
             });
 
@@ -4370,7 +4373,8 @@ namespace TeleSpecialists.BLL.Service
                                 }
                                 cls.FacilityId = Record[0].facility_key;
                                 cls.Facility = Record[0].facility;
-                                cls.PhysicianId = Record[0].phy_key;
+                                cls.PhysicianKey = Record[0].phy_key;
+                                cls.PhysicianId = Record[0].PhysicianId;
                                 cls.Physician = Record[0].physicianname;
                                 cls.hospitals = count;
                                 cls._meantime = _meantime;
@@ -4387,8 +4391,9 @@ namespace TeleSpecialists.BLL.Service
             {
                 id = x.FacilityId,
                 Facility = x.Facility,
-                phy_id = x.PhysicianId,
+                phy_key = x.PhysicianKey,
                 Physician = x.Physician,
+                PhysicianId = x.PhysicianId,
                 hospitalcount = x.hospitals,
                 mean = (string.Format("{0:00}:{1:00}:{2:00}", (x._meantime.Hours + x._meantime.Days * 24), x._meantime.Minutes, x._meantime.Seconds)),
                 median = (string.Format("{0:00}:{1:00}:{2:00}", (x._mediantime.Hours + x._mediantime.Days * 24), x._mediantime.Minutes, x._mediantime.Seconds)),
@@ -4396,7 +4401,6 @@ namespace TeleSpecialists.BLL.Service
             }).AsQueryable();
 
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
-
         }
 
 
@@ -6554,6 +6558,7 @@ namespace TeleSpecialists.BLL.Service
             List<StatusSnapshotcls> Physician_StatusList = _unitOfWork.SqlQuery<StatusSnapshotcls>(string.Format("Exec sp_get_status_snapshot @Date = '{0}',@Time = '{1}'", Date,Time)).ToList();
             var finalresult = Physician_StatusList.Select(x => new
             {
+                x.PhysicianId,
                 x.psl_key,
                 x.physician_name,
                 x.physician_status,

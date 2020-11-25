@@ -425,7 +425,14 @@
                         errorMessage += "Enter To Date";
                 }
                 if (errorMessage == "") {
-                    loadGridData();
+                    var reporttype = $("#ddlreporttype").val();
+                    $("#kendoDataGrid").empty();
+                    if (reporttype == "1") {
+                        loadGridData();
+                    } else {
+                        loadPhysicianGridData();
+                    }
+                    
                     localStorage.setItem('QualityMetricsReport.SearchApplied', true);
                     $("#resetSearch").removeClass("d-none");
                 }
@@ -490,7 +497,13 @@
                     CPOEOrderToNeedle: null,
                     StartAcceptTime: null
                 }
-                loadGridData();
+                var reporttype = $("#ddlreporttype").val();
+                $("#kendoDataGrid").empty();
+                if (reporttype == "1") {
+                    loadGridData();
+                } else {
+                    loadPhysicianGridData();
+                }
                 setWidthOfDropDowns();
                 $("#resetSearch").addClass("d-none");
             });
@@ -584,7 +597,13 @@
             });
             trySetFilters();
             resetDropDownOnDeseelect();
-            loadGridData();
+            var reporttype = $("#ddlreporttype").val();
+            $("#kendoDataGrid").empty();
+            if (reporttype == "1") {
+                loadGridData();
+            } else {
+                loadPhysicianGridData();
+            }
             setWidthOfDropDowns();
         });
 
@@ -825,6 +844,170 @@
                     serverPaging: true,
                     pageSize: 10,
                     serverFiltering: false,
+                    serverSorting: true
+                },
+                width: '100%',
+                pageable: {
+                    refresh: true,
+                    //pageSizes: true,
+                    //pageSize: 10
+                    pageSizes: [5, 10, 15, 20, 30, 50, 'All']
+                },
+                groupable: false,
+                filterable: true,
+                sortable: true,
+                resizable: true,
+                dataBound: function (e) {
+
+                    $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                    // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
+                    $('[data-role="dropdownlist"]').each(function () {
+                        var kendoDropDown = $(this).data("kendoDropDownList");
+                        if (kendoDropDown)
+                            kendoDropDown.bind("open", onDropdDownOpen);
+                    });
+
+                    filterColumns();
+                },
+                columns: [
+                    { hidden: true, field: "id", title: "Id" },
+                    { hidden: true, field: "phy_key" },
+                    {
+                        title: "<b>Graph</b>",
+                        template: "<input type='button' class='btn btn-dark btn-sm hopitalid' data-phyid='#= phy_key #' data-hopitalid='#= id #' onclick='showgraph.call(this)' value='View' />"
+                    },
+                    { field: "hospitalcount", title: "Case Count" },
+                    { field: "mean", title: "Mean" },
+                    { field: "median", title: "Median" },
+                    { field: "timecycle", title: "Time Frame" },
+                ]
+            });
+        }
+
+        function loadPhysicianGridData() {
+            showAllColumns();
+
+            $("#kendoDataGrid").kendoGrid({
+                excel: {
+                    allPages: true,
+                    filterable: false,
+                    fileName: '@ViewBag.Title' + '.xlsx',
+                    proxyURL: '@Url.Action("ExportToExcel")',
+                },
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetOnScreen")',
+                            contentType: "application/json",
+                            type: "POST",
+                            data: function () {
+                                var model = {
+                                    Facilities: "",
+                                    Physicians: "",
+                                    StartDate: null,
+                                    EndDate: null,
+                                    BillingCode: 1,
+                                    CaseType: 9,
+                                    QPSNumbers: "",
+                                    tPA: "",
+                                    eAlert: "",
+                                    TimeFrame: "",
+                                    states: "",
+                                    WakeUpStroke: false,
+                                    DefaultType: "1",
+                                    CaseStatus: 20
+                                };
+                                model.states = $("#fac_stt_key").val();
+                                model.Physicians = $("#Physicians").val();
+                                model.Facilities = $(".Facilities").val();
+                                model.DefaultType = $("#ddlreporttype").val();
+                                model.QPSNumbers = $("#QPS_Numbers_List").val();
+                                model.tPA = $("#tPA_List").val();
+                                model.eAlert = $("#eAlert_List").val();
+                                model.WorkFlowType = $("#WorkflowType").val();
+                                if ($("#WakeUpStroke").val() == "1") {
+                                    model.WakeUpStroke = true;
+                                } else {
+                                    model.WakeUpStroke = false;
+                                }
+                                model.TimeFrame = $("#ddlTimeFrame").val();
+                                switch (model.TimeFrame) {
+                                    case "Today":
+                                        model.StartDate = "@currentDate.ToString()";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "Yesterday":
+                                        model.StartDate = "@(currentDate.AddDays(-1).ToString())";
+                                        model.EndDate = "@(currentDate.AddDays(-1).ToString())";
+                                        break;
+                                    case "Last24Hours":
+                                        model.IncludeTime = true;
+                                        model.StartDate = "@(currentDate.AddHours(-24).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "Last48Hours":
+                                        //model.IncludeTime = true;
+                                        model.StartDate = "@(currentDate.AddDays(-2).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "LastSevenDays":
+                                        model.StartDate = "@(currentDate.AddDays(-7).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "Last14Days":
+                                        model.StartDate = "@(currentDate.AddDays(-14).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "LastMonth":
+                                        model.StartDate = "@LMStartDate";
+                                        model.EndDate = "@LMEndDate";
+                                        break;
+                                    case "Last60Days":
+                                        model.StartDate = "@(currentDate.AddDays(-60).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "Last3Months":
+                                        model.StartDate = "@LTHRStartDate";
+                                        model.EndDate = "@LTHREndDate";
+                                        break;
+                                    case "Last12Months":
+                                        model.StartDate = "@LTWStartDate";
+                                        model.EndDate = "@LTWEndDate";
+                                        break;
+                                    case "MonthToDate":
+                                        model.StartDate = "@(new DateTime(currentDate.Year, currentDate.Month, 01).ToString())";
+                                        model.EndDate = "@currentDate.ToString()";
+                                        break;
+                                    case "SpecificDate":
+                                        model.StartDate = $("#txtSpecificDate").val();
+                                        model.EndDate = $("#txtSpecificDate").val();
+                                        break;
+                                    case "CustomRange":
+                                        model.StartDate = $("#FromDate").val();
+                                        model.EndDate = $("#ToDate").val();
+                                        break;
+                                }
+                                localStorage.setItem('QualityMetricsReport.Filter', JSON.stringify(model));
+                                return model;
+                            },
+                            type: "POST"
+                        },
+                        parameterMap: function (options) {
+                            return kendo.stringify(options);
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        total: "Total"
+                    },
+                    //serverPaging: true,
+                    //serverFiltering: true,
+                    //serverSorting: true,
+                    //pageSize: GetKendoPageSize("QualityReport", "RecPerPage", true),
+                    //page: KendoGet("QualityReport", "page")
+                    serverPaging: true,
+                    pageSize: 10,
+                    serverFiltering: false,
                     serverSorting: true,
                     group: {
                         field: "Physician"
@@ -852,17 +1035,17 @@
                     });
 
                     filterColumns();
-                    ShowHideColumns();
                 },
                 columns: [
                     { hidden: true, field: "id", title: "Id" },
-                    { hidden: true, field: "phy_id" },
+                    { hidden: true, field: "phy_key" },
                     {
                         title: "<b>Graph</b>",
-                        template: "<input type='button' class='btn btn-dark btn-sm hopitalid' data-phyid='#= phy_id #' data-hopitalid='#= id #' onclick='showgraph.call(this)' value='View' />"
+                        template: "<input type='button' class='btn btn-dark btn-sm hopitalid' data-phyid='#= phy_key #' data-hopitalid='#= id #' onclick='showgraph.call(this)' value='View' />"
                     },
-                    { hidden: true,field: "Facility", title: "Facility" },
-                    { hidden: true, field: "Physician", title: "Physician" },
+                    { field: "Facility", title: "Facility" },
+                    { field: "PhysicianId", title: "ID" },
+                    { field: "Physician", title: "Physician" },
                     { field: "hospitalcount", title: "Case Count" },
                     { field: "mean", title: "Mean" },
                     { field: "median", title: "Median" },
@@ -870,8 +1053,9 @@
                 ]
             });
         }
+
         function ShowHideColumns() {
-            debugger
+            
             var shouldShow = $("#ddlreporttype").val();
             var grid = $("#kendoDataGrid").data("kendoGrid");
             if (shouldShow == "2") {

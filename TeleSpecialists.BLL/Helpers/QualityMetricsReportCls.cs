@@ -18,7 +18,8 @@ namespace TeleSpecialists.BLL.Helpers
         public string timeframe { get; set; }
         public string NavigatorID { get; set; }
         public Guid FacilityId { get; set; }
-        public string PhysicianId { get; set; }
+        public string PhysicianKey { get; set; }
+        public long? PhysicianId { get; set; }
         //public List<Guid> hospitalid { get; set; }
     }
 }
