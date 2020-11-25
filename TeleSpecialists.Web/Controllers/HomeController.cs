@@ -46,7 +46,11 @@ namespace TeleSpecialists.Controllers
         [OutputCache(NoStore = true, Duration = 0)]
         public ActionResult Index()
         {
-            if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
+            if (Session["RoleAccess"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+                if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.CredentialingTeam.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
             {
                 var facList = new List<SelectListItem>();
                 var phyList = new List<SelectListItem>();

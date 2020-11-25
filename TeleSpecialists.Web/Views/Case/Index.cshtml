@@ -20,10 +20,9 @@
         isPhysicianOrPatnerPhysician = true;
     }
     var isSleepAllow = ViewBag.isSleepAllow;
-    if (Session["RoleAccess"] != null) 
-    { 
+    
      var result = (List<TeleSpecialists.BLL.Model.sp_getMenuAccess_Result>)Session["RoleAccess"];
-    }
+    
 }
 
 
@@ -301,66 +300,37 @@
             isPacPhysician = true;
         }
 
-        @if (!User.IsInRole(UserRoles.MockPhysician.ToDescription()))
+        @if (result.Where(x => x.com_page_title == HideTabs.EmergentConsultCaseTab.ToDescription()).Select(x => x.cac_isAllowed).FirstOrDefault())
         {
             <li class="nav-item ">
                 <a class="nav-link bold font-md active" onclick="onTabClicked('emergentTab'), showthisTab()" id="emergentTabLinkt" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="emergentTab" aria-selected="true">Emergent Consults</a>
             </li>
+        }
+        @if (result.Where(x => x.com_page_title == HideTabs.RoutineConsultCaseTab.ToDescription()).Select(x => x.cac_isAllowed).FirstOrDefault())
+        {
             <li class="nav-item">
                 <a class="nav-link bold font-md" onclick="onTabClicked('routineTab'), showthisTab()" id="routineTabLink" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="routineTab" aria-selected="false">Routine Consults</a>
             </li>
+        }
+        @if (result.Where(x => x.com_page_title == HideTabs.EEGCaseTab.ToDescription()).Select(x => x.cac_isAllowed).FirstOrDefault())
+        {
             <li class="nav-item">
                 <a class="nav-link bold font-md" onclick="onTabClicked('eegsTab'), showthisTab()" id="eegsTabLink" data-toggle="tab" href="#emergentTab" role="tab" aria-controls="eegsTab" aria-selected="false">EEGs</a>
             </li>
-            <li class="nav-item">
-            </li>
         }
-        @if (User.IsInRole(UserRoles.MockPhysician.ToDescription()) || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.RRCManager.ToDescription()) || User.IsInRole(UserRoles.RRCDirector.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()))
+        @if (result.Where(x => x.com_page_title == HideTabs.MockDrillCaseTab.ToDescription()).Select(x => x.cac_isAllowed).FirstOrDefault())
         {
             <li class="nav-item">
                 <a class="nav-link bold font-md" onclick="hideOtherTabs('mockcasetab')" id="mockCaseTabLink" data-toggle="tab" href="#mockcaseTab" role="tab" aria-controls="mockCaseTab" aria-selected="false">Mock Drill</a>
             </li>
         }
-
-        @if (!User.IsInRole(UserRoles.MockPhysician.ToDescription()) && isSleepAllow || User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription())@*|| User.IsInRole(UserRoles.FacilityAdmin.ToDescription())*@ /**/
-        /**/
-        /**/
-        /**/
-        /**/
-        /**/
-        /**/
-        /**/
-        || User.IsInRole(UserRoles.FacilityPhysician.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription())
-|| User.IsInRole(UserRoles.AOC.ToDescription())
-|| User.IsInRole(UserRoles.CredentialingTeam.ToDescription())
-|| User.IsInRole(UserRoles.Finance.ToDescription())
-|| User.IsInRole(UserRoles.MedicalStaff.ToDescription())
-|| User.IsInRole(UserRoles.QPS.ToDescription())
-|| User.IsInRole(UserRoles.QualityDirector.ToDescription())
-|| User.IsInRole(UserRoles.VPQuality.ToDescription())
-|| User.IsInRole(UserRoles.RegionalMedicalDirector.ToDescription())
-|| User.IsInRole(UserRoles.RRCDirector.ToDescription())
-|| User.IsInRole(UserRoles.RRCManager.ToDescription()))
-{
-<li class="nav-item">
-    <a class="nav-link bold font-md" onclick="hideOtherTabs('homehealthtab')" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Sleep</span></a>
-</li>
-}
-@*@if (User.IsInRole(UserRoles.SuperAdmin.ToDescription()) || User.IsInRole(UserRoles.Administrator.ToDescription()) || User.IsInRole(UserRoles.Navigator.ToDescription()))
-    {
-        <li class="nav-item">
-            <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
-        </li>
-    }*@
-@*@if (User.IsInRole(UserRoles.PACPhysician.ToDescription()))
-    {
-        cls = "show active";
-        <li class="nav-item">
-            <a class="nav-link bold font-md" onclick="hideOtherTabs()" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Post Acute Care</span></a>
-        </li>
-    }*@
-
-    </ul>
+        @if (result.Where(x => x.com_page_title == HideTabs.SleepCaseTab.ToDescription()).Select(x => x.cac_isAllowed).FirstOrDefault())
+        {
+            <li class="nav-item">
+                <a class="nav-link bold font-md" onclick="hideOtherTabs('homehealthtab')" id="homehealthTabLink" data-toggle="tab" href="#homehealthTab" role="tab" aria-controls="homehealthTab" aria-selected="false"><span id="hhTabText">Sleep</span></a>
+            </li>
+        }
+        </ul>
     <div class="tab-content" id="caseListTabsContent">
 
         @if (!User.IsInRole(UserRoles.MockPhysician.ToDescription()))

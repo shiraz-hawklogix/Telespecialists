@@ -146,11 +146,7 @@ namespace TeleSpecialists.Controllers
 
                         #region Roles
                         Session["userRoleId"] = null;
-                        userSessionCookie.Values["RoleId"] = user.Roles.Select(x => x.RoleId).FirstOrDefault();
-                        HttpContext.Response.Cookies.Add(userSessionCookie);
-                        var userId = Request.Cookies["UserSessionCookie"].Values["UserId"];
-                        var roleId = Request.Cookies["UserSessionCookie"].Values["RoleId"];
-                       // Session["RoleId"] = user.Roles.Select(x => x.RoleId).FirstOrDefault();
+                        Session["RoleId"] = user.Roles.Select(x => x.RoleId).FirstOrDefault();
                         if (model.RoleId != null)
                         {
                             GetRoleAccess(user.Roles.Select(x => x.RoleId).FirstOrDefault(), user.Roles.Select(x => x.UserId).FirstOrDefault());
@@ -288,27 +284,7 @@ namespace TeleSpecialists.Controllers
                 }
                 rolesaccess.Where(x => x.com_key == user_com_key).FirstOrDefault().cac_isAllowed = bit;
             }
-           // Response.Cookies.Add(new HttpCookie("mylist", rolesaccess));
-            string dataAsString = Request.Cookies["mylist"].Value;
-            //HttpCookie userRoleAccessCookie;
-            foreach (var item in rolesaccess)
-            {
-
-                HttpCookie userRoleAccessCookie = new HttpCookie("UserRoleAccessCookie");
-                userRoleAccessCookie.Values["cac_isAllowed"] = Convert.ToString(item.cac_isAllowed);
-                userRoleAccessCookie.Values["cac_key"] = Convert.ToString(item.cac_key);
-                userRoleAccessCookie.Values["cac_roleid"] = Convert.ToString(item.cac_roleid);
-                userRoleAccessCookie.Values["com_key"] = Convert.ToString(item.com_key);
-                userRoleAccessCookie.Values["com_module_name"] = Convert.ToString(item.com_module_name);
-                userRoleAccessCookie.Values["com_page_name"] = Convert.ToString(item.com_page_name);
-                userRoleAccessCookie.Values["com_page_title"] = Convert.ToString(item.com_page_title);
-                userRoleAccessCookie.Values["com_parentcomponentid"] = Convert.ToString(item.com_parentcomponentid);
-                HttpContext.Response.Cookies.Add(userRoleAccessCookie);
-
-            }
-            
-
-            // Session["RoleAccess"] = rolesaccess;
+            Session["RoleAccess"] = rolesaccess;
         }
 
 
