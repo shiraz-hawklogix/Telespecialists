@@ -2349,6 +2349,10 @@ EntityTypes.StateAlertTemplate.ToInt()
             if (!validateGeneralTabForm(false, false, false)) {
                 return false;
             }
+            debugger
+            if (!validatemetricvideostartandendtime(false)) {
+                return false;
+            }
             // check tpa fields in physician metrics tab, and reset hidden field values.
             resetTpaCandidatehiddenFields();
             GetCaseReviewers();
