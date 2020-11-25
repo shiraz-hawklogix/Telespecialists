@@ -338,8 +338,8 @@
             });
             formData.append("Div_Image", images);
             var names = $('#ParameterName').val();
-            formData.append("ParameterName", names);
-            var info = Base64.encode(CKEDITOR.instances["ParameterName_Info"].getData());
+            formData.append("ParameterName", names); 
+            var info = btoa(CKEDITOR.instances["ParameterName_Info"].getData());
             formData.append("parameterinfo", info);
             var cas_fac_Name_arrays = [];
             $.each($(".cas_fac_key option:selected"), function () {

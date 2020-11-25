@@ -348,7 +348,7 @@
             formData.append("Div_Image", images);
             var names = $('#ParameterNamem').val();
             formData.append("ParameterNamem", names);
-            var info = Base64.encode(CKEDITOR.instances["ParameterName_Info2"].getData());
+            var info = btoa(CKEDITOR.instances["ParameterName_Info2"].getData());
             formData.append("ParameterName_Info2", info);
             var cas_fac_Name_arrays = [];
             $.each($(".protocol_fac_key option:selected"), function () {
