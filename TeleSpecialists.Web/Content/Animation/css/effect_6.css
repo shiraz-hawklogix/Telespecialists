@@ -53,16 +53,21 @@
 .dispatch-row-wrap td > tbody > tr:hover > th:hover, table > tbody > tr:hover > td:hover {
     background-color: rgba(0,0,0,0.6);
     color: #ffffff !important;
-    cursor: pointer;
-    /*transition: all 200ms ease-in;
+    transition: all 200ms ease-in;
     transform: scale(1.1);
-    text-align: center;*/
+    white-space: normal;
+    cursor: default;
 }
 
-/*.dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
+.dispatch-row-wrap td > tbody > tr:hover > th:hover, table > tbody > tr:hover > td.case-grid-crr_reason:hover {
+    background-color: transparent;
+    transform: scale(1);
+}
+
+.dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
     transition: all 200ms ease-in;
     transform: scale(1);
-}*/
+}
 
 
 
@@ -104,3 +109,5 @@
     color: #ffffff !important;
     background-color: rgba(0,0,0,0.6) !important;
 }
+
+
