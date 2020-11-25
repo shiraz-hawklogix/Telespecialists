@@ -26,6 +26,8 @@ body {
     margin: 0;
     padding-bottom: 3rem;
     min-height: 100%;
+    overflow-x: hidden;
+    font-family: 'Montserrat', sans-serif;
 }
 /* Menu Effect*/
 

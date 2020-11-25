@@ -81,27 +81,38 @@
     }
 
 
-    #styleReasonsDD > ul{
+    #styleReasonsDD > ul {
         border: 1px solid #a9a9a9;
         background-color: #fff;
+        left: 0;
+        opacity: 0;
+        position: absolute;
+        transition: all .5s ease;
+        top: 100%;
+        width: 100%;
     }
 
-        #styleReasonsDD > ul > li{
-            margin: 0;
-            background-color: #c3c3c3;
-            border-radius: 0;
-            border: 0;
-            margin-bottom: 1px;
+	#styleReasonsDD > ul > li{
+        margin: 0;
+		border-radius: 0;
+		border: 0;
+    }
+    .main-navigation > li:hover > ul {
+        opacity: 1 !important;
+        transform: translateY(0);
+        z-index: 1;
+        padding-left: 0;
+        box-shadow: 0 0 7px 0 #76abd9;
+        display: block;
+    }
+
+
+        li:hover > ul > li:hover {
+            float: none;
+            background-color: #000000 !important;
+            color: #ffffff;
+            transition: all 0.5s ease-in-out;
         }
-
-
-
-    li:hover > ul > li:hover {
-        float: none;
-        background-color: #000000 !important;
-        color: #ffffff;
-        transition: all 0.5s ease-in-out;
-    }
 
     #styleReasonsDD > ul > li:hover > a {
         color: #ffffff;
@@ -142,11 +153,52 @@
     .case-grid-crr_reason {
         overflow: unset !important;
     }
+    .modal-backdrop.show {
+        opacity: 0 !important;
+    }
+
+    .modal-open .modal {
+        background-color: rgba(0, 0, 0, 0.5) !important;
+    }
+    .blast-links {
+        text-align: center;
+        width: 100%;
+        font-size: 18px;
+    }
+    a.blast-links:hover {
+        color: #ffffff !important;
+    }
+
+    a.save-link.btn-success {
+        color: #28a745 !important;
+        border: none !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+    a.save-link.btn-success:hover {
+        color: #ffffff !important;
+    }
+    .k-grid tr td {
+        white-space: pre;
+    }
+
+    .tooltipBox {
+        position: absolute;
+        z-index: 1;
+        background: #ffffff;
+        box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        display: none;  
+    }
+    .tooltip-show-link {
+        font-size: 18px;
+        cursor: pointer;
+    }
 </style>
 
-<div class="row">
-    <div class="col-lg-3 col-xl-3 col-sm-3 col-md-3" style="margin-bottom:20px;">
-        <div class="border" id="divToolTip">
+<div class="row mb-4">
+    <div class="col-6 px-0 tooltip-box-wraper">
+        <a id="showHideLink" class="tooltip-show-link"><i class="fa fa-retweet" aria-hidden="true"></i></a>
+        <div class="border tooltipBox p-3" id="divToolTip">
             <div class="text-danger"><strong>*Tool Tip</strong></div>
             <div>
                 <div>3 Minutes - Yellow (Assignment overdue)</div>
@@ -237,6 +289,16 @@
                 @:navigatorsArr.push({ user_id: "@item.user_id", email: "@item.email", name: "@item.name", firbaseuid: "@item.UserName", ImgPath: "@item.ImgPath"});
             }
 
+        $("#showHideLink").hover(() => {
+            $(".tooltipBox").animate({
+                height: "toggle",
+                width: "toggle"
+            },
+                {
+                    duration: 1000,
+                });
+        });
+        jQuery('[data-toggle="tooltip"]').tooltip();
 
     });
     //if (!firebase.apps.length) {
@@ -331,6 +393,14 @@
                     if (kendoDropDown)
                         kendoDropDown.bind("open", onDropdDownOpen);
                 });
+                $(".blast-links").kendoTooltip({
+                    animation: {
+                        open: {
+                            effects: "fade:in",
+                            duration: 1000
+                        }
+                    }
+                });
             },
             filterable: false,
             sortable: true,
@@ -346,8 +416,8 @@
                 { hidden: true, field: "cas_fac_key" },
                 { hidden: true, field: "dateTimeElapsed" },
 
-                { hidden: true, command: { template: "<button class='btn btn-warning btn-sm py-1' onclick='internalBlast(event)'>I B</button>" }, title: "" }, //, width: "40px !important"
-                { hidden: true, command: { template: "<button class='btn btn-danger btn-sm py-1' onclick='externalBlast(event)'>E B</button>" }, title: "" }, //, width: "40px !important"
+                {hidden: true, command: { template: "<a class='fa fa-sign-in blast-links text-warning internal-blast py-1' onclick='internalBlast(event)' title='Internal Blast'></a>" }, title: "" }, //, width: "40px !important"
+                {hidden: true, command: { template: "<a class='fa fa-sign-out blast-links text-danger external-blast py-1' onclick='externalBlast(event)' title='External Blast'></a>" },title: "" }, //, width: "40px !important"
                 {
                     field: "fac_name", title: "Facility", width: '150px',
                     attributes: { "class": "case-grid-facitlityName" }
@@ -370,7 +440,7 @@
                     editor: caseStatusDropDownEditor, template: "#=cst_name#",
                     attributes: { "class": "case-grid-status" }, hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) ? "true" : "false"),
                 },
-                { command: { template: "<button class='btn btn-dark btn-sm py-1'' onclick='submitThisForm(event)'>Save</button>"}, title: " ", width: "60px" },
+                { command: { template: "<a class='fa fa-floppy-o text-dark blast-links save-link py-1'' onclick='submitThisForm(event)' data-toggle='tooltip' data-placement='bottom' title='Save'></a>"}, title: " ", width: "60px" },
                 {
                     field: "timeElapsed", title: "Time Elapsed", width: '80px',
                     attributes: { "class": "case-grid-time_elapsed" }
@@ -378,7 +448,7 @@
                 },
                 {
                     width: '60px',
-                    template: "<button class='btn btn-dark btn-sm py-1 loadLinkAsync' onclick='copyDispatchCase(#=cas_key#)'>Copy</button>"
+                    template: "<a class='fa fa-clone blast-links text-dark py-1 loadLinkAsync' onclick='copyDispatchCase(#=cas_key#)' data-toggle='tooltip' data-placement='bottom' title='Copy'></a>"
                 },
                 { hidden: true, field: "physician_key" },
                 { hidden: true, field: "phy_name" },
