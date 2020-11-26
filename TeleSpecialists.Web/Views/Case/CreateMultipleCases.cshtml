@@ -584,32 +584,43 @@
         }
         $.ajax({
             type: "GET",
-            url: "/Case/SearchDiagnosisCodes?Id=123&isImpressionChecked=false&Name=" + value.trim(),
+            url: "/Case/SearchDiagnosisCodes?Id=123&isIcdCal=false&Name=" + value.trim(),
             error: function (xhr, error) {
             },
             success: function (response) {
-                if (response.codes.length > 0) {
+                if (response.codes._DiagnosisCodesViewModel.length > 0) {
                     var _list = "<ul class='diagnose-code-ul'>";
-                    for (var i = 0; i < response.codes.length; i++) {
-                        _list = _list + "<li class='diagnose-code-li' onClick='updateDiagnosieCode(\"" + response.codes[i].title + "\"," + index + ")' >" + response.codes[i].title + "</li><hr> ";
+                    for (var i = 0; i < response.codes._DiagnosisCodesViewModel.length; i++) {                        
+                        _list = _list + "<li class='diagnose-code-li' id='diagnose-code-li-" + i + "' title='" + response.codes._DiagnosisCodesViewModel[i].title + "' onClick = 'updateDiagnosieCode(\"" + response.codes._DiagnosisCodesViewModel[i].title + "\"," + index + ")'>" + response.codes._DiagnosisCodesViewModel[i].title + "</li><hr> ";
                     }
                     _list = _list + "</ul>";
                     $("#IcdDiagnoseCodesId").html(_list);
-                    $('#IcdDiagnoseCodesId').show();
-                } else {
+                    $('#IcdDiagnoseCodesId').show();                   
+                } else {                  
                     $('#IcdDiagnoseCodesId').hide();
                 }
             }
         });
     }
 
+    function GetAllDiagnosisCodes() {
+        $.ajax({
+            type: "GET",
+            url: "/Case/GetAllDiagnosisCodes",
+            error: function (xhr, error) {
+            },
+            success: function (response) {
+            }
+        });
+    }
+
     var complete_is_locked = @User.IsInRole(UserRoles.Navigator.ToDescription()).ToString().ToLower();
     $(document).ready(function () {
-
-        //$(window).click(function () {
-        //    $('#IcdDiagnoseCodesId').hide();
-        //    $('#icd10diagnosis').val('');
-        //});
+        GetAllDiagnosisCodes();
+        $(window).click(function () {
+            $('#IcdDiagnoseCodesId').hide();
+            $('#icd10diagnosis').val('');
+        });
 
         document.title = $("#title-prefix").val() + '@ViewBag.Title';
         dataSource = new kendo.data.DataSource({
@@ -633,7 +644,7 @@
                         e.data.isMarkCompleted = $("input[name='isMarkCompleted']").prop("checked");
                         caseIndex = caseIndex + 1;
                         e.data.Id = caseIndex;
-                        //e.data.cas_billing_diagnosis = $('.cas_billing_diagnosis_' + caseIndex).val();
+                        e.data.cas_billing_diagnosis = $('.cas_billing_diagnosis_' + caseIndex).val();
 
                         dataSourceArray.push(e.data);
                     }
@@ -648,10 +659,10 @@
                     var index = dataSourceArray.findObjectIndex(e.data.Id, "Id");
                     e.data.isMarkCompleted = $("input[name='isMarkCompleted']").prop("checked");
 
-                    //if($('.cas_billing_diagnosis_' + e.data.Id).val() == '') {
-                    //    filldiagnosisCodeHiddenField(e.data.Id);
-                    //}
-                    //e.data.cas_billing_diagnosis = $('.cas_billing_diagnosis_' + e.data.Id).val();
+                    if($('.cas_billing_diagnosis_' + e.data.Id).val() == '') {
+                        filldiagnosisCodeHiddenField(e.data.Id);
+                    }
+                    e.data.cas_billing_diagnosis = $('.cas_billing_diagnosis_' + e.data.Id).val();
 
                     dataSourceArray[index] = e.data;
                     e.success();
@@ -1063,13 +1074,13 @@
                     editor: commentsField,
 
                 },
-                { field: "cas_billing_diagnosis", title: "Diagnosis", width: "120px" },
-                //{
-                //    editor: billingdiagnosisCodeEditor,
-                //    field: "cas_billing_diagnosis",
-                //    title: "Diagnosis",
-                //    width: "320px",
-                //},
+                //{ field: "cas_billing_diagnosis", title: "Diagnosis", width: "120px" },
+                {
+                    editor: billingdiagnosisCodeEditor,
+                    field: "cas_billing_diagnosis",
+                    title: "Diagnosis",
+                    width: "320px",
+                },
                 { field: "isMarkCompleted", title: "Complete", width: "120px", editor: markCompleteCheckBox,  template: '<input type="checkbox"  name="isMarkCompleted" disabled="disabled" #= isMarkCompleted ? "checked=checked"  : ""  #  ></input>' },
                 { command: ["edit","destroy"], title: "Action", width: "220px" },
                 ],
@@ -1328,6 +1339,9 @@
         color: white;
         line-height: 1.5;
         word-break: break-all;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .diag-code-div {
@@ -1343,7 +1357,7 @@
         cursor: pointer;
         position: relative;
         float: right;
-        /*margin-top:-3px;*/
+        margin-left:5px;
     }
 
     .daignosis-ul-background {
@@ -1401,6 +1415,9 @@
         border: 1px solid #ced4da;
         border-radius: 0.25rem;
         height: 20px;
+    }
+    .diagnose-code-li:hover {
+        font-weight:500;
     }
 </style>
 

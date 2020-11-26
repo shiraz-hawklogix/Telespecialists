@@ -5916,13 +5916,13 @@ namespace TeleSpecialists.Controllers
 
         #region diagnosis codes
         [HttpGet]
-        public ActionResult SearchDiagnosisCodes(string Id = "", bool isImpressionChecked = false, string Name = "")
+        public ActionResult SearchDiagnosisCodes(string Id = "", bool isIcdCal = false, string Name = "")
         {
             if (string.IsNullOrEmpty(Id) && Id != "123")
             {
                 return RedirectToAction("Home", "Index");
             }
-            var result = _diagnosisCodesService.SearchDiagnosisCodes(Name, isImpressionChecked);
+            var result = _diagnosisCodesService.SearchDiagnosisCodes(Name, isIcdCal);
             return Json(new { status = true, codes = result }, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]

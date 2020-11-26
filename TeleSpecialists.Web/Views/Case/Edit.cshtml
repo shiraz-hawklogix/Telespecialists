@@ -773,7 +773,24 @@ EntityTypes.StateAlertTemplate.ToInt()
         fillDignosesCode();
     }
 
-    function AcceptDiagnosiCode(code) {
+    //function AcceptDiagnosiCode(code) {
+    //    if ($('#cas_billing_diagnosis').val() == "" || $('#cas_billing_diagnosis').val() == null) {
+    //        $('#cas_billing_diagnosis').val(code.trim())
+    //    } else {
+    //        if ($('#cas_billing_diagnosis').val().indexOf(code) == -1) {
+    //            $('#cas_billing_diagnosis').val($('#cas_billing_diagnosis').val() + '; ' + code.trim());
+    //        }
+    //    }
+
+    //    $('#VisitDiagnosis').val('');
+    //    $("#AcceptDiagnosisCode").prop("disabled", true);
+    //    fillDignosesCode();
+    //    if ($('#templatesTabLink').length > 0) {
+    //        fillDignosesCodeTemp();
+    //    }        
+    //}
+
+    function updateDiagnosieCode(index,code,update = '') {
         if ($('#cas_billing_diagnosis').val() == "" || $('#cas_billing_diagnosis').val() == null) {
             $('#cas_billing_diagnosis').val(code.trim())
         } else {
@@ -782,30 +799,25 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
         }
 
-        $('#VisitDiagnosis').val('');
-        $("#AcceptDiagnosisCode").prop("disabled", true);
-        fillDignosesCode();
-        fillDignosesCodeTemp();
-    }
-
-    function updateDiagnosieCode(code) {
-        //if ($('#cas_billing_diagnosis').val() == "" || $('#cas_billing_diagnosis').val() == null) {
-        //    $('#cas_billing_diagnosis').val(code.trim())
-        //} else {
-        //    if ($('#cas_billing_diagnosis').val().indexOf(code) == -1) {
-        //        $('#cas_billing_diagnosis').val($('#cas_billing_diagnosis').val() + '; ' + code.trim());
-        //    }
-        //}
-
-        $('#VisitDiagnosis').val('');
-        $('#VisitDiagnosis').val(code);
-        $('#VisitDiagnosis').attr('title', code);
-        $("#AcceptDiagnosisCode").prop("disabled", false);
+        $('.diagnose-code-li').removeClass('active-idc10');
+        if(index > -1) {
+            $('#diagnose-code-li-' + index).addClass('active-idc10');
+        }
+       
+        //$('#VisitDiagnosis').val('');
+        //$('#VisitDiagnosis').val(code);
+        //$('#VisitDiagnosis').attr('title', code);
+       // $("#AcceptDiagnosisCode").prop("disabled", false);
         //$('#IcdDiagnoseCodesId').hide();
         //$('#icd10diagnosis').val('');
-        //fillDignosesCode();
-        $('.icd10childs_1').removeClass('active-idc10');
-        clearBelowLevel1();
+        fillDignosesCode();
+        if ($('#templatesTabLink').length > 0) {
+            fillDignosesCodeTemp();
+        }
+        if (update == 'clear') {
+            $('.icd10childs_1').removeClass('active-idc10');
+            clearBelowLevel1();
+        }        
     }
 
     function fillDignosesCodeTemp() {
@@ -845,10 +857,15 @@ EntityTypes.StateAlertTemplate.ToInt()
         if (DiagnosisCodes.startsWith(';')) {
             DiagnosisCodes = DiagnosisCodes.substring(1, DiagnosisCodes.length)
         }
+        $('.diagnose-code-li').removeClass('active-idc10');
+        $('.icd10childs_1').removeClass('active-idc10');
+        clearBelowLevel1();
         $('#cas_billing_diagnosis').val('');
         $('#cas_billing_diagnosis').val(DiagnosisCodes);
         fillDignosesCode();
-        fillDignosesCodeTemp();
+        if ($('#templatesTabLink').length > 0) {
+            fillDignosesCodeTemp();
+        }
         //UncheckRecentUsedCodes(code);
     }
 
@@ -859,7 +876,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 //checkedImpressions = checkedImpressions.substring(0, checkedImpressions.length - 1);
                 $.ajax({
                     type: "GET",
-                    url: "/Case/SearchDiagnosisCodes?Id=123&isImpressionChecked= true&Name=" + checkedImpressions,
+                    url: "/Case/SearchDiagnosisCodes?Id=123&isIcdCal= true&Name=" + checkedImpressions,
                     error: function (xhr, error) {
                     },
                     success: function (response) {
@@ -930,8 +947,8 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 
     function emptyIcd10Cal() {
-        $('#VisitDiagnosis').val('');
-        $('#VisitDiagnosis').attr('title', '');
+        //$('#VisitDiagnosis').val('');
+        //$('#VisitDiagnosis').attr('title', '');
         $('#icdCal10Div').hide();
         $('#parent_1').text('');
         $('#parent_1').hide();
@@ -978,8 +995,9 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 
     function checkChildorCodeTop(classname, sId, sValue, sCount) {
-        $('#VisitDiagnosis').val('');
-        $('#VisitDiagnosis').attr('title', '');
+        $('.diagnose-code-li').removeClass('active-idc10');
+        //$('#VisitDiagnosis').val('');
+        //$('#VisitDiagnosis').attr('title', '');
         clearBelowLevel1();
         $('#icd10TopValue').val('');
         $('#icd10TopValue').val(sId);
@@ -996,7 +1014,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 error: function (xhr, error) {
                 },
                 success: function (response) {
-                    $('#VisitDiagnosis').val('');
+                    //$('#VisitDiagnosis').val('');
                     if (response.codes.name != null) {
                         $('#parent_2').text(response.codes.name);
                         var Icdlist = "<ul class='icd10-ul'>";
@@ -1009,9 +1027,10 @@ EntityTypes.StateAlertTemplate.ToInt()
                         $('#parent_2').show();
                     } else {
                         if (response.codes.code_name != null) {
-                            $('#VisitDiagnosis').val('');
-                            $('#VisitDiagnosis').val(response.codes.code_name);
-                            $('#VisitDiagnosis').attr('title', response.codes.code_name);
+                            updateDiagnosieCode(-1, response.codes.code_name,'');                            
+                            //$('#VisitDiagnosis').val('');
+                            //$('#VisitDiagnosis').val(response.codes.code_name);
+                            //$('#VisitDiagnosis').attr('title', response.codes.code_name);
                         }
                         clearBelowLevel1();
                     }
@@ -1024,8 +1043,8 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 
     function checkChildorCodeMiddle(classname, sId, sValue, sCount) {
-        $('#VisitDiagnosis').val('');
-        $('#VisitDiagnosis').attr('title', '');
+        //$('#VisitDiagnosis').val('');
+        //$('#VisitDiagnosis').attr('title', '');
         clearBelowLevel2();
         $('#icd10MiddleValue').val('');
         $('#icd10MiddleValue').val(sId);
@@ -1044,7 +1063,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 error: function (xhr, error) {
                 },
                 success: function (response) {
-                    $('#VisitDiagnosis').val('');
+                    //$('#VisitDiagnosis').val('');
                     if (response.codes.name != null) {
                         $('#parent_3').text(response.codes.name);
                         var Icdlist = "<ul class='icd10-ul'>";
@@ -1057,9 +1076,10 @@ EntityTypes.StateAlertTemplate.ToInt()
                         $('#parent_3').show();
                     } else {
                         if (response.codes.code_name != null) {
-                            $('#VisitDiagnosis').val('');
-                            $('#VisitDiagnosis').val(response.codes.code_name);
-                            $('#VisitDiagnosis').attr('title', response.codes.code_name);
+                            updateDiagnosieCode(-1, response.codes.code_name,'');                            
+                            //$('#VisitDiagnosis').val('');
+                            //$('#VisitDiagnosis').val(response.codes.code_name);
+                            //$('#VisitDiagnosis').attr('title', response.codes.code_name);
                         }
                         clearBelowLevel2();
                     }
@@ -1069,8 +1089,8 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 
     function checkChildorCodeBottom(classname, sId, sValue, sCount) {
-        $('#VisitDiagnosis').val('');
-        $('#VisitDiagnosis').attr('title', '');
+        //$('#VisitDiagnosis').val('');
+        //$('#VisitDiagnosis').attr('title', '');
         clearBelowLevel3();
         $('#icd10BottomValue').val('');
         $('#icd10BottomValue').val(sId);
@@ -1088,7 +1108,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 error: function (xhr, error) {
                 },
                 success: function (response) {
-                    $('#VisitDiagnosis').val('');
+                    //$('#VisitDiagnosis').val('');
                     if (response.codes.name != null) {
                         $('#parent_4').text(response.codes.name);
                         var Icdlist = "<ul class='icd10-ul'>";
@@ -1101,9 +1121,10 @@ EntityTypes.StateAlertTemplate.ToInt()
                         $('#parent_4').show();
                     } else {
                         if (response.codes.code_name != null) {
-                            $('#VisitDiagnosis').val('');
-                            $('#VisitDiagnosis').val(response.codes.code_name);
-                            $('#VisitDiagnosis').attr('title', response.codes.code_name);
+                            updateDiagnosieCode(-1, response.codes.code_name,'');                            
+                            //$('#VisitDiagnosis').val('');
+                            //$('#VisitDiagnosis').val(response.codes.code_name);
+                            //$('#VisitDiagnosis').attr('title', response.codes.code_name);
                         }
                         clearBelowLevel3();
                     }
@@ -1113,8 +1134,8 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 
     function checkChildorCodeBottomMost(classname, sId, sValue, sCount) {
-        $('#VisitDiagnosis').val('');
-        $('#VisitDiagnosis').attr('title', '');
+        //$('#VisitDiagnosis').val('');
+        //$('#VisitDiagnosis').attr('title', '');
         var code_id = $('#icd10TopValue').val() + "," + $('#icd10MiddleValue').val() + "," + $('#icd10BottomValue').val() + "," + sId;
         if ($('#' + classname).hasClass('active-idc10')) {
             $('.icd10childs_4').removeClass('active-idc10');
@@ -1127,7 +1148,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 error: function (xhr, error) {
                 },
                 success: function (response) {
-                    $('#VisitDiagnosis').val('');
+                    //$('#VisitDiagnosis').val('');
                     if (response.codes.name != null) {
                         $('#parent_4').text(response.codes.name);
                         var Icdlist = "<ul class='icd10-ul'>";
@@ -1140,9 +1161,10 @@ EntityTypes.StateAlertTemplate.ToInt()
                         $('#parent_4').show();
                     } else {
                         if (response.codes.code_name != null) {
-                            $('#VisitDiagnosis').val('');
-                            $('#VisitDiagnosis').val(response.codes.code_name);
-                            $('#VisitDiagnosis').attr('title', response.codes.code_name);
+                            updateDiagnosieCode(-1, response.codes.code_name,'');                            
+                            //$('#VisitDiagnosis').val('');
+                            //$('#VisitDiagnosis').val(response.codes.code_name);
+                            //$('#VisitDiagnosis').attr('title', response.codes.code_name);
                         }
                     }
                 }
@@ -1184,17 +1206,17 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 
     function getIcd10Codes() {
+
         $.ajax({
             type: "GET",
-            url: "/Case/SearchDiagnosisCodes?Id=123&isImpressionChecked=false&Name=" + $('#icd10diagnosis').val().trim(),
+            url: "/Case/SearchDiagnosisCodes?Id=123&isIcdCal=true&Name=" + $('#icd10diagnosis').val().trim(),
             error: function (xhr, error) {
             },
-            success: function (response) {
-                debugger;
+            success: function (response) {               
                 if (response.codes._DiagnosisCodesViewModel.length > 0) {
                     var _list = "<ul class='diagnose-code-ul'>";
                     for (var i = 0; i < response.codes._DiagnosisCodesViewModel.length; i++) {
-                        _list = _list + "<li class='diagnose-code-li' onClick='updateDiagnosieCode(\"" + response.codes._DiagnosisCodesViewModel[i].title + "\")' >" + response.codes._DiagnosisCodesViewModel[i].title + "</li><hr> ";
+                        _list = _list + "<li class='diagnose-code-li' id='diagnose-code-li-" + i + "' title='" + response.codes._DiagnosisCodesViewModel[i].title + "' onClick='updateDiagnosieCode(" + i + ",\"" + response.codes._DiagnosisCodesViewModel[i].title + "\",\"clear\")' >" + response.codes._DiagnosisCodesViewModel[i].title + "</li><hr> ";
                     }
                     _list = _list + "</ul>";
                     $("#IcdDiagnoseCodesId").html(_list);
@@ -1217,6 +1239,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                         emptyIcd10Cal();
                     }
                 } else {
+
                     emptyIcd10Cal();
                     $('#IcdDiagnoseCodesId').hide();
                 }
@@ -1236,14 +1259,20 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 
     $(document).ready(function () {
-
+        GetAllDiagnosisCodes();
         $('#templatesTabLink').click(function () {          
             getIcd10SearchKeys();
             fillDignosesCode();
-            fillDignosesCodeTemp();
-            GetAllDiagnosisCodes();
+            fillDignosesCodeTemp();           
             //fillImpressionDropdown();
             //fillRecentUsedDiagnosisCodes();
+        });
+        $('#billingTabLink').click(function () {
+            if ($('#templatesTabLink').length == 0) {
+                $('#searchIcd10Codes').show();
+            } else {
+                $('#searchIcd10Codes').hide();
+            }
         });
 
         $('#AcceptDiagnosisCode').click(function () {
@@ -4759,7 +4788,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         border: 1px solid #DCDCDC;
         overflow-y: auto;
         height: auto;
-        max-height: 300px;
+        max-height: 185px;
         z-index: 1233333333333333333333333333333333;
         background-color: aliceblue;
         width: 100%;
@@ -4769,9 +4798,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         border: 1px solid #DCDCDC;
         overflow-y: auto;
         height: auto;
-        /*max-height: 200px;*/
         z-index: 1233333333333333333333333333333333;
-        /*width: 100%;*/
         margin: 0;
     }
 
@@ -4781,8 +4808,8 @@ EntityTypes.StateAlertTemplate.ToInt()
         padding-right: 10px;
         font-size: 13px;
         word-break: break-all;
-        width: 800px;
-        max-width: 800px;
+        width: 850px;
+        max-width: 850px;
         overflow-x: auto;
     }
 
@@ -4832,7 +4859,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         cursor: pointer;
         position: relative;
         float: right;
-        /*margin-top:-3px;*/
+        margin-left: 5px;
     }
 
     .daignosis-ul-background {
@@ -4954,8 +4981,16 @@ EntityTypes.StateAlertTemplate.ToInt()
 
     .active-idc10 {
         font-weight: 500;
-        background-color: blue;
+        background-color: #007bff;
         color: white;
+        border-radius: 5px;
+        padding: 5px;
+    }
+    .diagnose-code-li:hover {
+        font-weight:500;
+    }
+    .diagnose-code-li:active {
+        font-weight: 500;
     }
 </style>
 

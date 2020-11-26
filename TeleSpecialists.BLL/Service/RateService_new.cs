@@ -122,6 +122,7 @@ namespace TeleSpecialists.BLL.Service
                                                 + ":"
                                                 + DbFunctions.Right("00" + SqlFunctions.DateName("minute", onShiftModel.s.uss_time_to_calc.Value), 2),
                                             Physician = onShiftModel.u.LastName + " " + onShiftModel.u.FirstName,
+                                            physicianId = onShiftModel.u.PhysicianId,
                                             PhysicianKey = onShiftModel.c.cas_phy_key,
                                             uss_time_from_calc = onShiftModel.s.uss_time_from_calc.Value,
                                             uss_time_to_calc = onShiftModel.s.uss_time_to_calc.Value,
@@ -132,6 +133,7 @@ namespace TeleSpecialists.BLL.Service
                                     //assign_date = (DateTime)g.Key.assign_date,
                                     Schedule = g.Key.Schedule,
                                     Physician = g.Key.Physician,
+                                    PhysicianId = g.Key.physicianId,
                                     PhysicianKey = g.Key.PhysicianKey,
                                     Open = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.Open ? 1 : 0),
                                     WaitingToAccept = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.WaitingToAccept ? 1 : 0),
@@ -190,6 +192,7 @@ namespace TeleSpecialists.BLL.Service
                                             {
                                                 Schedule = "",
                                                 Physician = offShiftModel.u.LastName + " " + offShiftModel.u.FirstName,
+                                                PhysicianId = offShiftModel.u.PhysicianId,
                                                 PhysicianKey = offShiftModel.c.cas_phy_key,
                                             } into g
                                      select new PhysicianBillingByShiftViewModel
@@ -197,6 +200,7 @@ namespace TeleSpecialists.BLL.Service
                                          AssignDate = "Blast",
                                          Schedule = "",
                                          Physician = g.Key.Physician,
+                                         PhysicianId = g.Key.PhysicianId,
                                          PhysicianKey = g.Key.PhysicianKey,
                                          Open = null,
                                          WaitingToAccept = null,
@@ -227,6 +231,7 @@ namespace TeleSpecialists.BLL.Service
                         Schedule = "",
                         Physician = item.Physician,
                         PhysicianKey = item.PhysicianKey,
+                        PhysicianId = item.PhysicianId,
                         Open = null,
                         WaitingToAccept = null,
                         Accepted = null,
@@ -929,6 +934,7 @@ namespace TeleSpecialists.BLL.Service
                 obj.Not_Seen = item.Not_Seen;
                 obj.Open = item.Open;
                 obj.Physician = item.Physician;
+                obj.PhysicianId = item.PhysicianId;
                 obj.PhysicianKey = item.PhysicianKey;
                 obj.Schedule = item.Schedule;
                 obj.TC = item.TC;

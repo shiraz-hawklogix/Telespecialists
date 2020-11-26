@@ -242,6 +242,7 @@ namespace TeleSpecialists.BLL.Service
                                                 + ":"
                                                 + DbFunctions.Right("00" + SqlFunctions.DateName("minute", onShiftModel.s.uss_time_to_calc.Value), 2),
                                             Physician = onShiftModel.u.LastName + " " + onShiftModel.u.FirstName,
+                                            PhysicianId = onShiftModel.u.PhysicianId,
                                             PhysicianKey = onShiftModel.c.cas_phy_key,
                                             uss_time_from_calc = onShiftModel.s.uss_time_from_calc.Value,
                                             uss_time_to_calc = onShiftModel.s.uss_time_to_calc.Value,
@@ -252,6 +253,7 @@ namespace TeleSpecialists.BLL.Service
                                     AssignDate = g.Key.AssignDate,
                                     assign_date = (DateTime)g.Key.assign_date,
                                     Schedule = g.Key.Schedule,
+                                    PhysicianId = g.Key.PhysicianId,
                                     Physician = g.Key.Physician,
                                     PhysicianKey = g.Key.PhysicianKey,
                                     Open = g.Sum(x => x.c.cas_cst_key == (int)CaseStatus.Open ? 1 : 0),
@@ -296,6 +298,7 @@ namespace TeleSpecialists.BLL.Service
                 }
                 var _name = _unitOfWork.ApplicationUsers.Where(x => x.Id == item.cas_phy_key).FirstOrDefault();
                 obj.Physician = _name.LastName + " " + _name.FirstName;
+                obj.PhysicianId = _name.PhysicianId;
                 obj.PhysicianKey = item.cas_phy_key;
                 obj.Open = item.cas_cst_key == (int)CaseStatus.Open ? 1 : 0;
                 obj.WaitingToAccept = item.cas_cst_key == (int)CaseStatus.WaitingToAccept ? 1 : 0;
