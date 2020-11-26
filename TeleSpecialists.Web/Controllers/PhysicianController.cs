@@ -143,11 +143,11 @@ namespace TeleSpecialists.Controllers
         public ActionResult _StatusList(bool showOnlyLoggedInUsers, string sortOrder = "")
         {
 
-            var list = _physician.GetPhysicianStatusDashboard(sortOrder).ToList();
+            var list = _physician.GetPhysicianStatusDashboard(sortOrder);//.ToList();
             if (showOnlyLoggedInUsers)
             {
 
-                list = list.Where(m => OnlineUserIds.Contains(m.physician.Id)).ToList();
+                list = list.Where(m => OnlineUserIds.Contains(m.physician.Id));//.ToList();
             }
             var statusList = list.Where(m => m.physician.physician_status != null).Select(m => m.physician.physician_status).Distinct();
             ViewBag.OnlineUsers = OnlineUserIds;
@@ -155,38 +155,38 @@ namespace TeleSpecialists.Controllers
             ViewBag.defaultStatus = _physicianStatusService.GetDefault();
 
 
-            if (list.Count() > 0)
-            {
-                foreach (var l in list)
-                {
-                    if (l.physician.physician_status.phs_key != 1        // Available
-                        && l.physician.physician_status.phs_key != 4     // Rounding
-                        && l.physician.physician_status.phs_key != 19    // Rounding Prep
-                        && l.physician.physician_status.phs_key != 5     // Not Available
-                        && l.physician.physician_status.phs_key != 16)   // Break
-                    {
-                        int casKey = (int)l.physician.physician_status_log.Where(x => x.psl_user_key == l.physician.Id && x.psl_cas_key != null).OrderByDescending(or => or.psl_created_date).Select(s => s.psl_cas_key).FirstOrDefault();
+            //if (list.Count() > 0)
+            //{
+            //    foreach (var l in list)
+            //    {
+            //        if (l.physician.physician_status.phs_key != 1        // Available
+            //            && l.physician.physician_status.phs_key != 4     // Rounding
+            //            && l.physician.physician_status.phs_key != 19    // Rounding Prep
+            //            && l.physician.physician_status.phs_key != 5     // Not Available
+            //            && l.physician.physician_status.phs_key != 16)   // Break
+            //        {
+            //            int casKey = (int)l.physician.physician_status_log.Where(x => x.psl_user_key == l.physician.Id && x.psl_cas_key != null).OrderByDescending(or => or.psl_created_date).Select(s => s.psl_cas_key).FirstOrDefault();
 
-                        var casedata = _caseService.GetDetails(casKey);
-                        if (casedata != null)
-                        {
-                            l.CaseDetails = "Case #: " + casedata.cas_case_number + ", " + "Cart: " + casedata.cas_cart + ", " + "Facility: " + casedata.facility.fac_name;
-                        }
-                    }
+            //            var casedata = _caseService.GetDetails(casKey);
+            //            if (casedata != null)
+            //            {
+            //                l.CaseDetails = "Case #: " + casedata.cas_case_number + ", " + "Cart: " + casedata.cas_cart + ", " + "Facility: " + casedata.facility.fac_name;
+            //            }
+            //        }
 
 
-                    if (l.physician.physician_status.phs_key == 4    // Rounding
-                        || l.physician.physician_status.phs_key == 19)    // Rounding Prep
-                    {
-                        Guid facKey = (Guid)l.physician.physician_status_log.Where(x => x.psl_user_key == l.physician.Id && x.psl_fac_key != null).OrderByDescending(or => or.psl_created_date).Select(s => s.psl_fac_key).FirstOrDefault();
-                        if (facKey != null && facKey != Guid.Empty)
-                        {
-                            var facility = _facilityService.GetDetails(facKey);
-                            l.FacilityName = "Facility: " + facility.fac_name;
-                        }
-                    }
-                }
-            }
+            //        if (l.physician.physician_status.phs_key == 4    // Rounding
+            //            || l.physician.physician_status.phs_key == 19)    // Rounding Prep
+            //        {
+            //            Guid facKey = (Guid)l.physician.physician_status_log.Where(x => x.psl_user_key == l.physician.Id && x.psl_fac_key != null).OrderByDescending(or => or.psl_created_date).Select(s => s.psl_fac_key).FirstOrDefault();
+            //            if (facKey != null && facKey != Guid.Empty)
+            //            {
+            //                var facility = _facilityService.GetDetails(facKey);
+            //                l.FacilityName = "Facility: " + facility.fac_name;
+            //            }
+            //        }
+            //    }
+            //}
             return PartialView(list); 
         }
 
@@ -226,47 +226,47 @@ namespace TeleSpecialists.Controllers
         public ActionResult _NHStatusList(bool showOnlyLoggedInUsers, string sortOrder = "")
         {
 
-            var list = _physician.GetNHPhysicianStatusDashboard(sortOrder).ToList();
+            var list = _physician.GetNHPhysicianStatusDashboard(sortOrder);//.ToList();
             if (showOnlyLoggedInUsers)
             {
-                list = list.Where(m => OnlineUserIds.Contains(m.physician.Id)).ToList();
+                list = list.Where(m => OnlineUserIds.Contains(m.physician.Id));//.ToList();
             }
             var statusList = list.Where(m => m.physician.physician_status != null).Select(m => m.physician.physician_status).Distinct();
             ViewBag.OnlineUsers = OnlineUserIds;
             ViewBag.statusList = statusList.ToList();
             ViewBag.defaultStatus = _physicianStatusService.GetDefault();
-            if (list.Count() > 0)
-            {
-                foreach (var l in list)
-                {
-                    if (l.physician.physician_status.phs_key != 1        // Available
-                        && l.physician.physician_status.phs_key != 4     // Rounding
-                        && l.physician.physician_status.phs_key != 19    // Rounding Prep
-                        && l.physician.physician_status.phs_key != 5     // Not Available
-                        && l.physician.physician_status.phs_key != 16)   // Break
-                    {
-                        int casKey = (int)l.physician.physician_status_log.Where(x => x.psl_user_key == l.physician.Id && x.psl_cas_key != null).OrderByDescending(or => or.psl_created_date).Select(s => s.psl_cas_key).FirstOrDefault();
+            //if (list.Count() > 0)
+            //{
+            //    foreach (var l in list)
+            //    {
+            //        if (l.physician.physician_status.phs_key != 1        // Available
+            //            && l.physician.physician_status.phs_key != 4     // Rounding
+            //            && l.physician.physician_status.phs_key != 19    // Rounding Prep
+            //            && l.physician.physician_status.phs_key != 5     // Not Available
+            //            && l.physician.physician_status.phs_key != 16)   // Break
+            //        {
+            //            int casKey = (int)l.physician.physician_status_log.Where(x => x.psl_user_key == l.physician.Id && x.psl_cas_key != null).OrderByDescending(or => or.psl_created_date).Select(s => s.psl_cas_key).FirstOrDefault();
 
-                        var casedata = _caseService.GetDetails(casKey);
-                        if (casedata != null)
-                        {
-                            l.CaseDetails = "Case #: " + casedata.cas_case_number + ", " + "Cart: " + casedata.cas_cart + ", " + "Facility: " + casedata.facility.fac_name;
-                        }
-                    }
+            //            var casedata = _caseService.GetDetails(casKey);
+            //            if (casedata != null)
+            //            {
+            //                l.CaseDetails = "Case #: " + casedata.cas_case_number + ", " + "Cart: " + casedata.cas_cart + ", " + "Facility: " + casedata.facility.fac_name;
+            //            }
+            //        }
 
 
-                    if (l.physician.physician_status.phs_key == 4    // Rounding
-                        || l.physician.physician_status.phs_key == 19)    // Rounding Prep
-                    {
-                        Guid facKey = (Guid)l.physician.physician_status_log.Where(x => x.psl_user_key == l.physician.Id && x.psl_fac_key != null).OrderByDescending(or => or.psl_created_date).Select(s => s.psl_fac_key).FirstOrDefault();
-                        if (facKey != null && facKey != Guid.Empty)
-                        {
-                            var facility = _facilityService.GetDetails(facKey);
-                            l.FacilityName = "Facility: " + facility.fac_name;
-                        }
-                    }
-                }
-            }
+            //        if (l.physician.physician_status.phs_key == 4    // Rounding
+            //            || l.physician.physician_status.phs_key == 19)    // Rounding Prep
+            //        {
+            //            Guid facKey = (Guid)l.physician.physician_status_log.Where(x => x.psl_user_key == l.physician.Id && x.psl_fac_key != null).OrderByDescending(or => or.psl_created_date).Select(s => s.psl_fac_key).FirstOrDefault();
+            //            if (facKey != null && facKey != Guid.Empty)
+            //            {
+            //                var facility = _facilityService.GetDetails(facKey);
+            //                l.FacilityName = "Facility: " + facility.fac_name;
+            //            }
+            //        }
+            //    }
+            //}
             return PartialView(list);
         }
 
@@ -396,15 +396,29 @@ namespace TeleSpecialists.Controllers
         {
             var physician = _physician.GetDetail(phy_key);
             var physician_status_log = _physicianStatusLogService.GetExistingLog(phy_key);
+
+            BLL.Model.@case casedata = new @case();
+            BLL.Model.facility Foundfacility = new BLL.Model.facility();
+
             if (physician_status_log != null)
             {
                 if (casKey != "")
                 {
                     physician_status_log.psl_cas_key = Convert.ToInt32(casKey);
+                    casedata = _caseService.GetDetails(Convert.ToInt32(casKey));
+                    if (casedata != null)
+                    {
+                        physician_status_log.psl_case_details = "Case #: " + casedata.cas_case_number + ", " + "Cart: " + casedata.cas_cart + ", " + "Facility: " + casedata.facility.fac_name;
+                    }
                 }
                 if (facKey != "")
                 {
                     physician_status_log.psl_fac_key = new Guid(facKey);
+                    if (facKey != null && new Guid(facKey) != Guid.Empty)
+                    {
+                        Foundfacility = _facilityService.GetDetails(new Guid(facKey));
+                        physician_status_log.psl_facility_name = "Facility: " + Foundfacility.fac_name;
+                    }
                 }
                 physician_status_log.psl_end_date = DateTime.Now.ToEST();
                 physician_status_log.psl_modified_by = User.Identity.GetUserId();
@@ -413,16 +427,40 @@ namespace TeleSpecialists.Controllers
             }
 
             Nullable<Guid> facility;
-            if (facKey != "") { facility = new Guid(facKey); }
-            else { facility = null; }
             Nullable<int> casenum;
-            if (casKey != "") { casenum = Convert.ToInt32(casKey); }
-            else { casenum = null; }
+            string casedetails;
+            string facilityName;
 
-            var new_entry = new physician_status_log
+            if (facKey != "")
+            {
+                facility = new Guid(facKey);
+                facilityName = Foundfacility.fac_name;
+            }
+            else
+            {
+                facility = null;
+                facilityName = null;
+            }
+
+            if (casKey != "")
+            {
+                casenum = Convert.ToInt32(casKey);
+                casedetails = "Case #: " + casedata.cas_case_number + ", " + "Cart: " + casedata.cas_cart + ", " + "Facility: " + casedata.facility.fac_name;
+            }
+            else
+            {
+                casenum = null;
+                casedetails = null;
+            }
+            
+
+
+                var new_entry = new physician_status_log
             {
                 psl_cas_key = casenum,
                 psl_fac_key = facility,
+                psl_case_details = casedetails,
+                psl_facility_name = facilityName,
                 psl_created_date = DateTime.Now.ToEST(),
                 psl_created_by = User.Identity.GetUserId(),
                 psl_user_key = phy_key,

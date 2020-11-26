@@ -1816,6 +1816,8 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.MDStaffFacility' 
           <Property Name="psl_cas_key" Type="int" />
           <Property Name="psl_comments" Type="varchar" MaxLength="300" />
           <Property Name="psl_fac_key" Type="uniqueidentifier" />
+          <Property Name="psl_case_details" Type="varchar(max)" />
+          <Property Name="psl_facility_name" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="physician_status_snooze">
           <Key>
@@ -4632,6 +4634,8 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <NavigationProperty Name="physician_status_log2" Relationship="DataModel.FK_physician_status_log_physician_status_log" FromRole="physician_status_log1" ToRole="physician_status_log" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_physician_status_log_AspNetUsers" FromRole="physician_status_log" ToRole="AspNetUser" />
           <Property Name="psl_fac_key" Type="Guid" />
+          <Property Name="psl_case_details" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="psl_facility_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="physician_status_snooze">
           <Key>
@@ -7873,6 +7877,8 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <EntitySetMapping Name="physician_status_log">
             <EntityTypeMapping TypeName="DataModel.physician_status_log">
               <MappingFragment StoreEntitySet="physician_status_log">
+                <ScalarProperty Name="psl_facility_name" ColumnName="psl_facility_name" />
+                <ScalarProperty Name="psl_case_details" ColumnName="psl_case_details" />
                 <ScalarProperty Name="psl_fac_key" ColumnName="psl_fac_key" />
                 <ScalarProperty Name="psl_comments" ColumnName="psl_comments" />
                 <ScalarProperty Name="psl_cas_key" ColumnName="psl_cas_key" />

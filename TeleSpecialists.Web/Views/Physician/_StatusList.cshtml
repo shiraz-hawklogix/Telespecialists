@@ -15,6 +15,9 @@
 
     @foreach (var item in Model)
     {
+     //   var caseDetails = item.physician.physician_status_log.LastOrDefault().psl_case_details;
+     //   var facilityName = item.physician.physician_status_log.LastOrDefault().psl_facility_name;
+
         var threshholdTime = item.ThreshholdTime.HasValue ? item.ThreshholdTime.Value : new TimeSpan(0, 0, 0, 0, 0);
         TimeSpan? elapsedTime = DateTime.Now.ToEST() - (item.physician.status_change_date.HasValue ? item.physician.status_change_date.Value : item.physician.CreatedDate);
 
@@ -25,52 +28,52 @@
             item.physician.physician_status = defaultStatus;
         }
 
-<div class="col-lg-4 col-md-6 col-sm-6 col-xs-6 mt-3 ">
-    <div class="row">
-        <div class="col-4 mt-3 col-md-4 col-sm-4 ">
-            <div class="font-weight-bold">
-                @if (User.IsInRole(UserRoles.AOC.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
-                {
-                    <h6> @item.physician.FirstName @item.physician.LastName</h6>
-                }
-                else
-                {
-                    <a href="@Url.Action("ChangeStatusPopup", new { id = item.physician.Id })" class="loadModelPopup">
-                        @item.physician.FirstName @item.physician.LastName
-                    </a>
-                }
-            </div>
-            <div>
-                (@item.physician.CredentialIndex.ToString("0.00"))
-            </div>
-
-        </div>
-        <div class="col-4 col-xl-3 col-md-5 col-sm-4 pl-0  text-center">
-            <button data-toggle="tooltip" data-placement="top" title="@item.CaseDetails @item.FacilityName" style="width:75px;height:75px; color:#fff; font-size: 12px; border:none;background-color:@item.physician.physician_status.phs_color_code" class="rounded-circle">@(item.physician.physician_status.phs_name)</button>
-        </div>
-        <div class="col-4 col-md-3 col-sm-4 mt-3 ">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-6 mt-3 ">
             <div class="row">
-                <div class="w-100 text-align-left nowrap">
-                    <span class="@(hasExceededThreshhold ? "text-danger": "")">
-                        @elapsedTime.FormatTimeSpan()
-                    </span>
-                    <span>
-                        @if (onlineUsers.Contains(item.physician.Id))
+                <div class="col-4 mt-3 col-md-4 col-sm-4 ">
+                    <div class="font-weight-bold">
+                        @if (User.IsInRole(UserRoles.AOC.ToDescription()) || User.IsInRole(UserRoles.MedicalStaff.ToDescription()))
                         {
-                            <small class="text-success">Online</small>
+                            <h6> @item.physician.FirstName @item.physician.LastName</h6>
                         }
                         else
                         {
-                            <small>Offline</small>
+                            <a href="@Url.Action("ChangeStatusPopup", new { id = item.physician.Id })" class="loadModelPopup">
+                                @item.physician.FirstName @item.physician.LastName
+                            </a>
                         }
-                    </span>
-                </div>
+                    </div>
+                    <div>
+                        (@item.physician.CredentialIndex.ToString("0.00"))
+                    </div>
 
+                </div>
+                <div class="col-4 col-xl-3 col-md-5 col-sm-4 pl-0  text-center">
+                    <button data-toggle="tooltip" data-placement="top" title="@item.CaseDetails @item.FacilityName" style="width:75px;height:75px; color:#fff; font-size: 12px; border:none;background-color:@item.physician.physician_status.phs_color_code" class="rounded-circle">@(item.physician.physician_status.phs_name)</button>
+                </div>
+                <div class="col-4 col-md-3 col-sm-4 mt-3 ">
+                    <div class="row">
+                        <div class="w-100 text-align-left nowrap">
+                            <span class="@(hasExceededThreshhold ? "text-danger": "")">
+                                @elapsedTime.FormatTimeSpan()
+                            </span>
+                            <span>
+                                @if (onlineUsers.Contains(item.physician.Id))
+                                {
+                                    <small class="text-success">Online</small>
+                                }
+                                else
+                                {
+                                    <small>Offline</small>
+                                }
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-}
+    }
 </div>
 @if (statusList != null)
 {

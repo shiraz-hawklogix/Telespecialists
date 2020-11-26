@@ -142,7 +142,9 @@ namespace TeleSpecialists.BLL.Service
 
                             physician = m,
                             ThreshholdTime = m.physician_status.phs_threshhold_time,
-                            ElapsedTime = DbFunctions.DiffHours(m.status_change_date, now)
+                            ElapsedTime = DbFunctions.DiffHours(m.status_change_date, now),
+                            CaseDetails = m.physician_status_log.OrderByDescending(q => q.psl_key).Select(s => s.psl_case_details).FirstOrDefault(),
+                            FacilityName = m.physician_status_log.OrderByDescending(q => q.psl_key).Select(s => s.psl_facility_name).FirstOrDefault()
                         });
 
             switch (SortOrder)
@@ -271,7 +273,9 @@ namespace TeleSpecialists.BLL.Service
 
                             physician = m,
                             ThreshholdTime = m.physician_status.phs_threshhold_time,
-                            ElapsedTime = DbFunctions.DiffHours(m.status_change_date, now)
+                            ElapsedTime = DbFunctions.DiffHours(m.status_change_date, now),
+                            CaseDetails = m.physician_status_log.OrderByDescending(q => q.psl_key).Select(s => s.psl_case_details).FirstOrDefault(),
+                            FacilityName = m.physician_status_log.OrderByDescending(q => q.psl_key).Select(s => s.psl_facility_name).FirstOrDefault()
                         });
 
             switch (SortOrder)

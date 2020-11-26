@@ -118,6 +118,7 @@
     <Compile Include="Helpers\BCIReport.cs" />
     <Compile Include="Helpers\CaseReviewTrends.cs" />
     <Compile Include="Helpers\CCIReport.cs" />
+    <Compile Include="Helpers\CCIVSBCCIGraph.cs" />
     <Compile Include="Helpers\CSVReader.cs" />
     <Compile Include="Helpers\CWHGraphReport.cs" />
     <Compile Include="Helpers\CWHReport.cs" />

@@ -17,6 +17,9 @@
 
     @foreach (var item in Model)
     {
+        //var caseDetails = item.physician.physician_status_log.LastOrDefault().psl_case_details;
+        //var facilityName = item.physician.physician_status_log.LastOrDefault().psl_facility_name;
+
         var threshholdTime = item.ThreshholdTime.HasValue ? item.ThreshholdTime.Value : new TimeSpan(0, 0, 0, 0, 0);
         TimeSpan? elapsedTime = DateTime.Now.ToEST() - (item.physician.status_change_date.HasValue ? item.physician.status_change_date.Value : item.physician.CreatedDate);
 
