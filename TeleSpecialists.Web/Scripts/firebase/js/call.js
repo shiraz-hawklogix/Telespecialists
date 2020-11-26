@@ -697,13 +697,13 @@ function SignInStatus(userid) {
 function UserUnreadMsgsChanged() {
     var getConnection = firebase.database().ref("TeleUsers/" + SenderId + "/Connections");
     getConnection.orderByChild('lastOnline').on('child_changed', function (friends) {
-       // console.log('UserUnreadMsgsChanged called!');
+        //console.log('is user chat muted :', friends.val().muted);
         var unreadmsg = '';
         if (friends.val().unread !== 0 && friends.val().unread) {
             unreadmsg = friends.val().unread;
             document.getElementById("firebaseLink").style.color = "#FCFC00";
             let muteStatus = localStorage.getItem('muteStatus');
-            if (muteStatus === 'false')
+            if (muteStatus === 'false' && friends.val().muted !== 'true')
                 playMsgNotification();
             else
                 console.log('tune muted');

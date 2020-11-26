@@ -162,6 +162,7 @@
     var publicGrpArr = [];
     var activeFriendId;
     var endToEndChatId;
+    var activeConnection;
 
     var FileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'bmp',
         'txt', 'text',
@@ -501,6 +502,7 @@
         _msgType = type;
         // debugger;
         activeFriendId = receiverid;
+        activeConnection = receiverid;
         _receiverId = receiverid;
         _receiverName = receiverName;
         _receiverPhoto = receiverPhoto;
@@ -887,7 +889,7 @@
             if (!firstKnownKey) {
                 firstKnownKey = snapshot.key;
             }
-            if (snapshot.ref.parent.key === _receiverId) {
+            if (snapshot.ref.parent.key === activeConnection) {//_receiverId && activeConnection === snapshot.ref.parent.key
                 if (SenderId === snapshot.val().senderId) {
                     //_senderName = snapshot.val().senderName;
                     //_senderPhoto = snapshot.val().senderPhoto;
@@ -998,8 +1000,8 @@
     function GetChatNew(senderid, receiverid) {
         $("#msgDetail").html('');
         $("#msgDetail").empty();
-        var id = senderid + '-' + receiverid;
-        var _id = receiverid + '-' + senderid;
+        let id = senderid + '-' + receiverid;
+        let _id = receiverid + '-' + senderid;
         var status = 'not';
         var foundId;
         var ref = firebase.database().ref("userMessages");
@@ -1008,9 +1010,10 @@
             if (data.val() !== null) {
                 foundId = id;
                 endToEndChatId = id;
+                activeConnection = id
                 ref.child(foundId).on("child_added", function (snapshot) {
                     //console.log('1 to 1 :snapshot parrent value is : ' + snapshot.ref.parent.key + ' , ' + 'reciever value is : ' + id);
-                    if (snapshot.ref.parent.key === endToEndChatId) {
+                    if (snapshot.ref.parent.key === activeConnection) {//_receiverId && activeConnection === snapshot.ref.parent.key
                         if (SenderId === snapshot.val().senderId) {
                             _teleid = snapshot.val().teleid;
                             var date = new Date(snapshot.val().dateTime);
@@ -1109,9 +1112,10 @@
                 refConnection.child(_id).on('value', function (collect) {
                     foundId = _id;
                     endToEndChatId = _id;
+                    activeConnection = _id;
                     ref.child(foundId).on("child_added", function (snapshot) {
                         //console.log('1 to 1 :snapshot parrent value is : ' + snapshot.ref.parent.key + ' , ' + 'reciever value is : ' + _id);
-                        if (snapshot.ref.parent.key === endToEndChatId) {
+                        if (snapshot.ref.parent.key === activeConnection) {//endToEndChatId && activeConnection === snapshot.ref.parent.key
                             if (SenderId === snapshot.val().senderId) {
                                 _senderName = snapshot.val().senderName;
                                 _senderPhoto = snapshot.val().senderPhoto;
