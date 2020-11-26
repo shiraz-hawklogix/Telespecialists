@@ -34,12 +34,7 @@
                     <label for="Physicians">Physician</label>
                     @Html.DropDownList("Physicians", ViewBag.Physicians as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
                 </div>
-                <div class="form-group col-xl-4 col-6">
-                    <label>Wake Up Stroke</label>
-                    <div id="divCaseWakeUpStroke">
-                        @Html.DropDownList("WakeUpStroke", ViewBag.WakeUpStroke as List<SelectListItem>, new { @class = "form-control" })
-                    </div>
-                </div>
+                
                 <div class="form-group col-xl-4 col-6">
                     <label for="ddlTimeFrame">Time Cycle</label>
                     <select class="form-control" id="ddlTimeFrame">
@@ -440,7 +435,6 @@
                                     DefaultType: null,
                                     Blast: null,
                                     states: "",
-                                    WakeUpStroke: false
                                 };
                                 model.Facilities = $(".Facilities").val();
                                 model.Physicians = $("#Physicians").val();
@@ -458,11 +452,7 @@
                                 } else {
                                     model.Blast = $("#ddlCaseBlast").val();
                                 }
-                                if ($("#WakeUpStroke").val() == "1") {
-                                    model.WakeUpStroke = true;
-                                } else {
-                                    model.WakeUpStroke = false;
-                                }
+                                
                                 model.TimeFrame = $("#ddlTimeFrame").val();
                                     switch (model.TimeFrame) {
                                         case "q15min":
@@ -609,7 +599,6 @@
                 EndDate: null,
                 TimeFrame: "",
                 DefaultType: null,
-                WakeUpStroke: false
             };
             model.Facilities = $(".Facilities").val();
             model.Physicians = $("#Physicians").val();
@@ -621,11 +610,7 @@
             } else {
                 model.DefaultType = $("#ddlDefaultType").val();
             }
-            if ($("#WakeUpStroke").val() == "1") {
-                model.WakeUpStroke = true;
-            } else {
-                model.WakeUpStroke = false;
-            }
+            
             var isblast = $("#ddlCaseBlast").val();
             if (isblast == "Please Select") {
                 model.Blast = "";
@@ -759,7 +744,6 @@
                 EndDate: null,
                 TimeFrame: "",
                 DefaultType: null,
-                WakeUpStroke: false
             };
             model.Facilities = $(".Facilities").val();
             model.Physicians = $("#Physicians").val();
@@ -779,11 +763,7 @@
             } else {
                 model.Blast = $("#ddlCaseBlast").val();
             }
-            if ($("#WakeUpStroke").val() == "1") {
-                model.WakeUpStroke = true;
-            } else {
-                model.WakeUpStroke = false;
-            }
+            
             model.TimeFrame = $("#ddlTimeFrame").val();
             switch (model.TimeFrame) {
                 case "q15min":

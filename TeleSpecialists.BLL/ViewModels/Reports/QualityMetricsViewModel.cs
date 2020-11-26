@@ -29,7 +29,7 @@ namespace TeleSpecialists.BLL.ViewModels.Reports
         public List<int?> states { get; set; }
         public List<Guid?> Specialist { get; set; }
         public List<string> Credentialing { get; set; }
-        public bool WakeUpStroke { get; set; }
+        public string WakeUpStroke { get; set; }
     }
     public class QualityMetricsAdvance
     {

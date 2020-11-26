@@ -717,7 +717,7 @@
                                         eAlert: "",
                                         TimeFrame: "",
                                         states: "",
-                                        WakeUpStroke: false
+                                        WakeUpStroke: ""
                                 };
                                 model.states = $("#fac_stt_key").val();
                                     model.Physicians = $("#Physicians").val();
@@ -733,11 +733,7 @@
                                     model.CallType = $("#CallType").val();
                                     model.CallerSource = $("#CallerSource").val();
 
-                                if ($("#WakeUpStroke").val() == "1") {
-                                    model.WakeUpStroke = true;
-                                } else {
-                                    model.WakeUpStroke = false;
-                                }
+                                model.WakeUpStroke = $("#WakeUpStroke").val();
                                     model.CaseStatus = 20;//$("#CaseStatus").val();
                                     model.TimeFrame = $("#ddlTimeFrame").val();
                                     switch (model.TimeFrame) {
@@ -907,7 +903,7 @@
                 eAlert: "",
                 TimeFrame: "",
                 states: "",
-                WakeUpStroke: false
+                WakeUpStroke: ""
             };
             model.states = $("#fac_stt_key").val();
             model.Physicians = $("#Physicians").val();
@@ -922,11 +918,7 @@
             model.CallerSource = $("#CallerSource").val();
             model.CaseStatus = 20;//$("#CaseStatus").val();
             model.TimeFrame = $("#ddlTimeFrame").val();
-            if ($("#WakeUpStroke").val() == "1") {
-                model.WakeUpStroke = true;
-            } else {
-                model.WakeUpStroke = false;
-            }
+            model.WakeUpStroke = $("#WakeUpStroke").val();
             $.ajax({
                 cache: false,
                 async: true,

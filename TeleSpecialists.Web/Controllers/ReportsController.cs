@@ -2868,7 +2868,10 @@ namespace TeleSpecialists.Controllers
             try
             {
                 var result = _reportService.GetCasesPendingReviewList(request, QPS_Key, period);
-                return JsonMax(result, JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(result, JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+                //return JsonMax(result, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -2894,7 +2897,10 @@ namespace TeleSpecialists.Controllers
             try
             {
                 var result = _reportService.GetCasesCompletedReviewList(request, QPS_Key, period);
-                return JsonMax(result, JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(result, JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+                //return JsonMax(result, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {

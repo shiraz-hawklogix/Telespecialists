@@ -121,7 +121,8 @@
 
             dataBound: function (e) {
 
-                $("#kendoDataGrid .k-auto-scrollable").scrollLeft(0);
+                ApplyRedColor();
+                $("#cases-pending-review-container .k-auto-scrollable").scrollLeft(0);
                 // Adjust dropdown horizental allignment in case of five-9 sidebae expanded.
                 $('[data-role="dropdownlist"]').each(function () {
                     var kendoDropDown = $(this).data("kendoDropDownList");
@@ -129,7 +130,7 @@
                         kendoDropDown.bind("open", onDropdDownOpen);
                 });
                 //LoadCasesPendingReviewList();
-                DoRed();
+                
             },
             columns: [
                 {
@@ -148,8 +149,10 @@
     var AssignTabID = function () {
         localStorage.clickfromhome = "casespendingreview";
     }
-    function DoRed() {
-        $("#cases-pending-review-container tbody tr").each(function (index, element) {
+    function ApplyRedColor() {
+        
+        $("#cases-pending-review-container tr").each(function (index, element) {
+            
             var row = $(element);
             var Cases = row.find("td:nth-child(1)").text();
             if (Cases == "true") {

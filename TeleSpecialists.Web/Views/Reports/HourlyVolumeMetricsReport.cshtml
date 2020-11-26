@@ -24,12 +24,7 @@
                     <label for="Facilities">Facility</label>
                     <select id="Facilities" name="Facilities" class="form-control Facilities" multiple="multiple"></select>
                 </div>
-                <div class="form-group col-xl-4 col-6">
-                    <label>Wake Up Stroke</label>
-                    <div id="divCaseWakeUpStroke">
-                        @Html.DropDownList("WakeUpStroke", ViewBag.WakeUpStroke as List<SelectListItem>, new { @class = "form-control" })
-                    </div>
-                </div>
+                
                 <div class="form-group row col-xl-4 col-6">
                     <div class="col-6 pr-0">
                         <label>From</label>
@@ -421,7 +416,6 @@
                                     DefaultType: null,
                                     Blast: null,
                                     states: "",
-                                    WakeUpStroke: false
                                 };
                                 model.Facilities = $(".Facilities").val();
                                 model.states = $("#fac_stt_key").val();
@@ -432,11 +426,7 @@
                                 } else {
                                     model.DefaultType = $("#ddlDefaultType").val();
                                 }
-                                if ($("#WakeUpStroke").val() == "1") {
-                                    model.WakeUpStroke = true;
-                                } else {
-                                    model.WakeUpStroke = false;
-                                }
+                                
                                 var isblast = $("#ddlCaseBlast").val();
                                 if (isblast == "Please Select") {
                                     model.Blast = "";
@@ -579,7 +569,6 @@
                 DefaultType: null,
                 Blast: null,
                 states: "",
-                WakeUpStroke: false
             };
             model.Facilities = $(".Facilities").val();
             model.states = $("#fac_stt_key").val();
@@ -596,11 +585,7 @@
             } else {
                 model.Blast = $("#ddlCaseBlast").val();
             }
-            if ($("#WakeUpStroke").val() == "1") {
-                model.WakeUpStroke = true;
-            } else {
-                model.WakeUpStroke = false;
-            }
+            
             model.TimeCycle = $("#ddlTimeCycle").val();
             switch (model.TimeCycle) {
                 case "q20min":

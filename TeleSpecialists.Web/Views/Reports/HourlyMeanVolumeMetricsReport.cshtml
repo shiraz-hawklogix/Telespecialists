@@ -24,12 +24,7 @@
                     <label for="Facilities">Facility</label>
                     <select id="Facilities" name="Facilities" class="form-control Facilities" multiple="multiple"></select>
                 </div>
-                <div class="form-group col-xl-4 col-6">
-                    <label>Wake Up Stroke</label>
-                    <div id="divCaseWakeUpStroke">
-                        @Html.DropDownList("WakeUpStroke", ViewBag.WakeUpStroke as List<SelectListItem>, new { @class = "form-control" })
-                    </div>
-                </div>
+                
                 <div class="form-group row col-xl-4 col-6">
                     <div class="col-6 pr-0">
                         <label>From</label>
@@ -394,13 +389,8 @@
                                     DefaultType: null,
                                     Blast: null,
                                     states: "",
-                                    WakeUpStroke: false
                                 };
-                                if ($("#WakeUpStroke").val() == "1") {
-                                    model.WakeUpStroke = true;
-                                } else {
-                                    model.WakeUpStroke = false;
-                                }
+                                
                                 model.Facilities = $(".Facilities").val();
                                 model.states = $("#fac_stt_key").val();
                                 model.CaseStatus = 20;
@@ -520,7 +510,6 @@
                 DefaultType: null,
                 Blast: null,
                 states: "",
-                WakeUpStroke: false
             };
             model.Facilities = $(".Facilities").val();
             model.states = $("#fac_stt_key").val();
@@ -540,11 +529,7 @@
             model.TimeFrame = $("#ddlTimeCycle").val();
             model.StartDate = $("#FromDate").val();
             model.EndDate = $("#ToDate").val();
-            if ($("#WakeUpStroke").val() == "1") {
-                model.WakeUpStroke = true;
-            } else {
-                model.WakeUpStroke = false;
-            }
+            
             $.ajax({
                 cache: false,
                 async: true,

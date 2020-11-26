@@ -18,7 +18,8 @@ namespace TeleSpecialists.BLL.ViewModels
         public string QPS_Name { get; set; }
         public long? TC_CaseNumber { get; set; }
         public string DateOfConsult { get; set; }
-        public bool ColorRed { get; set; }
+        public string ColorRed { get; set; }
+        public int TotalRecords { get; set; }
     }
 
     public class caseCalculcation

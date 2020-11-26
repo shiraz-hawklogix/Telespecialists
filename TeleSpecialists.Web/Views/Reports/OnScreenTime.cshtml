@@ -55,7 +55,7 @@
                     <label for="State">State</label>
                     @Html.DropDownList("fac_stt_key", ViewBag.States as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
                 </div>
-                <div class="form-group col-xl-4 col-6">
+                <div class="form-group col-xl-3 col-6">
                     <label for="Facilities">Facility</label>
                     <select id="Facilities" name="Facilities" class="form-control Facilities" multiple="multiple"></select>
                 </div>
@@ -69,7 +69,7 @@
                         @Html.DropDownList("WorkflowType", ViewBag.WorkflowType as List<SelectListItem>, new { @class = "form-control", @multiple = "multiple" })
                     </div>
                 </div>
-                <div class="form-group col-xl-1 col-6">
+                <div class="form-group col-xl-2 col-6">
                     <label>Wake Up Stroke</label>
                     <div id="divCaseWakeUpStroke">
                         @Html.DropDownList("WakeUpStroke", ViewBag.WakeUpStroke as List<SelectListItem>, new { @class = "form-control" })
@@ -749,7 +749,7 @@
                                     eAlert: "",
                                     TimeFrame: "",
                                     states: "",
-                                    WakeUpStroke: false,
+                                    WakeUpStroke: "",
                                     DefaultType: "1",
                                     CaseStatus: 20
                                 };
@@ -761,11 +761,7 @@
                                 model.tPA = $("#tPA_List").val();
                                 model.eAlert = $("#eAlert_List").val();
                                 model.WorkFlowType = $("#WorkflowType").val();
-                                if ($("#WakeUpStroke").val() == "1") {
-                                    model.WakeUpStroke = true;
-                                } else {
-                                    model.WakeUpStroke = false;
-                                }
+                                model.WakeUpStroke = $("#WakeUpStroke").val();
                                 model.TimeFrame = $("#ddlTimeFrame").val();
                                 switch (model.TimeFrame) {
                                     case "Today":
@@ -913,7 +909,7 @@
                                     eAlert: "",
                                     TimeFrame: "",
                                     states: "",
-                                    WakeUpStroke: false,
+                                    WakeUpStroke: "",
                                     DefaultType: "1",
                                     CaseStatus: 20
                                 };
@@ -925,11 +921,7 @@
                                 model.tPA = $("#tPA_List").val();
                                 model.eAlert = $("#eAlert_List").val();
                                 model.WorkFlowType = $("#WorkflowType").val();
-                                if ($("#WakeUpStroke").val() == "1") {
-                                    model.WakeUpStroke = true;
-                                } else {
-                                    model.WakeUpStroke = false;
-                                }
+                                model.WakeUpStroke = $("#WakeUpStroke").val();
                                 model.TimeFrame = $("#ddlTimeFrame").val();
                                 switch (model.TimeFrame) {
                                     case "Today":
@@ -1137,7 +1129,7 @@
                 eAlert: "",
                 TimeFrame: "",
                 states: "",
-                WakeUpStroke: false
+                WakeUpStroke: ""
             };
             model.states = $("#fac_stt_key").val();
             model.Physicians = physicianarray;//$("#Physicians").val();
@@ -1152,11 +1144,7 @@
             model.CallerSource = $("#CallerSource").val();
             model.CaseStatus = 20;//$("#CaseStatus").val();
             model.TimeFrame = $("#ddlTimeFrame").val();
-            if ($("#WakeUpStroke").val() == "1") {
-                model.WakeUpStroke = true;
-            } else {
-                model.WakeUpStroke = false;
-            }
+            model.WakeUpStroke = $("#WakeUpStroke").val();
             $.ajax({
                 cache: false,
                 async: true,

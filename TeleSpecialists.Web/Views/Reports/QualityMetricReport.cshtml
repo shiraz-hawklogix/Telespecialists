@@ -683,7 +683,7 @@
                                     tPA: "",
                                     eAlert: "",
                                     TimeFrame: "",
-                                    WakeUpStroke: false
+                                    WakeUpStroke: ""
                                 };
                                 model.Physicians = $("#Physicians").val();
                                 model.Facilities = $(".Facilities").val();
@@ -694,14 +694,8 @@
                                 model.tPA = $("#tPA_List").val();
                                 model.eAlert = $("#eAlert_List").val();
                                 model.WorkFlowType = $("#WorkflowType").val();
-                                debugger
-                                if ($("#CaseTypes").val() == "9") {
-                                    if ($("#WakeUpStroke").val() == "1") {
-                                        model.WakeUpStroke = true;
-                                    } else {
-                                        model.WakeUpStroke = false;
-                                    }
-                                }
+                                
+                                model.WakeUpStroke = $("#WakeUpStroke").val();
                                 model.CallType = $("#CallType").val();
                                 model.CallerSource = $("#CallerSource").val();
 
