@@ -5677,69 +5677,27 @@ namespace TeleSpecialists.BLL.Service
         }
         public DataSourceResult GetCredentialsExpiringCaseslist(DataSourceRequest request, List<Guid> Facilities, List<string> Physicians)
         {
-            var result = new CredentialsExpiringCaseListing();
-            var query = _unitOfWork.FacilityPhysicianRepository.Query();
-
-            #region --- Filters ----
+            string facilities = "";
             if (Facilities != null && Facilities.Count > 0)
             {
-                if (Facilities[0] != Guid.Empty)
-                    query = query.Where(m => Facilities.Contains(m.fap_fac_key));
+                facilities = string.Join(",", Facilities);
             }
-
+            string physicians = "";
             if (Physicians != null && Physicians.Count > 0)
             {
-                if (Physicians[0] != string.Empty)
-                    query = query.Where(m => Physicians.Contains(m.fap_user_key));
-            }
-            #endregion
-
-            #region ---- Calculations
-            //string facilityTimeZone = BLL.Settings.DefaultTimeZone;
-            DateTime currentdate = DateTime.Now.ToEST();
-            var cacList = query.Where(x => x.fap_is_active == true && x.AspNetUser.IsActive)
-            .Select(x => new
-            {
-                CaseKey = x.fap_key,
-                PhysicianName = x.AspNetUser.FirstName + " " + x.AspNetUser.LastName,
-                FacilityName = x.facility.fac_name,
-                Days = DbFunctions.DiffDays(currentdate, x.fap_end_date),
-                EndDate = x.fap_end_date
-            }).OrderByDescending(x => x.CaseKey);
-            #endregion
-
-            var list = cacList.ToList();
-
-            foreach (var item in list)
-            {
-                if (item.Days <= 60 && item.Days >= 0)
-                {
-                    CredentialsExpiringCase expiringCase = new CredentialsExpiringCase();
-                    expiringCase.Fac_Key = item.CaseKey;
-                    expiringCase.PhysicianName = item.PhysicianName;
-                    expiringCase.FacilityName = item.FacilityName;
-                    if (item.EndDate.HasValue)
-                    {
-                        expiringCase.EndDate = item.EndDate;
-                    }
-                    else
-                    {
-                        expiringCase.EndDate = null;
-                    }
-
-                    result.CredentialsCases.Add(expiringCase);
-                }
+                physicians = string.Join(",", Physicians);
             }
 
-            var finalresult = result.CredentialsCases.Select(x => new
-            {
-                Fac_Key = x.Fac_Key,
-                FacilityName = x.FacilityName,
-                PhysicianName = x.PhysicianName,
-                EndDate = x.EndDate,
-            }).OrderBy(x => x.EndDate).AsQueryable();
+            List<CredentialsExpiringCase> result = _unitOfWork.SqlQuery<CredentialsExpiringCase>(string.Format("Exec sp_get_credentials_expiring @Physicians = '{0}',@Facilities = '{1}',@Take = '{2}',@Skip = '{3}'", physicians, facilities, request.Take, request.Skip)).ToList();
 
-            return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+            var list = result.AsQueryable();
+            int Total = list.FirstOrDefault()?.TotalRecords ?? 0;
+            if (request.Take == 0)
+                Total = list.Count();
+            var kendoObj = list.ToDataSourceResult(Total, 0, request.Sort, null);
+            kendoObj.Total = Total;
+            return kendoObj;
+            //return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
 
         public DataSourceResult GetCasesPendingReviewList(DataSourceRequest request, List<string> QPS, string period)
