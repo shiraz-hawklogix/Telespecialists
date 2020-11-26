@@ -273,7 +273,6 @@
                 @Html.ValidationMessageFor(model => model.cas_metric_patient_gender, "", new { @class = "text-danger" })
             </div>
         </div>
-        @Html.Partial("_Icd10BillingCodes")
         <div class="form-group row">
             <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">Chief Complaint: </label>
             <div class="col-xl-12 col-sm-8 col-lg-12" id="divComplaint">
@@ -364,6 +363,7 @@
         </div>
         @* Ended By Axim *@
 
+        @Html.Partial("_Icd10BillingCodes")
         <div class="form-group row" id="divImpression">
             <label class="control-label col-12 text-danger">Impression: </label>
             <div class="col-10 col-offset-2">
