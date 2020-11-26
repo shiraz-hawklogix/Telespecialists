@@ -79,7 +79,6 @@
         opacity: 0;
         position: absolute;
         transition: all .5s ease;
-        top: 100%;
         width: 100%;
     }
 
@@ -155,6 +154,15 @@
         text-align: center;
         width: 100%;
         font-size: 18px;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
     }
     a.blast-links:hover {
         color: #ffffff !important;
@@ -175,7 +183,7 @@
 
     .tooltipBox {
         position: absolute;
-        z-index: 1;
+        z-index: 2;
         background: #ffffff;
         box-shadow: 0 6px 12px rgba(0,0,0,.175);
         display: none;  
@@ -184,11 +192,17 @@
         font-size: 18px;
         cursor: pointer;
     }
+    .tooltip-box-wraper {
+        margin-top: -15px;
+    }
+    .dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
+        position: relative;
+    }
 </style>
 
 <div class="row mb-4">
     <div class="col-6 px-0 tooltip-box-wraper">
-        <a id="showHideLink" class="tooltip-show-link"><i class="fa fa-retweet" aria-hidden="true"></i></a>
+        <a id="showHideLink" class="tooltip-show-link"><i class="fa fa-info-circle" aria-hidden="true"></i> <span>Hover to view important note</span></a>
         <div class="border tooltipBox p-3" id="divToolTip">
             <div class="text-danger"><strong>*Tool Tip</strong></div>
             <div>
@@ -200,7 +214,7 @@
     </div>
 </div>
 <div class="row dispatch-row-wrap" style="margin-top:-20px">
-    <div class="col-md-12">
+    <div class="col-md-12 px-0">
 
         @*<div class="custom-control custom-switch">
                 <input data-role="switch" class="custom-control-input" id="refreshSwitch" checked="checked"/>
@@ -230,7 +244,7 @@
     </div>
 </div>
 <div class="row" style="margin-top:5px">
-    <div class="col-12">
+    <div class="col-12 px-0">
         @*<h3>Stroke Alerts Accepted</h3>*@
         <div class="customGridHeader">
             <div class="row">
