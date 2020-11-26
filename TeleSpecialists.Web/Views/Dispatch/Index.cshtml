@@ -207,6 +207,21 @@
     .dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
         position: relative;
     }
+    .dispatch-row-wrap td > tbody > tr:hover > th:hover, table > tbody > tr:hover > td:hover {
+        background-color: #5E5E5E;
+        color: #ffffff !important;
+        transition: all 200ms ease-in;
+        white-space: normal;
+        cursor: default;
+    }
+
+    .dispatch-row-wrap td > tbody > tr:hover > th:hover, table > tbody > tr:hover > td.case-grid-crr_reason:hover {
+        background-color: transparent;
+    }
+
+    .dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
+        transition: all 200ms ease-in;
+    }
 </style>
 
 <div class="row mb-4">
@@ -704,6 +719,7 @@
         });
     }
     function submitThisForm(e) {
+        ShowLoading();
         RefreshMode = true;
         var STFrow = $(e.currentTarget).closest("tr");
 
@@ -767,8 +783,7 @@
         });
 
       //  markAsDisabled(e);
-
-
+         
     }
     var sentCases = [];
     var disabledSaveButtons = [];
@@ -1154,6 +1169,7 @@
             });
      }
     function caseRejected(cas_key, reason, reasonText) {
+        ShowLoading();
         console.log('got from controller : ' + reasonText);
          var baseurl = "@Url.Action("RejectCase")";
             $.ajax({
@@ -1284,7 +1300,7 @@
     //var GlobalGetSaveButtonListTrigger = 0;// ******* TEMPORARY COMMENT *******
     var RefreshMode = true;
     function CheckRefreshCase() {
-        $("#hdnDisableLoader").val("1");
+        //$("#hdnDisableLoader").val("1");
         $.ajax({
             type: 'POST',
             url: '/Dispatch/GetRefreshCase',
