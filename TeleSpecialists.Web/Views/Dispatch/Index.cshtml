@@ -88,7 +88,6 @@
         opacity: 0;
         position: absolute;
         transition: all .5s ease;
-        top: 100%;
         width: 100%;
     }
 
@@ -164,6 +163,15 @@
         text-align: center;
         width: 100%;
         font-size: 18px;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
     }
     a.blast-links:hover {
         color: #ffffff !important;
@@ -184,7 +192,7 @@
 
     .tooltipBox {
         position: absolute;
-        z-index: 1;
+        z-index: 2;
         background: #ffffff;
         box-shadow: 0 6px 12px rgba(0,0,0,.175);
         display: none;  
@@ -193,11 +201,17 @@
         font-size: 18px;
         cursor: pointer;
     }
+    .tooltip-box-wraper {
+        margin-top: -15px;
+    }
+    .dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
+        position: relative;
+    }
 </style>
 
 <div class="row mb-4">
     <div class="col-6 px-0 tooltip-box-wraper">
-        <a id="showHideLink" class="tooltip-show-link"><i class="fa fa-retweet" aria-hidden="true"></i></a>
+        <a id="showHideLink" class="tooltip-show-link"><i class="fa fa-info-circle" aria-hidden="true"></i> <span>Hover to view important note</span></a>
         <div class="border tooltipBox p-3" id="divToolTip">
             <div class="text-danger"><strong>*Tool Tip</strong></div>
             <div>
@@ -208,8 +222,8 @@
         </div>
     </div>
 </div>
-<div class="row" style="margin-top:-20px">
-    <div class="col-md-12">
+<div class="row dispatch-row-wrap" style="margin-top:-20px">
+    <div class="col-md-12 px-0">
 
         @*<div class="custom-control custom-switch">
                 <input data-role="switch" class="custom-control-input" id="refreshSwitch" checked="checked"/>
@@ -217,7 +231,7 @@
             </div>*@
         @*<button class="btn btn-dark btn-sm py-1" onclick="manualRefresh()">Refresh</button>*@
         <div class="customGridHeader">
-            <div class="row">
+            <div class="row mb-3">
                 <div id="dispatchWaitingToAcceptGrid" class="col-md-8" style="padding:0px; height:440px; border:0px;">
                 </div>
                 <div class="col-md-4" style="padding:0px; height:440px; border:0px; overflow:scroll;">
@@ -239,15 +253,15 @@
     </div>
 </div>
 <div class="row" style="margin-top:5px">
-    <div>
+    <div class="col-12 px-0">
         @*<h3>Stroke Alerts Accepted</h3>*@
         <div class="customGridHeader">
             <div class="row">
                 <div id="dispatchAcceptedGrid" class="col-md-12" style="padding:0px; height:300px; border:0px;">
                 </div>
                 @*<div class="col-md-4" id="firebaseChatDiv" >
-                       {Html.RenderAction("_firebaseChat");}
-                    </div>*@
+                   {Html.RenderAction("_firebaseChat");}
+                </div>*@
             </div>
 
 
@@ -498,6 +512,55 @@
             grid.dataSource.read();
     }
 
+    function blink_IB(element) {
+        if (sent_I_Blast.length > 0) { 
+            var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(element).closest("tr"));
+            if (dataItem != undefined) {
+                var yesno = sent_I_Blast.filter(function (sb) { if (sb == dataItem.cas_key) { return sb; } });
+                if (yesno.length == 0) {
+                    $(element).fadeOut(100).fadeIn(100, blink_IB);
+                }
+                else {
+                    $(element.children("td")).removeClass("text-warning");
+                    $(element.children("td")).addClass("text-success");
+                }
+            }
+        }
+        else {
+            $(element).fadeOut(100).fadeIn(100, blink_IB);
+        }
+
+    }
+    function blink_EB(element) {
+        if (sent_E_Blast.length > 0) {
+            var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(element).closest("tr"));
+            if (dataItem != undefined) {
+                var yesno = sent_E_Blast.filter(function (sb) { if (sb == dataItem.cas_key) { return sb; } });
+                if (yesno.length == 0) {
+                    $(element).fadeOut(100).fadeIn(100, blink_EB);
+                }
+                else {
+                    $(element.children("td")).removeClass("text-danger");
+                    $(element.children("td")).addClass("text-success");
+
+                }
+            }
+        }
+        else {
+            $(element).fadeOut(100).fadeIn(100, blink_EB);
+        }
+
+    }
+    var sent_I_Blast = [];
+    var sent_E_Blast = [];
+
+    function InternalBlastSent(key) { 
+        sent_I_Blast.push(key);
+    }
+    function ExternalBlastSent(key) {
+        sent_E_Blast.push(key);
+    }  
+
 
     function applyColors() {
          $("#dispatchWaitingToAcceptGrid tr").each(function (index, element) {
@@ -551,6 +614,7 @@
          console.log('automsg: ' + automsg);
          //CreateMsg(dataItem);
 
+         InternalBlastSent(cas_key);
         var baseurl = "@Url.Action("GetPhysiciansForInternalBlast")";
         $.ajax({
             url: baseurl + "?fac_key=" + facKey + "&cas_ctp_key=" + case_type + "&softSaveGuid=" + "" + "&cas_key=" + cas_key + "&strokeStamp=" + automsg,
@@ -583,6 +647,8 @@
         var facKey = dataItem.cas_fac_key;
         var case_type = dataItem.cas_ctp_key;
         var cas_key = dataItem.cas_key;
+
+        ExternalBlastSent(cas_key);
         var baseurl = "@Url.Action("GetPhysiciansForExternalBlast")";
         $.ajax({
             url: baseurl + "?fac_key=" + facKey + "&cas_ctp_key=" + case_type + "&softSaveGuid=" + "" + "&cas_key=" + cas_key,
