@@ -23,7 +23,7 @@
         <button type="button" class="btn btn-dark" id="btnSearch">Search</button>
         <button type="button" class="btn btn-dark" id="btnClear" style="display: none">Clear Search</button>
         <input type='button' class='btn btn-dark' onclick="showgraph();" value="View CCI Graph" />
-        @*<input type='button' class='btn btn-dark' onclick="showgraph2();" value="View CCI VS BCI Graph" />*@
+        <input type='button' class='btn btn-dark' onclick="showgraph2();" value="View CCI VS BCI Graph" />
     </div>
 </div>
 
@@ -46,10 +46,10 @@
     <div class="modal-dialog modal-lg" style="max-width: 1400px;width: 1400px;">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="export-pdf k-button">Save as PDF</button>
+                <button type="button" class="export-pdf2 k-button">Save as PDF</button>
             </div>
             <div class="modal-body">
-                <div id="chart"></div>
+                <div id="chart2"></div>
             </div>
             <div class="modal-footer">
                 <a class="btn btn-link" data-dismiss="modal">Close</a>
@@ -303,20 +303,9 @@
             },
             seriesDefaults: {
                 type: "column",
-                labels: {
-                    visible: true,
-                    template: "#= value #",
-                    format: "{0}",
-                    margin: 20
-                }
             },
             // series: meancal,
             series: [{
-                labels: {
-                    template: "#= value #",
-                    visible: true,
-                    format: "{0}",
-                },
                 name: mean,
                 data: meancal,
                 color: "purple"
@@ -355,12 +344,12 @@
                 selection: {
                     lock: "y"
                 }
+            },
+            tooltip: {
+                visible: true,
+                format: "{0}",
+                template: "#= value #"
             }
-            //tooltip: {
-            //    visible: true,
-            //    format: "{0}",
-            //    template: "#= value #"
-            //}
         });
     }
     $(".export-pdf").click(function () {
@@ -406,7 +395,7 @@
                         }
                         else if (id == "MedianCalculation") {
                             $.each(dat, function (keys, vals) {
-                                mediancal.push(new Date(mindate + " " + vals).getTime());
+                                mediancal.push(vals);
                             })
                         }
                         else if (id == "Category") {
@@ -414,8 +403,8 @@
                         }
                     });
                 });
-                createChart(title, mean, median, meancal, mediancal, mindate, catgory);
-                $(document).bind("kendo:skinChange", createChart);
+                createChart2(title, mean, median, meancal, mediancal, mindate, catgory);
+                $(document).bind("kendo:skinChange", createChart2);
                 $("#graphmodal2").modal('show');
             },
             error: function () {
@@ -425,9 +414,9 @@
         });
     }
 
-    function createChart(title, mean, median, meancal = [], mediancal = [], mindate, catgory = []) {
+    function createChart2(title, mean, median = [], meancal = [], mediancal = [], mindate, catgory = []) {
         debugger
-        $("#chart").kendoChart({
+        $("#chart2").kendoChart({
             title: {
                 text: title,
                 color: "black"
@@ -441,27 +430,21 @@
             },
             seriesDefaults: {
                 type: "column",
-                labels: {
-                    visible: true,
-                    template: "#= value #",
-                    format: "{0}",
-                    margin: 20
-                }
+              
             },
-            // series: meancal,
             series: [{
-                labels: {
-                    template: "#= value #",
-                    visible: true,
-                    format: "{0}",
-                },
-                name: mean,
+                name: "BCI",
                 data: meancal,
                 color: "purple"
 
-            }
-            ],
+            },
 
+                {
+                    name: "CCI",
+                    data: mediancal,
+                    color: "orange"
+
+                }],
             valueAxis: {
                 labels: {
                     format: "{0}"
@@ -493,11 +476,16 @@
                 selection: {
                     lock: "y"
                 }
+            },
+            tooltip: {
+                visible: true,
+                format: "{0}",
+                template: "#= value #"
             }
         });
     }
-    $(".export-pdf").click(function () {
-        $("#chart").getKendoChart().saveAsPDF();
+    $(".export-pdf2").click(function () {
+        $("#chart2").getKendoChart().saveAsPDF();
     })
 </script>
 

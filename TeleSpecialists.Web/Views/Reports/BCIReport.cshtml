@@ -285,20 +285,20 @@
             },
             seriesDefaults: {
                 type: "column",
-                labels: {
-                    visible: true,
-                    template: "#= value #",
-                    format: "{0}",
-                    margin: 20
-                }
+                //labels: {
+                //    visible: true,
+                //    template: "#= value #",
+                //    format: "{0}",
+                //    margin: 20
+                //}
             },
            // series: meancal,
             series: [{
-                labels: {
-                    template: "#= value #",
-                    visible: true,
-                    format: "{0}",
-                },
+                //labels: {
+                //    template: "#= value #",
+                //    visible: true,
+                //    format: "{0}",
+                //},
                 name: mean,
                 data: meancal,
                 color: "purple"
@@ -337,12 +337,12 @@
                 selection: {
                     lock: "y"
                 }
+            },
+            tooltip: {
+                visible: true,
+                format: "{0}",
+                template: "#= value #"
             }
-            //tooltip: {
-            //    visible: true,
-            //    format: "{0}",
-            //    template: "#= value #"
-            //}
         });
     }
     $(".export-pdf").click(function () {

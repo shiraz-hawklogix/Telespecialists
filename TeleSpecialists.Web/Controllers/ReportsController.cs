@@ -3800,7 +3800,12 @@ namespace TeleSpecialists.Controllers
             return Json(_result, JsonRequestBehavior.AllowGet);
         }
 
-
+        public ActionResult GetCCIVSBCIGraphModal(DataSourceRequest request)
+        {
+            var result = _reportService.GetCCIVSBCIGraph(request);
+            var _result = result.Data;
+            return Json(_result, JsonRequestBehavior.AllowGet);
+        }
 
         public PartialViewResult AddPhysician()
         {

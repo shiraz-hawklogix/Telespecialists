@@ -10350,5 +10350,62 @@ namespace TeleSpecialists.BLL.Service
             }
         }
 
+        public DataSourceResult GetCCIVSBCIGraph(DataSourceRequest request)
+        {
+            using (var context = new Model.TeleSpecialistsContext())
+            {
+                context.Configuration.AutoDetectChangesEnabled = false;
+                context.Configuration.ProxyCreationEnabled = false;
+                context.Configuration.LazyLoadingEnabled = false;
+                BCIGraphReport graph = new BCIGraphReport();
+                graph.Mean = "CCI VS BCI Graph";
+                List<string> catgory = new List<string>();
+                List<string> meanlist = new List<string>();
+                List<string> Medianlist = new List<string>();
+                List<CCIVSBCCIGraph> Finallist = new List<CCIVSBCCIGraph>();
+                Finallist = _unitOfWork.SqlQuery<CCIVSBCCIGraph>(string.Format("Exec UspGetBBICCIData")).ToList();
+                foreach (var item in Finallist)
+                {
+                    meanlist.Add(item.BCI);
+                    Medianlist.Add(item.CCI);
+                    catgory.Add(item.Physician_Name);
+                }
+                if (catgory.Count > 0)
+                {
+
+                    graph.Title = "CCI VS BCI Graph";
+                    DateTime date = DateTime.Now;
+                    graph.MinDate = DateTime.Now.ToString();
+                    graph.Category = catgory;
+                    graph.MeanCalculation = meanlist;
+                    graph.MedianCalculation = Medianlist;
+                }
+
+                List<BCIGraphReport> list = new List<BCIGraphReport>();
+                list.Add(graph);
+                var finalresult = list.Select(x => new
+                {
+                    x.Title,
+                    x.Mean,
+                    x.Median,
+                    x.MinDate,
+                    x.MeanCalculation,
+                    x.MedianCalculation,
+                    x.Category
+                }).AsQueryable();
+
+                return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
     }
 }
