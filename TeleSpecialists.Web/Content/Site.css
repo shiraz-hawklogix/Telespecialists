@@ -49,9 +49,9 @@ body {
         margin-top: -6px;
     }
 
-   a.cursor{
-        cursor:pointer;
-    }
+a.cursor {
+    cursor: pointer;
+}
 
 /* rotate caret on hover */
 .dropdown-menu > li > a:hover:after {
@@ -141,7 +141,7 @@ input[type=number]::-webkit-outer-spin-button {
 
 .text-yellow {
     color: #c8c81d;
-} 
+}
 
 /*Disable the input arrows on numeric input types*/
 input[type=number], input[type=date] {
@@ -558,6 +558,7 @@ k-autocomplete.k-state-default, .k-multiselect-wrap, .k-numeric-wrap.k-state-def
 .font_11px {
     font-size: 11px !important;
 }
+
 .font_12px {
     font-size: 12px !important;
 }
@@ -764,7 +765,7 @@ ul.navbar-nav {
 ************************************************************************************/
 /* Donot change it without testing, It will effect the appearence of grid*/
 @media only screen and (max-width: 1600px) {
-    #kendoDataGrid, #Credentials-Expiring-container, .facility-grid-container #grid, #contactsGrid, #physicianGrid, #PhysicianPasswordkendoDataGrid, #protocols_grid,
+    #kendoDataGrid, #Credentials-Expiring-container, .facility-grid-container #grid, #contactsGrid, #physicianGrid, #PhysicianPasswordkendoDataGrid, #protocols_grid, #mockCasesGrid,
     #contractsGrid, #notesGrid, #FacilityDashboardGrid, #tPAcaseanalysisGrid, #pitrendsGrid, #casereviewtrendsGrid, #StrokeAlertCasesGrid, #CounterMeasureGrid, #VolumeMetricsGrid, #qualitygoalsGrid, #roles_grid, #users_grid, .kendo-ui-grid-control {
         font-size: 11px;
     }
@@ -777,9 +778,7 @@ ul.navbar-nav {
     /*height: 98vh;*/
     height: 98%;
 }
-.physician-tbl-ui {
-    padding-right: 30px !important;
-}
+
 .five-9-phoneBar, #phycisian-listing-container, #phycisian-listing-container table {
     width: 100%;
 }
@@ -809,9 +808,9 @@ ul.navbar-nav {
     border: 1px solid #ccc;
 }
 
-#phycisian-listing-container .list-item .case-start-time {
-    min-width: 75px;
-}
+    #phycisian-listing-container .list-item .case-start-time {
+        min-width: 75px;
+    }
 /*#phycisian-listing-container table {
     background-color: #f5f5f5;
 }*/
@@ -977,7 +976,7 @@ ul.navbar-nav {
 ***************************** Reporting ********************************************
 ************************************************************************************/
 #Reports ul.panelbar h4 {
-    font-size: 1.1rem !important; 
+    font-size: 1.1rem !important;
     padding-top: 2px;
 }
 
@@ -1054,13 +1053,13 @@ ul.navbar-nav {
     position: relative;
 }
 
-.sm-dot-warning .warning-alert-icon {
-    height: 20px;
-    width: 21px;
-    position: absolute;
-    top: 1.7px;
-    left: 1.7px;
-}
+    .sm-dot-warning .warning-alert-icon {
+        height: 20px;
+        width: 21px;
+        position: absolute;
+        top: 1.7px;
+        left: 1.7px;
+    }
 
 .link-color-change {
     color: #0503a0 !important;
@@ -1075,6 +1074,7 @@ ul.navbar-nav {
 .ms-options-wrap > button:focus, .ms-options-wrap > button {
     color: #495057 !important;
 }
+
 .k-pager-sizes > .k-widget.k-dropdown.k-header {
     margin-right: 12px !important;
     display: -webkit-inline-box !important;
@@ -1087,9 +1087,11 @@ ul.navbar-nav {
 .toolTipAntiFlicker {
     pointer-events: none;
 }
+
 .k-timepicker .k-icon.k-i-clock {
     left: 30%;
 }
+
 #schedulerValidator .k-timepicker .k-icon.k-i-clock {
     left: 0 !important;
 }
@@ -1103,28 +1105,32 @@ ul.navbar-nav {
 .text-orange {
     color: orange;
 }
-.text-purple{
+
+.text-purple {
     color: #800080;
 }
+
 .text-pink {
     color: #de6fa1;
 }
+
 .bg-light-blued {
     background-color: #99d9ea;
 }
+
 .text-blue {
     color: blue;
 }
 
-.facility-tooltip{
-    display:inline-block;
+.facility-tooltip {
+    display: inline-block;
     width: 16px;
-    height:16px;    
-    background-image:url('/Content/images/facility-info-icon.png')
+    height: 16px;
+    background-image: url('/Content/images/facility-info-icon.png')
 }
 
 #newcasePopupAlert .modal-body, #newcasePopupAlert .modal-footer {
-    font-size:22px
+    font-size: 22px
 }
 
 /*Axim Works Start 01-01-2020*/
@@ -1140,29 +1146,29 @@ ul.navbar-nav {
 
 /*Start > Case Listing Page Tabs color */
 
-#caseListTabs  {
-    border-bottom: solid  2px #dee2e6  !important;
+#caseListTabs {
+    border-bottom: solid 2px #dee2e6 !important;
 }
 
-#caseListTabs.nav-tabs .nav-item {
-        margin-bottom: -2px;       
-}
-
-#caseListTabs .nav-link.active {
-        border-width: 2px;
-}
-    /*End > Case Listing Page Tabs color */
-    .physicianCurrentStatus > .current-status-button {
-        cursor: pointer !important;
+    #caseListTabs.nav-tabs .nav-item {
+        margin-bottom: -2px;
     }
 
-.facility-emr-link {       
+    #caseListTabs .nav-link.active {
+        border-width: 2px;
+    }
+/*End > Case Listing Page Tabs color */
+.physicianCurrentStatus > .current-status-button {
+    cursor: pointer !important;
+}
+
+.facility-emr-link {
     margin-top: -5px;
     width: 24px;
 }
 
 .edMainLink {
-    font-size: 18px !important;    
+    font-size: 18px !important;
 }
 
 
@@ -1173,16 +1179,18 @@ ul.navbar-nav {
 
 .timer-container {
     display: grid;
-    display:-ms-grid;
-    display:-moz-grid;
+    display: -ms-grid;
+    display: -moz-grid;
     grid-template-columns: 90% auto;
     -ms-grid-columns: 90% auto;
-    -moz-columns: 90% auto; 
+    -moz-columns: 90% auto;
 }
+
 .est-container {
     position: relative;
-    -ms-grid-column:2; 
+    -ms-grid-column: 2;
 }
+
     .est-container > span {
         position: absolute;
         bottom: 0;
@@ -1202,29 +1210,33 @@ ul.navbar-nav {
 .w-101 {
     width: 101% !important;
 }
+
 .w-90 {
     width: 90% !important;
 }
 
-.rapids-inbox{
+.rapids-inbox {
     padding-right: 5px;
 }
-#rapids .k-timepicker .k-icon.k-i-clock{
+
+#rapids .k-timepicker .k-icon.k-i-clock {
     left: auto;
 }
+
 #rapids .fa-eye,
 #rapids .fa-eye-slash {
     padding: 0;
     color: black;
 }
+
 #rapids .a-fa-overlap {
-    position:relative;
+    position: relative;
     top: -28px;
-    right:5px;
+    right: 5px;
 }
 
-.rapids-unread{
-    font-weight:bold;
+.rapids-unread {
+    font-weight: bold;
 }
 
 #thrombectomyChecks .form-check-inline {
@@ -1281,21 +1293,24 @@ ul.navbar-nav {
 .k-grid-content {
     max-height: 500px;
 }
+
 #basic #grid tr textarea:disabled, #basic #grid tr textarea:disabled:hover {
     background-color: #ebebeb;
 }
+
 .pactemplate-padding {
     padding: 0px;
 }
 
-#case_edit_header_col5  .btn{
-    font-size:11px;
-    min-width:93px;
+#case_edit_header_col5 .btn {
+    font-size: 11px;
+    min-width: 93px;
 }
 
 .edMainHeaderLink {
-    font-size:15px !important;
+    font-size: 15px !important;
 }
+
 .headerDiv {
     background: #D2D0CF; /*#1abc9c;*/
     color: black;
@@ -1312,6 +1327,7 @@ ul.navbar-nav {
 .add-margin-left {
     margin-left: 10px;
 }
+
 .hideimagediv {
     display: none;
 }
@@ -1509,74 +1525,3 @@ ul.navbar-nav {
 }
 
 /*End added by ahmad*/
-
-/***********************************************************************************
-*****************************Dispatch Listing Grid *************************************
-************************************************************************************/
-/* Donot change it without testing, It will effect the appearence of grid*/
-@media only screen and (max-width: 2560px) {
-    #dispatchWaitingToAcceptGrid, #dispatchAcceptedGrid, tbodyForPhysician {
-        font-size: 11px;
-    }
-}
-
-div.sticky {
-    position: -webkit-sticky;
-    position: sticky;
-    bottom: 0;
-    background-color: #3B3A3A;
-    padding: 10px;
-    font-size: 16px;
-    color: white;
-    -webkit-border-top-right-radius: 10px;
-    -webkit-border-top-left-radius: 10px;
-    width: 350px;
-    float: right;
-    cursor: pointer;
-}
-
-    div.sticky  .Stickybadge {
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        padding: 4px 10px;
-        border-radius: 50%;
-        background-color: red;
-        color: white;
-    }
-
-div.stickyFirebase {
-    position: fixed;
-    bottom: 0;
-    width: 800px;
-    border: thin;
-    right: 24px;
-    z-index: 2;
-}
-div.stickyFirebase .Stickybadge {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    padding: 4px 10px;
-    border-radius: 50%;
-    background-color: red;
-    color: white;
-}
-div.headerStickyFirebase {
-    background-color: #3B3A3A;
-    padding: 10px;
-    font-size: 16px;
-    color: white;
-    -webkit-border-top-right-radius: 10px;
-    -webkit-border-top-left-radius: 10px;
-    cursor: pointer;
-}
-div.bodyStickyFirebase {
-    background-color: white;
-    padding: 0px;
-   left:15px;
-}
-div.contentChat {
-    margin-left:15px;
-    margin-right:15px;
-} 
