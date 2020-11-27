@@ -1510,8 +1510,7 @@ ul.navbar-nav {
 
 
 /* Added By Mutti */
-
-.dispatch-row-wrap td > tbody > tr:hover > th:hover, table > tbody > tr:hover > td:hover {
+/*.dispatch-row-wrap td > tbody > tr:hover > th:hover, table > tbody > tr:hover > td:hover {
     background-color: #5E5E5E;
     color: #ffffff !important;
     transition: all 200ms ease-in;
@@ -1525,6 +1524,7 @@ ul.navbar-nav {
 
 .dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
     transition: all 200ms ease-in;
-}
+}*/
+
 
 /*Ended By Mutti*/

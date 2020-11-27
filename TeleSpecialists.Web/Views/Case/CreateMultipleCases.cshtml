@@ -531,6 +531,14 @@
 
         var model = $('#grid').data().kendoGrid.editable.options.model;
         model.set('.cas_billing_diagnosis', DiagnosisCodes);
+
+        if ($("input[name='isMarkCompleted']").prop("checked")) {
+            if (DiagnosisCodes == '') {
+                $('#cas_billing_codes').addClass('border-danger');
+            } else {
+                $('#cas_billing_codes').removeClass('border-danger');
+            }
+        }
         updateCode(index);
 
     }
@@ -571,6 +579,14 @@
                 model.set('.cas_billing_diagnosis', $('.cas_billing_diagnosis_' + index).val());
             }
         }
+        if ($("input[name='isMarkCompleted']").prop("checked")) {
+            if ($('.cas_billing_diagnosis_' + index).val() == '') {
+                $('#cas_billing_codes').addClass('border-danger');
+            } else {
+                $('#cas_billing_codes').removeClass('border-danger');
+            }
+        }
+
         $('#IcdDiagnoseCodesId').hide();
         $('#icd10diagnosis').val('');
         fillDignosesCode(index);
@@ -654,8 +670,7 @@
                     //e.error("XHR response", "status code", "error message");
                 }
 
-                , update: function (e) {
-
+                , update: function (e) {                    
                     var index = dataSourceArray.findObjectIndex(e.data.Id, "Id");
                     e.data.isMarkCompleted = $("input[name='isMarkCompleted']").prop("checked");
 
@@ -665,7 +680,7 @@
                     e.data.cas_billing_diagnosis = $('.cas_billing_diagnosis_' + e.data.Id).val();
 
                     dataSourceArray[index] = e.data;
-                    e.success();
+                    e.success(e.data);
                 },
                 destroy: function (e) {
 
@@ -691,8 +706,6 @@
                         BillingCode: {
                             defaultValue: { ucd_key: 0, ucd_title: "" }
                         },
-
-
                         cas_billing_dob: { type: "date", nullable: true },
 
                         IdentificationType: {
@@ -784,7 +797,6 @@
             let NewArray = JSON.parse(JSON.stringify(dataSourceArray));
 
                 for (var i = 0; i < $(NewArray).length; i++) {
-
                     NewArray[i].Comments = Base64.encode(NewArray[i].Comments);
                     NewArray[i].cas_identification_number = Base64.encode(NewArray[i].cas_identification_number);
                     NewArray[i].cas_patient_name = Base64.encode(NewArray[i].cas_patient_name);
@@ -904,12 +916,12 @@
 
         function billingdiagnosisCodeEditor(container, options) {
             if (options.model.id == "") {
-                $("<input class='k-input k-textbox cas_billing_diagnosis_" + (caseIndex + 1) + "' name='" + options.field + "' style='display:none;'>").appendTo(container);
+                $("<input class='k-input k-textbox  cas_billing_diagnosis_" + (caseIndex + 1) + "' name='" + options.field + "' style='display:none;'>").appendTo(container);                
                 $('<input type="text" id="icd10diagnosis" placeholder="Code or name" class="search_field valid"  onkeyup="icd10DiagnosisCodes(event,' + (caseIndex + 1) + ')" autocomplete="off" aria-invalid="false"> <div id="IcdDiagnoseCodesId" style="display:none"></div>').appendTo(container);
                 $("<div class='col-12 pl-0 pr-0 mt-1'><div class='diag-code-div case_billing_codes_" + (caseIndex + 1) + "' id='cas_billing_codes'></div></div>)")
                     .appendTo(container);
             } else {
-                $("<input class='k-input k-textbox cas_billing_diagnosis_" + (options.model.id) + "' name='" + options.field + "' value='" + options.model.cas_billing_diagnosis + "' style='display:none;'>").appendTo(container);
+                $("<input class='k-input k-textbox cas_billing_diagnosis_" + (options.model.id) + "' name='" + options.field + "' value='" + options.model.cas_billing_diagnosis + "' style='display:none;'>").appendTo(container);                
                 $('<input type="text" id="icd10diagnosis" placeholder="Code or name" class="search_field valid"  onkeyup="icd10DiagnosisCodes(event,' + (options.model.id) + ')" autocomplete="off" aria-invalid="false"> <div id="IcdDiagnoseCodesId" style="display:block"></div>').appendTo(container);
                 $("<div class='col-12 pl-0 pr-0 mt-1'><div class='diag-code-div case_billing_codes_" + (options.model.id) + "' id='cas_billing_codes'></div></div>)")
                     .appendTo(container);
@@ -953,8 +965,7 @@
             },
             pageable: false,
             toolbar: ["create"],
-            edit: function (e) {
-
+            edit: function (e) {                
                 if (e.model.isNew()) {
                     $(".k-grid-update").text("Add");
                     
@@ -1113,7 +1124,7 @@
     }
 
 
-    function validateGrid(row) {
+    function validateGrid(row) {        
         // testObj = e.sender.container;
         var result = true;
         $(".border-danger").removeClass("border-danger");
@@ -1126,6 +1137,7 @@
         var IsMarkedCompleted = row.find("input[name='isMarkCompleted']").prop("checked");
         if (IsMarkedCompleted) {
 
+          
             row.find("[role='gridcell']").each(function () {
                 var item = $(this);
                 var isValid = true;
@@ -1178,8 +1190,7 @@
                         }
                     }
                 }
-                else {
-
+                else {                  
                     if (tagName != "") {
                         if (tagName.toLowerCase() != "input") {
                             var isDisabled = item.find("input").prop("disabled");
@@ -1258,14 +1269,11 @@
                     }
 
                 }
-
-
-
-
             });
-
-
-
+            var IsCaseBillingDiagnosis = row.find("input[name='cas_billing_diagnosis']").val();
+            if (IsCaseBillingDiagnosis == "") {
+                $('#cas_billing_codes').addClass('border-danger');
+            } 
         }
         else {
             var isDatePicker = row.find("[data-role='datepicker']").length > 0 ? true : false;
