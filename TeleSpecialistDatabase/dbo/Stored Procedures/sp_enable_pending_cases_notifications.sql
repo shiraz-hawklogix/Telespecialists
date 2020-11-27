@@ -1,5 +1,0 @@
-﻿create procedure sp_enable_pending_cases_notifications
-AS
-BEGIN
-select aps_enable_pending_cases_notifications from application_setting
-END
