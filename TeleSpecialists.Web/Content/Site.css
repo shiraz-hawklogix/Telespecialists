@@ -765,7 +765,7 @@ ul.navbar-nav {
 ************************************************************************************/
 /* Donot change it without testing, It will effect the appearence of grid*/
 @media only screen and (max-width: 1600px) {
-    #kendoDataGrid, #Credentials-Expiring-container, .facility-grid-container #grid, #contactsGrid, #physicianGrid, #PhysicianPasswordkendoDataGrid, #protocols_grid, #mockCasesGrid,
+    #kendoDataGrid, #Credentials-Expiring-container, .facility-grid-container #grid, #contactsGrid, #physicianGrid, #PhysicianPasswordkendoDataGrid, #protocols_grid,
     #contractsGrid, #notesGrid, #FacilityDashboardGrid, #tPAcaseanalysisGrid, #pitrendsGrid, #casereviewtrendsGrid, #StrokeAlertCasesGrid, #CounterMeasureGrid, #VolumeMetricsGrid, #qualitygoalsGrid, #roles_grid, #users_grid, .kendo-ui-grid-control {
         font-size: 11px;
     }
@@ -777,6 +777,10 @@ ul.navbar-nav {
 .five-9-phoneBar {
     /*height: 98vh;*/
     height: 98%;
+}
+
+.physician-tbl-ui {
+    padding-right: 30px !important;
 }
 
 .five-9-phoneBar, #phycisian-listing-container, #phycisian-listing-container table {
@@ -1525,3 +1529,78 @@ ul.navbar-nav {
 }
 
 /*End added by ahmad*/
+
+/***********************************************************************************
+*****************************Dispatch Listing Grid *************************************
+************************************************************************************/
+/* Donot change it without testing, It will effect the appearence of grid*/
+@media only screen and (max-width: 2560px) {
+    #dispatchWaitingToAcceptGrid, #dispatchAcceptedGrid, tbodyForPhysician {
+        font-size: 11px;
+    }
+}
+
+div.sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    bottom: 0;
+    background-color: #3B3A3A;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    -webkit-border-top-right-radius: 10px;
+    -webkit-border-top-left-radius: 10px;
+    width: 350px;
+    float: right;
+    cursor: pointer;
+}
+
+    div.sticky .Stickybadge {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        padding: 4px 10px;
+        border-radius: 50%;
+        background-color: red;
+        color: white;
+    }
+
+div.stickyFirebase {
+    position: fixed;
+    bottom: 0;
+    width: 800px;
+    border: thin;
+    right: 24px;
+    z-index: 2;
+}
+
+    div.stickyFirebase .Stickybadge {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        padding: 4px 10px;
+        border-radius: 50%;
+        background-color: red;
+        color: white;
+    }
+
+div.headerStickyFirebase {
+    background-color: #3B3A3A;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    -webkit-border-top-right-radius: 10px;
+    -webkit-border-top-left-radius: 10px;
+    cursor: pointer;
+}
+
+div.bodyStickyFirebase {
+    background-color: white;
+    padding: 0px;
+    left: 15px;
+}
+
+div.contentChat {
+    margin-left: 15px;
+    margin-right: 15px;
+}
