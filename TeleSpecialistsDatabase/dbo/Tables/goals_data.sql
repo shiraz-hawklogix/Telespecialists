@@ -1,0 +1,26 @@
+﻿CREATE TABLE [dbo].[goals_data] (
+    [gd_key]                                                         INT           IDENTITY (1, 1) NOT NULL,
+    [gd_qag_key]                                                     INT           NULL,
+    [gd_quater]                                                      NVARCHAR (50) NULL,
+    [qag_door_to_TS_notification_ave_minutes]                        NVARCHAR (50) NULL,
+    [qag_door_to_TS_notification_median_minutes]                     NVARCHAR (50) NULL,
+    [qag_percent10_min_or_less_activation_EMS]                       NVARCHAR (50) NULL,
+    [qag_percent10_min_or_less_activation_PV]                        NVARCHAR (50) NULL,
+    [qag_percent10_min_or_less_activation_Inpt]                      NVARCHAR (50) NULL,
+    [qag_TS_notification_to_response_average_minute]                 NVARCHAR (50) NULL,
+    [qag_TS_notification_to_response_median_minute]                  NVARCHAR (50) NULL,
+    [qag_percent_TS_at_bedside_grterthan10_minutes]                  NVARCHAR (50) NULL,
+    [qag_alteplase_administered]                                     NVARCHAR (50) NULL,
+    [qag_door_to_needle_average]                                     NVARCHAR (50) NULL,
+    [qag_door_to_needle_median]                                      NVARCHAR (50) NULL,
+    [qag_verbal_order_to_administration_average_minutes]             NVARCHAR (50) NULL,
+    [qag_DTN_grter_or_equal_30minutes_percent]                       NVARCHAR (50) NULL,
+    [qag_DTN_grter_or_equal_45minutes_percent]                       NVARCHAR (50) NULL,
+    [qag_DTN_grter_or_equal_60minutes_percent]                       NVARCHAR (50) NULL,
+    [qag_TS_notification_to_needle_grter_or_equal_30minutes_percent] NVARCHAR (50) NULL,
+    [qag_TS_notification_to_needle_grter_or_equal_45minutes_percent] NVARCHAR (50) NULL,
+    [qag_TS_notification_to_needle_grter_or_equal_60minutes_percent] NVARCHAR (50) NULL,
+    CONSTRAINT [PK_goals_data] PRIMARY KEY CLUSTERED ([gd_key] ASC),
+    CONSTRAINT [FK_goals_data_quality_goals] FOREIGN KEY ([gd_qag_key]) REFERENCES [dbo].[quality_goals] ([qag_key])
+);
+

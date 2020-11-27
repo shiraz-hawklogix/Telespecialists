@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSpecialists.CA.DeleteOl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSpecialist.CWH", "TeleSpecialist.CWH\TeleSpecialist.CWH.csproj", "{175A4A5F-A2E3-4406-916F-31767E6F0651}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "TeleSpecialistsDatabase", "TeleSpecialistsDatabase\TeleSpecialistsDatabase.sqlproj", "{A919FB4C-B4A2-4284-8AC5-4CA62604E056}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AzureCustomBuild-Web|Any CPU = AzureCustomBuild-Web|Any CPU
@@ -159,6 +161,18 @@ Global
 		{175A4A5F-A2E3-4406-916F-31767E6F0651}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
 		{175A4A5F-A2E3-4406-916F-31767E6F0651}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{175A4A5F-A2E3-4406-916F-31767E6F0651}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.AzureCustomBuild-Web|Any CPU.ActiveCfg = Release|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.AzureCustomBuild-Web|Any CPU.Build.0 = Release|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.AzureCustomBuild-Web|Any CPU.Deploy.0 = Release|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.DebugLocal|Any CPU.Deploy.0 = Debug|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A919FB4C-B4A2-4284-8AC5-4CA62604E056}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
