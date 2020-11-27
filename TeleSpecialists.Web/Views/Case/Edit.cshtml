@@ -2378,10 +2378,13 @@ EntityTypes.StateAlertTemplate.ToInt()
             if (!validateGeneralTabForm(false, false, false)) {
                 return false;
             }
-            debugger
-            if (!validatemetricvideostartandendtime(false)) {
-                return false;
+
+            if ($("#cas_ctp_key").val() == caseTypeEnum.StrokeAlert || $("#cas_ctp_key").val() == caseTypeEnum.StatConsult || $("#cas_ctp_key").val() == caseTypeEnum.TransferAlert) {
+                if (!validatemetricvideostartandendtime(false)) {
+                    return false;
+                }
             }
+
             // check tpa fields in physician metrics tab, and reset hidden field values.
             resetTpaCandidatehiddenFields();
             GetCaseReviewers();
