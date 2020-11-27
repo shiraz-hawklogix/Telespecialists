@@ -486,8 +486,27 @@
 
     @if (!string.IsNullOrEmpty(Model.case_template_stroke_neuro_tpa.csn_vitals_bp) || !string.IsNullOrEmpty(Model.case_template_stroke_neuro_tpa.csn_vitals_pulse) || !string.IsNullOrEmpty(Model.case_template_stroke_neuro_tpa.csn_vitals_blood_glucose) || (!string.IsNullOrEmpty(ViewBag.NIHSSAssessmentsData)@*&& !Model.case_template_stroke_neuro_tpa.csn_ignore_nihss*@))
 {
+<br />
 <div>
+    @if (Model.case_template_stroke_neuro_tpa != null && Model.cas_nihss_cannot_completed)
+    {
+        string NIHSS = "NIHSS may not be reliable due to:";
+        if (Model.case_template_stroke_neuro_tpa.csn_NIHSS_comatose == 1)
+        {
+            <span>@NIHSS Patient is comatose</span><br />
+        }
+        if (Model.case_template_stroke_neuro_tpa.csn_NIHSS_comatose == 2)
+        {
+            <span>@NIHSS Patient was intubated and paralyzed</span><br />
+        }
+        if (Model.case_template_stroke_neuro_tpa.csn_NIHSS_comatose == 3)
+        {
+            <span>@NIHSS @Model.case_template_stroke_neuro_tpa.csn_NIHSS_comatose_text</span><br />
+        }
+    }
+</div>
     <br />
+<div>
     <div><b>Examination:</b></div>
     @if (!string.IsNullOrEmpty(Model.case_template_stroke_neuro_tpa.csn_vitals_bp) || !string.IsNullOrEmpty(Model.case_template_stroke_neuro_tpa.csn_vitals_pulse) || !string.IsNullOrEmpty(Model.case_template_stroke_neuro_tpa.csn_vitals_blood_glucose))
     {
@@ -513,15 +532,15 @@ if (!string.IsNullOrEmpty(ViewBag.NIHSSAssessmentsData) /*&& !Model.case_templat
 }
 
 }
-    @if (Model.cas_nihss_cannot_completed)
+@*@if (Model.cas_nihss_cannot_completed)
     {
         <br />
         <label>
             <span>@Model.cas_exam_free_text</span><br />
         </label>
-    }
-    @*@if (!string.IsNullOrEmpty(Model.case_template_stroke_neuro_tpa.csn_nihss_totalscore.ToString()) && !(Model.case_template_stroke_neuro_tpa.csn_ignore_nihss))*@
-    @if (!string.IsNullOrEmpty(Model.case_template_stroke_neuro_tpa.csn_nihss_totalscore.ToString()) && !(Model.cas_nihss_cannot_completed))
+    }*@
+@*@if (!string.IsNullOrEmpty(Model.case_template_stroke_neuro_tpa.csn_nihss_totalscore.ToString()) && !(Model.case_template_stroke_neuro_tpa.csn_ignore_nihss))*@
+    @if (!string.IsNullOrEmpty(Model.case_template_stroke_neuro_tpa.csn_nihss_totalscore.ToString()) @*&& !(Model.cas_nihss_cannot_completed)*@)
     {
         <br />
         <div>

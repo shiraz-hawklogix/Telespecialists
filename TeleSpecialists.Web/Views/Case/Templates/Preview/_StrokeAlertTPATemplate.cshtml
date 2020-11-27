@@ -472,6 +472,24 @@
 {
 <br />
 <div>
+    @if (Model.case_template_stroke_tpa != null && Model.cas_nihss_cannot_completed)
+    {
+        string NIHSS = "NIHSS may not be reliable due to:";
+        if (Model.case_template_stroke_tpa.cts_NIHSS_comatose == 1)
+        {
+            <span>@NIHSS Patient is comatose</span><br />
+        }
+        if (Model.case_template_stroke_tpa.cts_NIHSS_comatose == 2)
+        {
+            <span>@NIHSS Patient was intubated and paralyzed</span><br />
+        }
+        if (Model.case_template_stroke_tpa.cts_NIHSS_comatose == 3)
+        {
+            <span>@NIHSS @Model.case_template_stroke_tpa.cts_NIHSS_comatose_text</span><br />
+        }
+    }
+</div>
+<div>
     <div><b>Examination:</b></div>
     @if (!string.IsNullOrEmpty(Model.case_template_stroke_tpa.cts_vitals_bp) || !string.IsNullOrEmpty(Model.case_template_stroke_tpa.cts_vitals_pulse) || !string.IsNullOrEmpty(Model.case_template_stroke_tpa.cts_vitals_blood_glucose))
     {
@@ -494,18 +512,17 @@
 {
 <div>@Html.Raw(ViewBag.NIHSSAssessmentsData)</div>
 }
-
 </div>
 }
-    @if (Model.cas_nihss_cannot_completed)
+@*@if (Model.cas_nihss_cannot_completed)
     {
         <br />
         <label>
            <span>@Model.cas_exam_free_text</span><br />
         </label>
-    }
-    @*@if (!string.IsNullOrEmpty(Model.case_template_stroke_tpa.cts_nihss_totalscore.ToString()) && !(Model.case_template_stroke_tpa.cts_ignore_nihss))*@
-    @if (!string.IsNullOrEmpty(Model.case_template_stroke_tpa.cts_nihss_totalscore.ToString()) && !(Model.cas_nihss_cannot_completed))
+    }*@
+@*@if (!string.IsNullOrEmpty(Model.case_template_stroke_tpa.cts_nihss_totalscore.ToString()) && !(Model.case_template_stroke_tpa.cts_ignore_nihss))*@
+    @if (!string.IsNullOrEmpty(Model.case_template_stroke_tpa.cts_nihss_totalscore.ToString()) @*&& !(Model.cas_nihss_cannot_completed)*@)
     {
         <br />
         <div>

@@ -71,11 +71,11 @@
     }
 
     DateTime examdate = Convert.ToDateTime("09/22/2020");
-    var examtext = "false";
+    //var examtext = "false";
     var classdanger = "";
     if (Model.cas_created_date > examdate)
     {
-        examtext = "true";
+        //examtext = "true";
         classdanger = "text-danger";
     }
     var NIHSSComatose = Enum.GetValues(typeof(NIHSSPatientsComatose)).Cast<NIHSSPatientsComatose>().Select(m => new { Value = (int)m, Text = m.ToDescription() });
@@ -302,16 +302,21 @@
 
     <div class="col-xl-4  col-lg-4 col-md-4 col-sm-12">
         <div class="form-group row">
-            <div class="col-12">
-                @*@Html.CheckBoxFor(m => m.case_template_stroke_tpa.cts_ignore_nihss)*@
+            <div class="col-6">
                 @Html.CheckBoxFor(m => m.cas_nihss_cannot_completed)
                 <label class="checkbox-inline">
                     <b>NIHSS may not be reliable due to</b>
                 </label>
             </div>
+            <div class="col-6" id="ddlNIHSScomatose" style="display:none;">
+                @Html.DropDownListFor(m => m.case_template_stroke_tpa.cts_NIHSS_comatose, NIHSSComatoseList, new { @id = "ddlNIHSS", @class = "form-control" })
+                <div class="error_msg" id="case_template_stroke_tpa_cts_NIHSS_comatose-error" style="display:none;">
+                    <label>This field is required</label>
+                </div>
+            </div>
         </div>
         @* Added BY axim 10-09-2020 *@
-        <div class="form-group row" id="divexamTextFree" style="display:none">
+        @*<div class="form-group row" id="divexamTextFree" style="display:none">
             <label class="control-label col-12 @classdanger">Exam Free Text: </label>
             <div class="col-6" id="divexamFree">
                 @Html.TextAreaFor(m => m.cas_exam_free_text, new { @class = "form-control" })
@@ -322,19 +327,12 @@
                     <label>This field is required</label>
                 </div>
             </div>
-            <div class="col-6">
-                @Html.DropDownListFor(m => m.case_template_stroke_tpa.cts_NIHSS_comatose, NIHSSComatoseList, new { @id = "ddlNIHSS", @class = "form-control" })
-            </div>
-        </div>
+        </div>*@
         @* Ended by Axim 10-09-2020 *@
         @* Added BY axim 17-11-2020 *@
         <div class="form-group row" id="divNIHSScomatose" style="display:none">
-            @*<label class="control-label col-12 @classdanger">Exam Free Text: </label>*@
             <div class="col-12">
                 @Html.TextAreaFor(m => m.case_template_stroke_tpa.cts_NIHSS_comatose_text, new { @class = "form-control" })
-                @*<div class="text-danger">
-                        <label class="error">50 characters minimum (<span class="Counter">0</span>)</label>
-                    </div>*@
                 <div class="error_msg" id="case_template_stroke_tpa_cts_NIHSS_comatose_text-error" style="display:none;">
                     <label>This field is required</label>
                 </div>
@@ -382,22 +380,17 @@
         cts_tpa_bolus_complications_change();
         calculateScore("#case_template_stroke_tpa_cts_nihss_totalscore");
 
-        //if ($("#case_template_stroke_tpa_cts_ignore_nihss").is(':checked')) {
         if ($("#cas_nihss_cannot_completed").is(':checked')) {
-            $(".nihss-empty").removeClass("d-none");
-            $(".nihss").addClass("d-none");
-            $("#divTotalScore").addClass("d-none");
-            $("#divexamTextFree").show();
-            @*if (@examtext) {
-                $("#cas_exam_free_text").attr('required', true);
-            }*@
+            //    $(".nihss-empty").removeClass("d-none");
+            //    $(".nihss").addClass("d-none");
+            //    $("#divTotalScore").addClass("d-none");
+            $("#ddlNIHSScomatose").show();
         }
         else {
-            $(".nihss-empty").addClass("d-none");
-            $(".nihss").removeClass("d-none");
-            $("#divTotalScore").removeClass("d-none");
-            $("#divexamTextFree").hide();
-           // $("#cas_exam_free_text").removeAttr('required');
+            //    $(".nihss-empty").addClass("d-none");
+            //    $(".nihss").removeClass("d-none");
+            //    $("#divTotalScore").removeClass("d-none");
+            $("#ddlNIHSScomatose").hide();
         }
     });
             $("input[name='case_template_stroke_tpa.cts_tpa_bolus_complications']").off("change").on("change", cts_tpa_bolus_complications_change);
@@ -433,40 +426,39 @@
         }
     });
     //Ended BY Axim 17-11-2020
-    var existingText = $("#cas_exam_free_text").val();
-    if (existingText != undefined) {
-        var charactersTyped = existingText.replace(/\s/g, '').length;
-        $(".Counter").html(charactersTyped);
+    //var existingText = $("#cas_exam_free_text").val();
+    //if (existingText != undefined) {
+    //    var charactersTyped = existingText.replace(/\s/g, '').length;
+    //    $(".Counter").html(charactersTyped);
 
-        $("#cas_exam_free_text").keyup(function () {
-            var text = $(this).val();
-            var charactersTyped = text.replace(/\s/g, '').length;
-            $(".Counter").html(charactersTyped)
-        });
-    }
+    //    $("#cas_exam_free_text").keyup(function () {
+    //        var text = $(this).val();
+    //        var charactersTyped = text.replace(/\s/g, '').length;
+    //        $(".Counter").html(charactersTyped)
+    //    });
+    //}
     //Added By Axim
     if (@status== true) {
         $("#cts-family-consent").show();
     }
-            //$('#case_template_stroke_tpa_cts_ignore_nihss').change(function () {
-            $('#cas_nihss_cannot_completed').change(function () {
-                if ($(this).is(":checked")) {
-                    $(".nihss-empty").removeClass("d-none");
-                    $(".nihss").addClass("d-none");
-                    $("#divTotalScore").addClass("d-none");
-                    $("#divexamTextFree").show();
-                    @*if (@examtext) {
-                        $("#cas_exam_free_text").attr('required', true);
-                    }*@
-                }
-                else {
-                    $(".nihss-empty").addClass("d-none");
-                    $(".nihss").removeClass("d-none");
-                    $("#divTotalScore").removeClass("d-none");
-                    $("#divexamTextFree").hide();
-                    //$("#cas_exam_free_text").removeAttr('required');
-                }
-
+    $('#cas_nihss_cannot_completed').change(function () {
+        if ($(this).is(":checked")) {
+            //                $(".nihss-empty").removeClass("d-none");
+            //                $(".nihss").addClass("d-none");
+            //                $("#divTotalScore").addClass("d-none");
+           
+            $("#ddlNIHSScomatose").show();
+            if ($("#ddlNIHSS").val() == "3") {
+                $("#divNIHSScomatose").show();
+            }
+        }
+        else {
+            //                $(".nihss-empty").addClass("d-none");
+            //                $(".nihss").removeClass("d-none");
+            //                $("#divTotalScore").removeClass("d-none");
+            $("#ddlNIHSScomatose").hide();
+            $("#divNIHSScomatose").hide();
+        }
     });
     $(".cts_familyRD").on("change").change(function () {
         var _value = $(this).val();

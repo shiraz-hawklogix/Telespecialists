@@ -397,6 +397,26 @@
 
     @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_bp) || !string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_pulse) || !string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_blood_glucose) || !string.IsNullOrEmpty(ViewBag.NIHSSAssessmentsData))
     {
+        <br />
+        <div>
+            @if (Model.case_template_statconsult != null && Model.cas_nihss_cannot_completed)
+            {
+                string NIHSS = "NIHSS may not be reliable due to:";
+                if (Model.case_template_statconsult.ctt_NIHSS_comatose == 1)
+                {
+                    <span>@NIHSS Patient is comatose</span><br />
+                }
+                if (Model.case_template_statconsult.ctt_NIHSS_comatose == 2)
+                {
+                    <span>@NIHSS Patient was intubated and paralyzed</span><br />
+                }
+                if (Model.case_template_statconsult.ctt_NIHSS_comatose == 3)
+                {
+                    <span>@NIHSS @Model.case_template_statconsult.ctt_NIHSS_comatose_text</span><br />
+                }
+            }
+        </div>
+        <br />
         <div>
             <div><b>Examination:</b></div>
             @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_bp) || !string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_pulse) || !string.IsNullOrEmpty(Model.case_template_statconsult.ctt_vitals_blood_glucose))
@@ -592,23 +612,23 @@
                 }
                 else
                 {
-                    if (Model.cas_nihss_cannot_completed)
-                    {
-                        <label class="checkbox-inline">
-                            <b> NIHSS Cannot be Completed Due to Patient Status</b>
-                        </label>
-                       <br />
-                        <label>
-                           <span>@Model.cas_exam_free_text</span>
-                        </label>
-                    }
-                    else
-                    {
-                        if (!string.IsNullOrEmpty(ViewBag.NIHSSAssessmentsData))
+                    @*if (Model.cas_nihss_cannot_completed)
                         {
-                            <div>@Html.Raw(ViewBag.NIHSSAssessmentsData)</div>
+                            <label class="checkbox-inline">
+                                <b> NIHSS Cannot be Completed Due to Patient Status</b>
+                            </label>
+                            <br />
+                            <label>
+                                <span>@Model.cas_exam_free_text</span>
+                            </label>
                         }
+                        else
+                        {*@
+                    if (!string.IsNullOrEmpty(ViewBag.NIHSSAssessmentsData))
+                    {
+                        <div>@Html.Raw(ViewBag.NIHSSAssessmentsData)</div>
                     }
+                    //}
 
                 }
 
@@ -618,7 +638,7 @@
         </div>
     }
     @*@if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_nihss_totalscore.ToString()) && !(Model.case_template_statconsult.ctt_ignore_nihss))*@
-    @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_nihss_totalscore.ToString()) && !(Model.cas_nihss_cannot_completed))
+    @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_nihss_totalscore.ToString()) @*&& !(Model.cas_nihss_cannot_completed)*@)
     {
         if (Model.case_template_statconsult.ctt_nihss_or_neuro != "NeuroExam")
         {
@@ -654,9 +674,9 @@
     {
         AspNetUser physician = ViewBag.Physician;
         <br /><br />
-              <div>
-                  Dr @physician.FirstName @physician.LastName
-              </div>
+        <div>
+            Dr @physician.FirstName @physician.LastName
+        </div>
     }
 
     <br />

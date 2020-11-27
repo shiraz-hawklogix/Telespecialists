@@ -337,21 +337,21 @@ namespace TeleSpecialists.BLL.Service
         }
         public string GenerateNIHSSReport(@case model)
         {
-            string nihssMessage = "NIHSS cannot be completed due to patient status.";
+            //string nihssMessage = "NIHSS cannot be completed due to patient status.";
             //if (model.case_template_stroke_neuro_tpa != null && model.case_template_stroke_neuro_tpa.csn_ignore_nihss)
-            if (model.case_template_stroke_neuro_tpa != null && model.cas_nihss_cannot_completed)
-                return nihssMessage;
+            ////if (model.case_template_stroke_neuro_tpa != null && model.cas_nihss_cannot_completed)
+              ////  return nihssMessage;
             //else if (model.case_template_stroke_notpa != null && model.case_template_stroke_notpa.ctn_ignore_nihss)
-            else if (model.case_template_stroke_notpa != null && model.cas_nihss_cannot_completed)
-                return nihssMessage;
+            ////else if (model.case_template_stroke_notpa != null && model.cas_nihss_cannot_completed)
+                ////return nihssMessage;
             //else if (model.case_template_stroke_tpa != null && model.case_template_stroke_tpa.cts_ignore_nihss)
-            else if (model.case_template_stroke_tpa != null && model.cas_nihss_cannot_completed)
-                return nihssMessage;
+            ////else if (model.case_template_stroke_tpa != null && model.cas_nihss_cannot_completed)
+                ////return nihssMessage;
             //else if (model.case_template_telestroke_notpa != null && model.case_template_telestroke_notpa.ctt_ignore_nihss)
-            else if (model.case_template_telestroke_notpa != null && model.cas_nihss_cannot_completed)
-                return nihssMessage;
-            else
-            {
+            ////else if (model.case_template_telestroke_notpa != null && model.cas_nihss_cannot_completed)
+                ////return nihssMessage;
+            ////else
+            ////{
                 var paragraph = new StringBuilder();
                 if (!string.IsNullOrEmpty(model.SelectedNIHSQuestionResponse))
                 {
@@ -362,9 +362,10 @@ namespace TeleSpecialists.BLL.Service
                         paragraph.Append(item.nih_stroke_scale_question.nsq_title + " - " + item.nss_title);
                         paragraph.Append("<b> + " + item.nss_score.ToString() + "</b><br/>");
                     }
-                }
-                return paragraph.ToString();
+                ////}
+                ////return paragraph.ToString();
             }
+            return paragraph.ToString();
         }
 
         private void ReplaceText(string inputText, string textToReplace)
