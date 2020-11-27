@@ -170,6 +170,7 @@
     var _msgType;
     var publicGrpArr = [];
     var activeFriendId;
+    var activeConnection;
 
     var FileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'bmp',
         'txt', 'text',
@@ -532,6 +533,7 @@
         _isOnline = $(this).attr("data-onlineStatus");
         _msgType = type;
         activeFriendId = receiverid;
+        activeConnection = receiverid;
         _receiverId = receiverid;
         _receiverName = receiverName;
         _receiverPhoto = receiverPhoto;
@@ -822,21 +824,24 @@
             showLeaveGrp = false;
         // end
         if (type !== 'Private' && showLeaveGrp) {
-            let _leave = "<a href='javacript:void(0)' class='leave-group' id='leaveGrp' data-userid='" + SenderId + "' data-grpid='" + _receiverId + "' >Leave Group</a>";
+            let _leave = "<a href='javacript:void(0)' class='leave-group' id='leaveGrp' data-userid='" + SenderId + "' data-grpid='" + _receiverId + "' ><i class='fa fa-level-down' aria-hidden='true'></i>Leave Group</a>";
             $("#AttachmentDiv").append(_leave);
         }
         let mutedStatus = muted;
         let muteText = '';
+        let blsBellIcon = '';
         if (mutedStatus === 'true') {
             mutedStatus = false;
             muteText = 'UnMute Notification';
+            blsBellIcon = 'fa fa-bell-slash';
         }
         else {
             mutedStatus = true;
             muteText = 'Mute Notification';
+            blsBellIcon = 'fa fa-bell';
         }
            
-        let mute_notification = "<a href='javacript:void(0)' class='leave-group' id='mute_notification' data-userid='" + SenderId + "' data-grpid='" + _receiverId + "' data-value='" + mutedStatus + "' >" + muteText+"</a>";
+        let mute_notification = "<a href='javacript:void(0)' class='leave-group' id='mute_notification' data-userid='" + SenderId + "' data-grpid='" + _receiverId + "' data-value='" + mutedStatus + "'><i class='" + blsBellIcon+"' id='user_fa_bell'></i><span>" + muteText+"</span></a>";
         $("#AttachmentDiv").append(mute_notification);
         $("#AttachmentDiv").addClass('attachment-div');
         GetAttachmentEvent();
@@ -942,7 +947,7 @@
             if (!firstKnownKey) {
                 firstKnownKey = snapshot.key;
             }
-            if (snapshot.ref.parent.key === _receiverId) {
+            if (snapshot.ref.parent.key === activeConnection) {//_receiverId && activeConnection === snapshot.ref.parent.key
                 if (SenderId === snapshot.val().senderId) {
                     //_senderName = snapshot.val().senderName;
                     //_senderPhoto = snapshot.val().senderPhoto;
@@ -1057,8 +1062,8 @@
     function GetChatNew(senderid, receiverid) {
         $("#msgDetail").html('');
         $("#msgDetail").empty();
-        var id = senderid + '-' + receiverid;
-        var _id = receiverid + '-' + senderid;
+        let id = senderid + '-' + receiverid;
+        let _id = receiverid + '-' + senderid;
         var status = 'not';
         var foundId;
         var ref = firebase.database().ref("userMessages");
@@ -1067,8 +1072,9 @@
             if (data.val() !== null) {
                 foundId = id;
                 endToEndChatId = id;
+                activeConnection = id
                 ref.child(foundId).on("child_added", function (snapshot) {
-                    if (snapshot.ref.parent.key === endToEndChatId) {
+                    if (snapshot.ref.parent.key === activeConnection) {//endToEndChatId && activeConnection === snapshot.ref.parent.key
                         if (SenderId === snapshot.val().senderId) {
                             _teleid = snapshot.val().teleid;
                             var date = new Date(snapshot.val().dateTime);
@@ -1167,8 +1173,9 @@
                 refConnection.child(_id).on('value', function (collect) {
                     foundId = _id;
                     endToEndChatId = _id;
+                    activeConnection = _id;
                     ref.child(foundId).on("child_added", function (snapshot) {
-                        if (snapshot.ref.parent.key === endToEndChatId) {
+                        if (snapshot.ref.parent.key === activeConnection) {//endToEndChatId && activeConnection === snapshot.ref.parent.key
                             if (SenderId === snapshot.val().senderId) {
                                 _senderName = snapshot.val().senderName;
                                 _senderPhoto = snapshot.val().senderPhoto;
@@ -2350,12 +2357,16 @@
                 muted: _status
             });
             if (_status === 'true') {
-                $(this).data('value', 'false');
-                $(this).html('UnMute Notification');
+                $(this).attr('data-value', 'false'); //$(this).data('value', 'false');
+                $('#mute_notification span').html('UnMute Notification');
+                $('#user_fa_bell').removeClass('fa-bell');
+                $('#user_fa_bell').addClass('fa-bell-slash');
             }
             else {
-                $(this).data('value', 'true');
-                $(this).html('Mute Notification');
+                $(this).attr('data-value', 'true');// $(this).data('value', 'true');
+                $('#mute_notification span').html('Mute Notification');
+                $('#user_fa_bell').removeClass('fa-bell-slash');
+                $('#user_fa_bell').addClass('fa-bell');
             }
         });
     }
