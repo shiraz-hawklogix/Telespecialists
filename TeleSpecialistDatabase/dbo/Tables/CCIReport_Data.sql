@@ -5,6 +5,7 @@
     [Month]          DATETIME       NULL,
     [Date]           DATETIME       NULL,
     [Physician_Name] NVARCHAR (100) NULL,
+	[PhysicianID]         NVARCHAR (50) NULL,
     CONSTRAINT [PK_CCIReport_Data] PRIMARY KEY CLUSTERED ([CCI_ID] ASC)
 );
 

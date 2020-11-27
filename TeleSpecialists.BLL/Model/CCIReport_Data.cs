@@ -20,5 +20,6 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<System.DateTime> Month { get; set; }
         public Nullable<System.DateTime> Date { get; set; }
         public string Physician_Name { get; set; }
+        public string PhysicianID { get; set; }
     }
 }

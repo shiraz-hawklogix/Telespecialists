@@ -10005,13 +10005,15 @@ namespace TeleSpecialists.BLL.Service
             var finalresult = Finallist.Select(x => new
             {
                 Phy_Name = x.Phy_Name,
-                Phy_Bci_Value = x.Phy_Bci_Value
+                Phy_Bci_Value = x.Phy_Bci_Value,
+                PhysicianID = x.PhysicianID
 
             }).OrderBy(x => x.Phy_Name).AsQueryable();
 
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
+
         public DataSourceResult GetDailyForecastBydb(DataSourceRequest request, string facilitiess)
         {
             List<Monthly_Forecast> volumelist = new List<Monthly_Forecast>();
@@ -10055,6 +10057,7 @@ namespace TeleSpecialists.BLL.Service
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
+
         public DataSourceResult GetMontlyForecastBydb(DataSourceRequest request, string facilitiess)
         {
 
@@ -10106,6 +10109,7 @@ namespace TeleSpecialists.BLL.Service
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
 
         }
+
         public DataSourceResult GetCCIData(DataSourceRequest request, List<Guid> facilities, List<Guid> Physicians)
         {
 
@@ -10121,7 +10125,8 @@ namespace TeleSpecialists.BLL.Service
             var finalresult = Finallist.Select(x => new
             {
                 Physician_Name = x.Physician_Name,
-                Physician_CCI = x.Physician_CCI
+                Physician_CCI = x.Physician_CCI,
+                PhysicianID = x.PhysicianID
 
             }).AsQueryable();
 
@@ -10172,6 +10177,7 @@ namespace TeleSpecialists.BLL.Service
                 return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
             }
         }
+
         public DataSourceResult GetCCIGraph(DataSourceRequest request)
         {
             using (var context = new Model.TeleSpecialistsContext())
@@ -10263,15 +10269,6 @@ namespace TeleSpecialists.BLL.Service
                 return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
             }
         }
-
-
-
-
-
-
-
-
-
 
     }
 }

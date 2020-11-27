@@ -259,6 +259,7 @@
           <Property Name="Phy_Name" Type="nvarchar" MaxLength="100" />
           <Property Name="Phy_Bci_Value" Type="nvarchar" MaxLength="100" />
           <Property Name="Phy_Id" Type="nvarchar" MaxLength="100" />
+          <Property Name="PhysicianID" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="call_history">
           <Key>
@@ -929,6 +930,7 @@
           <Property Name="Month" Type="datetime" />
           <Property Name="Date" Type="datetime" />
           <Property Name="Physician_Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="PhysicianID" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="component_access">
           <Key>
@@ -6450,6 +6452,7 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <Property Name="Month" Type="DateTime" Precision="3" />
           <Property Name="Date" Type="DateTime" Precision="3" />
           <Property Name="Physician_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <ComplexType Name="UspGetAllCaseDataForCCI_Result">
           <Property Type="String" Name="cas_phy_key" Nullable="true" MaxLength="128" />
@@ -6526,6 +6529,7 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <Property Name="Phy_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Phy_Bci_Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Phy_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="case_rejection_reason">
           <Key>
@@ -9248,6 +9252,7 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <EntitySetMapping Name="CCIReport_Data">
             <EntityTypeMapping TypeName="DataModel.CCIReport_Data">
               <MappingFragment StoreEntitySet="CCIReport_Data">
+                <ScalarProperty Name="PhysicianID" ColumnName="PhysicianID" />
                 <ScalarProperty Name="Physician_Name" ColumnName="Physician_Name" />
                 <ScalarProperty Name="Date" ColumnName="Date" />
                 <ScalarProperty Name="Month" ColumnName="Month" />
@@ -9298,6 +9303,7 @@ warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedul
           <EntitySetMapping Name="BCI_ReportData">
             <EntityTypeMapping TypeName="DataModel.BCI_ReportData">
               <MappingFragment StoreEntitySet="BCI_ReportData">
+                <ScalarProperty Name="PhysicianID" ColumnName="PhysicianID" />
                 <ScalarProperty Name="Phy_Id" ColumnName="Phy_Id" />
                 <ScalarProperty Name="Phy_Bci_Value" ColumnName="Phy_Bci_Value" />
                 <ScalarProperty Name="Phy_Name" ColumnName="Phy_Name" />
