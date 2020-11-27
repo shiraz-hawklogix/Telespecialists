@@ -6315,6 +6315,19 @@ namespace TeleSpecialists.BLL.Service
 
         public DataSourceResult GetOperationsOutliersList(DataSourceRequest request, string period)
         {
+
+            List<OperationsOutliers> result = _unitOfWork.SqlQuery<OperationsOutliers>(string.Format("Exec sp_get_case_color_outliers @filter = '{0}',@Take = '{1}',@Skip = '{2}'", period, request.Take, request.Skip)).ToList();
+
+            var list = result.AsQueryable();
+            int Total = list.FirstOrDefault()?.TotalRecords ?? 0;
+            if (request.Take == 0)
+                Total = list.Count();
+            var kendoObj = list.ToDataSourceResult(Total, 0, request.Sort, null);
+            kendoObj.Total = Total;
+            return kendoObj;
+
+            #region
+            /*
             using (var context = new Model.TeleSpecialistsContext())
             {
 
@@ -6398,58 +6411,21 @@ namespace TeleSpecialists.BLL.Service
                     {
                         obj.CallBack_Response_Time = item.CallBack_Response;
                     }
-                    //obj.TS_Response_Time = (item.casetypeid == 9) ? item.TS_ResponseTime : item.CallBack_Response;
                     obj.Created_Date = item.cas_created_date;
                     obj.Operations_Notes = item.cas_operations_review;
                     _list.Add(obj);
-
-                    //else if (item.CallBackResponseTime > 15 && item.casetypeid == 10)
-                    //{
-                    //    obj = new OperationsOutliers();
-                    //    obj.CaseKey = item.cas_key;
-                    //    obj.CaseNumber = item.case_number;
-                    //    obj.CaseType = "STAT Consult";
-                    //    obj.StartTime = item.start_time;
-                    //    obj.FacilityName = item.fac_name;
-                    //    obj.Physician_Initials = item.physician;
-                    //    obj.Physician_Status = PhysicianColors(item.cas_key, item.physician, ColorList);
-                    //    obj.CallBack_Response_Time = item.CallBack_Response;
-                    //    obj.Created_Date = item.cas_created_date;
-                    //    _list.Add(obj);
-                    //}
                 }
 
                 var finalresult = _list.OrderByDescending(x => x.Created_Date).AsQueryable();
                 return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
             }
+            */
+            #endregion
         }
 
+        /*
         public string PhysicianColors(int cas_key, string physician, List<UserColorOutliers> ColorList)
         {
-            //using (var context = new Model.TeleSpecialistsContext())
-            //{
-
-            //context.Configuration.AutoDetectChangesEnabled = false;
-            //context.Configuration.ProxyCreationEnabled = false;
-            //context.Configuration.LazyLoadingEnabled = false;
-            //var phy_initials = physician.Split('/').ToList();
-            //var cases = from userlog in _unitOfWork.PhysicianStatusLogRepository.Query()
-            //            where userlog.psl_cas_key == cas_key
-            //            join phy_status in _unitOfWork.PhysicianStatusRepository.Query() on userlog.psl_phs_key equals phy_status.phs_key into status
-            //            from phy_status in status.DefaultIfEmpty()
-            //                //join user in _unitOfWork.UserRepository.Query() on userlog.psl_user_key equals user.Id into users
-            //                //from user in users.DefaultIfEmpty()
-            //                //where user.IsActive == true && user.IsDeleted == false && user.IsDisable == false
-            //            select (new
-            //            {
-            //                userinitial = userlog.AspNetUser.UserInitial,
-            //                usercolor = userlog.psl_phs_key == phy_status.phs_key ? phy_status.phs_color_code : "",
-            //                userstatus = userlog.psl_status_name,
-            //            });
-
-            //List<string> checklist = new List<string>();
-            //var detail = cases.ToList();
-
             var detail = ColorList.Where(x => x.psl_cas_key == cas_key).FirstOrDefault();
             string html = "<div class='physicianstatusdiv'>";
             if (detail.UserInitial != null && detail.psl_status_color != null && detail.psl_status_name != null)
@@ -6474,8 +6450,8 @@ namespace TeleSpecialists.BLL.Service
             string result = html.TrimEnd('/');
             result += "</div>";
             return result;
-            //}
         }
+        */
 
         public DataSourceResult GetStatusSnapshot(DataSourceRequest request, string datevalue)
         {

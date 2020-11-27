@@ -44,19 +44,9 @@ namespace TeleSpecialists.BLL.ViewModels
         public string Physician_Status { get; set; }
         public string TS_Response_Time { get; set; }
         public string CallBack_Response_Time { get; set; }
-        public DateTime Created_Date { get; set; }
         public string Operations_Notes { get; set; }
-    }
-
-
-    public class UserColorOutliers
-    {
-        public int psl_cas_key { get; set; }
-        public string UserInitial { get; set; }
-
-        public string psl_status_color { get; set; }
-
-        public string psl_status_name { get; set; }
+        public string Physician_Color { get; set; }
+        public int TotalRecords { get; set; }
 
     }
 }

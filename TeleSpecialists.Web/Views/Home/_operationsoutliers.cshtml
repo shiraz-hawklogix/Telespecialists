@@ -127,7 +127,7 @@
                         kendoDropDown.bind("open", onDropdDownOpen);
                 });
                 //LoadOperationsoutliersList();
-                DoColor();
+                ApplyPhysicianColor();
                 //PhysicianColor();
                 //GetDetail();
             },
@@ -136,14 +136,15 @@
                     title: "<span class='font-weight-bold' style='font-size: larger;'>Operations Outliers Report</span>",
                     columns: [
                         { hidden: true, field: "CaseKey" },
+                        { hidden: true, field: "Physician_Color", attributes: { "class": "physiciancolor" } },
+                        { hidden: true, field: "Physician_Status", attributes: { "class": "physicianstatus" } },
                         { title: "TC Case Number", template: "<a class='loadLinkAsync' onclick='AssignTabID.call(this)' title='TC Case Number' href='@Url.Action("Edit", "Case")?id=#= CaseKey#&isReadOnly=#= true#'>#=CaseNumber#</a>", width: 185 },
-                        { field: "CaseType", width: 185, title: "CaseType" },
+                        { field: "CaseType", width: 185, title: "CaseType", attributes: { "class": "casetype" } },
                         { field: "StartTime", width: 185, title: "Start Time" },
                         { field: "FacilityName", width: 250, title: "Facility" },
-                        { field: "Physician_Initials", width: 250, title: "Physician Initials", hidden: true },
-                        { field: "Physician_Status", width: 185, title: "Physician Status", template:"#= Physician_Status#" },
-                        { field: "TS_Response_Time", width: 185, title: "TS Response Time" },
-                        { field: "CallBack_Response_Time", width: 185, title: "CallBack Time" },
+                        { field: "Physician_Initials", width: 250, title: "Physician Initials", attributes: { "class": "physicianinitials" } },
+                        { field: "TS_Response_Time", width: 185, title: "TS Response Time", attributes: { "class": "reponsetime" } },
+                        { field: "CallBack_Response_Time", width: 185, title: "CallBack Time", attributes: { "class": "callbacktime" } },
                         { field: "Operations_Notes", width: 250, title: "Operation Notes" }
                     ]
                 }]
@@ -152,13 +153,14 @@
     //var AssignTabID = function () {
     //    localStorage.clickfromhome = "casespendingreview";
     //}
-    function DoColor() {
+    function ApplyPhysicianColor() {
         $("#cases-operations-outliers-container tbody tr").each(function (index, element) {
             var row = $(element);
-            var respTime = row.find("td:nth-child(8)").text();
-            var callback = row.find("td:nth-child(9)").text();
-            var CaseType = row.find("td:nth-child(3)").text();
-            var physician = row.find("td:nth-child(6)").text();
+            debugger
+            var respTime = row.find(".reponsetime").text();
+            var callback = row.find(".callbacktime").text();
+            var CaseType = row.find(".casetype").text();
+            var physician = row.find(".physicianinitials").text();
             var showPurple = false;
 
             if (physician != undefined && physician != '') {
@@ -220,6 +222,29 @@
                         }
                     }
                 }
+            }
+
+            var userinitial = row.find(".physicianinitials").text();
+            var usercolor = row.find(".physiciancolor").text();
+            var userstatus = row.find(".physicianstatus").text();
+            if (userinitial != "" && usercolor != "" && userstatus != "") {
+                var userinitials = userinitial.split('/');
+                var usercolors = usercolor.split('/');
+                var userstatuss = userstatus.split('/');
+                var data = "<div class='physicianstatusdiv'>";
+                for (var i = 0; i < userinitials.length; i++) {
+                    if (userstatuss[i] == undefined) {
+                        userstatuss[i] = "Waiting to Accept";
+                    }
+                    if (usercolors[i] == undefined) {
+                        usercolors[i] = "Black";
+                    }
+                    data += "<span title='" + userstatuss[i] + "' style='color: " + usercolors[i] + ";font-weight:bold;'>" + userinitials[i] + "</span>/";
+                }
+                var html = data.substring(0, data.length - 1);
+                html += "</div>";
+                row.find('.physicianinitials').empty();
+                row.children('.physicianinitials').append(html);
             }
 
         });

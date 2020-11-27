@@ -2938,7 +2938,10 @@ namespace TeleSpecialists.Controllers
             try
             {
                 var result = _reportService.GetOperationsOutliersList(request, period);
-                return JsonMax(result, JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(result, JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+                //return JsonMax(result, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {

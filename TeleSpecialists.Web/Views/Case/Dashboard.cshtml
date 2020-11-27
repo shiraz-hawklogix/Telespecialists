@@ -316,7 +316,7 @@
                     { field: "cas_patient", title: "Patient Name", width: '135px' },
                     {
                         field: "phy_name", title: "Physician", width: '100px',
-                        attributes: { "class": "dash-case-grid-physician wrapWord " },
+                        attributes: { "class": "dash-case-grid-physician wrapWord" },
                         hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) || User.IsInRole(UserRoles.Physician.ToDescription()) ? "true" : "false"),
                     },
                     { field: "ResponseTime", title: "TS Response Time", width: '150px', attributes: { "class": "case-grid-response-time" } },
@@ -327,9 +327,9 @@
                     { field: "Navigator", title: "Navigator", width: '120px', hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "true" : "false"), },
                     { field: "StartToStamp", title: "Start to Stamp", width: '135px' },
                     { field: "StartToAccept", title: "Start to Accepted", width: '135px' },   
-                    { field: "UserInitial", hidden: true },
-                    { field: "psl_status_color", hidden: true },
-                    { field: "psl_status_name", hidden: true },
+                    { field: "UserInitial", hidden: true, attributes: { "class": "userinitials" } },
+                    { field: "psl_status_color", hidden: true, attributes: { "class": "usercolors" } },
+                    { field: "psl_status_name", hidden: true, attributes: { "class": "usernames" } },
                 ]
             });
 
@@ -781,9 +781,9 @@
                     }
                 }
                 
-                var userinitial = row.find("td:nth-child(22)").text();
-                var usercolor = row.find("td:nth-child(23)").text();
-                var userstatus = row.find("td:nth-child(24)").text();
+                var userinitial = row.find(".userinitials").text();
+                var usercolor = row.find(".usercolors").text();
+                var userstatus = row.find(".usernames").text();
                 if (userinitial != "" && usercolor != "" && userstatus != "") {
                     var userinitials = userinitial.split('/');
                     var usercolors = usercolor.split('/');
