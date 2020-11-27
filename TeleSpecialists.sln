@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSpecialists.Services.MD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSpecialists.Web.API", "TeleSpecialists.Web.API\TeleSpecialists.Web.API.csproj", "{4FD48EFF-ED76-4C21-9CCC-B62F65E1AECB}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "TeleSpecialists.DB", "TeleSpecialists.DB\TeleSpecialists.DB.sqlproj", "{22CD583B-A14F-424E-983A-3C0965C5B121}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSpecialists.CA.StatusAvailable", "TeleSpecialists.CA.StatusReset\TeleSpecialists.CA.StatusAvailable.csproj", "{6E36B170-BCA4-4CA2-81E1-1681432F79CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleSpecialists.CA.StatusMover", "TeleSpecialists.CA.StatusMover\TeleSpecialists.CA.StatusMover.csproj", "{CB00F765-602F-4E23-A204-5E9560FDD316}"
@@ -91,18 +89,6 @@ Global
 		{4FD48EFF-ED76-4C21-9CCC-B62F65E1AECB}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
 		{4FD48EFF-ED76-4C21-9CCC-B62F65E1AECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FD48EFF-ED76-4C21-9CCC-B62F65E1AECB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.AzureCustomBuild-Web|Any CPU.ActiveCfg = Debug|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.AzureCustomBuild-Web|Any CPU.Build.0 = Debug|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.AzureCustomBuild-Web|Any CPU.Deploy.0 = Debug|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.DebugLocal|Any CPU.Deploy.0 = Debug|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.Release|Any CPU.Build.0 = Release|Any CPU
-		{22CD583B-A14F-424E-983A-3C0965C5B121}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{6E36B170-BCA4-4CA2-81E1-1681432F79CA}.AzureCustomBuild-Web|Any CPU.ActiveCfg = Release|Any CPU
 		{6E36B170-BCA4-4CA2-81E1-1681432F79CA}.AzureCustomBuild-Web|Any CPU.Build.0 = Release|Any CPU
 		{6E36B170-BCA4-4CA2-81E1-1681432F79CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
