@@ -50,23 +50,6 @@
     }
 }
 
-.dispatch-row-wrap td > tbody > tr:hover > th:hover, table > tbody > tr:hover > td:hover {
-    background-color: #5E5E5E;
-    color: #ffffff !important;
-    transition: all 200ms ease-in;
-    white-space: normal;
-    cursor: default;
-}
-
-.dispatch-row-wrap td > tbody > tr:hover > th:hover, table > tbody > tr:hover > td.case-grid-crr_reason:hover {
-    background-color: transparent;
-}
-
-.dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
-    transition: all 200ms ease-in;
-}
-
-
 
 .navbar-nav > li > .dropdown-menu {
     margin-top: 0;
