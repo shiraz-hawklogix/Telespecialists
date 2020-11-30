@@ -173,7 +173,7 @@
         <div class="form-group row">
             <label class="control-label col-sm-4">Pre-Morbid Modified Ranking Scale:</label>
             <div class="col-sm-8">
-                <span class="pl-3 font-weight-bold" id="has_morbid_symptoms_premorbid">@(Model.cas_metric_has_morbid_symptoms.HasValue ? Model.cas_metric_has_morbid_symptoms.Value != 7 ? Model.cas_metric_has_morbid_symptoms.Value.ToString() : "Information not available at this time in premorbid MRS field" : "" )</span>
+                <span class="pl-3 font-weight-bold" id="has_morbid_symptoms_premorbid">@(Model.cas_metric_has_morbid_symptoms.HasValue ? Model.cas_metric_has_morbid_symptoms.Value != 7 ? Model.cas_metric_has_morbid_symptoms.Value.ToString() : "Information not available at this time" : "" )</span>
             </div>
         </div>
     </div>
