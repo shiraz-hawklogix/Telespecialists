@@ -341,7 +341,7 @@
         </div>
         <div class="form-group row">
             <label class="control-label col-12">Patient/Family Consent to Neurology Consult via TeleHealth</label>
-            <div class="col-4">
+            <div class="col-4 cases-form-wrapper">
                 @Html.RadioButtonListFor(m => m.case_template_stroke_notpa.ctn_patient_family_cosulted, yesNoOptions, new { @class = "ctn_familyRD", @id = "ctn_familyRD" })
             </div>
 
@@ -354,7 +354,7 @@
 
         <div class="form-group row">
             <label class="control-label col-12 text-danger">Critical Care was Provided: </label>
-            <div class="col-12" id="divcriticalCare">
+            <div class="col-12 cases-form-wrapper" id="divcriticalCare">
                 @Html.RadioButtonListFor(m => m.case_template_stroke_notpa.ctn_critical_care_was_provided, yesNoOptions)
                 <div class="error_msg" style="display:none">
                     <label>This field is required</label>

@@ -274,7 +274,7 @@
                 yesNoOptions.Add("false", "No");
             }
             <label class="control-label col-12">Patient/Family Consent to Neurology Consult via TeleHealth</label>
-            <div class="col-4">
+            <div class="col-4 cases-form-wrapper">
                 @Html.RadioButtonListFor(m => m.case_template_stroke_neuro_tpa.csn_patient_family_cosulted, yesNoOptions, new { @class = "csn_familyRD", @id = "csn_familyRD" })
             </div>
         </div>

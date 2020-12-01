@@ -294,7 +294,7 @@ CaseType.StatConsult.ToInt()
             <label class="control-label col-sm-4">Physician Blast:</label>
             @Html.HiddenFor(m => m.cas_billing_physician_blast_date)
             @Html.HiddenFor(m => m.cas_billing_physician_blast_date_est)
-            <div class="col-8">
+            <div class="col-8 cases-form-wrapper">
                 @Html.RadioButtonListFor(m => m.cas_billing_physician_blast, dicOptions, new { @class = "disabled" })
                 @Html.ValidationMessageFor(model => model.cas_billing_physician_blast, "", new { @class = "text-danger" })
             </div>

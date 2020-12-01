@@ -191,11 +191,11 @@
     }
 
     .tooltipBox {
-        position: absolute;
         z-index: 2;
         background: #ffffff;
         box-shadow: 0 6px 12px rgba(0,0,0,.175);
-        display: none;  
+        display: none;
+        margin-bottom: 10px;
     }
     .tooltip-show-link {
         font-size: 18px;
@@ -222,12 +222,15 @@
 
     .dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
         transition: all 200ms ease-in;
+        position: relative;
+        font-size: 14px;
     }
+
 </style>
 
 <div class="row mb-4">
-    <div class="col-6 px-0 tooltip-box-wraper">
-        <a id="showHideLink" class="tooltip-show-link"><i class="fa fa-info-circle" aria-hidden="true"></i> <span>Hover to view tooltip</span></a>
+    <div class="col-3 px-0 tooltip-box-wraper">
+        <a id="showHideLink" class="tooltip-show-link" data-toggle="tooltip" data-placement="right" title="Click to view tooltip"><i class="fa fa-info-circle" aria-hidden="true"></i> </a>
         <div class="border tooltipBox p-3" id="divToolTip">
             <div class="text-danger"><strong>*Tool Tip</strong></div>
             <div>
@@ -319,7 +322,7 @@
                 @:navigatorsArr.push({ user_id: "@item.user_id", email: "@item.email", name: "@item.name", firbaseuid: "@item.UserName", ImgPath: "@item.ImgPath"});
             }
 
-        $("#showHideLink").hover(() => {
+        $("#showHideLink").click(() => {
             $(".tooltipBox").animate({
                 height: "toggle",
                 width: "toggle"
