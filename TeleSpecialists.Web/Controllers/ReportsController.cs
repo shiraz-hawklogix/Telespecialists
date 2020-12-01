@@ -597,9 +597,9 @@ namespace TeleSpecialists.Controllers
                                         Value = m.ToDescription()
                                     }).Select(m => new SelectListItem { Value = m.Key, Text = m.Value }).Prepend(new SelectListItem()
                                     {
-                                        Text = "--Select--",
-                                        Value = ""
-                                    }).ToList();
+                                        Text = "All",
+                                        Value = "0"
+                                    }).OrderByDescending(x => x.Value).ToList();
 
             //var QPS_Numbers_List = Enumerable.Range(1, 20).Select(n => new SelectListItem()
             //{
@@ -2950,11 +2950,11 @@ namespace TeleSpecialists.Controllers
             }
         }
 
-        public ActionResult GetStatusSnapshot(DataSourceRequest request, string datevalue)
+        public ActionResult GetStatusSnapshot(DataSourceRequest request, string datevalue,string timevalue)
         {
             try
             {
-                if (datevalue == "")
+                if (datevalue == "" && timevalue == "")
                 {
                     DataSourceResult result = new DataSourceResult();
                     result.Data = new List<string>();
@@ -2962,7 +2962,7 @@ namespace TeleSpecialists.Controllers
                 }
                 else
                 {
-                    var result = _reportService.GetStatusSnapshot(request, datevalue);
+                    var result = _reportService.GetStatusSnapshot(request, datevalue, timevalue);
                     return JsonMax(result, JsonRequestBehavior.AllowGet);
                 }
             }

@@ -1525,6 +1525,8 @@ ul.navbar-nav {
 .dispatch-row-wrap td > tbody > tr > th, table > tbody > tr > td {
     transition: all 200ms ease-in;
 }*/
-
+.timepicker.timepicker-custom .k-select {
+    text-align: initial !important;
+}
 
 /*Ended By Mutti*/

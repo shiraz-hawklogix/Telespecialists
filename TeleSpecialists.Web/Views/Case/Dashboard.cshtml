@@ -322,7 +322,7 @@
                     { field: "ResponseTime", title: "TS Response Time", width: '150px', attributes: { "class": "case-grid-response-time" } },
                     { field: "ArrivalToNeedleTime", title: "Arrival to Needle Time", width: '150px', attributes: { "class": "case-grid-needle-time" } },
                     { hidden: true, field: "CallBackResponseTime", title: "Callback To TS-Response Time", width: '150px', attributes: { "class": "case-grid-callbackresponse-time" } },
-                    { field: "cst_name", title: "Status", width: '100px', hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "true" : "false"), },
+                    { field: "cst_name", title: "Status", width: '100px', hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "true" : "false"), attributes: { "class": "case-grid-status" } },
                     { field: "TPACandidate", title: "tPA", width: '50px' },
                     { field: "Navigator", title: "Navigator", width: '120px', hidden: @(User.IsInRole(UserRoles.FacilityAdmin.ToDescription()) ? "true" : "false"), },
                     { field: "StartToStamp", title: "Start to Stamp", width: '135px' },
@@ -701,9 +701,10 @@
                 var row = $(element);
                 var open = caseStatusEnum.Open;
                 var waiting_to_accept = caseStatusEnum.WaitingToAccept;
+                var Cancelled = caseStatusEnum.Cancelled;
                 var defaultTimeZoneOffset = @Functions.GetTimeZoneOffset(TeleSpecialists.BLL.Settings.DefaultTimeZone);
                 var status = row.find("td:nth-child(3)").text().toInt();
-
+                var statusname = row.find(".case-grid-status").text();
                 if (status == open || status == waiting_to_accept) {
                     var currentDateTime = moment(moment().utcOffset(defaultTimeZoneOffset, false).format("YYYY-MM-DD HH:mm:ss"));
                     var cas_status_assign_date = moment(row.find("td:nth-child(2)").text());
@@ -718,69 +719,70 @@
 
                 //////////////////////////////////////////////////////////////
                 // TCARE-406
+                debugger
+                if (statusname != 'Cancelled') {
+                    var physician = row.find(".dash-case-grid-physician").text();
+                    var showPurple = false;
 
-                var physician = row.find(".dash-case-grid-physician").text();
-                var showPurple = false;
+                    if (physician != undefined && physician != '') {
+                        var phyCount = physician.split('/').length;
 
-                if (physician != undefined && physician != '') {
-                    var phyCount = physician.split('/').length;
-
-                    if (phyCount > 2) {
-                        row.children("td").addClass("text-orange font-weight-bold");
-                        showPurple = true;
+                        if (phyCount > 2) {
+                            row.children("td").addClass("text-orange font-weight-bold");
+                            showPurple = true;
+                        }
                     }
-                }
-                
-                var CaseType = row.find("td:nth-child(11)").text();
-                if (CaseType.trim() == "Stroke Alert") {
-                    var respTime = row.find(".case-grid-response-time").text();
-                    if (respTime != undefined && respTime != '') {
-                        var respTimeArray = respTime.split(':');
-                        var hrs = parseInt(respTimeArray[0]);
-                        var mins = parseInt(respTimeArray[1]);
-                        var secs = 0;
-                        if (respTimeArray.length > 2) {
-                            secs = parseInt(respTimeArray[2]);
-                            if (secs > 0)
-                                mins = mins + (secs / 60);
+
+                    var CaseType = row.find("td:nth-child(11)").text();
+                    if (CaseType.trim() == "Stroke Alert") {
+                        var respTime = row.find(".case-grid-response-time").text();
+                        if (respTime != undefined && respTime != '') {
+                            var respTimeArray = respTime.split(':');
+                            var hrs = parseInt(respTimeArray[0]);
+                            var mins = parseInt(respTimeArray[1]);
+                            var secs = 0;
+                            if (respTimeArray.length > 2) {
+                                secs = parseInt(respTimeArray[2]);
+                                if (secs > 0)
+                                    mins = mins + (secs / 60);
+                            }
+
+                            if (hrs > 0 || mins > 10.0) {
+                                row.children("td").removeClass("text-orange font-weight-bold");
+
+                                if (showPurple) {
+                                    row.children("td").addClass("text-purple font-weight-bold");
+                                } else {
+                                    row.children("td").addClass("text-pink font-weight-bold");
+                                }
+                            }
                         }
 
-                        if (hrs > 0 || mins > 10.0) {
-                            row.children("td").removeClass("text-orange font-weight-bold");
+                    } else if (CaseType.trim() == "STAT Consult") {
+                        var callback = row.find(".case-grid-callbackresponse-time").text();
+                        if (callback != undefined && callback != '') {
+                            var callrespTimeArray = callback.split(':');
+                            var hrs = parseInt(callrespTimeArray[0]);
+                            var mins = parseInt(callrespTimeArray[1]);
+                            var secs = 0;
+                            if (callrespTimeArray.length > 2) {
+                                secs = parseInt(callrespTimeArray[2]);
+                                if (secs > 0)
+                                    mins = mins + (secs / 60);
+                            }
 
-                            if (showPurple) {
-                                row.children("td").addClass("text-purple font-weight-bold");
-                            } else {
-                                row.children("td").addClass("text-pink font-weight-bold");
+                            if (hrs > 0 || mins > 15.0) {
+                                row.children("td").removeClass("text-orange font-weight-bold");
+
+                                if (showPurple) {
+                                    row.children("td").addClass("text-purple font-weight-bold");
+                                } else {
+                                    row.children("td").addClass("text-pink font-weight-bold");
+                                }
                             }
                         }
                     }
-
-                } else if (CaseType.trim() == "STAT Consult") {
-                    var callback = row.find(".case-grid-callbackresponse-time").text();
-                    if (callback != undefined && callback != '') {
-                        var callrespTimeArray = callback.split(':');
-                        var hrs = parseInt(callrespTimeArray[0]);
-                        var mins = parseInt(callrespTimeArray[1]);
-                        var secs = 0;
-                        if (callrespTimeArray.length > 2) {
-                            secs = parseInt(callrespTimeArray[2]);
-                            if (secs > 0)
-                                mins = mins + (secs / 60);
-                        }
-
-                        if (hrs > 0 || mins > 15.0) {
-                            row.children("td").removeClass("text-orange font-weight-bold");
-
-                            if (showPurple) {
-                                row.children("td").addClass("text-purple font-weight-bold");
-                            } else {
-                                row.children("td").addClass("text-pink font-weight-bold");
-                            }
-                        }
-                    }
                 }
-                
                 var userinitial = row.find(".userinitials").text();
                 var usercolor = row.find(".usercolors").text();
                 var userstatus = row.find(".usernames").text();
@@ -807,6 +809,8 @@
                     row.children('.dash-case-grid-physician').append(html);
                 }
                 
+               
+                
                 //////////////////////////////////////////////////////////////
 
             });
@@ -819,7 +823,6 @@
 
         function PhysiciansColor() {
             $("#kendoDataGrid tr").each(function (index, element) {
-                debugger
                 var row = $(element);
                 var cas_key = parseInt(row.find("td:nth-child(1)").text());
                 var physician = row.find(".dash-case-grid-physician").text();
@@ -834,7 +837,6 @@
 
                     },
                     success: function (data) {
-                        debugger
                         row.find('.dash-case-grid-physician .physicianstatusdiv').empty();
                         row.children('.dash-case-grid-physician').append(data);
                         //row.children("td:nth-child(14)").append(data);

@@ -12,8 +12,12 @@
         <div class="form-row">
             <div class="form-group row col-xl-5 col-12" id="divDateRange">
                 <div class="col-6 pr-0">
-                    <label>Select DateTime</label>
+                    <label>Select Date</label>
                     <input type="text" id=FromDate name=FromDate class="form-control datepicker" />
+                </div>
+                <div class="col-6 pr-0">
+                    <label>Select Time</label>
+                    <input id="reportTimePicker" title="timepicker" class="form-control timepicker timepicker-custom" style="width: 100%;" />
                 </div>
             </div>
 
@@ -47,10 +51,31 @@
         $(document).ready(function () {
             document.title = $("#title-prefix").val() + '@ViewBag.Title';
             $('#btnExportPdf').hide();
-            $('.datepicker').kendoDateTimePicker({
+            @* $('.datepicker').kendoDateTimePicker({
                 timeFormat: "HH:mm",
                 format: "yyyy-MM-dd HH:mm:ss",
                 //parseFormats: ["yyyy-MM-dd HH:mm:ss"]
+            });*@
+            $(".datepicker").kendoDatePicker({
+                dateInput: true,
+                format: "MM-dd-yyyy",
+                value: new Date(),
+                animation: {
+                    close: {
+                        effects: "fadeOut zoom:out",
+                        duration: 300
+                    },
+                    open: {
+                        effects: "fadeIn zoom:in",
+                        duration: 300
+                    }
+                }
+            });
+            $(".timepicker").kendoTimePicker({
+                value: new Date(),
+                format: "HH:mm:ss",
+                componentType: "modern",
+                dateInput: true
             });
             $('#divLocalFilters').appendTo('#divFilters');
 
@@ -116,7 +141,7 @@
                             url: '@Url.Action("GetStatusSnapshot")',
                             contentType: "application/json",
                             type: "POST",
-                            data: { datevalue: $("#FromDate").val() },
+                            data: { datevalue: $("#FromDate").val(), timevalue: $("#reportTimePicker").val() },
                             type: "POST"
                         },
                         parameterMap: function (options) {
@@ -164,7 +189,7 @@
                     { field: "PhysicianId", width: 100, title: "ID" },
                     { field: "physician_name", width: 250, title: "Physician Name" },
                     { field: "physician_status", width: 185, title: "Physician Status" },
-                    { field: "psl_created_date", template: "#= kendo.toString(kendo.parseDate(psl_created_date, 'yyyy-MM-dd HH:mm:ss'), 'MM/dd/yyyy HH:mm:ss') #", width: 185, title: "Date" },
+                    { field: "psl_created_date", /*template: "#= kendo.toString(kendo.parseDate(psl_created_date, 'yyyy-MM-dd HH:mm:ss'), 'MM/dd/yyyy HH:mm:ss') #",*/ width: 185, title: "Date" },
                 ]
             });
         }

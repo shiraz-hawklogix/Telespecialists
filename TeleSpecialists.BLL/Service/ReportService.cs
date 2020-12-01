@@ -3656,7 +3656,7 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
                 }
-                else
+                else if(model.WakeUpStroke == "2")
                 {
                     cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
                 }
@@ -6453,10 +6453,10 @@ namespace TeleSpecialists.BLL.Service
         }
         */
 
-        public DataSourceResult GetStatusSnapshot(DataSourceRequest request, string datevalue)
+        public DataSourceResult GetStatusSnapshot(DataSourceRequest request, string datevalue, string timevalue)
         {
-            DateTime Date = Convert.ToDateTime(datevalue);
-            DateTime Time = Convert.ToDateTime(datevalue);
+            DateTime Date = Convert.ToDateTime(datevalue + " " + timevalue);
+            DateTime Time = Convert.ToDateTime(datevalue + " " + timevalue);
             List<StatusSnapshotcls> Physician_StatusList = _unitOfWork.SqlQuery<StatusSnapshotcls>(string.Format("Exec sp_get_status_snapshot @Date = '{0}',@Time = '{1}'", Date,Time)).ToList();
             var finalresult = Physician_StatusList.Select(x => new
             {
@@ -6464,7 +6464,7 @@ namespace TeleSpecialists.BLL.Service
                 x.psl_key,
                 x.physician_name,
                 x.physician_status,
-                psl_created_date = datevalue
+                psl_created_date = datevalue + " " + timevalue
             }).AsQueryable();
             return finalresult.ToDataSourceResult(request.Take, request.Skip, request.Sort, request.Filter);
         }
@@ -6870,7 +6870,7 @@ namespace TeleSpecialists.BLL.Service
                 {
                     cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == true);
                 }
-                else
+                else if (model.WakeUpStroke == "2")
                 {
                     cases = cases.Where(c => c.ca.cas_metric_wakeup_stroke == false);
                 }
