@@ -266,7 +266,6 @@
     <Compile Include="Controllers\MDStaffController.cs" />
     <Compile Include="Controllers\MockCaseController.cs" />
     <Compile Include="Controllers\PACPhysicianController.cs" />
-    <Compile Include="Controllers\PatientDetailsController.cs" />
     <Compile Include="Controllers\PhonebarController.cs" />
     <Compile Include="Controllers\PhysicianCaseTempController.cs" />
     <Compile Include="Controllers\PhysicianLicenseController.cs" />
@@ -3576,7 +3575,6 @@
     <Folder Include="ViewModels\" />
     <Folder Include="Views\CaseCopyLog\" />
     <Folder Include="Views\Error\" />
-    <Folder Include="Views\PatientDetails\" />
     <Folder Include="Views\PhysicianCaseTemp\" />
     <Folder Include="Views\SignalRHandler\" />
     <Folder Include="Views\Signout\" />

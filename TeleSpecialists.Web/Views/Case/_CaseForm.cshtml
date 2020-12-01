@@ -498,12 +498,6 @@
                 </div>
             </div>
         </div>
-        <div class="form-group row">
-            <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4 text-danger">Patient: </label>
-            <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
-                <input id="patientName" type="text" class="form-control" placeholder="Last Name, First Name" />
-            </div>
-        </div>
         <div class="form-group row showWithRoutineConsult @(isRoutineConsultCase ? "" : "d-none")">
             <label class="control-label col-xl-4 col-lg-12 col-md-4 col-sm-4">Date of Consult: </label>
             <div class="col-lg-12 col-xl-8 col-md-8  col-sm-8 col-xs-12">
@@ -1129,110 +1123,6 @@
     });
     $(document).ready(function () {
         $("#cas_callback_response_by").fillKendoDropDown("/Case/GetUserByRoleId", "Text", "Value", "-- Select --");
-        });
-
-    //var Patient_dataSource = new kendo.data.DataSource({
-    //    batch: true,
-    //    transport: {
-    //        read: {
-    //            url: "/PatientDetails/GetAll",
-    //            dataType: "json",
-    //            data: {
-    //                fName: "nab" 
-    //            }
-    //        },
-    //        parameterMap: function (data, type) {
-    //            if (type == "read") {
-    //                return kendo.stringify(data);
-    //            }
-    //        }
-    //        //,
-    //        //create: {
-    //        //    url: "PatientDetails/Create",
-    //        //    dataType: "jsonp"
-    //        //},
-    //        //parameterMap: function (options, operation) {
-    //        //    if (operation !== "read" && options.models) {
-    //        //        return { models: kendo.stringify(options.models) };
-    //        //    }
-    //        //}
-    //    }
-    //    //,
-    //    //schema: {
-    //    //    model: {
-    //    //        id: "patientNumber",
-    //    //        fields: {
-    //    //            patientNumber: { type: "number" },
-    //    //            patientName: { type: "string" }
-    //    //        }
-    //    //    }
-    //    //}
-    //});
-    var SearchText = "";
-    var facilityKey = $("#cas_fac_key").val();
-    
-    $("#patientName").kendoAutoComplete({
-        filter: "startswith",
-        dataTextField: "patientName",
-        dataValueField: "patientNumber",
-        dataSource: {
-            transport: {
-                read: {
-                    url: "/PatientDetails/GetAll",
-                    dataType: "json" 
-                    //data: {
-                    //    fName: "nab"
-                    //}
-                },
-                parameterMap: function (data, type) {
-                    if (type = "read") {
-                        var values = {};
-                        values["fName"] = SearchText;
-                        values["lName"] = SearchText;
-                        values["facility"] = facilityKey;
-                        values["mrn"] = "";
-                        return values;
-                    }
-                    //if (type == "read") {
-                    //    return kendo.stringify(data);
-                    //}
-                }
-            }
-        },
-        open: function (e) { 
-        },
-        change: function (c) {
-            debugger
-            SearchText = "";
-            SearchText = $(c.sender.element).val();
-        },
-        select: function (s) {
-            debugger
-
-        },
-        noDataTemplate: $("#noDataTemplate").html()
     });
-
-    function GetSearchText(elem) {
-
-
-    }
-
-    //$("#patientFirstName").kendoAutoComplete({
-    //    filter: "startswith",
-    //    dataTextField: "patientName",
-    //    dataValueField: "patientNumber",
-    //    dataSource: Patient_dataSource, 
-    //    noDataTemplate: $("#noDataTemplate").html()
-    //});
-
 </script>
 
-
-<script id="noDataTemplate" type="text/x-kendo-tmpl">
-    <div>
-        No data found. Do you want to add new item - '#: instance.element.val() #' ?
-    </div>
-    <br />
-    <button class="k-button" onclick="addNew('#: instance.element[0].id #', '#: instance.element.val() #')">Add Patient</button>
-</script>

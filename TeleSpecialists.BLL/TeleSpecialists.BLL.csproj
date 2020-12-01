@@ -265,9 +265,6 @@
     <Compile Include="Model\default_notification_tune.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\patient.cs">
-      <DependentUpon>DataModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Model\physician_case_temp.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -423,7 +420,6 @@
     <Compile Include="Service\MockCaseService.cs" />
     <Compile Include="Service\NHService.cs" />
     <Compile Include="Service\OnBoardedServices.cs" />
-    <Compile Include="Service\PatientDetailsService.cs" />
     <Compile Include="Service\PhysicianCaseTempService.cs" />
     <Compile Include="Service\PhysicianHolidayRateService.cs" />
     <Compile Include="Service\PhysicianPercentageRateService.cs" />

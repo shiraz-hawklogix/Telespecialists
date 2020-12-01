@@ -24,7 +24,6 @@ namespace TeleSpecialists.BLL.Model
             this.quality_goals = new HashSet<quality_goals>();
             this.facility_physician = new HashSet<facility_physician>();
             this.mock_case = new HashSet<mock_case>();
-            this.patients = new HashSet<patient>();
         }
     
         public System.Guid fac_key { get; set; }
@@ -86,7 +85,5 @@ namespace TeleSpecialists.BLL.Model
         public virtual ICollection<facility_physician> facility_physician { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<mock_case> mock_case { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<patient> patients { get; set; }
     }
 }
