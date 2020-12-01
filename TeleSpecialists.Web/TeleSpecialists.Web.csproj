@@ -705,6 +705,7 @@
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Scripts\base64.min.js" />
     <Content Include="Scripts\Case_File\EMSWorkFlow.js" />
     <Content Include="Scripts\Case_File\InpatientWorkFlow.js" />
     <Content Include="Scripts\Case_File\OtherWorkFlow.js" />

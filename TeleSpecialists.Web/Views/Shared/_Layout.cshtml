@@ -159,6 +159,8 @@
                 }
                 @if (User.IsInRole(UserRoles.Administrator.ToDescription())
               || User.IsInRole(UserRoles.SuperAdmin.ToDescription())
+              || User.IsInRole(UserRoles.RRCDirector.ToDescription())
+              || User.IsInRole(UserRoles.RRCManager.ToDescription())
               || User.IsInRole(UserRoles.Navigator.ToDescription()))
                 {
                     <li class="nav-item">
