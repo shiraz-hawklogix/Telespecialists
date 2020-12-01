@@ -589,7 +589,7 @@ else if (Model != null)
 
         <div class="form-group row @(isStrokeAlertCase ? "" : "d-none")" id="divCallType">
             <label class="control-label col-xl-5 col-lg-12 col-md-4 col-sm-4 text-danger">Call Type: </label>
-            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12">
+            <div class="col-lg-12 col-xl-7 col-md-8  col-sm-8 col-xs-12 cases-form-wrapper">
                 @Html.RadioButtonListFor(m => m.cas_call_type, callTypes, new { @class = "disabled" })
 
                 <div class="error_msg" id="cas_call_type_error" style="display:none;">

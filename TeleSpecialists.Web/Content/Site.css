@@ -1524,4 +1524,14 @@ ul.navbar-nav {
     }
 }
 
+
+.cases-form-wrapper .form-check-inline {
+    margin-bottom: 0.5rem;
+}
+
+.cases-form-wrapper .form-check-inline label {
+    margin-bottom: 0;
+    margin-left: 5px;
+    margin-right: 4px;
+}
 /*End added by ahmad*/

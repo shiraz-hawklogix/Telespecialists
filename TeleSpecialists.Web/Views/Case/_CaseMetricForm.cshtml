@@ -183,7 +183,7 @@
 
             @Html.FormattedDateTextBoxFor(m => m.cas_metric_stamp_time_est, new { @class = "d-none" })
 
-            <div class="col-xl-4 col-lg-4 col-md-12 first-col">
+            <div class="col-xl-4 col-lg-4 col-md-12 first-col cases-form-wrapper">
                 <div class="form-group row">
                     @Html.LabelForWithSuffix(m => m.cas_response_ts_notification, new { @class = "control-label col-xl-4 col-sm-4 col-lg-12" })
                     <div class="col-sm-8 col-xl-8 col-lg-12">
@@ -305,7 +305,7 @@
 
         else if (Model.cas_ctp_key == CaseType.StrokeAlert.ToInt())
         {
-            <div class="col-xl-4 col-lg-4 col-md-12 first-col">
+            <div class="col-xl-4 col-lg-4 col-md-12 first-col cases-form-wrapper">
                 <div class="form-group row">
                     <label class="control-label col-xl-4 col-sm-4 col-lg-12 text-danger">
                         Last Known Well:
@@ -651,7 +651,7 @@
             {
                 show_TPA_EarlyOrderIndicator = true;
             }
-            <div class="col-xl-4 col-lg-4 col-md-12 second-col">
+            <div class="col-xl-4 col-lg-4 col-md-12 second-col cases-form-wrapper">
                 <label class="control-label mb-0">LB2S2 Criteria for tPA Early mixing</label>
                 <div class="bg-light-blue col-12" id="lb2s2-contianer">
                     <div class="form-group row">
@@ -1142,7 +1142,7 @@
                 @* Ended By Axim 21-10-2020 *@
 
             </div>
-            <div class="col-xl-4 col-lg-4 col-md-12 third-col">
+            <div class="col-xl-4 col-lg-4 col-md-12 third-col cases-form-wrapper">
                 @* added by axim 21-08-2020 *@
                 <div class="accordion" id="DivContraindicationsMain">
                     <div class="card z-depth-0 bordered">
