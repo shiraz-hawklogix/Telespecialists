@@ -477,7 +477,8 @@
                 },
                 {
                     width: '60px',
-                    template: "<a class='fa fa-clone blast-links text-dark py-1 loadLinkAsync' onclick='copyDispatchCase(#=cas_key#)' data-toggle='tooltip' data-placement='bottom' title='Copy'></a>"
+                    template: "<a class='fa fa-clone blast-links text-dark py-1 loadLinkAsync' onclick='copyDispatchCase(event)' data-toggle='tooltip' data-placement='bottom' title='Copy'></a>"
+                    //template: "<a class='fa fa-clone blast-links text-dark py-1 loadLinkAsync' onclick='copyDispatchCase(#=cas_key#)' data-toggle='tooltip' data-placement='bottom' title='Copy'></a>"
                 },
                 { hidden: true, field: "physician_key" },
                 { hidden: true, field: "phy_name" },
@@ -882,7 +883,20 @@
     //}
 
 
-    function copyDispatchCase(key) {
+    function copyDispatchCase(e) {
+        
+        var dataItem = $("#dispatchWaitingToAcceptGrid").data("kendoGrid").dataItem($(e.currentTarget).closest("tr"));
+        var caseStamp = dataItem.CombinedMessage;
+        if (caseStamp != "" && caseStamp != undefined) {
+            setClipboardText(caseStamp.replaceAll("##NewLine##", "\r\n"));
+            var textToPreview = caseStamp.replaceAll("##NewLine##", "<br/>");
+            $("#caseCopyPopUp").find(".modal-body").empty().html(textToPreview);
+            $("#caseCopyPopUp").modal("show");
+        }
+    }
+
+
+    @*function copyDispatchCase(key) {
         $("#divCaseCopy").html("");
          $.ajax({
              url: "@Url.Action("GetCaseCopyData")?case_key="+key,
@@ -901,7 +915,7 @@
                 console.log("error");
             }
         });
-    }
+    }*@
 
 
 

@@ -48,7 +48,16 @@ namespace TeleSpecialists.BLL.ViewModels.Dispatch
         public string cas_triage_notes { get; set; }
         public string cas_callback_extension { get; set; }
         public string cas_eta { get; set; }
+
+        public string cas_cart_location_text { get; set; }
+        public string cas_navigator_stamp_notes { get; set; }
+        public bool cas_phy_has_technical_issue { get; set; }
+        public string cas_phy_technical_issue_date_est { get; set; }
         
+
+
+
+
 
 
         public List<SelectListItem> PhysicianDD { get; set; }

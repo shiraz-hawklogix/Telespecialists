@@ -1377,9 +1377,9 @@ namespace TeleSpecialists.Web.Controllers
                 }
 
 
-                if (dbModel.cas_cst_key != 0)
+                if (dbModel.cas_ctp_key != 0)
                 {
-                    var casType = (CaseStatus)dbModel.cas_cst_key;
+                    var casType = (CaseType)dbModel.cas_ctp_key;
                     copytext.Append(casType);
                     copytext.Append("##NewLine##");
                 }
@@ -1394,6 +1394,12 @@ namespace TeleSpecialists.Web.Controllers
                 {
                     var cart = dbModel.cas_cart;
                     copytext.Append("Cart: " + cart);
+                    copytext.Append("##NewLine##");
+                }
+                if (dbModel.cas_cart_location_text != null)
+                {
+                    var cartlocation = dbModel.cas_cart_location_text;
+                    copytext.Append("Cart Location: " + cartlocation);
                     copytext.Append("##NewLine##");
                 }
                 if (dbModel.cas_callback != null)
@@ -1418,23 +1424,40 @@ namespace TeleSpecialists.Web.Controllers
                 if (dbModel.cas_triage_notes != null)
                 {
                     var triagenotes = dbModel.cas_triage_notes;
-                    copytext.Append("Triage Notes: " + triagenotes);
+                    copytext.Append("RRC Manager Notes: " + triagenotes);
                     copytext.Append("##NewLine##");
                 }
                 if (dbModel.cas_notes != null)
                 {
                     var notes = dbModel.cas_notes;
-                    copytext.Append("Notes: " + notes);
+                    copytext.Append("Alert Notes: " + notes);
                     copytext.Append("##NewLine##");
                 }
-                if (dbModel.cas_eta != null)
+                if (dbModel.cas_navigator_stamp_notes != null)
                 {
-                    var eta = dbModel.cas_eta;
-                    copytext.Append("##NewLine##");
-                    copytext.Append("##NewLine##");
-                    copytext.Append("ETA: " + eta);
+                    var NAVnotes = dbModel.cas_navigator_stamp_notes;
+                    copytext.Append("Navigator Stamp Notes: " + NAVnotes);
                     copytext.Append("##NewLine##");
                 }
+                //if (dbModel.cas_eta != null)
+                //{
+                //    var eta = dbModel.cas_eta;
+                //    copytext.Append("##NewLine##");
+                //    copytext.Append("##NewLine##");
+                //    copytext.Append("ETA: " + eta);
+                //    copytext.Append("##NewLine##");
+                //}
+
+                if (dbModel.cas_phy_has_technical_issue)
+                {
+                    if (dbModel.cas_phy_technical_issue_date_est != null)
+                    {
+                    var technicalIssues = dbModel.cas_phy_technical_issue_date_est;
+                    copytext.Append("Physician Having Technical Issues: " + technicalIssues);
+                    copytext.Append("##NewLine##");
+                    }
+                }
+
             }
 
             return copytext.ToString();
@@ -1472,7 +1495,14 @@ namespace TeleSpecialists.Web.Controllers
                     copytext.Append("##NewLine##");
                 }
 
-                 
+
+                if (dbModel.cas_ctp_key != 0)
+                {
+                    var casType = (CaseType)dbModel.cas_ctp_key;
+                    copytext.Append(casType);
+                    copytext.Append("##NewLine##");
+                }
+
                 if (dbModel.fac_name != null)
                 {
                     var fac_name = dbModel.fac_name;
@@ -1483,6 +1513,12 @@ namespace TeleSpecialists.Web.Controllers
                 {
                     var cart = dbModel.cas_cart;
                     copytext.Append("Cart: " + cart);
+                    copytext.Append("##NewLine##");
+                }
+                if (dbModel.cas_cart_location_text != null)
+                {
+                    var cartlocation = dbModel.cas_cart_location_text;
+                    copytext.Append("Cart Location: " + cartlocation);
                     copytext.Append("##NewLine##");
                 }
                 if (dbModel.cas_callback != null)
@@ -1507,24 +1543,34 @@ namespace TeleSpecialists.Web.Controllers
                 if (dbModel.cas_triage_notes != null)
                 {
                     var triagenotes = dbModel.cas_triage_notes;
-                    copytext.Append("Triage Notes: " + triagenotes);
+                    copytext.Append("RRC Manager Notes: " + triagenotes);
                     copytext.Append("##NewLine##");
                 }
                 if (dbModel.cas_notes != null)
                 {
                     var notes = dbModel.cas_notes;
-                    copytext.Append("Notes: " + notes);
+                    copytext.Append("Alert Notes: " + notes);
                     copytext.Append("##NewLine##");
                 }
-                if (dbModel.cas_eta != null)
+                if (dbModel.cas_navigator_stamp_notes != null)
                 {
-                    var eta = dbModel.cas_eta;
-                    copytext.Append("##NewLine##");
-                    copytext.Append("##NewLine##");
-                    copytext.Append("ETA: " + eta);
+                    var NAVnotes = dbModel.cas_navigator_stamp_notes;
+                    copytext.Append("Navigator Stamp Notes: " + NAVnotes);
                     copytext.Append("##NewLine##");
                 }
-            }
+
+
+                if (dbModel.cas_phy_has_technical_issue)
+                {
+                    if (dbModel.cas_phy_technical_issue_date_est != null)
+                    {
+                        var technicalIssues = dbModel.cas_phy_technical_issue_date_est;
+                        copytext.Append("Physician Having Technical Issues: " + technicalIssues);
+                        copytext.Append("##NewLine##");
+                    }
+                }
+
+            } 
 
             return copytext.ToString();
         }

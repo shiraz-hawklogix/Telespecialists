@@ -404,7 +404,7 @@ EntityTypes.StateAlertTemplate.ToInt()
 @if (User.IsInRole(UserRoles.Physician.ToDescription()) && DifferenceInMinutes.Minutes < 5)// 5 minutes check
 {
     <ul class="nav nav-tabs" style="float:right">
-        <li class="nav-item"> <button class="btn btn-danger" style="padding:7px 30px;" id="rejectCaseButton">Reject Case</button></li>
+      @*  <li class="nav-item"> <button class="btn btn-danger" style="padding:7px 30px;" id="rejectCaseButton">Reject Case</button></li>*@
     </ul>
     @*<select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation d-none" data-selectedValue="@(Model != null ? Model.cas_phy_key : "0")"></select>*@
     @*@Html.HiddenFor(x => x.cas_phy_key, new { id = "cas_phy_key", @class = "d-none" })*@
@@ -4697,9 +4697,9 @@ EntityTypes.StateAlertTemplate.ToInt()
 
 
 
-                                                                                                                 $("#rejectCaseButton").click(function () {
-                                                                                                                        $("#popupModelCaseRejection").modal("show");
-                                                                                                                    });
+                                                                                                                 //$("#rejectCaseButton").click(function () {
+                                                                                                                 //       $("#popupModelCaseRejection").modal("show");
+                                                                                                                 //   });
 
                                                                                                                     //function RemovePreviousAssignedPhysician(arr, value) {
 
