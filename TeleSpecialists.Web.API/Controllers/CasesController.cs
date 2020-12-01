@@ -235,6 +235,11 @@ namespace TeleSpecialists.Web.API.Controllers
             {
                 string query = string.Format("Exec  [dbo].[usp_api_case_reject] {0}, '{1}'", Id, phyId);
                 var result = _dbContext.Database.SqlQuery<string>(query).FirstOrDefault();
+                #region Method for reasigning of case
+                //TeleSpecialists.Web.Controllers.DispatchController dispatchController = new Web.Controllers.DispatchController();
+                //dispatchController.RejectCaseForApi(Id, null ,"from Api rejection");
+                #endregion
+
                 return Json(result);
             }
             catch (Exception ex)

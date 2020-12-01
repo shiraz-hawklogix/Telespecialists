@@ -165,7 +165,7 @@ namespace TeleSpecialists.BLL.ViewModels
                 try
                 {
                     var ioslist = _tokenservice.GetIOSAll(phy_key);
-                    if (ioslist.Count > 0)
+                    if (ioslist.Count > 0 && strokeDetail != null)
                     {
                         WebRequest _tRequest = WebRequest.Create("https://fcm.googleapis.com/fcm/send");
                         _tRequest.Method = "post";

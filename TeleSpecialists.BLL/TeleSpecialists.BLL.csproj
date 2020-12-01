@@ -367,6 +367,7 @@
     <Compile Include="ViewModels\CaseRejectionReasonsViewModel.cs" />
     <Compile Include="ViewModels\CasesPendingReviewListing.cs" />
     <Compile Include="ViewModels\CredentialsExpiringCaseListing.cs" />
+    <Compile Include="ViewModels\Dispatch\CodeForApi.cs" />
     <Compile Include="ViewModels\Dispatch\DispatchListing.cs" />
     <Compile Include="ViewModels\Dispatch\dispatchSaveStatusVM.cs" />
     <Compile Include="ViewModels\EntityNotes\SignOutNoteViewModel.cs" />

@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 using TeleSpecialists.Web.API.Extensions;
 using TeleSpecialists.Web.API.Models;
+using TeleSpecialists.Web.API.ViewModels;
 
 namespace TeleSpecialists.Web.API.Controllers
 {
@@ -203,10 +205,9 @@ namespace TeleSpecialists.Web.API.Controllers
         }
 
 
-       
+
         [Authorize]
         [Route("physician/token/save")]
-
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized", typeof(string))]
         [SwaggerResponse(HttpStatusCode.OK, "OK", typeof(string))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "Bad Request", typeof(APIErrorResponse))]
@@ -214,15 +215,77 @@ namespace TeleSpecialists.Web.API.Controllers
         [HttpPost]
         public IHttpActionResult SaveToken(string phy_key, string token, string deviceType)
         {
-            try { 
+            try
+            {
 
-                string query = string.Format("Exec [usp_api_user_token] @UserId = '{0}', @Token='{1}', @deviceType='{2}'", phy_key,token, deviceType);
+                string query = string.Format("Exec [usp_api_user_token] @UserId = '{0}', @Token='{1}', @deviceType='{2}'", phy_key, token, deviceType);
 
                 //var result = _dbContext.SqlToList(query);
                 var result = _dbContext.Database.SqlQuery<string>(query).FirstOrDefault();
-                 return Json(result);
+                return Json(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                return ServerError(ex.Message);
+            }
+
+
+        }
+        [HttpPost]
+        [Authorize]
+        [Route("physician/token/saveToken")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.OK, "OK", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Bad Request", typeof(APIErrorResponse))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "Internal Server Error", typeof(APIErrorResponse))]
+        public IHttpActionResult Phy_SaveToken([FromBody] FormDataCollection form)
+        {
+            try
+            {
+                var re = Request;
+                // way one to get
+                string _phy_key = form.Get("phy_key");
+                string _token = form.Get("token");
+                string _deviceType = form.Get("deviceType");
+                // way two to get
+                string phy_key = form.GetValues("phy_key").First();
+                string token = form.GetValues("token").First();
+                string deviceType = form.GetValues("deviceType").First();
+                string query = string.Format("Exec [usp_api_user_token] @UserId = '{0}', @Token='{1}', @deviceType='{2}'", phy_key, token, deviceType);
+
+                //var result = _dbContext.SqlToList(query);
+                var result = _dbContext.Database.SqlQuery<string>(query).FirstOrDefault();
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return ServerError(ex.Message);
+            }
+
+
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("physician/token/save_Token")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Unauthorized", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.OK, "OK", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "Bad Request", typeof(APIErrorResponse))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "Internal Server Error", typeof(APIErrorResponse))]
+        public IHttpActionResult Save_Token(SaveToken saveToken)
+        {
+            try
+            {
+                string phy_key = saveToken.phy_key;
+                string token = saveToken.token;
+                string deviceType = saveToken.deviceType;
+                string query = string.Format("Exec [usp_api_user_token] @UserId = '{0}', @Token='{1}', @deviceType='{2}'", phy_key, token, deviceType);
+
+                //var result = _dbContext.SqlToList(query);
+                var result = _dbContext.Database.SqlQuery<string>(query).FirstOrDefault();
+                return Json(result);
+            }
+            catch (Exception ex)
             {
                 return ServerError(ex.Message);
             }
