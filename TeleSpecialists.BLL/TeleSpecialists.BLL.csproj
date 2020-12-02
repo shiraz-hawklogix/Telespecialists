@@ -382,6 +382,7 @@
     <Compile Include="ViewModels\Reports\QualityGoalsViewModel.cs" />
     <Compile Include="ViewModels\Schedule\ScheduleExportVM.cs" />
     <Compile Include="ViewModels\UserLoggedInVerification.cs" />
+    <Compile Include="ViewModels\UserNodes.cs" />
     <Compile Include="ViewModels\UserPresenceListings.cs" />
     <Compile Include="ViewModels\user_alarm_setting.cs" />
     <Compile Include="ViewModels\PACgridVM.cs" />

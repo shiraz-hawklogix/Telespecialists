@@ -1169,8 +1169,13 @@ namespace TeleSpecialists.Web.Controllers
                 }
             }
         }
-        private void LogCaseAssignHistory(int cas_key, string cas_phy_key, string cah_action, bool isManualAssign)
+        private void LogCaseAssignHistory(int cas_key, string cas_phy_key, string cah_action, bool isManualAssign, string callFrom = "Default")
         {
+            string _createdBy = "";
+            if (callFrom == "api")
+                _createdBy = cas_phy_key;
+            else
+                _createdBy = User.Identity.GetUserId();
             _caseAssignHistoryService.Create(new case_assign_history
             {
                 cah_cas_key = cas_key,
@@ -1178,7 +1183,7 @@ namespace TeleSpecialists.Web.Controllers
                 cah_action = cah_action,
                 cah_created_date = DateTime.Now.ToEST(),
                 cah_created_date_utc = DateTime.UtcNow,
-                cah_created_by = User.Identity.GetUserId(),
+                cah_created_by = _createdBy,
                 cah_is_active = true,
                 cah_request_sent_time = DateTime.Now.ToEST(),
                 cah_action_time = DateTime.Now.ToEST(),
@@ -1997,128 +2002,70 @@ namespace TeleSpecialists.Web.Controllers
             string prvPhysicianInitials = model.AspNetUser2.UserInitial;
             string users = "";
             List<FireBaseData> resultList = new List<FireBaseData>();
-
-            if (!string.IsNullOrEmpty(casReasonId))
+            try
             {
-                case_rejection_reason reason = _caseRejectService.GetDetails(casReasonId.ToInt());
+                var phyList = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, model.cas_fac_key, null, model.cas_ctp_key).Where(x => x.FinalSorted).ToList();
 
-                if (reason.crr_troubleshoot)
+                if (phyList != null && phyList.Count > 0)
                 {
-                    // Rejection Reason is Troubleshoot Reason
-                    #region Husnain code for firebase chat grp
-
-                    if (!string.IsNullOrEmpty(reason.crr_users))
+                    List<string> PreviousAssignedPhysicians = model.case_assign_history.Select(cs => cs.cah_phy_key).ToList();
+                    if (PreviousAssignedPhysicians.Count() > 0)
                     {
-                        users = reason.crr_users + "," + model.cas_phy_key;
-                        var list = users.Split(',');
-                        var phy_ids = new HashSet<string>(list);
-                        resultList = _fireBaseUserMailService.GetAllSpecificUser(phy_ids);
+                        // Skip Previous Assigned Physician BEFORE Re Assigning
+                        var filtered = phyList.Where(x => !PreviousAssignedPhysicians.Any(y => y == x.AspNetUser_Id.ToString())).ToList();
 
-
-
-                        #region Case Re-Assigning and Blast Functionality
-                        try
+                        if (filtered.ToList().Count() > 0)
                         {
-                            var phyList = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, model.cas_fac_key, null, model.cas_ctp_key).Where(x => x.FinalSorted).ToList();
+                            model.cas_phy_key = filtered.FirstOrDefault().AspNetUser_Id.ToString();
+                            model.cas_physician_assign_date = DateTime.Now.ToEST();
 
-                            if (phyList != null && phyList.Count > 0)
+                            model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
+                            model.cas_status_assign_date = DateTime.Now.ToEST();
+                            var status = "Waiting to Accept";
+
+                            HandleCaseStatusCodeForCaseRejection_forApi(model, _caseService.GetDetails(casKey));
+
+                            LogCaseAssignHistory(casKey, model.cas_phy_key, status, true, "api");
+                            model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
+
+                            model.cas_modified_by = model.cas_phy_key;
+                            model.cas_modified_by_name = model.AspNetUser2.FirstName + " " + model.AspNetUser2.LastName;
+                            model.cas_modified_date = DateTime.Now.ToEST();
+
+                        }
+                        else
+                        {
+                            #region CASE REASSIGN EVEN ON BLAST
+
+                            model.cas_phy_key = phyList.FirstOrDefault().AspNetUser_Id.ToString();
+                            model.cas_physician_assign_date = DateTime.Now.ToEST();
+
+                            model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
+                            model.cas_status_assign_date = DateTime.Now.ToEST();
+                            var status = "Waiting to Accept";
+
+                            HandleCaseStatusCodeForCaseRejection_forApi(model, _caseService.GetDetails(casKey));
+
+                            LogCaseAssignHistory(casKey, model.cas_phy_key, status, true, "api");
+                            model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
+
+                            model.cas_modified_by = model.cas_phy_key;
+                            model.cas_modified_by_name = model.AspNetUser2.FirstName + " " + model.AspNetUser2.LastName;
+                            model.cas_modified_date = DateTime.Now.ToEST();
+
+                            #endregion
+                            // Internal Blast
+                            #region Husnain code for firebase
+                            var physicians = phyList.ToList();//.Select(x => x.AspNetUser_Id).ToList();
+                            if (physicians.Count > 0)
                             {
-                                List<string> PreviousAssignedPhysicians = model.case_assign_history.Select(cs => cs.cah_phy_key).ToList();
-                                if (PreviousAssignedPhysicians.Count() > 0)
-                                {
-                                    // Skip Previous Assigned Physician BEFORE Re Assigning
-                                    var filtered = phyList.Where(x => !PreviousAssignedPhysicians.Any(y => y == x.AspNetUser_Id.ToString())).ToList();
-                                    // if (filtered.Where(p => p.phs_name == "Available").ToList().Count() > 0)       // Removed Available Status Check
-                                    if (filtered.ToList().Count() > 0)
-                                    {
-                                        model.cas_phy_key = filtered.FirstOrDefault().AspNetUser_Id.ToString();
-                                        model.cas_physician_assign_date = DateTime.Now.ToEST();
-
-                                        model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                        model.cas_status_assign_date = DateTime.Now.ToEST();
-                                        var status = "Waiting to Accept";
-
-                                        HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                        LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                        model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                        model.cas_modified_by = loggedInUser.Id;
-                                        model.cas_modified_by_name = loggedInUser.FullName;
-                                        model.cas_modified_date = DateTime.Now.ToEST();
-
-                                    }
-                                    else
-                                    {
-                                        #region CASE REASSIGN EVEN ON BLAST
-
-                                        model.cas_phy_key = phyList.FirstOrDefault().AspNetUser_Id.ToString();
-                                        model.cas_physician_assign_date = DateTime.Now.ToEST();
-
-                                        model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                        model.cas_status_assign_date = DateTime.Now.ToEST();
-                                        var status = "Waiting to Accept";
-
-                                        HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                        LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                        model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                        model.cas_modified_by = loggedInUser.Id;
-                                        model.cas_modified_by_name = loggedInUser.FullName;
-                                        model.cas_modified_date = DateTime.Now.ToEST();
-
-                                        #endregion
-
-                                        // Internal Blast
-                                        #region Husnain code for firebase
-                                        var physicians = phyList.ToList();
-                                        HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
-                                        var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                        var phyids = firebaseUsers.Select(x => x.user_id).ToList();
-                                        var paramData = new List<object>();
-                                        paramData.Add(JsonConvert.SerializeObject(phyids));
-                                        bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phyids, caseType: "InternalBlast", Data: paramData);
-                                        #endregion
-                                    }
-                                }
-                                else
-                                {
-                                    // No Previous Assigned Physician
-
-                                    // if (phyList.Where(p => p.phs_name == "Available").ToList().Count() > 0) // Removed Available Status Check
-                                    if (phyList.ToList().Count() > 0)
-                                    {
-                                        model.cas_phy_key = phyList.FirstOrDefault().AspNetUser_Id.ToString();
-                                        model.cas_physician_assign_date = DateTime.Now.ToEST();
-                                        model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                        model.cas_status_assign_date = DateTime.Now.ToEST();
-                                        var status = "Waiting to Accept";
-
-                                        HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                        LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                        model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                        model.cas_modified_by = loggedInUser.Id;
-                                        model.cas_modified_by_name = loggedInUser.FullName;
-                                        model.cas_modified_date = DateTime.Now.ToEST();
-                                    }
-                                    //else
-                                    //{
-                                    //    // Internal Blast
-                                    //    #region Husnain code for firebase
-                                    //    var physicians = phyList.Where(p => p.phs_name != "Available").ToList();//.Select(x => x.AspNetUser_Id).ToList();
-                                    //    HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
-                                    //    var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                    //    var phyids = firebaseUsers.Select(x => x.user_id).ToList();
-                                    //    var paramData = new List<object>();
-                                    //    paramData.Add(JsonConvert.SerializeObject(phyids));
-                                    //    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phyids, caseType: "InternalBlast", Data: paramData);
-                                    //    #endregion
-                                    //}
-                                }
-
+                                //These Physcians have not rejected this case yet.
+                                HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
+                                var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
+                                var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
+                                var paramData = new List<object>();
+                                paramData.Add(JsonConvert.SerializeObject(phy_ids));
+                                bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "InternalBlast", Data: paramData);
                             }
                             else
                             {
@@ -2126,415 +2073,292 @@ namespace TeleSpecialists.Web.Controllers
 
                                 if (credentialedPhysiciansList != null && credentialedPhysiciansList.Count > 0)
                                 {
-
-                                    #region CASE REASSIGN EVEN ON BLAST
-
-                                    model.cas_phy_key = credentialedPhysiciansList.FirstOrDefault().AspNetUser_Id.ToString();
-                                    model.cas_physician_assign_date = DateTime.Now.ToEST();
-
-                                    model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                    model.cas_status_assign_date = DateTime.Now.ToEST();
-                                    var status = "Waiting to Accept";
-
-                                    HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                    LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                    model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                    model.cas_modified_by = loggedInUser.Id;
-                                    model.cas_modified_by_name = loggedInUser.FullName;
-                                    model.cas_modified_date = DateTime.Now.ToEST();
-
-                                    #endregion
-
                                     // External Blast
                                     #region Husnain code for firebase
                                     HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
                                     var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                    var phyids = firebaseUsers.Select(x => x.user_id).ToList();
-                                    var paramData = new List<object>();
-                                    paramData.Add(JsonConvert.SerializeObject(phyids));
-                                    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phyids, caseType: "ExternalBlast", Data: paramData);
-                                    #endregion
-                                }
-
-                            }
-
-
-                            if (!string.IsNullOrEmpty(caseRejectionType))
-                                model.cas_rejection_type = caseRejectionType;
-
-                            _dispatchService.EditCase(model, false);
-                            _dispatchService.Save();
-                            _dispatchService.Commit();
-                            _dispatchService.UpdateTimeStamps(model.cas_key.ToString());
-
-
-                            //return Json(true, JsonRequestBehavior.AllowGet);
-                        }
-                        catch (Exception ex)
-                        {
-                            Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-                        }
-                        #endregion
-
-
-                        //return Json(new { list = resultList, caseNumber = model.cas_case_number, initials = prvPhysicianInitials, physicianName = prvPhysician, phy_key = prvPhysicianKey }, JsonRequestBehavior.AllowGet);
-                    }
-                    #endregion
-                }
-
-                if (reason.crr_troubleshoot == false)
-                {
-                    // Rejection Reason is NOT Troubleshoot Reason
-                    try
-                    {
-                        var phyList = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, model.cas_fac_key, null, model.cas_ctp_key).Where(x => x.FinalSorted).ToList();
-
-                        if (phyList != null && phyList.Count > 0)
-                        {
-                            List<string> PreviousAssignedPhysicians = model.case_assign_history.Select(cs => cs.cah_phy_key).ToList();
-                            if (PreviousAssignedPhysicians.Count() > 0)
-                            {
-                                // Skip Previous Assigned Physician BEFORE Re Assigning
-                                var filtered = phyList.Where(x => !PreviousAssignedPhysicians.Any(y => y == x.AspNetUser_Id.ToString())).ToList();
-
-                                if (filtered.ToList().Count() > 0)
-                                {
-                                    model.cas_phy_key = filtered.FirstOrDefault().AspNetUser_Id.ToString();
-                                    model.cas_physician_assign_date = DateTime.Now.ToEST();
-
-                                    model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                    model.cas_status_assign_date = DateTime.Now.ToEST();
-                                    var status = "Waiting to Accept";
-
-                                    HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                    LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                    model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                    model.cas_modified_by = loggedInUser.Id;
-                                    model.cas_modified_by_name = loggedInUser.FullName;
-                                    model.cas_modified_date = DateTime.Now.ToEST();
-
-                                }
-                                else
-                                {
-                                    #region CASE REASSIGN EVEN ON BLAST
-
-                                    model.cas_phy_key = phyList.FirstOrDefault().AspNetUser_Id.ToString();
-                                    model.cas_physician_assign_date = DateTime.Now.ToEST();
-
-                                    model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                    model.cas_status_assign_date = DateTime.Now.ToEST();
-                                    var status = "Waiting to Accept";
-
-                                    HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                    LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                    model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                    model.cas_modified_by = loggedInUser.Id;
-                                    model.cas_modified_by_name = loggedInUser.FullName;
-                                    model.cas_modified_date = DateTime.Now.ToEST();
-
-                                    #endregion
-
-                                    // Internal Blast
-                                    #region Husnain code for firebase
-                                    var physicians = phyList.ToList();
-                                    HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
-                                    var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
                                     var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
                                     var paramData = new List<object>();
                                     paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                                    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "InternalBlast", Data: paramData);
+                                    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
                                     #endregion
                                 }
                             }
-                            else
-                            {
-                                // No Previous Assigned Physician
 
-                                if (phyList.ToList().Count() > 0)
-                                {
-                                    model.cas_phy_key = phyList.FirstOrDefault().AspNetUser_Id.ToString();
-                                    model.cas_physician_assign_date = DateTime.Now.ToEST();
-                                    model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                    model.cas_status_assign_date = DateTime.Now.ToEST();
-                                    var status = "Waiting to Accept";
-
-                                    HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                    LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                    model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                    model.cas_modified_by = loggedInUser.Id;
-                                    model.cas_modified_by_name = loggedInUser.FullName;
-                                    model.cas_modified_date = DateTime.Now.ToEST();
-                                }
-                                //else
-                                //{
-                                //    // Internal Blast
-                                //    #region Husnain code for firebase
-                                //    var physicians = phyList.Where(p => p.phs_name != "Available").ToList();//.Select(x => x.AspNetUser_Id).ToList();
-                                //    HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
-                                //    var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                //    var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                                //    var paramData = new List<object>();
-                                //    paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                                //    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "InternalBlast", Data: paramData);
-                                //    #endregion
-                                //}
-                            }
-
+                            #endregion
                         }
-                        else
-                        {
-                            var credentialedPhysiciansList = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, model.cas_fac_key, null, model.cas_ctp_key).ToList();
-
-                            if (credentialedPhysiciansList != null && credentialedPhysiciansList.Count > 0)
-                            {
-
-                                #region CASE REASSIGN EVEN ON BLAST
-
-                                model.cas_phy_key = credentialedPhysiciansList.FirstOrDefault().AspNetUser_Id.ToString();
-                                model.cas_physician_assign_date = DateTime.Now.ToEST();
-
-                                model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                model.cas_status_assign_date = DateTime.Now.ToEST();
-                                var status = "Waiting to Accept";
-
-                                HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                model.cas_modified_by = loggedInUser.Id;
-                                model.cas_modified_by_name = loggedInUser.FullName;
-                                model.cas_modified_date = DateTime.Now.ToEST();
-
-                                #endregion
-
-                                // External Blast
-                                #region Husnain code for firebase
-                                HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
-                                var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                                var paramData = new List<object>();
-                                paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                                bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
-                                #endregion
-                            }
-
-                        }
-
-
-                        if (!string.IsNullOrEmpty(caseRejectionType))
-                            model.cas_rejection_type = caseRejectionType;
-
-                        _dispatchService.EditCase(model, false);
-                        _dispatchService.Save();
-                        _dispatchService.Commit();
-                        _dispatchService.UpdateTimeStamps(model.cas_key.ToString());
-
-
-                        //return Json(true, JsonRequestBehavior.AllowGet);
-                    }
-                    catch (Exception ex)
-                    {
-                        Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
-                    }
-                }
-            }
-            else
-            {
-                try
-                {
-                    var phyList = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, model.cas_fac_key, null, model.cas_ctp_key).Where(x => x.FinalSorted).ToList();
-
-                    if (phyList != null && phyList.Count > 0)
-                    {
-                        List<string> PreviousAssignedPhysicians = model.case_assign_history.Select(cs => cs.cah_phy_key).ToList();
-                        if (PreviousAssignedPhysicians.Count() > 0)
-                        {
-                            // Skip Previous Assigned Physician BEFORE Re Assigning
-                            var filtered = phyList.Where(x => !PreviousAssignedPhysicians.Any(y => y == x.AspNetUser_Id.ToString())).ToList();
-
-                            if (filtered.ToList().Count() > 0)
-                            {
-                                model.cas_phy_key = filtered.FirstOrDefault().AspNetUser_Id.ToString();
-                                model.cas_physician_assign_date = DateTime.Now.ToEST();
-
-                                model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                model.cas_status_assign_date = DateTime.Now.ToEST();
-                                var status = "Waiting to Accept";
-
-                                HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                model.cas_modified_by = loggedInUser.Id;
-                                model.cas_modified_by_name = loggedInUser.FullName;
-                                model.cas_modified_date = DateTime.Now.ToEST();
-
-                            }
-                            else
-                            {
-
-                                #region CASE REASSIGN EVEN ON BLAST
-
-                                model.cas_phy_key = phyList.FirstOrDefault().AspNetUser_Id.ToString();
-                                model.cas_physician_assign_date = DateTime.Now.ToEST();
-
-                                model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                model.cas_status_assign_date = DateTime.Now.ToEST();
-                                var status = "Waiting to Accept";
-
-                                HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                model.cas_modified_by = loggedInUser.Id;
-                                model.cas_modified_by_name = loggedInUser.FullName;
-                                model.cas_modified_date = DateTime.Now.ToEST();
-
-                                #endregion
-
-
-                                // Internal Blast
-                                #region Husnain code for firebase
-                                var physicians = phyList.ToList();//.Select(x => x.AspNetUser_Id).ToList();
-                                if (physicians.Count > 0)
-                                {
-                                    //These Physcians have not rejected this case yet.
-                                    HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
-                                    var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                    var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                                    var paramData = new List<object>();
-                                    paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                                    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "InternalBlast", Data: paramData);
-                                }
-                                else
-                                {
-                                    var credentialedPhysiciansList = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, model.cas_fac_key, null, model.cas_ctp_key).ToList();
-
-                                    if (credentialedPhysiciansList != null && credentialedPhysiciansList.Count > 0)
-                                    {
-                                        // External Blast
-                                        #region Husnain code for firebase
-                                        HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
-                                        var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                                        var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                                        var paramData = new List<object>();
-                                        paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                                        bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
-                                        #endregion
-                                    }
-                                }
-
-                                #endregion
-                            }
-                        }
-                        else
-                        {
-                            // No Previous Assigned Physician
-
-                            if (phyList.ToList().Count() > 0)
-                            {
-                                model.cas_phy_key = phyList.FirstOrDefault().AspNetUser_Id.ToString();
-                                model.cas_physician_assign_date = DateTime.Now.ToEST();
-                                model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
-                                model.cas_status_assign_date = DateTime.Now.ToEST();
-                                var status = "Waiting to Accept";
-
-                                HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
-
-                                LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
-                                model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
-
-                                model.cas_modified_by = loggedInUser.Id;
-                                model.cas_modified_by_name = loggedInUser.FullName;
-                                model.cas_modified_date = DateTime.Now.ToEST();
-                            }
-                            //else
-                            //{
-                            //    // Internal Blast
-                            //    #region Husnain code for firebase
-                            //    var physicians = phyList.Where(p => p.phs_name != "Available").ToList();//.Select(x => x.AspNetUser_Id).ToList();
-                            //    HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
-                            //    var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                            //    var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                            //    var paramData = new List<object>();
-                            //    paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                            //    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "InternalBlast", Data: paramData);
-                            //    #endregion
-                            //}
-                        }
-
                     }
                     else
                     {
-                        var credentialedPhysiciansList = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, model.cas_fac_key, null, model.cas_ctp_key).ToList();
+                        // No Previous Assigned Physician
 
-                        if (credentialedPhysiciansList != null && credentialedPhysiciansList.Count > 0)
+                        if (phyList.ToList().Count() > 0)
                         {
-
-                            #region CASE REASSIGN EVEN ON BLAST
-
-                            model.cas_phy_key = credentialedPhysiciansList.FirstOrDefault().AspNetUser_Id.ToString();
+                            model.cas_phy_key = phyList.FirstOrDefault().AspNetUser_Id.ToString();
                             model.cas_physician_assign_date = DateTime.Now.ToEST();
-
                             model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
                             model.cas_status_assign_date = DateTime.Now.ToEST();
                             var status = "Waiting to Accept";
 
                             HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
 
-                            LogCaseAssignHistory(casKey, model.cas_phy_key, status, true);
+                            LogCaseAssignHistory(casKey, model.cas_phy_key, status, true, "api");
                             model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
 
-                            model.cas_modified_by = loggedInUser.Id;
-                            model.cas_modified_by_name = loggedInUser.FullName;
+                            model.cas_modified_by = model.cas_phy_key;
+                            model.cas_modified_by_name = model.AspNetUser2.FirstName + " " + model.AspNetUser2.LastName;
                             model.cas_modified_date = DateTime.Now.ToEST();
-
-                            #endregion
-
-                            // External Blast
-                            #region Husnain code for firebase
-                            HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
-                            var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
-                            var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
-                            var paramData = new List<object>();
-                            paramData.Add(JsonConvert.SerializeObject(phy_ids));
-                            bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
-                            #endregion
                         }
-
+                        //else
+                        //{
+                        //    // Internal Blast
+                        //    #region Husnain code for firebase
+                        //    var physicians = phyList.Where(p => p.phs_name != "Available").ToList();//.Select(x => x.AspNetUser_Id).ToList();
+                        //    HashSet<string> hash_ids = new HashSet<string>(physicians.Select(s => s.AspNetUser_Id.ToString()));
+                        //    var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
+                        //    var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
+                        //    var paramData = new List<object>();
+                        //    paramData.Add(JsonConvert.SerializeObject(phy_ids));
+                        //    bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "InternalBlast", Data: paramData);
+                        //    #endregion
+                        //}
                     }
 
-
-                    if (!string.IsNullOrEmpty(caseRejectionType))
-                        model.cas_rejection_type = caseRejectionType;
-
-                    _dispatchService.EditCase(model, false);
-                    _dispatchService.Save();
-                    _dispatchService.Commit();
-                    _dispatchService.UpdateTimeStamps(model.cas_key.ToString());
-
-
-                    //return Json(true, JsonRequestBehavior.AllowGet);
                 }
-                catch (Exception ex)
+                else
                 {
-                    Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                    var credentialedPhysiciansList = _facilityPhysicianService.GetAllPhysiciansByFacility(ApplicationSetting, model.cas_fac_key, null, model.cas_ctp_key).ToList();
+
+                    if (credentialedPhysiciansList != null && credentialedPhysiciansList.Count > 0)
+                    {
+
+                        #region CASE REASSIGN EVEN ON BLAST
+
+                        model.cas_phy_key = credentialedPhysiciansList.FirstOrDefault().AspNetUser_Id.ToString();
+                        model.cas_physician_assign_date = DateTime.Now.ToEST();
+
+                        model.cas_cst_key = BLL.Helpers.CaseStatus.WaitingToAccept.ToInt();
+                        model.cas_status_assign_date = DateTime.Now.ToEST();
+                        var status = "Waiting to Accept";
+
+                        HandleCaseStatusCodeForCaseRejection(model, _caseService.GetDetails(casKey));
+
+                        LogCaseAssignHistory(casKey, model.cas_phy_key, status, true, "api");
+                        model.cas_history_physician_initial = _caseService.GetCaseInitials(casKey);
+
+                        model.cas_modified_by = model.cas_phy_key;
+                        model.cas_modified_by_name = model.AspNetUser2.FirstName + " " + model.AspNetUser2.LastName;
+                        model.cas_modified_date = DateTime.Now.ToEST();
+
+                        #endregion
+
+                        // External Blast
+                        #region Husnain code for firebase
+                        HashSet<string> hash_ids = new HashSet<string>(credentialedPhysiciansList.Select(s => s.AspNetUser_Id.ToString()));
+                        var firebaseUsers = _fireBaseUserMailService.GetAllSpecificUserForAuto(hash_ids);
+                        var phy_ids = firebaseUsers.Select(x => x.user_id).ToList();
+                        var paramData = new List<object>();
+                        paramData.Add(JsonConvert.SerializeObject(phy_ids));
+                        bool sentStatus = _user_Fcm_Notification.SendNotification(caseId: casKey, phy_ids: phy_ids, caseType: "ExternalBlast", Data: paramData);
+                        #endregion
+                    }
+
+                }
+
+
+                if (!string.IsNullOrEmpty(caseRejectionType))
+                    model.cas_rejection_type = caseRejectionType;
+
+                _dispatchService.EditCase(model, false);
+                _dispatchService.Save();
+                _dispatchService.Commit();
+                _dispatchService.UpdateTimeStamps(model.cas_key.ToString());
+
+
+                //return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            
+            //return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+        }
+        private void HandleCaseStatusCodeForCaseRejection_forApi(@case model, @case dbModel)
+        {
+            bool updatePhysicianStatus = true;
+            bool isPhysicianCurrentCase = false;
+            var previousPhysician = _adminService.GetAspNetUsers().Where(m => m.status_change_cas_key == model.cas_key && m.Id == dbModel.cas_phy_key).FirstOrDefault();
+            if (previousPhysician != null)
+            {
+                if (previousPhysician.status_key == PhysicianStatus.Stroke.ToInt() || previousPhysician.status_key == PhysicianStatus.STATConsult.ToInt())
+                    isPhysicianCurrentCase = true;
+                
+                SetStatus_ForApi(PhysicianStatus.Available.ToInt(), null, dbModel.cas_phy_key, $"Status changed to Available due to Case Rejection for {model.cas_key}", previousPhysician);
+                UpdateStatusOfPreviousPhy_forApi(model, dbModel);
+            }
+
+            HideNavigatorCasePopup(dbModel.cas_key, dbModel.cas_phy_key);
+            /*
+            if (model.cas_cst_key == BLL.Helpers.CaseStatus.WaitingToAccept.ToInt()
+                && !string.IsNullOrEmpty(model.cas_phy_key)
+                && (model.cas_ctp_key == CaseType.StrokeAlert.ToInt() || model.cas_ctp_key == CaseType.StatConsult.ToInt())
+                && isPhysicianCurrentCase
+
+                )
+            {
+                var assignedPhysician = UserManager.FindById(model.cas_phy_key);
+                if (assignedPhysician.status_key == PhysicianStatus.Available.ToInt())
+                {
+
+                    if (model.cas_cst_key != dbModel.cas_cst_key && model.cas_phy_key != dbModel.cas_phy_key)
+                    {
+                        //SetStatus(PhysicianStatus.Stroke.ToInt(), null, model.cas_phy_key, $"Status changed to Stroke due to Case Reassigning through Case Rejection for {model.cas_key}");
+                        updatePhysicianStatus = false;
+                    }
+                }
+            }
+            */
+        }
+        private void SetStatus_ForApi(int id, int? cas_key, string userId, string comments,  AspNetUser entity)
+        {
+            /*
+            userId = string.IsNullOrEmpty(userId) ? User.Identity.GetUserId() : userId;
+            var physician = UserManager.FindById(userId);
+            bool isUpdateStatusDate = true;
+
+            var status = _physicianStatusService.GetDetails(id);
+
+            #region Applying Rule 3 Define in TCARE-11 -  Physician Status Rules/Changes
+            if (physician.status_key == PhysicianStatus.Stroke.ToInt() && status.phs_key == PhysicianStatus.TPA.ToInt())
+            {
+                isUpdateStatusDate = false;
+            }
+            #endregion
+
+            physician.status_key = id;
+            if (isUpdateStatusDate)
+            {
+                physician.status_change_date = DateTime.Now.ToEST();
+            }
+            physician.status_change_cas_key = cas_key;
+            physician.status_change_date_forAll = DateTime.Now.ToEST();
+
+            UserManager.Update(physician);
+            */
+            entity.status_key = id;
+            entity.status_change_date = DateTime.Now.ToEST();
+            entity.status_change_cas_key = cas_key;
+            entity.status_change_date_forAll = DateTime.Now.ToEST();
+            var _updateStatus = _dispatchService.UpdateUserStatus(entity);//userId, id, DateTime.Now.ToEST(), cas_key, DateTime.Now.ToEST());
+            LogStatusChange_forApi(id, userId, cas_key, comments);
+
+            if (BLL.Settings.RPCMode == RPCMode.SignalR)
+            {
+                /*
+                var hubContext = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<PhysicianCasePopupHub>();
+                var physicianOnlineWindows = PhysicianCasePopupHub.ConnectedUsers
+                                                            .Where(m => m.UserId == userId)
+                                                            .ToList();
+                physicianOnlineWindows.ForEach(window =>
+                {
+
+                    hubContext.Clients.Client(window.ConnectionId).syncPhysicianStatusTime(isUpdateStatusDate);
+                });
+                */
+            }
+            else if (BLL.Settings.RPCMode == RPCMode.WebSocket)
+            {
+                //var dataList = new List<object>();
+                //dataList.Add(isUpdateStatusDate);
+                //new WebSocketEventHandler().CallJSMethod(userId, new SocketResponseModel { MethodName = "refreshCurrentPhyStatus", Data = dataList });
+            }
+            bool _status = _user_Fcm_Notification.SendNotification(phy_key: userId, caseType: "refreshPhyStatus");
+        }
+        private void UpdateStatusOfPreviousPhy_forApi(@case model, @case dbModel)
+        {
+
+            if (model.cas_ctp_key == CaseType.StrokeAlert.ToInt() || model.cas_ctp_key == CaseType.StatConsult.ToInt())
+            {
+                var previousPhysician = _adminService.GetAspNetUsers().Where(m => m.status_change_cas_key == model.cas_key).FirstOrDefault();
+                // currently the status will be only reversed in case of physician is removed from the case or physician is changed
+                if (previousPhysician != null)
+                {
+                    if (previousPhysician.Id != model.cas_phy_key) //|| model.cas_cst_key == CaseStatus.Cancelled.ToInt() || model.cas_cst_key == CaseStatus.Complete.ToInt())
+                    {
+                        var dbCaseType = _uclService.GetDetails(dbModel.cas_ctp_key);
+                        var dbCaseStatus = _physicianStatusService.GetAll().FirstOrDefault(m => m.phs_name.ToLower() == dbCaseType.ucd_title.ToLower());
+
+                        //int? phy_status_key = null;
+                        if (dbCaseStatus != null)
+                        {
+                            var physician = _adminService.GetUser(previousPhysician.Id);//UserManager.FindById(previousPhysician.Id);
+                            if (physician.status_change_cas_key == dbModel.cas_key) // if it is current
+                            {
+                                // reset the physician status to available
+                                physician.status_change_date = DateTime.Now.ToEST();
+                                physician.status_change_date_forAll = DateTime.Now.ToEST();
+                                physician.status_key = PhysicianStatus.Available.ToInt();
+                                physician.status_change_cas_key = null;
+                                //UserManager.Update(physician);
+                                var _updateStatus = _dispatchService.UpdateUserStatus(physician);//physician.Id, physician.status_key, physician.status_change_date, physician.status_change_cas_key, physician.status_change_date_forAll);
+
+                                HideNavigatorCasePopup(dbModel.cas_key, dbModel.cas_phy_key);
+
+                                LogStatusChange_forApi(PhysicianStatus.Available.ToInt(), physician.Id, dbModel.cas_key, $"Case Assigned to {model.cas_phy_key}");
+
+                                if (Settings.RPCMode == RPCMode.SignalR)
+                                {
+                                    var hubContext = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<PhysicianCasePopupHub>();
+                                    var physicianOnlineWindows = PhysicianCasePopupHub.ConnectedUsers
+                                                                                .Where(m => m.UserId == physician.Id)
+                                                                                .ToList();
+                                    physicianOnlineWindows.ForEach(window =>
+                                    {
+                                        hubContext.Clients.Client(window.ConnectionId).syncPhysicianStatusTime();
+                                    });
+                                }
+                                else if (Settings.RPCMode == RPCMode.WebSocket)
+                                {
+                                    //new WebSocketEventHandler().CallJSMethod(physician.Id, new SocketResponseModel { MethodName = "refreshCurrentPhyStatus" });
+                                }
+                                bool status = _user_Fcm_Notification.SendNotification(phy_key: physician.Id, caseType: "refreshPhyStatus");
+                            }
+                        }
+                    }
+
                 }
             }
 
-            //return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
+        public void LogStatusChange_forApi(int psl_phs_key, string phy_key, int? cas_key, string comments)
+        {
+            var physician = _physician.GetDetail(phy_key);
+
+            var physician_status_log = _physicianStatusLogService.GetExistingLog(phy_key);
+            if (physician_status_log != null)
+            {
+                physician_status_log.psl_end_date = DateTime.Now.ToEST();
+                physician_status_log.psl_modified_by = phy_key;
+                physician_status_log.psl_modified_date = DateTime.Now.ToEST();
+                _physicianStatusLogService.Edit(physician_status_log);
+            }
+
+            var new_entry = new physician_status_log
+            {
+                psl_cas_key = cas_key,
+                psl_created_date = DateTime.Now.ToEST(),
+                psl_created_by = phy_key,
+                psl_user_key = phy_key,
+                psl_phs_key = psl_phs_key,
+                psl_start_date = DateTime.Now.ToEST(),
+                psl_comments = comments,
+                psl_status_name = "Available"
+            };
+
+            _physicianStatusLogService.Create(new_entry);
+        }
+
         #endregion
 
         #region ----- Disposable -----

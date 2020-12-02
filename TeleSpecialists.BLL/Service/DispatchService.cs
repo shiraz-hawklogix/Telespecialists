@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TeleSpecialists.BLL.Extensions;
 using TeleSpecialists.BLL.Model;
+using TeleSpecialists.BLL.ViewModels;
 using TeleSpecialists.BLL.ViewModels.Dispatch;
 
 namespace TeleSpecialists.BLL.Service
@@ -636,7 +637,59 @@ namespace TeleSpecialists.BLL.Service
         ////}
 
         #endregion
+        #region Api's Block by Husnain 
+        public bool UpdateUserStatus(AspNetUser entity)//string phyid, int? statuskey, DateTime? statusChangeDate, int? changeCaseKey, DateTime? dateForAll)
+        {
+            try
+            {
+                UpdateUser(entity, true);
+                /*
+                var sqlParameters = new List<SqlParameter>();
+                sqlParameters.Add(new SqlParameter("@phy_id", phyid));
+                sqlParameters.Add(new SqlParameter("@status_key", statuskey));
+                sqlParameters.Add(new SqlParameter("@status_change_date", statusChangeDate));
+                sqlParameters.Add(new SqlParameter("@status_change_cas_key", changeCaseKey));
+                sqlParameters.Add(new SqlParameter("@status_change_date_forAll", dateForAll));
 
+                if (!string.IsNullOrEmpty(phyid))
+                {
+                    var queryBuilder = new StringBuilder();
+
+                    queryBuilder.Append($"@phy_id={phyid}");
+                    if (statuskey != null)
+                        queryBuilder.Append(string.Format(",@status_key='{0}'", statuskey));
+                    if (statusChangeDate.HasValue)
+                        queryBuilder.Append(string.Format(",@status_change_date='{0}'", statusChangeDate.Value));
+                    if (changeCaseKey != null)
+                        queryBuilder.Append(string.Format(",@status_change_cas_key='{0}'", changeCaseKey));
+                    if (dateForAll.HasValue)
+                        queryBuilder.Append(string.Format(",@status_change_date_forAll='{0}'", dateForAll.Value));
+                    var list = _unitOfWork.SqlQuery<UserNodes>("Exec usp_api_updatePhysicianStatus " + queryBuilder.ToString()).ToList();
+                }
+                    
+                */
+                //string query = string.Format("Exec  [dbo].[usp_api_case_accept] '{0}', {1}, {2}, {3},{4}", phyid, statuskey, statusChangeDate, changeCaseKey, dateForAll);
+                //var result = _unitOfWork.SqlQuery<string>(query).FirstOrDefault();
+                //Helpers.DBHelper.ExecuteNonQuery("usp_api_updatePhysicianStatus", sqlParameters.ToArray());
+                return true;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
+            
+        }
+        public void UpdateUser(AspNetUser entity, bool commit = true)
+        {
+            _unitOfWork.UserRepository.AddUpdate(entity);
+            if (commit)
+            {
+                _unitOfWork.Save();
+                _unitOfWork.Commit();
+            }
+
+        }
+        #endregion
     }
 }
 

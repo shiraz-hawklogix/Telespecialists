@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using TeleSpecialists.BLL.Model;
 using System;
+using System.Data.Entity.Migrations;
 
 namespace TeleSpecialists.BLL.Repository
 {
@@ -20,6 +21,7 @@ namespace TeleSpecialists.BLL.Repository
         void Delete(Guid id);
         void DeleteRange(IEnumerable<T> entity);
         void DeleteRate(T entity);
+        void AddUpdate(T entity);
     }
 
     public abstract class GenericRepository<T> : IGenericRepository<T> where T : class, new()
@@ -94,6 +96,10 @@ namespace TeleSpecialists.BLL.Repository
             {
                 _dbContext.Set<T>().Remove(entity);
             }
+        }
+        public void AddUpdate(T entity)
+        {
+            _dbContext.Set<T>().AddOrUpdate(entity);
         }
     }
 }
