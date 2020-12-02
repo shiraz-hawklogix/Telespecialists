@@ -100,11 +100,6 @@ namespace TeleSpecialists.Controllers
                         if (ApplicationSetting.aps_secuirty_is_reset_password_required && !user.RequirePasswordReset)
                         {
                             ViewBag.UserName = model.Username;
-                            ViewBag.isLowercaseRequired = ApplicationSetting.aps_security_is_lowercase_required;
-                            ViewBag.isUpperCaseRequired = ApplicationSetting.aps_security_is_uppercase_required;
-                            ViewBag.isAlphaNumericRequired = ApplicationSetting.aps_security_is_non_alphanumeric_required;
-                            ViewBag.isNumberRequired = ApplicationSetting.aps_security_is_number_required;
-                            ViewBag.isPasswordLengthCheckRequired = ApplicationSetting.aps_security_password_length_value;
                             ViewBag.IsPasswordExpired = false;
                             return View("ChangePasswordOnFirstLogin");
                         }
@@ -116,11 +111,6 @@ namespace TeleSpecialists.Controllers
                             if (expirationDate < currentDate)
                             {
                                 ViewBag.UserName = model.Username;
-                                ViewBag.isLowercaseRequired = ApplicationSetting.aps_security_is_lowercase_required;
-                                ViewBag.isUpperCaseRequired = ApplicationSetting.aps_security_is_uppercase_required;
-                                ViewBag.isAlphaNumericRequired = ApplicationSetting.aps_security_is_non_alphanumeric_required;
-                                ViewBag.isNumberRequired = ApplicationSetting.aps_security_is_number_required;
-                                ViewBag.isPasswordLengthCheckRequired = ApplicationSetting.aps_security_password_length_value;
                                 ViewBag.IsPasswordExpired = true;
                                 return View("ChangePasswordOnFirstLogin");
                             }
