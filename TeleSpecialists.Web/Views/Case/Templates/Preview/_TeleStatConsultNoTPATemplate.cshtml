@@ -6,24 +6,33 @@
     #region impression
     const string subListLevel1 = "&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;";
     string impressionOptionsText = "";
-    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_impression))
-    {
-        var impressionOptions = Model.case_template_statconsult.ctt_impression.Split(',')
-                                             .Select(m => "<div>" + subListLevel1 + "&nbsp;" + ((AcuteISchemicStatConsult)m.ToInt()).ToDescription() + "</div>");
-        impressionOptionsText = string.Join("", impressionOptions);
-    }
-    if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_impression_text))
-    {
-        //impressionOptionsText += "<div>" + subListLevel1 + "&nbsp;" + Model.case_template_statconsult.ctt_impression_text + "</div>";
+    //if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_impression))
+    //{
+    //    var impressionOptions = Model.case_template_statconsult.ctt_impression.Split(',')
+    //                                         .Select(m => "<div>" + subListLevel1 + "&nbsp;" + ((AcuteISchemicStatConsult)m.ToInt()).ToDescription() + "</div>");
+    //    impressionOptionsText = string.Join("", impressionOptions);
+    //}
+    //if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_impression_text))
+    //{
+    //    //impressionOptionsText += "<div>" + subListLevel1 + "&nbsp;" + Model.case_template_statconsult.ctt_impression_text + "</div>";
 
-        // change like that due to TCARE-409
-        Model.case_template_statconsult.ctt_impression_text
-                                            .Split('\n')
-                                            .ToList()
-                                            .ForEach(x =>
-                                            {
-                                                impressionOptionsText += "<div>" + subListLevel1 + "&nbsp;" + x + "</div>";
-                                            });
+    //    // change like that due to TCARE-409
+    //    Model.case_template_statconsult.ctt_impression_text
+    //                                        .Split('\n')
+    //                                        .ToList()
+    //                                        .ForEach(x =>
+    //                                        {
+    //                                            impressionOptionsText += "<div>" + subListLevel1 + "&nbsp;" + x + "</div>";
+    //                                        });
+    //}
+    if (!string.IsNullOrEmpty(Model.cas_billing_diagnosis))
+    {
+        Model.cas_billing_diagnosis.Split(';')
+                                    .ToList()
+                                    .ForEach(x =>
+                                    {
+                                        impressionOptionsText += "<div>" + subListLevel1 + "&nbsp;" + x.Trim() + "</div>";
+                                    });
     }
     string MetricsHtml = ViewBag.PhysicianMetrics;
     #endregion
