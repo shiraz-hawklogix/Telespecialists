@@ -97,7 +97,8 @@ namespace TeleSpecialists.BLL.Service
                     obj.Id = code.code_id;
                     obj.icd_code = code.icd_code;
                     obj.title = code.icd_code + " - " + code.icd_code_title;
-                    _list.Add(obj);
+                    if (!_list.Any(x => x.title.Trim() == obj.title.Trim()))
+                        _list.Add(obj);
                 }
             }
 
@@ -109,7 +110,8 @@ namespace TeleSpecialists.BLL.Service
                 obj.Id = otherCode.code_id;
                 obj.icd_code = otherCode.icd_code;
                 obj.title = otherCode.icd_code + " - " + otherCode.icd_code_title;
-                _list.Add(obj);
+                if (!_list.Any(x => x.title.Trim() == obj.title.Trim()))
+                    _list.Add(obj);
             }
 
             //  }
@@ -148,7 +150,7 @@ namespace TeleSpecialists.BLL.Service
                     }
                 }
             }
-          
+
 
             objIcd._DiagnosisCodesViewModel = _list;
             objIcd._Icd10CodeCalculator = objIcd10cal;
