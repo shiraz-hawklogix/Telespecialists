@@ -116,11 +116,11 @@
         <div class="navbar-collapse collapse col-8" id="navbarNavDropdown" style="">
             <ul class="navbar-nav">
                 @*<li class="nav-item active ">
-                    <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("UserBasedMenuAccess", "MenuAccess")">Profile Access <span class="sr-only"></span></a>
-                </li>
-                <li class="nav-item active ">
-                    <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "MenuAccess")">Role Access <span class="sr-only"></span></a>
-                </li>*@
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("UserBasedMenuAccess", "MenuAccess")">Profile Access <span class="sr-only"></span></a>
+                    </li>
+                    <li class="nav-item active ">
+                        <a class="nav-link topbarLinks nav-link loadLinkAsync clearLS" href="@Url.Action("Index", "MenuAccess")">Role Access <span class="sr-only"></span></a>
+                    </li>*@
                 @if (User.IsInRole(UserRoles.Physician.ToDescription()) || User.IsInRole(UserRoles.PartnerPhysician.ToDescription()))
                 {
                     <li class="nav-item active ">
@@ -1119,7 +1119,7 @@
         @Scripts.Render("~/bundles/hubs")
     }
     <div id="processing" class="loading" style="display:none"></div>
-
+    <div id="SpinnerDispatch" class="loading" style="display:none"></div>
     <script src="https://rawgit.com/nwcell/ics.js/master/ics.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ical.js@1.4.0/build/ical.min.js"></script>
     @*<script src="https://www.gstatic.com/firebasejs/3.6.9/firebase.js"></script>*@

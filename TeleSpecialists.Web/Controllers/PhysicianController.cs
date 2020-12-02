@@ -538,9 +538,9 @@ public ActionResult CanReadEEGs(string id)
         #region  Nabeel's Code
 
         [HttpGet]
-        public JsonResult GetCaseNumberDropDown(string physicianKey)
+        public JsonResult GetCaseNumberDropDown(string physicianKey, int statuskey)
         {
-            var dropdown = _caseService.GetCaseNumberDropDown(physicianKey);
+            var dropdown = _caseService.GetCaseNumberDropDown(physicianKey, statuskey);
             return Json(dropdown, JsonRequestBehavior.AllowGet);
         }
 

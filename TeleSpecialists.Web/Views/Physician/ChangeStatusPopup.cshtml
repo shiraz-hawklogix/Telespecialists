@@ -79,9 +79,7 @@
 
 
     var elementRound = $("#changePhysicianStatus").find(".poup-current-status");
-    debugger
     var selectedElementValue = elementRound.data("status");
-    debugger
     if (selectedElementValue != 1 && selectedElementValue != 4 && selectedElementValue != 5 && selectedElementValue != 19 && selectedElementValue != 16) {
         $("#facility_FORMGROUP").css("display", "none");
         $("#casNumber_FORMGROUP").css("display", "block");
@@ -94,6 +92,7 @@
         $("#casNumber_FORMGROUP").css("display", "none");
         $("#facility_FORMGROUP").css("display", "block");
     }
+        $("#casNumber").fillKendoDropDown("/Physician/GetCaseNumberDropDown?&physicianKey=@physician.Id&statuskey=" + selectedElementValue, "CaseNumFac", "cas_key", "-- Select -- ");
 
     });
     $("#btnChangeStatusSave").off("click").click(function () {   
@@ -153,7 +152,6 @@
 
    
       $("#fac_key").fillKendoDropDown("/LookUp/GetFacilitiesByPhysician?&physicianKey=@physician.Id", "fac_name", "fac_key", "-- Select --");
-    $("#casNumber").fillKendoDropDown("/Physician/GetCaseNumberDropDown?&physicianKey=@physician.Id", "CaseNumFac", "cas_key", "-- Select -- ");
 
 
 </script>

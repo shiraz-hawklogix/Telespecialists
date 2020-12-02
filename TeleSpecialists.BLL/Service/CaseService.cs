@@ -1307,10 +1307,11 @@ namespace TeleSpecialists.BLL.Service
 
         #region  Nabeel's Code
 
-        public List<CaseNumberDropDownVM> GetCaseNumberDropDown(string physician)
+        public List<CaseNumberDropDownVM> GetCaseNumberDropDown(string physician, int statuskey)
         {
             var param_physician = new SqlParameter("PhysicianKey", SqlDbType.VarChar) { Value = physician };
-            var dropdownlist = _unitOfWork.ExecuteStoreProcedure<CaseNumberDropDownVM>("usp_cas_number_dropdown @PhysicianKey", param_physician).ToList();
+            var param_status = new SqlParameter("StatusKey", SqlDbType.Int) { Value = statuskey };
+            var dropdownlist = _unitOfWork.ExecuteStoreProcedure<CaseNumberDropDownVM>("usp_cas_number_dropdown @PhysicianKey, @StatusKey", param_physician, param_status).ToList();
 
             return dropdownlist;
         }

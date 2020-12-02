@@ -1419,3 +1419,60 @@ function checkUserLoggedInStatus() {
         }
     });
 }
+
+
+
+// Js Spinner for dispatch
+
+
+function jsSpinDispatch() {
+    var opts = {
+        lines: 13, // The number of lines to draw
+        length: 0, // The length of each line
+        width: 25, // The line thickness
+        radius: 60, // The radius of the inner circle
+        corners: 1, // Corner roundness (0..1)
+        rotate: 0, // The rotation offset
+        direction: 1, // 1: clockwise, -1: counterclockwise
+        color: '#000', // #rgb or #rrggbb or array of colors
+        speed: 1.1, // Rounds per second
+        trail: 52, // Afterglow percentage
+        shadow: false, // Whether to render a shadow
+        hwaccel: false, // Whether to use hardware acceleration
+        className: 'spinner', // The CSS class to assign to the spinner
+        zIndex: 2e9, // The z-index (defaults to 2000000000)
+        top: 'auto', // Top position relative to parent in px
+        left: 'auto' // Left position relative to parent in px
+    };
+    var target = document.getElementById('SpinnerDispatch');
+    var spinner = new Spinner(opts).spin(target);
+}
+
+function ShowSpinnerDispatch() {
+    $('div#SpinnerDispatch').attr("style", "display:block");
+    jsSpinDispatch();
+}
+
+function HideSpinnerDispatch() {
+    $('div#SpinnerDispatch').attr("style", "display:none");
+    $('div#SpinnerDispatch').find('.spinner').remove();
+}
+
+
+////var timerVar = setInterval(countTimer, 1000);
+//var totalSeconds = 0;
+
+//function countTimer(element) {
+//    debugger
+//    ++totalSeconds;
+//    var hour = Math.floor(totalSeconds / 3600);
+//    var minute = Math.floor((totalSeconds - hour * 3600) / 60);
+//    var seconds = totalSeconds - (hour * 3600 + minute * 60);
+//    if (hour < 10)
+//        hour = "0" + hour;
+//    if (minute < 10)
+//        minute = "0" + minute;
+//    if (seconds < 10)
+//        seconds = "0" + seconds;
+//    $(element).innerHTML = hour + ":" + minute + ":" + seconds;
+//}
