@@ -6316,7 +6316,7 @@ namespace TeleSpecialists.BLL.Service
         public DataSourceResult GetOperationsOutliersList(DataSourceRequest request, string period)
         {
 
-            List<OperationsOutliers> result = _unitOfWork.SqlQuery<OperationsOutliers>(string.Format("Exec sp_get_case_color_outliers @filter = '{0}',@Take = '{1}',@Skip = '{2}'", period, request.Take, request.Skip)).ToList();
+            List<OperationsOutliers> result = _unitOfWork.SqlQuery<OperationsOutliers>(string.Format("Exec sp_get_case_color_outliers_bkp @filter = '{0}',@Take = '{1}',@Skip = '{2}'", period, request.Take, request.Skip)).ToList();
 
             var list = result.AsQueryable();
             int Total = list.FirstOrDefault()?.TotalRecords ?? 0;
