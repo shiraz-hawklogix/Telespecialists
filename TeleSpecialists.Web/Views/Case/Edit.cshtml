@@ -2434,6 +2434,7 @@ EntityTypes.StateAlertTemplate.ToInt()
          //Ended BY Axim 26-10-2020
 
         $("#btnSaveClose").off("click").click(function () {
+            debugger;
             savetypeofcorrespondense();
             $(".error_msg").hide();
             var isCompleted = $("#cas_cst_key").val();
@@ -3443,7 +3444,8 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 
       function validateTemplateTabRequiredFields(entityType, isCaseCompleteCall) {
-
+          debugger;
+          $('#cas_billing_codes_temp').removeClass('border-color-danger');
         var templateId = parseInt(entityType);
 
         var tPATypeYes = templateId == @EntityTypes.NeuroStrokeAlertTemplateTpa.ToInt() || templateId == @EntityTypes.StrokeAlertTemplateTpa.ToInt() || templateId == @EntityTypes.StateAlertTemplate.ToInt();
@@ -3452,7 +3454,8 @@ EntityTypes.StateAlertTemplate.ToInt()
 
         var divComment = true;
         var divImpression = true;
-        var divBP = true;
+          var divBP = true;
+          var divIcd10Codes = true;
           var divBloodGlucose = true;
           var divpulse = true;
           var divcriticalCare = true;
@@ -3501,6 +3504,13 @@ EntityTypes.StateAlertTemplate.ToInt()
                       //    }
                       //}
 
+                      if ($('#cas_billing_diagnosis').val() == "" || $('#cas_billing_diagnosis').val() == null) {                          
+                          $('#cas_billing_codes_temp').addClass('border-color-danger');
+                          $("#divIcd10Codes").find(".error_msg").show();
+                          result = false;
+                          divIcd10Codes = false;
+                      }
+
                       if ($.trim($("#divBP").find("textarea").val()) == "") {
                           $("#divBP").find(".error_msg").show();
                           result = false;
@@ -3522,6 +3532,12 @@ EntityTypes.StateAlertTemplate.ToInt()
                   else {
                       if (tPATypeYes) {
                           if (cas_type !== @CaseType.StatConsult.ToInt() && cas_type !== @CaseType.TransferAlert.ToInt()) {
+                              if ($('#cas_billing_diagnosis').val() == "" || $('#cas_billing_diagnosis').val() == null) {
+                                  $('#cas_billing_codes_temp').addClass('border-color-danger');
+                                  $("#divIcd10Codes").find(".error_msg").show();
+                                  result = false;
+                                  divIcd10Codes = false;
+                              }
                               if ($.trim($("#divBP").find("textarea").val()) == "") {
                                   $("#divBP").find(".error_msg").show();
                                   result = false;
@@ -3635,6 +3651,9 @@ EntityTypes.StateAlertTemplate.ToInt()
             }
             else if (!divComment) {
                 element = $("#divComment").find("textarea");
+            }
+            else if (!divIcd10Codes) {
+                element = $("#cas_billing_codes_temp");
             }
             else if (!divBP) {
                 element = $("#divBP").find("textarea");
@@ -5016,6 +5035,9 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
     .diagnose-code-li:active {
         font-weight: 500;
+    }
+    .border-color-danger {
+       border-color: #dc3545 !important;
     }
 </style>
 
