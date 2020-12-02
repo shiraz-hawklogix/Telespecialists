@@ -1575,7 +1575,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label class="control-label col-xl-8 col-sm-8 col-lg-12 text-danger">
+                    <label class="control-label col-xl-8 col-sm-8 col-lg-12">
                         Neuro Interventional Case:
                     </label>
                     <div class="col-xl-4 col-sm-4 col-lg-12">
@@ -2339,7 +2339,6 @@
             var cas_metric_advanced_imaging_personally = true;
             var cas_metric_tpa_ordered_personally = true;
             var cas_metric_viz_app_usage = true;
-            var cas_metric_is_neuro_interventional = true;
             //ended by axim 13-08-2020
 
             if ($.trim($("#cas_cst_key").val()).toInt() == caseStatusEnum.Cancelled) {
@@ -2510,8 +2509,8 @@
                     if ($("input[name='cas_metric_is_neuro_interventional']:checked").val() == undefined || $("input[name='cas_metric_is_neuro_interventional']:checked").val() == null) {
 
                         // TCARE-457 Not required
-                        result = false;
-                        $("#cas_metric_is_neuro_interventional-error").show();
+                        //result = false;
+                        //$("#cas_metric_is_neuro_interventional-error").show();
                     }
 
                     if ($("#cas_metric_lastwell_date_est").val() == "" && $("#cas_metric_is_lastwell_unknown")[0].checked == false) {
@@ -2949,8 +2948,6 @@
                     element = $("#cas_metric_ct_head_review");
                 } else if (!cas_metric_viz_app_usage) {
                     element = $("#cas_metric_viz_app_usage");
-                } else if (!cas_metric_is_neuro_interventional) {
-                    element = $("#cas_metric_is_neuro_interventional");
                 }
                 // ended by axim 13-08-2020
 
