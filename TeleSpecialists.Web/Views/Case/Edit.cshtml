@@ -461,10 +461,10 @@ EntityTypes.StateAlertTemplate.ToInt()
 }
 <div class="ajaxForm">
     <form method="post" class="form-horizontal" id="createForm" action="@editUrl">
-        @if (User.IsInRole(UserRoles.Physician.ToDescription()))
+        @*@if (User.IsInRole(UserRoles.Physician.ToDescription()))
         {
             <select id="cas_phy_key" name="cas_phy_key" class="form-control addValidation d-none"></select>
-        }
+        }*@
         <input type="hidden" name="cas_cancelled_type" id="cas_cancelled_type" value="@Model.cas_cancelled_type" />
         @Html.HiddenFor(x => x.cas_billing_bic_key_initial, new { @id = "key_revised" })
         @Html.Partial("_caseCancellationReason")
@@ -2423,6 +2423,7 @@ EntityTypes.StateAlertTemplate.ToInt()
 
         //Added BY Axim 26-10-2020
         function checkBillingRevisedCode() {
+            debugger;
             var billingCode = $("#cas_billing_bic_key3").val();
             if (billingCode /*!== "" || billingCode !== undefined || billingCode !== 'undefined'*/) {
                 $('#cas_billing_bic_key').val(billingCode);//.change();
@@ -2454,6 +2455,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             if (typeof (caseTemplateBeforeSubmit) != "undefined") {
                 caseTemplateBeforeSubmit();
             }
+            debugger;
             if (validateGeneralTabForm(true, false, false) && validateMetricsRequiredFields(false) /*&& validatepremorbidFields(false)*/ && validateBillingRequiredFields(false) && validateTemplateTabRequiredFields($("#TemplateEntityType").val()@*@Model.TemplateEntityType.ToInt()*@, false)) {
                 // check tpa fields in physician metrics tab, and reset hidden field values.
                 resetTpaCandidatehiddenFields();
@@ -2979,11 +2981,13 @@ EntityTypes.StateAlertTemplate.ToInt()
             $(targetElement).trigger("click");
     }
     function performCaseCompletion(redirectedPage) {
+        debugger;
         $(".error_msg").hide();
         if (typeof (caseTemplateBeforeSubmit) != "undefined") {
             caseTemplateBeforeSubmit();
         }
         if (validateGeneralTabForm(true, true, false) && validateMetricsRequiredFields(true) /*&& validatepremorbidFields(true)*/ && validateBillingRequiredFields(true) && validateTemplateTabRequiredFields($("#TemplateEntityType").val() @*@Model.TemplateEntityType.ToInt()*@, true)) {
+            debugger;
             // check tpa fields in physician metrics tab, and reset hidden field values.
             resetTpaCandidatehiddenFields();
             GetCaseReviewers();
