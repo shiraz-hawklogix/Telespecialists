@@ -1182,7 +1182,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                 if (response.searchKeys != null) {
                     var IcdSearchlist = "<ul class='icd10-ul-search'>";
                     for (var i = 0; i < response.searchKeys.length; i++) {
-                        IcdSearchlist = IcdSearchlist + "<li class='icd10SearchKeys' id='icd10SearchKeys_" + response.searchKeys[i].id + "'  onClick='SearchIcd10Code(" + response.searchKeys[i].id + ",\"" + response.searchKeys[i].name + "\")'>" + response.searchKeys[i].name + "</li>";
+                        IcdSearchlist = IcdSearchlist + "<li class='icd10SearchKeys mt-1' id='icd10SearchKeys_" + response.searchKeys[i].id + "'  onClick='SearchIcd10Code(" + response.searchKeys[i].id + ",\"" + response.searchKeys[i].name + "\")'>" + response.searchKeys[i].name + "</li>";
                     }
                     IcdSearchlist = IcdSearchlist + "</ul>";
                     $("#icd10SearchKeys").html(IcdSearchlist);
@@ -2538,7 +2538,6 @@ EntityTypes.StateAlertTemplate.ToInt()
         }
 
         $("#btnCompleteCase").off("click").click(function () {
-            debugger;
             savetypeofcorrespondense();
 
             window.showErrorsOnTabClick = true;
@@ -2781,6 +2780,7 @@ EntityTypes.StateAlertTemplate.ToInt()
 
 
     $("#btnDownloadTemplate").off("click").click(function () {
+        debugger;
         ////added by ahmad 08-09-2020
         var criticalcareTimeDiv = true;
         var criticalCar = $("#divcriticalCare").find("input[type=radio]:checked").val();
@@ -3453,7 +3453,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         var result = true;
 
         var divComment = true;
-        var divImpression = true;
+        //var divImpression = true;
           var divBP = true;
           var divIcd10Codes = true;
           var divBloodGlucose = true;
@@ -3589,13 +3589,13 @@ EntityTypes.StateAlertTemplate.ToInt()
                     }
                 }
                if (cas_type === @CaseType.StatConsult.ToInt() || cas_type === @CaseType.TransferAlert.ToInt()) {
-                    if ($.trim($("#divImpression").find("textarea").val()) == "") {
-                        if ($("#divImpression input:checked").length == 0) {
-                            $("#divImpression").find(".error_msg").show();
-                            result = false;
-                            divImpression = false;
-                        }
-                    }
+                    //if ($.trim($("#divImpression").find("textarea").val()) == "") {
+                    //    if ($("#divImpression input:checked").length == 0) {
+                    //        $("#divImpression").find(".error_msg").show();
+                    //        result = false;
+                    //        divImpression = false;
+                    //    }
+                    //}
 
                     if ($.trim($("#divComplaint").find("textarea").val()) == "") {
                         $("#divComplaint").find(".error_msg").show();
@@ -3616,11 +3616,11 @@ EntityTypes.StateAlertTemplate.ToInt()
 
                 }
                 else {
-                    if ($.trim($("#divImpression").find("textarea").val()) == "" && $("#divImpression input:checked").length == 0) {
-                        $("#divImpression").find(".error_msg").show();
-                        result = false;
-                        divImpression = false;
-                    }
+                    //if ($.trim($("#divImpression").find("textarea").val()) == "" && $("#divImpression input:checked").length == 0) {
+                    //    $("#divImpression").find(".error_msg").show();
+                    //    result = false;
+                    //    divImpression = false;
+                    //}
                 }
 
                 //TCARE-559
@@ -3645,10 +3645,10 @@ EntityTypes.StateAlertTemplate.ToInt()
         if (!result) {
 
             var element = null;
-            if (!divImpression) {
-                element = $("#divImpression").find("textarea");
+            //if (!divImpression) {
+            //    element = $("#divImpression").find("textarea");
 
-            }
+            //}
             else if (!divComment) {
                 element = $("#divComment").find("textarea");
             }
