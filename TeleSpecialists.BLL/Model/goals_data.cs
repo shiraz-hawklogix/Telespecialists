@@ -16,6 +16,7 @@ namespace TeleSpecialists.BLL.Model
     {
         public int gd_key { get; set; }
         public Nullable<int> gd_qag_key { get; set; }
+        public string gd_quater { get; set; }
         public string qag_door_to_TS_notification_ave_minutes { get; set; }
         public string qag_door_to_TS_notification_median_minutes { get; set; }
         public string qag_percent10_min_or_less_activation_EMS { get; set; }
@@ -34,7 +35,6 @@ namespace TeleSpecialists.BLL.Model
         public string qag_TS_notification_to_needle_grter_or_equal_30minutes_percent { get; set; }
         public string qag_TS_notification_to_needle_grter_or_equal_45minutes_percent { get; set; }
         public string qag_TS_notification_to_needle_grter_or_equal_60minutes_percent { get; set; }
-        public string gd_quater { get; set; }
         public string qag_cpoe_order_to_needle_ave_min { get; set; }
         public string qag_cpoe_order_to_needle_med_min { get; set; }
     

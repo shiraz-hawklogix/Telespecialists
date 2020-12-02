@@ -36,7 +36,6 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<AspNetUsers_Log> AspNetUsers_Log { get; set; }
         public virtual DbSet<AspNetUsers_PasswordReset> AspNetUsers_PasswordReset { get; set; }
         public virtual DbSet<call_history> call_history { get; set; }
-        public virtual DbSet<case_assign_history> case_assign_history { get; set; }
         public virtual DbSet<case_copy_log> case_copy_log { get; set; }
         public virtual DbSet<case_generated_template> case_generated_template { get; set; }
         public virtual DbSet<case_review_template> case_review_template { get; set; }
@@ -76,7 +75,6 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<physician_holiday_rate> physician_holiday_rate { get; set; }
         public virtual DbSet<user_schedule> user_schedule { get; set; }
         public virtual DbSet<rapids_mailbox> rapids_mailbox { get; set; }
-        public virtual DbSet<goals_data> goals_data { get; set; }
         public virtual DbSet<quality_goals> quality_goals { get; set; }
         public virtual DbSet<case_template_statconsult> case_template_statconsult { get; set; }
         public virtual DbSet<case_cancelled_type> case_cancelled_type { get; set; }
@@ -87,7 +85,6 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<facility_rate> facility_rate { get; set; }
         public virtual DbSet<user_schedule_sleep> user_schedule_sleep { get; set; }
         public virtual DbSet<user_schedule_nhalert> user_schedule_nhalert { get; set; }
-        public virtual DbSet<@case> cases { get; set; }
         public virtual DbSet<facility> facilities { get; set; }
         public virtual DbSet<cwh_data> cwh_data { get; set; }
         public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
@@ -96,29 +93,29 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<application_setting> application_setting { get; set; }
         public virtual DbSet<user_login_verify> user_login_verify { get; set; }
         public virtual DbSet<firebase_usersemail> firebase_usersemail { get; set; }
-        public virtual DbSet<operationsoutliersTemp> operationsoutliersTemps { get; set; }
         public virtual DbSet<Hospital_Protocols> Hospital_Protocols { get; set; }
         public virtual DbSet<Onboarded> Onboardeds { get; set; }
         public virtual DbSet<web2campaign_log> web2campaign_log { get; set; }
-        public virtual DbSet<component_access> component_access { get; set; }
-        public virtual DbSet<component> components { get; set; }
         public virtual DbSet<premorbid_correspondnce> premorbid_correspondnce { get; set; }
         public virtual DbSet<Forcast_Data> Forcast_Data { get; set; }
         public virtual DbSet<telecare_counters> telecare_counters { get; set; }
-        public virtual DbSet<CCIReport_Data> CCIReport_Data { get; set; }
         public virtual DbSet<view_facility_physician> view_facility_physician { get; set; }
         public virtual DbSet<view_user_schedule> view_user_schedule { get; set; }
-        public virtual DbSet<BCI_ReportData> BCI_ReportData { get; set; }
         public virtual DbSet<case_rejection_reason> case_rejection_reason { get; set; }
         public virtual DbSet<firebase_users> firebase_users { get; set; }
         public virtual DbSet<For_Case> For_Case { get; set; }
-        public virtual DbSet<mute_firebase_notification> mute_firebase_notification { get; set; }
         public virtual DbSet<icd10_billing_codes_calcualtor> icd10_billing_codes_calcualtor { get; set; }
         public virtual DbSet<mock_case> mock_case { get; set; }
         public virtual DbSet<OperationOutlierNotificationLog> OperationOutlierNotificationLogs { get; set; }
         public virtual DbSet<token> tokens { get; set; }
-        public virtual DbSet<user_access> user_access { get; set; }
         public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
+        public virtual DbSet<goals_data> goals_data { get; set; }
+        public virtual DbSet<BCI_ReportData> BCI_ReportData { get; set; }
+        public virtual DbSet<CCIReport_Data> CCIReport_Data { get; set; }
+        public virtual DbSet<component_access> component_access { get; set; }
+        public virtual DbSet<component> components { get; set; }
+        public virtual DbSet<@case> cases { get; set; }
+        public virtual DbSet<case_assign_history> case_assign_history { get; set; }
     
         public virtual int usp_new_GetAllPhysiciansByFacility(Nullable<System.Guid> facilityKey, Nullable<int> caseType, Nullable<int> isTimeBetween7and12, Nullable<System.Guid> softSaveGuid)
         {

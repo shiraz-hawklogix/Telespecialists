@@ -21,8 +21,8 @@ namespace TeleSpecialists.BLL.Model
             this.case_generated_template = new HashSet<case_generated_template>();
             this.case_review_template = new HashSet<case_review_template>();
             this.nih_stroke_scale_answer = new HashSet<nih_stroke_scale_answer>();
-            this.rca_counter_measure = new HashSet<rca_counter_measure>();
             this.premorbid_correspondnce = new HashSet<premorbid_correspondnce>();
+            this.rca_counter_measure = new HashSet<rca_counter_measure>();
         }
     
         public int cas_key { get; set; }
@@ -132,6 +132,11 @@ namespace TeleSpecialists.BLL.Model
         public string cas_metric_non_tpa_reason_text { get; set; }
         public bool cas_metric_ct_head_has_no_acture_hemorrhage { get; set; }
         public bool cas_metric_ct_head_is_reviewed { get; set; }
+        public bool cas_metric_advance_imaging_to_be_reviewed { get; set; }
+        public bool cas_metric_advance_imaging_is_reviewed { get; set; }
+        public bool cas_metric_advance_imaging_not_obtained { get; set; }
+        public bool cas_metric_advance_imaging_cta_head_checked_obtained { get; set; }
+        public bool cas_metric_advance_imaging_ctp_obtained { get; set; }
         public Nullable<bool> cas_metric_discussed_with_neurointerventionalist { get; set; }
         public Nullable<bool> cas_metric_physician_notified_of_thrombolytics { get; set; }
         public bool cas_metric_physician_recommented_consult_neurointerventionalist { get; set; }
@@ -154,6 +159,7 @@ namespace TeleSpecialists.BLL.Model
         public bool cas_is_ealert { get; set; }
         public string cas_metric_hpi { get; set; }
         public string cas_metric_patient_gender { get; set; }
+        public bool cas_metric_advance_imaging_no_indication_thombus { get; set; }
         public Nullable<int> cas_followup_case_key { get; set; }
         public Nullable<bool> cas_metric_radiologist_callback_for_review_of_advance_imaging { get; set; }
         public string cas_metric_radiologist_callback_for_review_of_advance_imaging_notes { get; set; }
@@ -176,6 +182,8 @@ namespace TeleSpecialists.BLL.Model
         public bool cas_metric_symptom_onset_during_ed_stay { get; set; }
         public Nullable<int> cas_caller_source_key { get; set; }
         public string cas_caller_source_text { get; set; }
+        public bool cas_metric_presentation_suggestive { get; set; }
+        public bool cas_metric_presentation_is_not_suggestive { get; set; }
         public bool cas_metric_in_cta_queue { get; set; }
         public bool cas_is_partial_update { get; set; }
         public bool cas_is_flagged_dashboard { get; set; }
@@ -224,19 +232,17 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<System.DateTime> cas_metric_symptom_onset_during_ed_stay_time { get; set; }
         public Nullable<int> TemplateEntityType { get; set; }
         public string cas_operations_review { get; set; }
-        public Nullable<System.DateTime> cas_template_deleted_date { get; set; }
         public Nullable<int> cas_operations_review_completed { get; set; }
+        public Nullable<System.DateTime> cas_template_deleted_date { get; set; }
         public string cas_review_facility_communication { get; set; }
         public string cas_review_internal_notes { get; set; }
+        public Nullable<int> cas_billing_bic_key_initial { get; set; }
         public string cas_cancelled_type { get; set; }
         public string cas_cancelled_text { get; set; }
-        public Nullable<int> cas_billing_bic_key_initial { get; set; }
         public string cas_datetime_of_contact { get; set; }
         public string cas_typeof_correspondence { get; set; }
         public string cas_contact_comments { get; set; }
         public string cas_callback_response_by { get; set; }
-        public string cas_rejection_type { get; set; }
-        public string cas_rejection_text { get; set; }
         public string cas_callback_notes { get; set; }
         public Nullable<bool> cas_commnets_off { get; set; }
         public string cas_navigator_notes { get; set; }
@@ -250,6 +256,8 @@ namespace TeleSpecialists.BLL.Model
         public string cas_anticoagulant_use_text { get; set; }
         public Nullable<bool> cas_antiplatelet_use { get; set; }
         public string cas_antiplatelet_use_text { get; set; }
+        public string cas_rejection_type { get; set; }
+        public string cas_rejection_text { get; set; }
         public Nullable<int> cas_metric_has_time_of_set { get; set; }
         public Nullable<int> cas_metric_has_ct_head_hemorrhage { get; set; }
         public Nullable<int> cas_metric_has_ischemic_stroke { get; set; }
@@ -266,16 +274,8 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<int> cas_metric_has_suspected_aortic_arch { get; set; }
         public Nullable<int> cas_metric_has_intracranial_neoplasm { get; set; }
         public string cas_navigator_stamp_notes { get; set; }
-        public bool cas_is_flagged_physician { get; set; }
         public string cas_exam_free_text { get; set; }
-        public bool cas_metric_advance_imaging_to_be_reviewed { get; set; }
-        public bool cas_metric_advance_imaging_is_reviewed { get; set; }
-        public bool cas_metric_advance_imaging_not_obtained { get; set; }
-        public bool cas_metric_advance_imaging_cta_head_checked_obtained { get; set; }
-        public bool cas_metric_advance_imaging_ctp_obtained { get; set; }
-        public bool cas_metric_advance_imaging_no_indication_thombus { get; set; }
-        public bool cas_metric_presentation_suggestive { get; set; }
-        public bool cas_metric_presentation_is_not_suggestive { get; set; }
+        public bool cas_is_flagged_physician { get; set; }
         public Nullable<bool> cas_metric_ct_head_review { get; set; }
         public Nullable<int> cas_metric_ct_head_review_reason { get; set; }
         public string cas_metric_ct_head_review_text { get; set; }
@@ -296,6 +296,9 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<System.DateTime> cas_premorbid_completed_date { get; set; }
         public bool cas_metric_wakeup_stroke { get; set; }
     
+        public virtual AspNetUser AspNetUser { get; set; }
+        public virtual AspNetUser AspNetUser1 { get; set; }
+        public virtual AspNetUser AspNetUser2 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<case_assign_history> case_assign_history { get; set; }
         public virtual facility facility { get; set; }
@@ -311,11 +314,8 @@ namespace TeleSpecialists.BLL.Model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<nih_stroke_scale_answer> nih_stroke_scale_answer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<rca_counter_measure> rca_counter_measure { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<premorbid_correspondnce> premorbid_correspondnce { get; set; }
-        public virtual AspNetUser AspNetUser { get; set; }
-        public virtual AspNetUser AspNetUser1 { get; set; }
-        public virtual AspNetUser AspNetUser2 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<rca_counter_measure> rca_counter_measure { get; set; }
     }
 }

@@ -17,13 +17,13 @@ namespace TeleSpecialists.BLL.Model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public facility()
         {
-            this.cases = new HashSet<@case>();
             this.contacts = new HashSet<contact>();
             this.ealert_user_facility = new HashSet<ealert_user_facility>();
             this.post_acute_care = new HashSet<post_acute_care>();
             this.quality_goals = new HashSet<quality_goals>();
             this.facility_physician = new HashSet<facility_physician>();
             this.mock_case = new HashSet<mock_case>();
+            this.cases = new HashSet<@case>();
         }
     
         public System.Guid fac_key { get; set; }
@@ -70,8 +70,6 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<int> fac_ai_software_ddl { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<@case> cases { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<contact> contacts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ealert_user_facility> ealert_user_facility { get; set; }
@@ -85,5 +83,7 @@ namespace TeleSpecialists.BLL.Model
         public virtual ICollection<facility_physician> facility_physician { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<mock_case> mock_case { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<@case> cases { get; set; }
     }
 }

@@ -22,10 +22,6 @@ namespace TeleSpecialists.BLL.Model
             this.AspNetUserRoles = new HashSet<AspNetUserRole>();
             this.AspNetUsers_Log = new HashSet<AspNetUsers_Log>();
             this.AspNetUsers_PasswordReset = new HashSet<AspNetUsers_PasswordReset>();
-            this.cases = new HashSet<@case>();
-            this.cases1 = new HashSet<@case>();
-            this.cases2 = new HashSet<@case>();
-            this.case_assign_history = new HashSet<case_assign_history>();
             this.ealert_user_case_type = new HashSet<ealert_user_case_type>();
             this.ealert_user_facility = new HashSet<ealert_user_facility>();
             this.facility_physician = new HashSet<facility_physician>();
@@ -42,6 +38,10 @@ namespace TeleSpecialists.BLL.Model
             this.user_login_verify = new HashSet<user_login_verify>();
             this.user_schedule_nhalert = new HashSet<user_schedule_nhalert>();
             this.user_schedule_sleep = new HashSet<user_schedule_sleep>();
+            this.cases = new HashSet<@case>();
+            this.cases1 = new HashSet<@case>();
+            this.cases2 = new HashSet<@case>();
+            this.case_assign_history = new HashSet<case_assign_history>();
         }
     
         public string Id { get; set; }
@@ -112,14 +112,6 @@ namespace TeleSpecialists.BLL.Model
         public virtual ICollection<AspNetUsers_PasswordReset> AspNetUsers_PasswordReset { get; set; }
         public virtual physician_status physician_status { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<@case> cases { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<@case> cases1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<@case> cases2 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<case_assign_history> case_assign_history { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ealert_user_case_type> ealert_user_case_type { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ealert_user_facility> ealert_user_facility { get; set; }
@@ -151,5 +143,13 @@ namespace TeleSpecialists.BLL.Model
         public virtual ICollection<user_schedule_nhalert> user_schedule_nhalert { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<user_schedule_sleep> user_schedule_sleep { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<@case> cases { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<@case> cases1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<@case> cases2 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<case_assign_history> case_assign_history { get; set; }
     }
 }

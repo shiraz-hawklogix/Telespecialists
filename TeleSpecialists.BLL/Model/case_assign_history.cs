@@ -31,7 +31,7 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<System.DateTime> cah_action_time_utc { get; set; }
         public Nullable<System.DateTime> cah_created_date_utc { get; set; }
     
-        public virtual @case @case { get; set; }
         public virtual AspNetUser AspNetUser { get; set; }
+        public virtual @case @case { get; set; }
     }
 }

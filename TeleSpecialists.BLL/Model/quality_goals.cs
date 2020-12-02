@@ -24,8 +24,8 @@ namespace TeleSpecialists.BLL.Model
         public Nullable<System.Guid> qag_fac_key { get; set; }
         public string qag_time_frame { get; set; }
     
+        public virtual facility facility { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<goals_data> goals_data { get; set; }
-        public virtual facility facility { get; set; }
     }
 }
