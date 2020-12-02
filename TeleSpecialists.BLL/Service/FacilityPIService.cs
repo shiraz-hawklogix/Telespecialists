@@ -932,6 +932,7 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle45Minutes.JanGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent;
                                 }
+
                                 if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent))
                                 {
                                     TSNotificationtoNeedle60Minutes.JanGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent + "%";
@@ -940,8 +941,25 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.JanGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.JanGoals = "";
-                                CPOEtoNeedleTimemed.JanGoals = "";
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.JanGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.JanGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.JanGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.JanGoals = "";
+                                }
+                                
                             }
 
                         }
@@ -1375,8 +1393,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.FebGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.FebGoals = "";
-                                CPOEtoNeedleTimemed.FebGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.FebGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.FebGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.FebGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.FebGoals = "";
+                                }
                             }
 
                         }
@@ -1810,8 +1843,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.MarGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.MarGoals = "";
-                                CPOEtoNeedleTimemed.MarGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.MarGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.MarGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.MarGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.MarGoals = "";
+                                }
                             }
 
                         }
@@ -2245,8 +2293,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.AprGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.AprGoals = "";
-                                CPOEtoNeedleTimemed.AprGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.AprGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.AprGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.AprGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.AprGoals = "";
+                                }
                             }
 
                         }
@@ -2684,8 +2747,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.MayGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.MayGoals = "";
-                                CPOEtoNeedleTimemed.MayGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.MayGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.MayGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.MayGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.MayGoals = "";
+                                }
                             }
 
                         }
@@ -3120,8 +3198,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.JunGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.JunGoals = "";
-                                CPOEtoNeedleTimemed.JunGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.JunGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.JunGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.JunGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.JunGoals = "";
+                                }
                             }
 
                         }
@@ -3555,8 +3648,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.JulGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.JulGoals = "";
-                                CPOEtoNeedleTimemed.JulGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.JulGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.JulGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.JulGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.JulGoals = "";
+                                }
                             }
 
                         }
@@ -3995,8 +4103,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.AugGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.AugGoals = "";
-                                CPOEtoNeedleTimemed.AugGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.AugGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.AugGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.AugGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.AugGoals = "";
+                                }
                             }
 
                         }
@@ -4430,8 +4553,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.SepGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.SepGoals = "";
-                                CPOEtoNeedleTimemed.SepGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.SepGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.SepGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.SepGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.SepGoals = "";
+                                }
                             }
 
                         }
@@ -4865,8 +5003,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.OctGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.OctGoals = "";
-                                CPOEtoNeedleTimemed.OctGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.OctGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.OctGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.OctGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.OctGoals = "";
+                                }
                             }
 
                         }
@@ -5300,8 +5453,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.NovGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.NovGoals = "";
-                                CPOEtoNeedleTimemed.NovGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.NovGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.NovGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.NovGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.NovGoals = "";
+                                }
                             }
 
                         }
@@ -5735,8 +5903,23 @@ namespace TeleSpecialists.BLL.Service
                                 {
                                     TSNotificationtoNeedle60Minutes.DecGoals = GetGoalsbyQuater.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
                                 }
-                                CPOEtoNeedleTimeave.DecGoals = "";
-                                CPOEtoNeedleTimemed.DecGoals = "";
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min))
+                                {
+                                    CPOEtoNeedleTimeave.DecGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_ave_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimeave.DecGoals = "";
+                                }
+
+                                if (!string.IsNullOrEmpty(GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min))
+                                {
+                                    CPOEtoNeedleTimemed.DecGoals = GetGoalsbyQuater.qag_cpoe_order_to_needle_med_min;
+                                }
+                                else
+                                {
+                                    CPOEtoNeedleTimemed.DecGoals = "";
+                                }
                             }
 
                         }

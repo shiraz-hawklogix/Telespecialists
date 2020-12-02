@@ -103,6 +103,8 @@
                 qag_TS_notification_to_needle_grter_or_equal_30minutes_percent: "",
                 qag_TS_notification_to_needle_grter_or_equal_45minutes_percent: "",
                 qag_TS_notification_to_needle_grter_or_equal_60minutes_percent: "",
+                qag_cpoe_order_to_needle_ave_min: "",
+                qag_cpoe_order_to_needle_med_min: ""
             }
             var model = {
                 Facilities: "",
@@ -136,6 +138,9 @@
             model.obj.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent = $(".qag_TS_notification_to_needle_grter_or_equal_30minutes_percent").val();
             model.obj.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent = $(".qag_TS_notification_to_needle_grter_or_equal_45minutes_percent").val();
             model.obj.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent = $(".qag_TS_notification_to_needle_grter_or_equal_60minutes_percent").val();
+
+            model.obj.qag_cpoe_order_to_needle_ave_min = $(".qag_cpoe_order_to_needle_ave_min").val();
+            model.obj.qag_cpoe_order_to_needle_med_min = $(".qag_cpoe_order_to_needle_med_min").val();
 
             $("#divModelPopUp").find("input:button, input:submit").disable();
             $.post('/FacilityPI/Save', { model: model }, function (response) {

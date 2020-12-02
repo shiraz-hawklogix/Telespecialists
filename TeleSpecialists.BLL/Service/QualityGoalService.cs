@@ -82,6 +82,8 @@ namespace TeleSpecialists.BLL.Service
                     goalscls.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent = data.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent;
                     goalscls.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent = data.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent;
                     goalscls.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent = data.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent;
+                    goalscls.qag_cpoe_order_to_needle_ave_min = data.qag_cpoe_order_to_needle_ave_min;
+                    goalscls.qag_cpoe_order_to_needle_med_min = data.qag_cpoe_order_to_needle_med_min;
                     qualities.Add(goalscls);
                     count++;
                 }

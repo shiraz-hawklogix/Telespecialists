@@ -162,6 +162,8 @@ namespace TeleSpecialists.Controllers
                                 data.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent[j];
                                 data.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent[j];
                                 data.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent[j];
+                                data.qag_cpoe_order_to_needle_ave_min = model.obj.qag_cpoe_order_to_needle_ave_min[j];
+                                data.qag_cpoe_order_to_needle_med_min = model.obj.qag_cpoe_order_to_needle_med_min[j];
                                 _qualityGoalsService.CreateGoalData(data);
                             }
                         }
@@ -190,6 +192,8 @@ namespace TeleSpecialists.Controllers
                                     issExist[j].qag_TS_notification_to_needle_grter_or_equal_30minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent[j];
                                     issExist[j].qag_TS_notification_to_needle_grter_or_equal_45minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent[j];
                                     issExist[j].qag_TS_notification_to_needle_grter_or_equal_60minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent[j];
+                                    issExist[j].qag_cpoe_order_to_needle_ave_min = model.obj.qag_cpoe_order_to_needle_ave_min[j];
+                                    issExist[j].qag_cpoe_order_to_needle_med_min = model.obj.qag_cpoe_order_to_needle_med_min[j];
                                     _qualityGoalsService.EditGoalData(issExist[j]);
                                     _qualityGoalsService.SaveChanges();
                                 }
@@ -216,6 +220,8 @@ namespace TeleSpecialists.Controllers
                                 data.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent[0];
                                 data.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent[0];
                                 data.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent[0];
+                                data.qag_cpoe_order_to_needle_ave_min = model.obj.qag_cpoe_order_to_needle_ave_min[0];
+                                data.qag_cpoe_order_to_needle_med_min = model.obj.qag_cpoe_order_to_needle_med_min[0];
                                 _qualityGoalsService.CreateGoalData(data);
                                 _qualityGoalsService.SaveChanges();
                             }
@@ -242,6 +248,8 @@ namespace TeleSpecialists.Controllers
                     isExist.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_30minutes_percent[0];
                     isExist.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_45minutes_percent[0];
                     isExist.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent = model.obj.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent[0];
+                    isExist.qag_cpoe_order_to_needle_ave_min = model.obj.qag_cpoe_order_to_needle_ave_min[0];
+                    isExist.qag_cpoe_order_to_needle_med_min = model.obj.qag_cpoe_order_to_needle_med_min[0];
                     _qualityGoalsService.EditGoalData(isExist);
                     _qualityGoalsService.SaveChanges();
                 }

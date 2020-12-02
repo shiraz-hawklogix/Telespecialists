@@ -21,6 +21,8 @@
             <col style="width:450px" />
             <col style="width:450px" />
             <col style="width:450px" />
+            <col style="width:350px" />
+            <col style="width:350px" />
         </colgroup>
         <thead>
             <tr>
@@ -42,6 +44,8 @@
                 <th>TS Notification to Needle Less-Than or Equal 30 Minutes Percent</th>
                 <th>TS Notification to Needle Less-Than or Equal 45 Minutes Percent</th>
                 <th>TS Notification to Needle Less-Than or Equal 60 Minutes Percent</th>
+                <th>CPOE Order to Needle Time Ave. Minutes</th>
+                <th>CPOE Order to Needle Time Median Minutes</th>
             </tr>
         </thead>
         <tbody>
@@ -67,10 +71,10 @@
                     </div>
                 </td>
                 @*<td>
-                    <div class="form-group col-xl-8 col-8">
-                        @Html.TextBoxFor(m => m.qag_percent10_min_or_less_activation_Inpt, new { @class = "form-control qag_percent10_min_or_less_activation_Inpt", type = "number" })
-                    </div>
-                </td>*@
+            <div class="form-group col-xl-8 col-8">
+                @Html.TextBoxFor(m => m.qag_percent10_min_or_less_activation_Inpt, new { @class = "form-control qag_percent10_min_or_less_activation_Inpt", type = "number" })
+            </div>
+        </td>*@
                 <td>
                     <div class="form-group col-xl-8 col-8">
                         @Html.TextBoxFor(m => m.qag_TS_notification_to_response_average_minute, new { @class = "form-control qag_TS_notification_to_response_average_minute", type = "number" })
@@ -87,10 +91,10 @@
                     </div>
                 </td>
                 @*<td>
-                    <div class="form-group col-xl-8 col-8">
-                        @Html.TextBoxFor(m => m.qag_alteplase_administered, new { @class = "form-control qag_alteplase_administered", type = "number" })
-                    </div>
-                </td>*@
+            <div class="form-group col-xl-8 col-8">
+                @Html.TextBoxFor(m => m.qag_alteplase_administered, new { @class = "form-control qag_alteplase_administered", type = "number" })
+            </div>
+        </td>*@
                 <td>
                     <div class="form-group col-xl-8 col-8">
                         @Html.TextBoxFor(m => m.qag_door_to_needle_average, new { @class = "form-control qag_door_to_needle_average", type = "number" })
@@ -136,6 +140,18 @@
                         @Html.TextBoxFor(m => m.qag_TS_notification_to_needle_grter_or_equal_60minutes_percent, new { @class = "form-control qag_TS_notification_to_needle_grter_or_equal_60minutes_percent", type = "number" })
                     </div>
                 </td>
+
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_cpoe_order_to_needle_ave_min, new { @class = "form-control qag_cpoe_order_to_needle_ave_min", type = "number" })
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group col-xl-8 col-8">
+                        @Html.TextBoxFor(m => m.qag_cpoe_order_to_needle_med_min, new { @class = "form-control qag_cpoe_order_to_needle_med_min", type = "number" })
+                    </div>
+                </td>
+
             </tr>
         </tbody>
     </table>

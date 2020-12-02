@@ -32,5 +32,7 @@ namespace TeleSpecialists.BLL.Helpers
         public string qag_TS_notification_to_needle_grter_or_equal_30minutes_percent { get; set; }
         public string qag_TS_notification_to_needle_grter_or_equal_45minutes_percent { get; set; }
         public string qag_TS_notification_to_needle_grter_or_equal_60minutes_percent { get; set; }
+        public string qag_cpoe_order_to_needle_ave_min { get; set; }
+        public string qag_cpoe_order_to_needle_med_min { get; set; }
     }
 }
