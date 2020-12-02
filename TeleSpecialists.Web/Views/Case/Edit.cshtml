@@ -880,7 +880,7 @@ EntityTypes.StateAlertTemplate.ToInt()
                     error: function (xhr, error) {
                     },
                     success: function (response) {
-                        debugger;
+                       
                         if (response.codes._DiagnosisCodesViewModel.length > 0) {
                             var _list = "";
                             //_list = "<span class=''>Select </span>";
@@ -1625,13 +1625,13 @@ EntityTypes.StateAlertTemplate.ToInt()
         }
     }
     function changefacility() {
-        debugger;
+     
         var caseType = $("#cas_ctp_key").val();
         loadFacilityDropdown(caseType);
     }
     var facilityDropdown = null;
     function loadFacilityDropdown(caseType) {
-        debugger
+       
         if (@Model.cas_cst_key == @CaseStatus.Complete.ToInt()) {
 
              facilityDropDown = $("#cas_fac_key").fillKendoDropDown("/LookUp/GetStrokeFacilitiesAll?phoneNumber=", "fac_name", "fac_key", "-- Select --", function () {
@@ -2423,7 +2423,7 @@ EntityTypes.StateAlertTemplate.ToInt()
 
         //Added BY Axim 26-10-2020
         function checkBillingRevisedCode() {
-            debugger;
+             
             var billingCode = $("#cas_billing_bic_key3").val();
             if (billingCode /*!== "" || billingCode !== undefined || billingCode !== 'undefined'*/) {
                 $('#cas_billing_bic_key').val(billingCode);//.change();
@@ -2435,7 +2435,7 @@ EntityTypes.StateAlertTemplate.ToInt()
          //Ended BY Axim 26-10-2020
 
         $("#btnSaveClose").off("click").click(function () {
-            debugger;
+             
             savetypeofcorrespondense();
             $(".error_msg").hide();
             var isCompleted = $("#cas_cst_key").val();
@@ -2455,7 +2455,7 @@ EntityTypes.StateAlertTemplate.ToInt()
             if (typeof (caseTemplateBeforeSubmit) != "undefined") {
                 caseTemplateBeforeSubmit();
             }
-            debugger;
+             
             if (validateGeneralTabForm(true, false, false) && validateMetricsRequiredFields(false) /*&& validatepremorbidFields(false)*/ && validateBillingRequiredFields(false) && validateTemplateTabRequiredFields($("#TemplateEntityType").val()@*@Model.TemplateEntityType.ToInt()*@, false)) {
                 // check tpa fields in physician metrics tab, and reset hidden field values.
                 resetTpaCandidatehiddenFields();
@@ -2782,7 +2782,7 @@ EntityTypes.StateAlertTemplate.ToInt()
 
 
     $("#btnDownloadTemplate").off("click").click(function () {
-        debugger;
+         
         ////added by ahmad 08-09-2020
         var criticalcareTimeDiv = true;
         var criticalCar = $("#divcriticalCare").find("input[type=radio]:checked").val();
@@ -2981,13 +2981,13 @@ EntityTypes.StateAlertTemplate.ToInt()
             $(targetElement).trigger("click");
     }
     function performCaseCompletion(redirectedPage) {
-        debugger;
+         
         $(".error_msg").hide();
         if (typeof (caseTemplateBeforeSubmit) != "undefined") {
             caseTemplateBeforeSubmit();
         }
         if (validateGeneralTabForm(true, true, false) && validateMetricsRequiredFields(true) /*&& validatepremorbidFields(true)*/ && validateBillingRequiredFields(true) && validateTemplateTabRequiredFields($("#TemplateEntityType").val() @*@Model.TemplateEntityType.ToInt()*@, true)) {
-            debugger;
+             
             // check tpa fields in physician metrics tab, and reset hidden field values.
             resetTpaCandidatehiddenFields();
             GetCaseReviewers();
@@ -3448,7 +3448,7 @@ EntityTypes.StateAlertTemplate.ToInt()
     }
 
       function validateTemplateTabRequiredFields(entityType, isCaseCompleteCall) {
-          debugger;
+           
           $('#cas_billing_codes_temp').removeClass('border-color-danger');
         var templateId = parseInt(entityType);
 
