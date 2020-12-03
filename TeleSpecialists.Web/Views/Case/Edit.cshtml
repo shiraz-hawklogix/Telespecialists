@@ -1260,7 +1260,17 @@ EntityTypes.StateAlertTemplate.ToInt()
 
     $(document).ready(function () {
 
+        function showIcd10DiagnosiCode() {
+            if ($('#templatesTabLink').length == 0) {
+                $('#searchIcd10Codes').show();
+            } else {
+                $('#searchIcd10Codes').hide();
+            }
+        }
+        
+
         GetAllDiagnosisCodes();
+        showIcd10DiagnosiCode();
         $('#templatesTabLink').click(function () {          
             getIcd10SearchKeys();
             fillDignosesCode();
@@ -1268,13 +1278,9 @@ EntityTypes.StateAlertTemplate.ToInt()
             //fillImpressionDropdown();
             //fillRecentUsedDiagnosisCodes();
         });
-        $('#billingTabLink').click(function () {
-            if ($('#templatesTabLink').length == 0) {
-                $('#searchIcd10Codes').show();
-            } else {
-                $('#searchIcd10Codes').hide();
-            }
-        });
+        //$('#billingTabLink').click(function () {
+        //    showIcd10DiagnosiCode();
+        //});
 
         $('#AcceptDiagnosisCode').click(function () {
             var code = $('#VisitDiagnosis').val();
@@ -2434,8 +2440,7 @@ EntityTypes.StateAlertTemplate.ToInt()
         }
          //Ended BY Axim 26-10-2020
 
-        $("#btnSaveClose").off("click").click(function () {
-             
+        $("#btnSaveClose").off("click").click(function () {           
             savetypeofcorrespondense();
             $(".error_msg").hide();
             var isCompleted = $("#cas_cst_key").val();
