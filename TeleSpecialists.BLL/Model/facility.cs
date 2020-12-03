@@ -19,15 +19,16 @@ namespace TeleSpecialists.BLL.Model
         {
             this.contacts = new HashSet<contact>();
             this.ealert_user_facility = new HashSet<ealert_user_facility>();
-            this.post_acute_care = new HashSet<post_acute_care>();
-            this.quality_goals = new HashSet<quality_goals>();
             this.facility_physician = new HashSet<facility_physician>();
             this.mock_case = new HashSet<mock_case>();
+            this.post_acute_care = new HashSet<post_acute_care>();
+            this.quality_goals = new HashSet<quality_goals>();
             this.cases = new HashSet<@case>();
         }
     
         public System.Guid fac_key { get; set; }
         public string fac_name { get; set; }
+        public string fac_description { get; set; }
         public bool fac_is_active { get; set; }
         public string fac_created_by { get; set; }
         public System.DateTime fac_created_date { get; set; }
@@ -46,6 +47,7 @@ namespace TeleSpecialists.BLL.Model
         public string fac_md_staff_reference_source_id { get; set; }
         public string fac_created_by_name { get; set; }
         public string fac_modified_by_name { get; set; }
+        public string fac_system { get; set; }
         public bool fac_not_templated_used { get; set; }
         public bool fac_go_live { get; set; }
         public string qps_number { get; set; }
@@ -65,8 +67,6 @@ namespace TeleSpecialists.BLL.Model
         public string fac_cst_key_with_Name { get; set; }
         public bool IsSleep { get; set; }
         public string fac_ts_account_ID { get; set; }
-        public string fac_description { get; set; }
-        public string fac_system { get; set; }
         public Nullable<int> fac_ai_software_ddl { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -74,15 +74,15 @@ namespace TeleSpecialists.BLL.Model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ealert_user_facility> ealert_user_facility { get; set; }
         public virtual facility_contract facility_contract { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<facility_physician> facility_physician { get; set; }
         public virtual facility_questionnaire_pre_live facility_questionnaire_pre_live { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<mock_case> mock_case { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<post_acute_care> post_acute_care { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<quality_goals> quality_goals { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<facility_physician> facility_physician { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<mock_case> mock_case { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<@case> cases { get; set; }
     }
