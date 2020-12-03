@@ -366,6 +366,7 @@
     <Content Include="Content\images\logo-header-previous.png" />
     <Content Include="Content\images\logo-header.png" />
     <Content Include="Content\images\M.png" />
+    <Content Include="Content\images\magnifying_glass.png" />
     <Content Include="Content\images\no-background.png" />
     <Content Include="Content\images\one-dollar.png" />
     <Content Include="Content\images\power_icon.png" />
@@ -716,6 +717,8 @@
     <Content Include="Scripts\firebase\js\firebase_auth.js" />
     <Content Include="Scripts\firebase\js\init.js" />
     <Content Include="Scripts\firebase\js\LoadFirebase.js" />
+    <Content Include="Scripts\table2csv.js" />
+    <Content Include="Scripts\table2csv.min.js" />
     <Content Include="telerCare.ico" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
