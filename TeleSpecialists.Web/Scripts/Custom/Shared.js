@@ -648,6 +648,13 @@ function copyCase() {
         $("#divCaseCopy").append(facility);
         $("#divCaseCopy").append("##NewLine##");
     }
+    
+    var caseNumber = $("#spnCaseNumber").text();
+    if ($.trim(caseNumber) != "") {
+        $("#divCaseCopy").append("Case # " + caseNumber);
+        $("#divCaseCopy").append("##NewLine##");
+    }
+    
 
     var cart = $.trim($("#cas_cart").val());
     if ($.trim(cart) != "") {

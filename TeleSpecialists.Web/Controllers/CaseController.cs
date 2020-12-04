@@ -851,17 +851,47 @@ namespace TeleSpecialists.Controllers
                 var physician = _physician.GetDetail(phy_key);
 
                 var physician_status_log = _physicianStatusLogService.GetExistingLog(phy_key);
+
+                BLL.Model.@case casedata = new @case();
+
                 if (physician_status_log != null)
                 {
+                    if (cas_key != null)
+                    {
+                        physician_status_log.psl_cas_key = Convert.ToInt32(cas_key);
+                        casedata = _caseService.GetDetails(Convert.ToInt32(cas_key));
+                        if (casedata != null)
+                        {
+                            physician_status_log.psl_case_details = "Case #: " + casedata.cas_case_number + ", " + "Cart: " + casedata.cas_cart + ", " + "Facility: " + casedata.facility.fac_name;
+                        }
+                    }
+
                     physician_status_log.psl_end_date = DateTime.Now.ToEST();
                     physician_status_log.psl_modified_by = User.Identity.GetUserId();
                     physician_status_log.psl_modified_date = DateTime.Now.ToEST();
                     _physicianStatusLogService.Edit(physician_status_log);
                 }
 
+                Nullable<int> casenum;
+                string casedetails;
+
+                if (cas_key != null)
+                {
+                    casenum = Convert.ToInt32(cas_key);
+                    casedetails = "Case #: " + casedata.cas_case_number + ", " + "Cart: " + casedata.cas_cart + ", " + "Facility: " + casedata.facility.fac_name;
+                }
+                else
+                {
+                    casenum = null;
+                    casedetails = null;
+                }
+
+
+
                 var new_entry = new physician_status_log
                 {
                     psl_cas_key = cas_key,
+                    psl_case_details = casedetails,
                     psl_created_date = DateTime.Now.ToEST(),
                     psl_created_by = User.Identity.GetUserId(),
                     psl_user_key = phy_key,

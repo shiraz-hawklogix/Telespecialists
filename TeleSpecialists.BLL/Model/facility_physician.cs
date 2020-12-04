@@ -55,7 +55,7 @@ namespace TeleSpecialists.BLL.Model
         public string fap_Array_path { get; set; }
         public string fap_UserName { get; set; }
     
-        public virtual facility facility { get; set; }
         public virtual AspNetUser AspNetUser { get; set; }
+        public virtual facility facility { get; set; }
     }
 }
