@@ -835,6 +835,7 @@
     <Content Include="Content\case\pdf\logo-header.png" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\TeleCareQA.pubxml" />
+    <None Include="Properties\PublishProfiles\Uat Dev Branch.pubxml" />
     <None Include="Properties\PublishProfiles\VM - Web Deploy.pubxml" />
     <Content Include="R-Scripting\Foracst_BCI.R" />
     <Content Include="R-Scripting\ForecastingExport.csv" />
