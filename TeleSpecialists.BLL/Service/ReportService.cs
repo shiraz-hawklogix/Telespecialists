@@ -737,7 +737,7 @@ namespace TeleSpecialists.BLL.Service
                 case_type = x.caseType != null ? x.caseType.ucd_title : "",
                 caseStatus = x.caseStatus != null ? x.caseStatus.ucd_title : "",
                 Physician = x.ca.AspNetUser2 != null ? x.ca.AspNetUser2.LastName + " " + x.ca.AspNetUser2.FirstName : "",
-                PhysicianId = x.ca.AspNetUser2.PhysicianId,
+                PhysicianId = x.ca.AspNetUser2 != null ? x.ca.AspNetUser2.PhysicianId.ToString() : "",
                 // husnain code end
                 cas_billing_date_of_consult = x.ca.cas_billing_date_of_consult.HasValue
                                     ? DBHelper.FormatDateTime(x.ca.cas_billing_date_of_consult.Value, false)
