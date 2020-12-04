@@ -795,114 +795,139 @@ namespace TeleSpecialists.BLL.Service
                     #region find physician shift for rate
                     if (hours >= 9 && timeFrom.Date == endTime.Date && (day == "Friday" || day == "Saturday" || day == "Sunday"))
                     {
+                        int _shift = 5;
+                        if (obj.uss_shift_key != null)
+                            _shift = (int)obj.uss_shift_key;
+                        
                         if (phy_floor_rate == 0)
                         {
                             // its weekend day shift
-                            var getFloorRate = GetRecord(id, 5, scheduleDate); // get floor rate from shift rate table
+                            var getFloorRate = GetRecord(id, _shift, scheduleDate); // get floor rate from shift rate table
                             if (getFloorRate != null)
                                 phy_floor_rate = (decimal)getFloorRate.psr_rate;
                         }
                         //get value of productivity rate
                         if (gotoProductivity)
-                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, 5, isStrokeAlert);
+                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, _shift, isStrokeAlert);
                     }
                     else if (hours >= 9 && timeFrom.Date != endTime.Date && (day == "Friday" || day == "Saturday" || day == "Sunday"))
                     {
+                        int _shift = 6;
+                        if (obj.uss_shift_key != null)
+                            _shift = (int)obj.uss_shift_key;
                         if (phy_floor_rate == 0)
                         {
                             // its weekend night shift
-                            var getFloorRate = GetRecord(id, 6, obj.uss_date); // get floor rate from shift rate table
+                            var getFloorRate = GetRecord(id, _shift, obj.uss_date); // get floor rate from shift rate table
                             if (getFloorRate != null)
                                 phy_floor_rate = (decimal)getFloorRate.psr_rate;
                         }
 
                         //get value of productivity rate
                         if (gotoProductivity)
-                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, 6, isStrokeAlert);
+                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, _shift, isStrokeAlert);
                     }
                     else if (hours == 6 && timeFrom.Date == endTime.Date && (day == "Friday" || day == "Saturday" || day == "Sunday"))
                     {
+                        int _shift = 9;
+                        if (obj.uss_shift_key != null)
+                            _shift = (int)obj.uss_shift_key;
                         if (phy_floor_rate == 0)
                         {
                             // its day light weekend
-                            var getFloorRate = GetRecord(id, 9, scheduleDate); // get floor rate from shift rate table
+                            var getFloorRate = GetRecord(id, _shift, scheduleDate); // get floor rate from shift rate table
                             if (getFloorRate != null)
                                 phy_floor_rate = (decimal)getFloorRate.psr_rate;
                         }
 
                         //get value of productivity rate
                         if (gotoProductivity)
-                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, 9, isStrokeAlert);
+                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, _shift, isStrokeAlert);
                     }
                     else if (hours == 5 && _startTimeOnly == "19:00" && _endTimeOnly == "00:00" && (day == "Friday" || day == "Saturday" || day == "Sunday"))
                     {
+                        int _shift = 8;
+                        if (obj.uss_shift_key != null)
+                            _shift = (int)obj.uss_shift_key;
                         if (phy_floor_rate == 0)
                         {
                             // its moon light weekend
-                            var getFloorRate = GetRecord(id, 8, scheduleDate); // get floor rate from shift rate table
+                            var getFloorRate = GetRecord(id, _shift, scheduleDate); // get floor rate from shift rate table
                             if (getFloorRate != null)
                                 phy_floor_rate = (decimal)getFloorRate.psr_rate;
                         }
 
                         //get value of productivity rate
                         if (gotoProductivity)
-                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, 8, isStrokeAlert);
+                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, _shift, isStrokeAlert);
                     }
                     else if (hours >= 9 && timeFrom.Date == endTime.Date)
                     {
+                        int _shift = 1;
+                        if (obj.uss_shift_key != null)
+                            _shift = (int)obj.uss_shift_key;
                         if (phy_floor_rate == 0)
                         {
                             // its day shift
-                            var getFloorRate = GetRecord(id, 1, obj.uss_date); // get floor rate from shift rate table
+                            var getFloorRate = GetRecord(id, _shift, obj.uss_date); // get floor rate from shift rate table
                             if (getFloorRate != null)
                                 phy_floor_rate = (decimal)getFloorRate.psr_rate;
                         }
 
                         //get value of productivity rate
                         if (gotoProductivity)
-                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, 1, isStrokeAlert);
+                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, _shift, isStrokeAlert);
                     }
                     else if (hours >= 9 && timeFrom.Date != endTime.Date)
                     {
+                        int _shift = 2;
+                        if (obj.uss_shift_key != null)
+                            _shift = (int)obj.uss_shift_key;
                         if (phy_floor_rate == 0)
                         {
                             // its night shift
-                            var getFloorRate = GetRecord(id, 2, obj.uss_date); // get floor rate from shift rate table
+                            var getFloorRate = GetRecord(id, _shift, obj.uss_date); // get floor rate from shift rate table
                             if (getFloorRate != null)
                                 phy_floor_rate = (decimal)getFloorRate.psr_rate;
                         }
 
                         //get value of productivity rate
                         if (gotoProductivity)
-                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, 2, isStrokeAlert);
+                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, _shift, isStrokeAlert);
                     }
                     else if (hours == 6 && timeFrom.Date == endTime.Date)
                     {
+                        int _shift = 4;
+                        if (obj.uss_shift_key != null)
+                            _shift = (int)obj.uss_shift_key;
                         if (phy_floor_rate == 0)
                         {
                             // its day light shift
-                            var getFloorRate = GetRecord(id, 4, obj.uss_date); // get floor rate from shift rate table
+                            var getFloorRate = GetRecord(id, _shift, obj.uss_date); // get floor rate from shift rate table
                             if (getFloorRate != null)
                                 phy_floor_rate = (decimal)getFloorRate.psr_rate;
                         }
 
                         //get value of productivity rate
                         if (gotoProductivity)
-                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, 4, isStrokeAlert);
+                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, _shift, isStrokeAlert);
                     }
                     else if (hours == 5 && _startTimeOnly == "19:00" && _endTimeOnly == "00:00")
                     {
+                        int _shift = 3;
+                        if (obj.uss_shift_key != null)
+                            _shift = (int)obj.uss_shift_key;
                         if (phy_floor_rate == 0)
                         {
                             // its moon light shift
-                            var getFloorRate = GetRecord(id, 3, obj.uss_date); // get floor rate from shift rate table
+                            var getFloorRate = GetRecord(id, _shift, obj.uss_date); // get floor rate from shift rate table
                             if (getFloorRate != null)
                                 phy_floor_rate = (decimal)getFloorRate.psr_rate;
                         }
 
                         //get value of productivity rate
                         if (gotoProductivity)
-                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, 3, isStrokeAlert);
+                            foundTotalBill = CalculatePhysicianBill(phy_rate_list, objVeiwModel, _shift, isStrokeAlert);
                     }
                     else
                     {
