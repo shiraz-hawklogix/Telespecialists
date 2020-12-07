@@ -7,7 +7,7 @@
       <Diagram DiagramId="0f9282533e2c4b57b1710716d023b273" Name="Diagram1" ZoomLevel="82">
         <EntityTypeShape EntityType="DataModel.alarm_setting" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="DataModel.alarm_tunes" Width="1.5" PointX="2.75" PointY="0.75" />
-        <EntityTypeShape EntityType="DataModel.AspNetRole" Width="1.5" PointX="3.75" PointY="73.125" />
+        <EntityTypeShape EntityType="DataModel.AspNetRole" Width="1.5" PointX="3" PointY="73.5" />
         <EntityTypeShape EntityType="DataModel.AspNetUser_Detail" Width="1.5" PointX="0.75" PointY="5.75" />
         <EntityTypeShape EntityType="DataModel.AspNetUserClaim" Width="1.5" PointX="3" PointY="161.625" />
         <EntityTypeShape EntityType="DataModel.AspNetUserRole" Width="1.5" PointX="6" PointY="72.125" />

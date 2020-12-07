@@ -295,6 +295,8 @@ namespace TeleSpecialists.BLL.Model
         public string cas_premorbid_completed_by { get; set; }
         public Nullable<System.DateTime> cas_premorbid_completed_date { get; set; }
         public bool cas_metric_wakeup_stroke { get; set; }
+        public Nullable<int> cas_pat_key { get; set; }
+        public Nullable<int> cas_metric_ethnicity { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual AspNetUser AspNetUser1 { get; set; }

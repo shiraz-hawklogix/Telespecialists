@@ -50,12 +50,12 @@ namespace TeleSpecialists.BLL.Helpers
         [Description("External Account Locked Out")]
         ExternalAccountLockOut,
         [Description("External Require Varification")]
-        ExternalRequireVarification, 
+        ExternalRequireVarification,
         [Description("External Log Out")]
         ExternalLogOut,
         [Description("External Account Created")]
         ExternalAccountCreated,
-       
+
     }
 
     public enum RequestStatus
@@ -73,9 +73,9 @@ namespace TeleSpecialists.BLL.Helpers
 
     public enum UclTypes
     {
-        
+
         BillingCode = 10,
-        CaseType,        
+        CaseType,
         CaseStatus,
         EMR,
         ContractType,
@@ -115,18 +115,18 @@ namespace TeleSpecialists.BLL.Helpers
         CallerSource,
         [Description("Cart Location")]
         CartLocation,
-        PacCaseType ,
-        PacStatus ,
+        PacCaseType,
+        PacStatus,
         [Description("State Consult Template")]
         StateConsultTemplate = 39,
         [Description("Imaging Studies Stat Consult")]
         ImagingStudiesStatConsult = 28,
-       
+
         [Description("Therapies State")]
         TherapiesState = 29,
-        
-       // PacStatus = 35,
-       // PacCaseType = 34,
+
+        // PacStatus = 35,
+        // PacCaseType = 34,
         BedSize = 41,
         System = 42,
         Regional = 43,
@@ -189,7 +189,7 @@ namespace TeleSpecialists.BLL.Helpers
     {
         CaseListing = 1,
         Dashboard = 2,
-        SignOutListing =3,
+        SignOutListing = 3,
     }
 
 
@@ -286,7 +286,7 @@ namespace TeleSpecialists.BLL.Helpers
         Partner,
         [Description("Quality Director")]
         QualityDirector,
-        
+
         [Description("Medical Staff")]
         MedicalStaff,
         [Description("Mock Physician")]
@@ -325,8 +325,8 @@ namespace TeleSpecialists.BLL.Helpers
 
     public enum CallType
     {
-        Direct = 1, 
-        Indirect = 2     
+        Direct = 1,
+        Indirect = 2
     }
 
     public enum CaseType
@@ -350,7 +350,7 @@ namespace TeleSpecialists.BLL.Helpers
         [Description("Rounding New")]
         RoundingNew = 227,
         [Description("Rounding Follow-Up")]
-        RoundingFollowUp = 228 ,
+        RoundingFollowUp = 228,
         [Description("Routine Consult- New")]
         RoutineConsultNew = 163,
         [Description("Routine Consult-Follow-Up")]
@@ -363,7 +363,7 @@ namespace TeleSpecialists.BLL.Helpers
         TestResults = 139,
         [Description("Radiology Call back")]
         RadiologyCallback = 226
-        
+
     }
 
     public enum EntityTypes
@@ -582,7 +582,7 @@ namespace TeleSpecialists.BLL.Helpers
         LowerLikelihoodOfLargeVesselOcclusiveButFollowingStatStudiesAreRecommended = 2,
 
         [Description("Clinical Presentation is Suggestive of Large Vessel Occlusive Disease, Recommendations are as Follows")]
-        ClinicalPresentationIsSuggestiveOfLargeVesselOcclusiveDisease_RecommendationsAreAsFollows  = 3
+        ClinicalPresentationIsSuggestiveOfLargeVesselOcclusiveDisease_RecommendationsAreAsFollows = 3
     }
 
     #region Added by husnain 
@@ -1605,7 +1605,8 @@ namespace TeleSpecialists.BLL.Helpers
         [Description("Other")]
         Other = 5
     }
-    public enum NIHSSPatientsComatose {
+    public enum NIHSSPatientsComatose
+    {
         [Description("-- Select --")]
         Select = 0,
         [Description("Patient is comatose")]
@@ -1615,6 +1616,34 @@ namespace TeleSpecialists.BLL.Helpers
         [Description("Other")]
         other = 3,
 
+    }
+    public enum Ethnicity
+    {
+        [Description("Caucasian")]
+        Select = 1,
+        [Description("Black")]
+        patient_comatose = 2,
+        [Description("Hispanic")]
+        patient_intubated = 3,
+        [Description("")]
+        other = 4,
+    }
+    public enum MorbidSymptoms
+    {
+        [Description("No symptoms at all")]
+        no_symptom = 0,
+        [Description("No significant disability despite symptoms; able to carry out all usual duties and activities")]
+        disability_despite = 1,
+        [Description("Slight disability; unable to carry out all previous activities, but able to look after own affairs without assistance")]
+        slight_disability = 2,
+        [Description("Moderate disability; requiring some help, but able to walk without assistance")]
+        moderate_disability = 3,
+        [Description("Moderately severe disability; unable to walk and attend to bodily needs without assistance")]
+        moderate_severe_disability = 4,
+        [Description("Severe disability; bedridden, incontinent and requiring constant nursing care and attention")]
+        severe_disability = 5,
+        [Description("Dead")]
+        dead = 6
     }
 
     #endregion
