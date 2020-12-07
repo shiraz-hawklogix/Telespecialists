@@ -663,7 +663,7 @@
 
                     <div class="col-md-12">
                         <div class="form-group row">
-                            <input class="form-control" id="checkUsername" placeholder="Username" type="text" value="@loggedInUser.Email" disabled>
+                            <input class="form-control" id="checkUsername" placeholder="Username" type="text" value="@loggedInUser.UserName" disabled>
                         </div>
                         <div class="form-group row">
                             <input class="form-control" id="checkPassword" placeholder="Password" type="text" value="" autocomplete="off">
@@ -749,7 +749,7 @@
         $("#confirmedpassword").off('click').click(function () {
             ShowLoading();
             var password = $("#checkPassword").val();
-            var username = '@loggedInUser.Email';
+            var username = '@loggedInUser.UserName';
             var url = '/Account/PasswordConfirmation';
             $.post(url, { Username: username, Password: password}, function (response) {
                 if (response) {

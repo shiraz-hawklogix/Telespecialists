@@ -3597,31 +3597,6 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <EntitySet Name="facility_rate" EntityType="DataModel.facility_rate" />
           <EntitySet Name="user_schedule_sleep" EntityType="DataModel.user_schedule_sleep" />
           <EntitySet Name="user_schedule_nhalert" EntityType="DataModel.user_schedule_nhalert" />
-          <EntitySet Name="facilities" EntityType="DataModel.facility" />
-          <AssociationSet Name="FK_contact_facility" Association="DataModel.FK_contact_facility">
-            <End Role="facility" EntitySet="facilities" />
-            <End Role="contact" EntitySet="contacts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ealert_user_facility_facility" Association="DataModel.FK_ealert_user_facility_facility">
-            <End Role="facility" EntitySet="facilities" />
-            <End Role="ealert_user_facility" EntitySet="ealert_user_facility" />
-          </AssociationSet>
-          <AssociationSet Name="FK_facility_contract_facility" Association="DataModel.FK_facility_contract_facility">
-            <End Role="facility" EntitySet="facilities" />
-            <End Role="facility_contract" EntitySet="facility_contract" />
-          </AssociationSet>
-          <AssociationSet Name="FK_facility_questionnaire_pre_live_facility" Association="DataModel.FK_facility_questionnaire_pre_live_facility">
-            <End Role="facility" EntitySet="facilities" />
-            <End Role="facility_questionnaire_pre_live" EntitySet="facility_questionnaire_pre_live" />
-          </AssociationSet>
-          <AssociationSet Name="FK_post_acute_care_facility" Association="DataModel.FK_post_acute_care_facility">
-            <End Role="facility" EntitySet="facilities" />
-            <End Role="post_acute_care" EntitySet="post_acute_care" />
-          </AssociationSet>
-          <AssociationSet Name="FK_quality_goals_facility" Association="DataModel.FK_quality_goals_facility">
-            <End Role="facility" EntitySet="facilities" />
-            <End Role="quality_goals" EntitySet="quality_goals" />
-          </AssociationSet>
           <FunctionImport Name="usp_get_cwh_data" ReturnType="Collection(DataModel.usp_get_cwh_data_Result)">
             <Parameter Name="StartDateForAll" Mode="In" Type="DateTime" />
             <Parameter Name="edateForAll" Mode="In" Type="DateTime" />
@@ -3649,10 +3624,6 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           </AssociationSet>
           <EntitySet Name="AspNetUserLogins" EntityType="DataModel.AspNetUserLogin" />
           <EntitySet Name="facility_physician" EntityType="DataModel.facility_physician" />
-          <AssociationSet Name="FK_facility_physician_facility" Association="DataModel.FK_facility_physician_facility">
-            <End Role="facility" EntitySet="facilities" />
-            <End Role="facility_physician" EntitySet="facility_physician" />
-          </AssociationSet>
           <EntitySet Name="diagnosis_codes" EntityType="DataModel.diagnosis_codes" />
           <EntitySet Name="application_setting" EntityType="DataModel.application_setting" />
           <EntitySet Name="user_login_verify" EntityType="DataModel.user_login_verify" />
@@ -3693,11 +3664,21 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <EntitySet Name="mock_case" EntityType="DataModel.mock_case" />
           <EntitySet Name="OperationOutlierNotificationLogs" EntityType="DataModel.OperationOutlierNotificationLog" />
           <EntitySet Name="tokens" EntityType="DataModel.token" />
-          <AssociationSet Name="FK_mock_case_facility" Association="DataModel.FK_mock_case_facility">
-            <End Role="facility" EntitySet="facilities" />
-            <End Role="mock_case" EntitySet="mock_case" />
+          <EntitySet Name="goals_data" EntityType="DataModel.goals_data" />
+          <AssociationSet Name="FK_goals_data_quality_goals" Association="DataModel.FK_goals_data_quality_goals">
+            <End Role="quality_goals" EntitySet="quality_goals" />
+            <End Role="goals_data" EntitySet="goals_data" />
+          </AssociationSet>
+          <EntitySet Name="BCI_ReportData" EntityType="DataModel.BCI_ReportData" />
+          <EntitySet Name="CCIReport_Data" EntityType="DataModel.CCIReport_Data" />
+          <EntitySet Name="component_access" EntityType="DataModel.component_access" />
+          <EntitySet Name="components" EntityType="DataModel.component" />
+          <AssociationSet Name="FK_ComponentAccess_Component_Id" Association="DataModel.FK_ComponentAccess_Component_Id">
+            <End Role="component" EntitySet="components" />
+            <End Role="component_access" EntitySet="component_access" />
           </AssociationSet>
           <EntitySet Name="AspNetUsers" EntityType="DataModel.AspNetUser" />
+          <EntitySet Name="facilities" EntityType="DataModel.facility" />
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="DataModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="AspNetUserClaim" EntitySet="AspNetUserClaims" />
@@ -3786,18 +3767,37 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="user_schedule_sleep" EntitySet="user_schedule_sleep" />
           </AssociationSet>
-          <EntitySet Name="goals_data" EntityType="DataModel.goals_data" />
-          <AssociationSet Name="FK_goals_data_quality_goals" Association="DataModel.FK_goals_data_quality_goals">
-            <End Role="quality_goals" EntitySet="quality_goals" />
-            <End Role="goals_data" EntitySet="goals_data" />
+          <AssociationSet Name="FK_contact_facility" Association="DataModel.FK_contact_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="contact" EntitySet="contacts" />
           </AssociationSet>
-          <EntitySet Name="BCI_ReportData" EntityType="DataModel.BCI_ReportData" />
-          <EntitySet Name="CCIReport_Data" EntityType="DataModel.CCIReport_Data" />
-          <EntitySet Name="component_access" EntityType="DataModel.component_access" />
-          <EntitySet Name="components" EntityType="DataModel.component" />
-          <AssociationSet Name="FK_ComponentAccess_Component_Id" Association="DataModel.FK_ComponentAccess_Component_Id">
-            <End Role="component" EntitySet="components" />
-            <End Role="component_access" EntitySet="component_access" />
+          <AssociationSet Name="FK_ealert_user_facility_facility" Association="DataModel.FK_ealert_user_facility_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="ealert_user_facility" EntitySet="ealert_user_facility" />
+          </AssociationSet>
+          <AssociationSet Name="FK_facility_contract_facility" Association="DataModel.FK_facility_contract_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="facility_contract" EntitySet="facility_contract" />
+          </AssociationSet>
+          <AssociationSet Name="FK_facility_physician_facility" Association="DataModel.FK_facility_physician_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="facility_physician" EntitySet="facility_physician" />
+          </AssociationSet>
+          <AssociationSet Name="FK_facility_questionnaire_pre_live_facility" Association="DataModel.FK_facility_questionnaire_pre_live_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="facility_questionnaire_pre_live" EntitySet="facility_questionnaire_pre_live" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mock_case_facility" Association="DataModel.FK_mock_case_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="mock_case" EntitySet="mock_case" />
+          </AssociationSet>
+          <AssociationSet Name="FK_post_acute_care_facility" Association="DataModel.FK_post_acute_care_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="post_acute_care" EntitySet="post_acute_care" />
+          </AssociationSet>
+          <AssociationSet Name="FK_quality_goals_facility" Association="DataModel.FK_quality_goals_facility">
+            <End Role="facility" EntitySet="facilities" />
+            <End Role="quality_goals" EntitySet="quality_goals" />
           </AssociationSet>
           <EntitySet Name="cases" EntityType="DataModel.case" />
           <EntitySet Name="case_assign_history" EntityType="DataModel.case_assign_history" />
@@ -3860,6 +3860,10 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <AssociationSet Name="FK_rca_counter_measure_case" Association="DataModel.FK_rca_counter_measure_case">
             <End Role="case" EntitySet="cases" />
             <End Role="rca_counter_measure" EntitySet="rca_counter_measure" />
+          </AssociationSet>
+          <AssociationSet Name="FK_case_assign_history_case" Association="DataModel.FK_case_assign_history_case">
+            <End Role="case" EntitySet="cases" />
+            <End Role="case_assign_history" EntitySet="case_assign_history" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="alarm_setting">
@@ -4237,8 +4241,8 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="cnt_role_ucd_key" Type="Int32" />
           <Property Name="cnt_is_deleted" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="ucl_data" Relationship="DataModel.FK_contact_contact" FromRole="contact" ToRole="ucl_data" />
-          <NavigationProperty Name="facility" Relationship="DataModel.FK_contact_facility" FromRole="contact" ToRole="facility" />
           <Property Name="cnt_extension" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="facility" Relationship="DataModel.FK_contact_facility" FromRole="contact" ToRole="facility" />
         </EntityType>
         <EntityType Name="default_notification_tune">
           <Key>
@@ -4288,8 +4292,8 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="efa_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="efa_modified_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
           <Property Name="efa_modified_date" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="facility" Relationship="DataModel.FK_ealert_user_facility_facility" FromRole="ealert_user_facility" ToRole="facility" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_ealert_user_facility_AspNetUsers" FromRole="ealert_user_facility" ToRole="AspNetUser" />
+          <NavigationProperty Name="facility" Relationship="DataModel.FK_ealert_user_facility_facility" FromRole="ealert_user_facility" ToRole="facility" />
         </EntityType>
         <EntityType Name="entity_change_log">
           <Key>
@@ -4563,10 +4567,10 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="psl_comments" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="physician_status_log1" Relationship="DataModel.FK_physician_status_log_physician_status_log" FromRole="physician_status_log" ToRole="physician_status_log1" />
           <NavigationProperty Name="physician_status_log2" Relationship="DataModel.FK_physician_status_log_physician_status_log" FromRole="physician_status_log1" ToRole="physician_status_log" />
-          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_physician_status_log_AspNetUsers" FromRole="physician_status_log" ToRole="AspNetUser" />
           <Property Name="psl_fac_key" Type="Guid" />
           <Property Name="psl_case_details" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="psl_facility_name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_physician_status_log_AspNetUsers" FromRole="physician_status_log" ToRole="AspNetUser" />
         </EntityType>
         <EntityType Name="physician_status_snooze">
           <Key>
@@ -4955,8 +4959,8 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="pac_largevesselinfract" Type="Boolean" />
           <Property Name="pac_levelofconsciousness" Type="Int32" />
           <Property Name="pac_mechanismofstroke" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="facility" Relationship="DataModel.FK_post_acute_care_facility" FromRole="post_acute_care" ToRole="facility" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_post_acute_care_users_AspNetUsers" FromRole="post_acute_care" ToRole="AspNetUser" />
+          <NavigationProperty Name="facility" Relationship="DataModel.FK_post_acute_care_facility" FromRole="post_acute_care" ToRole="facility" />
         </EntityType>
         <Association Name="FK_pac_case_template_post_acute_care">
           <End Type="DataModel.post_acute_care" Role="post_acute_care" Multiplicity="0..1" />
@@ -5109,8 +5113,8 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="qag_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="qag_fac_key" Type="Guid" />
           <Property Name="qag_time_frame" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="facility" Relationship="DataModel.FK_quality_goals_facility" FromRole="quality_goals" ToRole="facility" />
           <NavigationProperty Name="goals_data" Relationship="DataModel.FK_goals_data_quality_goals" FromRole="quality_goals" ToRole="goals_data" />
+          <NavigationProperty Name="facility" Relationship="DataModel.FK_quality_goals_facility" FromRole="quality_goals" ToRole="facility" />
         </EntityType>
         <EntityType Name="case_template_statconsult">
           <Key>
@@ -5345,136 +5349,6 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="uss_shift_key" Type="Int32" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_user_schedule_nhalert_AspNetUsers" FromRole="user_schedule_nhalert" ToRole="AspNetUser" />
         </EntityType>
-        <EntityType Name="facility">
-          <Key>
-            <PropertyRef Name="fac_key" />
-          </Key>
-          <Property Name="fac_key" Type="Guid" Nullable="false" />
-          <Property Name="fac_name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="fac_is_active" Type="Boolean" Nullable="false" />
-          <Property Name="fac_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="fac_created_date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="fac_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="fac_modified_date" Type="DateTime" Precision="3" />
-          <Property Name="fac_address_line1" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="fac_address_line2" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="fac_city" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="fac_stt_key" Type="Int32" />
-          <Property Name="fac_zip" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="fac_timezone" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="fac_fct_key" Type="Int32" />
-          <Property Name="fac_cst_key" Type="Int32" />
-          <Property Name="fac_sct_key" Type="Int32" />
-          <Property Name="fac_md_staff_source_name" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="fac_md_staff_reference_source_id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="fac_created_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="fac_modified_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="fac_not_templated_used" Type="Boolean" Nullable="false" />
-          <Property Name="fac_go_live" Type="Boolean" Nullable="false" />
-          <Property Name="qps_number" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="fac_emr" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_is_pac" Type="Boolean" Nullable="false" />
-          <Property Name="fac_ucd_key_system" Type="Int32" />
-          <Property Name="fac_ucd_region_key" Type="Int32" />
-          <Property Name="fac_freestanding_fac_key" Type="Guid" />
-          <Property Name="fac_emr_portal" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_cart_type" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_transfer_process" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_ai_software" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_tpa_orderset" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_imaging_protocol" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_ucd_bed_size" Type="Int32" />
-          <Property Name="fac_cart_numbers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_cst_key_with_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="IsSleep" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="contacts" Relationship="DataModel.FK_contact_facility" FromRole="facility" ToRole="contact" />
-          <NavigationProperty Name="ealert_user_facility" Relationship="DataModel.FK_ealert_user_facility_facility" FromRole="facility" ToRole="ealert_user_facility" />
-          <NavigationProperty Name="facility_contract" Relationship="DataModel.FK_facility_contract_facility" FromRole="facility" ToRole="facility_contract" />
-          <NavigationProperty Name="facility_questionnaire_pre_live" Relationship="DataModel.FK_facility_questionnaire_pre_live_facility" FromRole="facility" ToRole="facility_questionnaire_pre_live" />
-          <NavigationProperty Name="post_acute_care" Relationship="DataModel.FK_post_acute_care_facility" FromRole="facility" ToRole="post_acute_care" />
-          <NavigationProperty Name="quality_goals" Relationship="DataModel.FK_quality_goals_facility" FromRole="facility" ToRole="quality_goals" />
-          <Property Name="fac_ts_account_ID" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="fac_description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="fac_system" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="facility_physician" Relationship="DataModel.FK_facility_physician_facility" FromRole="facility" ToRole="facility_physician" />
-          <Property Name="fac_ai_software_ddl" Type="Int32" />
-          <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_facility" FromRole="facility" ToRole="mock_case" />
-          <NavigationProperty Name="cases" Relationship="DataModel.FK_case_facility" FromRole="facility" ToRole="case" />
-        </EntityType>
-        <Association Name="FK_contact_facility">
-          <End Type="DataModel.facility" Role="facility" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.contact" Role="contact" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="facility">
-              <PropertyRef Name="fac_key" />
-            </Principal>
-            <Dependent Role="contact">
-              <PropertyRef Name="cnt_fac_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ealert_user_facility_facility">
-          <End Type="DataModel.facility" Role="facility" Multiplicity="1" />
-          <End Type="DataModel.ealert_user_facility" Role="ealert_user_facility" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="facility">
-              <PropertyRef Name="fac_key" />
-            </Principal>
-            <Dependent Role="ealert_user_facility">
-              <PropertyRef Name="efa_fac_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_facility_contract_facility">
-          <End Type="DataModel.facility" Role="facility" Multiplicity="1" />
-          <End Type="DataModel.facility_contract" Role="facility_contract" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="facility">
-              <PropertyRef Name="fac_key" />
-            </Principal>
-            <Dependent Role="facility_contract">
-              <PropertyRef Name="fct_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_facility_questionnaire_pre_live_facility">
-          <End Type="DataModel.facility" Role="facility" Multiplicity="1" />
-          <End Type="DataModel.facility_questionnaire_pre_live" Role="facility_questionnaire_pre_live" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="facility">
-              <PropertyRef Name="fac_key" />
-            </Principal>
-            <Dependent Role="facility_questionnaire_pre_live">
-              <PropertyRef Name="fqp_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_post_acute_care_facility">
-          <End Type="DataModel.facility" Role="facility" Multiplicity="0..1" />
-          <End Type="DataModel.post_acute_care" Role="post_acute_care" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="facility">
-              <PropertyRef Name="fac_key" />
-            </Principal>
-            <Dependent Role="post_acute_care">
-              <PropertyRef Name="pac_fac_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_quality_goals_facility">
-          <End Type="DataModel.facility" Role="facility" Multiplicity="0..1" />
-          <End Type="DataModel.quality_goals" Role="quality_goals" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="facility">
-              <PropertyRef Name="fac_key" />
-            </Principal>
-            <Dependent Role="quality_goals">
-              <PropertyRef Name="qag_fac_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <ComplexType Name="usp_get_cwh_data_Result">
           <Property Type="String" Name="fac_key" Nullable="true" />
           <Property Type="String" Name="fac_name" Nullable="true" />
@@ -5593,23 +5467,9 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="fap_Password_Date" Type="DateTime" Precision="3" />
           <Property Name="fap_Array_path" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="fap_UserName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="facility" Relationship="DataModel.FK_facility_physician_facility" FromRole="facility_physician" ToRole="facility" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_facility_physician_AspNetUsers" FromRole="facility_physician" ToRole="AspNetUser" />
+          <NavigationProperty Name="facility" Relationship="DataModel.FK_facility_physician_facility" FromRole="facility_physician" ToRole="facility" />
         </EntityType>
-        <Association Name="FK_facility_physician_facility">
-          <End Type="DataModel.facility" Role="facility" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.facility_physician" Role="facility_physician" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="facility">
-              <PropertyRef Name="fac_key" />
-            </Principal>
-            <Dependent Role="facility_physician">
-              <PropertyRef Name="fap_fac_key" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="diagnosis_codes">
           <Key>
             <PropertyRef Name="code_id" />
@@ -6054,11 +5914,11 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="mcas_connectivity_issue" Type="Boolean" />
           <Property Name="mcas_is_nav_blast" Type="Boolean" />
           <Property Name="mcas_mock_drill_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="facility" Relationship="DataModel.FK_mock_case_facility" FromRole="mock_case" ToRole="facility" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_mock_case_AspNetUsers" FromRole="mock_case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_mock_case_AspNetUsers_Navigator" FromRole="mock_case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="DataModel.FK_mock_case_AspNetUsers1" FromRole="mock_case" ToRole="AspNetUser" />
-        </EntityType>
+          <NavigationProperty Name="facility" Relationship="DataModel.FK_mock_case_facility" FromRole="mock_case" ToRole="facility" />
+          </EntityType>
         <EntityType Name="OperationOutlierNotificationLog">
           <Key>
             <PropertyRef Name="Id" />
@@ -6082,17 +5942,113 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="tok_device_type" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_token_AspNetUsers" FromRole="token" ToRole="AspNetUser" />
         </EntityType>
-        <Association Name="FK_mock_case_facility">
-          <End Type="DataModel.facility" Role="facility" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="DataModel.mock_case" Role="mock_case" Multiplicity="*" />
+        <EntityType Name="goals_data">
+          <Key>
+            <PropertyRef Name="gd_key" />
+          </Key>
+          <Property Name="gd_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="gd_qag_key" Type="Int32" />
+          <Property Name="gd_quater" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_door_to_TS_notification_ave_minutes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_door_to_TS_notification_median_minutes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_percent10_min_or_less_activation_EMS" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_percent10_min_or_less_activation_PV" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_percent10_min_or_less_activation_Inpt" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_TS_notification_to_response_average_minute" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_TS_notification_to_response_median_minute" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_percent_TS_at_bedside_grterthan10_minutes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_alteplase_administered" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_door_to_needle_average" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_door_to_needle_median" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_verbal_order_to_administration_average_minutes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_DTN_grter_or_equal_30minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_DTN_grter_or_equal_45minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_DTN_grter_or_equal_60minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_TS_notification_to_needle_grter_or_equal_30minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_TS_notification_to_needle_grter_or_equal_45minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_TS_notification_to_needle_grter_or_equal_60minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_cpoe_order_to_needle_ave_min" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="qag_cpoe_order_to_needle_med_min" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="quality_goals" Relationship="DataModel.FK_goals_data_quality_goals" FromRole="goals_data" ToRole="quality_goals" />
+        </EntityType>
+        <Association Name="FK_goals_data_quality_goals">
+          <End Type="DataModel.quality_goals" Role="quality_goals" Multiplicity="0..1" />
+          <End Type="DataModel.goals_data" Role="goals_data" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="facility">
-              <PropertyRef Name="fac_key" />
+            <Principal Role="quality_goals">
+              <PropertyRef Name="qag_key" />
             </Principal>
-            <Dependent Role="mock_case">
-              <PropertyRef Name="mcas_fac_key" />
+            <Dependent Role="goals_data">
+              <PropertyRef Name="gd_qag_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="BCI_ReportData">
+          <Key>
+            <PropertyRef Name="BCI_ID" />
+          </Key>
+          <Property Name="BCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Phy_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Phy_Bci_Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Phy_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="CCIReport_Data">
+          <Key>
+            <PropertyRef Name="CCI_ID" />
+          </Key>
+          <Property Name="CCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Physician_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Physician_CCI" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Month" Type="DateTime" Precision="3" />
+          <Property Name="Date" Type="DateTime" Precision="3" />
+          <Property Name="Physician_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="component_access">
+          <Key>
+            <PropertyRef Name="cac_key" />
+          </Key>
+          <Property Name="cac_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="cac_roleid" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="cac_com_key" Type="Int32" />
+          <Property Name="cac_addedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="cac_addeddate" Type="DateTime" Precision="3" />
+          <Property Name="cac_modifiedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="cac_modifiedon" Type="DateTime" Precision="3" />
+          <Property Name="cac_isAllowed" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="component" Relationship="DataModel.FK_ComponentAccess_Component_Id" FromRole="component_access" ToRole="component" />
+        </EntityType>
+        <EntityType Name="component">
+          <Key>
+            <PropertyRef Name="com_key" />
+          </Key>
+          <Property Name="com_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="com_parentcomponentid" Type="Int32" />
+          <Property Name="com_module_name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="com_page_url" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="com_page_name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="com_page_title" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="com_page_description" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="com_form_id" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="com_status" Type="Boolean" Nullable="false" />
+          <Property Name="com_addedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="com_addedon" Type="DateTime" Precision="3" />
+          <Property Name="com_modifiedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="com_modifiedon" Type="DateTime" Precision="3" />
+          <Property Name="com_sortorder" Type="Int32" />
+          <Property Name="com_moduleimage" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="component_access" Relationship="DataModel.FK_ComponentAccess_Component_Id" FromRole="component" ToRole="component_access" />
+        </EntityType>
+        <Association Name="FK_ComponentAccess_Component_Id">
+          <End Type="DataModel.component" Role="component" Multiplicity="0..1" />
+          <End Type="DataModel.component_access" Role="component_access" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="component">
+              <PropertyRef Name="com_key" />
+            </Principal>
+            <Dependent Role="component_access">
+              <PropertyRef Name="cac_com_key" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6181,6 +6137,62 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <NavigationProperty Name="cases1" Relationship="DataModel.FK_case_AspNetUsers_Navigator" FromRole="AspNetUser" ToRole="case" />
           <NavigationProperty Name="cases2" Relationship="DataModel.FK_case_AspNetUsers1" FromRole="AspNetUser" ToRole="case" />
           <NavigationProperty Name="case_assign_history" Relationship="DataModel.FK_case_assign_history_AspNetUsers" FromRole="AspNetUser" ToRole="case_assign_history" />
+        </EntityType>
+        <EntityType Name="facility">
+          <Key>
+            <PropertyRef Name="fac_key" />
+          </Key>
+          <Property Name="fac_key" Type="Guid" Nullable="false" />
+          <Property Name="fac_name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="fac_description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="fac_is_active" Type="Boolean" Nullable="false" />
+          <Property Name="fac_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="fac_created_date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="fac_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="fac_modified_date" Type="DateTime" Precision="3" />
+          <Property Name="fac_address_line1" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="fac_address_line2" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="fac_city" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="fac_stt_key" Type="Int32" />
+          <Property Name="fac_zip" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="fac_timezone" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="fac_fct_key" Type="Int32" />
+          <Property Name="fac_cst_key" Type="Int32" />
+          <Property Name="fac_sct_key" Type="Int32" />
+          <Property Name="fac_md_staff_source_name" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="fac_md_staff_reference_source_id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="fac_created_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="fac_modified_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="fac_system" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="fac_not_templated_used" Type="Boolean" Nullable="false" />
+          <Property Name="fac_go_live" Type="Boolean" Nullable="false" />
+          <Property Name="qps_number" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="fac_emr" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="fac_is_pac" Type="Boolean" Nullable="false" />
+          <Property Name="fac_ucd_key_system" Type="Int32" />
+          <Property Name="fac_ucd_region_key" Type="Int32" />
+          <Property Name="fac_freestanding_fac_key" Type="Guid" />
+          <Property Name="fac_emr_portal" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="fac_cart_type" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="fac_transfer_process" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="fac_ai_software" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="fac_tpa_orderset" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="fac_imaging_protocol" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="fac_ucd_bed_size" Type="Int32" />
+          <Property Name="fac_cart_numbers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="fac_cst_key_with_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="IsSleep" Type="Boolean" Nullable="false" />
+          <Property Name="fac_ts_account_ID" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="fac_ai_software_ddl" Type="Int32" />
+          <NavigationProperty Name="contacts" Relationship="DataModel.FK_contact_facility" FromRole="facility" ToRole="contact" />
+          <NavigationProperty Name="ealert_user_facility" Relationship="DataModel.FK_ealert_user_facility_facility" FromRole="facility" ToRole="ealert_user_facility" />
+          <NavigationProperty Name="facility_contract" Relationship="DataModel.FK_facility_contract_facility" FromRole="facility" ToRole="facility_contract" />
+          <NavigationProperty Name="facility_physician" Relationship="DataModel.FK_facility_physician_facility" FromRole="facility" ToRole="facility_physician" />
+          <NavigationProperty Name="facility_questionnaire_pre_live" Relationship="DataModel.FK_facility_questionnaire_pre_live_facility" FromRole="facility" ToRole="facility_questionnaire_pre_live" />
+          <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_facility" FromRole="facility" ToRole="mock_case" />
+          <NavigationProperty Name="post_acute_care" Relationship="DataModel.FK_post_acute_care_facility" FromRole="facility" ToRole="post_acute_care" />
+          <NavigationProperty Name="quality_goals" Relationship="DataModel.FK_quality_goals_facility" FromRole="facility" ToRole="quality_goals" />
+          <NavigationProperty Name="cases" Relationship="DataModel.FK_case_facility" FromRole="facility" ToRole="case" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
@@ -6460,113 +6472,105 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="goals_data">
-          <Key>
-            <PropertyRef Name="gd_key" />
-          </Key>
-          <Property Name="gd_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="gd_qag_key" Type="Int32" />
-          <Property Name="gd_quater" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_door_to_TS_notification_ave_minutes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_door_to_TS_notification_median_minutes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_percent10_min_or_less_activation_EMS" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_percent10_min_or_less_activation_PV" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_percent10_min_or_less_activation_Inpt" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_TS_notification_to_response_average_minute" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_TS_notification_to_response_median_minute" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_percent_TS_at_bedside_grterthan10_minutes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_alteplase_administered" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_door_to_needle_average" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_door_to_needle_median" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_verbal_order_to_administration_average_minutes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_DTN_grter_or_equal_30minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_DTN_grter_or_equal_45minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_DTN_grter_or_equal_60minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_TS_notification_to_needle_grter_or_equal_30minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_TS_notification_to_needle_grter_or_equal_45minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_TS_notification_to_needle_grter_or_equal_60minutes_percent" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_cpoe_order_to_needle_ave_min" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="qag_cpoe_order_to_needle_med_min" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="quality_goals" Relationship="DataModel.FK_goals_data_quality_goals" FromRole="goals_data" ToRole="quality_goals" />
-        </EntityType>
-        <Association Name="FK_goals_data_quality_goals">
-          <End Type="DataModel.quality_goals" Role="quality_goals" Multiplicity="0..1" />
-          <End Type="DataModel.goals_data" Role="goals_data" Multiplicity="*" />
+        <Association Name="FK_contact_facility">
+          <End Type="DataModel.facility" Role="facility" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.contact" Role="contact" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="quality_goals">
-              <PropertyRef Name="qag_key" />
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
             </Principal>
-            <Dependent Role="goals_data">
-              <PropertyRef Name="gd_qag_key" />
+            <Dependent Role="contact">
+              <PropertyRef Name="cnt_fac_key" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="BCI_ReportData">
-          <Key>
-            <PropertyRef Name="BCI_ID" />
-          </Key>
-          <Property Name="BCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Phy_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Phy_Bci_Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Phy_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PhysicianID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="CCIReport_Data">
-          <Key>
-            <PropertyRef Name="CCI_ID" />
-          </Key>
-          <Property Name="CCI_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Physician_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Physician_CCI" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Month" Type="DateTime" Precision="3" />
-          <Property Name="Date" Type="DateTime" Precision="3" />
-          <Property Name="Physician_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PhysicianID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="component_access">
-          <Key>
-            <PropertyRef Name="cac_key" />
-          </Key>
-          <Property Name="cac_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="cac_roleid" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="cac_com_key" Type="Int32" />
-          <Property Name="cac_addedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="cac_addeddate" Type="DateTime" Precision="3" />
-          <Property Name="cac_modifiedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="cac_modifiedon" Type="DateTime" Precision="3" />
-          <Property Name="cac_isAllowed" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="component" Relationship="DataModel.FK_ComponentAccess_Component_Id" FromRole="component_access" ToRole="component" />
-        </EntityType>
-        <EntityType Name="component">
-          <Key>
-            <PropertyRef Name="com_key" />
-          </Key>
-          <Property Name="com_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="com_parentcomponentid" Type="Int32" />
-          <Property Name="com_module_name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_page_url" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_page_name" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_page_title" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_page_description" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_form_id" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="com_status" Type="Boolean" Nullable="false" />
-          <Property Name="com_addedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="com_addedon" Type="DateTime" Precision="3" />
-          <Property Name="com_modifiedby" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="com_modifiedon" Type="DateTime" Precision="3" />
-          <Property Name="com_sortorder" Type="Int32" />
-          <Property Name="com_moduleimage" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="component_access" Relationship="DataModel.FK_ComponentAccess_Component_Id" FromRole="component" ToRole="component_access" />
-        </EntityType>
-        <Association Name="FK_ComponentAccess_Component_Id">
-          <End Type="DataModel.component" Role="component" Multiplicity="0..1" />
-          <End Type="DataModel.component_access" Role="component_access" Multiplicity="*" />
+        <Association Name="FK_ealert_user_facility_facility">
+          <End Type="DataModel.facility" Role="facility" Multiplicity="1" />
+          <End Type="DataModel.ealert_user_facility" Role="ealert_user_facility" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="component">
-              <PropertyRef Name="com_key" />
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
             </Principal>
-            <Dependent Role="component_access">
-              <PropertyRef Name="cac_com_key" />
+            <Dependent Role="ealert_user_facility">
+              <PropertyRef Name="efa_fac_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_facility_contract_facility">
+          <End Type="DataModel.facility" Role="facility" Multiplicity="1" />
+          <End Type="DataModel.facility_contract" Role="facility_contract" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
+            </Principal>
+            <Dependent Role="facility_contract">
+              <PropertyRef Name="fct_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_facility_physician_facility">
+          <End Type="DataModel.facility" Role="facility" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.facility_physician" Role="facility_physician" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
+            </Principal>
+            <Dependent Role="facility_physician">
+              <PropertyRef Name="fap_fac_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_facility_questionnaire_pre_live_facility">
+          <End Type="DataModel.facility" Role="facility" Multiplicity="1" />
+          <End Type="DataModel.facility_questionnaire_pre_live" Role="facility_questionnaire_pre_live" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
+            </Principal>
+            <Dependent Role="facility_questionnaire_pre_live">
+              <PropertyRef Name="fqp_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_mock_case_facility">
+          <End Type="DataModel.facility" Role="facility" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.mock_case" Role="mock_case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
+            </Principal>
+            <Dependent Role="mock_case">
+              <PropertyRef Name="mcas_fac_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_post_acute_care_facility">
+          <End Type="DataModel.facility" Role="facility" Multiplicity="0..1" />
+          <End Type="DataModel.post_acute_care" Role="post_acute_care" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
+            </Principal>
+            <Dependent Role="post_acute_care">
+              <PropertyRef Name="pac_fac_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_quality_goals_facility">
+          <End Type="DataModel.facility" Role="facility" Multiplicity="0..1" />
+          <End Type="DataModel.quality_goals" Role="quality_goals" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="facility">
+              <PropertyRef Name="fac_key" />
+            </Principal>
+            <Dependent Role="quality_goals">
+              <PropertyRef Name="qag_fac_key" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -6890,6 +6894,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <NavigationProperty Name="nih_stroke_scale_answer" Relationship="DataModel.FK_nih_stroke_scale_answer_case" FromRole="case" ToRole="nih_stroke_scale_answer" />
           <NavigationProperty Name="premorbid_correspondnce" Relationship="DataModel.FK_premorbid_correspondnce_case" FromRole="case" ToRole="premorbid_correspondnce" />
           <NavigationProperty Name="rca_counter_measure" Relationship="DataModel.FK_rca_counter_measure_case" FromRole="case" ToRole="rca_counter_measure" />
+          <NavigationProperty Name="case_assign_history" Relationship="DataModel.FK_case_assign_history_case" FromRole="case" ToRole="case_assign_history" />
         </EntityType>
         <EntityType Name="case_assign_history">
           <Key>
@@ -6912,6 +6917,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="cah_action_time_utc" Type="DateTime" Precision="3" />
           <Property Name="cah_created_date_utc" Type="DateTime" Precision="3" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_case_assign_history_AspNetUsers" FromRole="case_assign_history" ToRole="AspNetUser" />
+          <NavigationProperty Name="case" Relationship="DataModel.FK_case_assign_history_case" FromRole="case_assign_history" ToRole="case" />
         </EntityType>
           <Property Name="cas_pat_key" Type="Int32" />
           <Property Name="cas_metric_ethnicity" Type="Int32" />
@@ -7110,6 +7116,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+
         <Association Name="FK_contact_facility">
           <End Type="DataModel.facility" Role="facility" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -8269,10 +8276,16 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
         <Association Name="FK_rca_counter_measure_case">
           <End Type="DataModel.case" Role="case" Multiplicity="1" />
           <End Type="DataModel.rca_counter_measure" Role="rca_counter_measure" Multiplicity="*" />
+
+        <Association Name="FK_case_assign_history_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="1" />
+          <End Type="DataModel.case_assign_history" Role="case_assign_history" Multiplicity="*" />
+
           <ReferentialConstraint>
             <Principal Role="case">
               <PropertyRef Name="cas_key" />
             </Principal>
+
             <Dependent Role="rca_counter_measure">
               <PropertyRef Name="rca_key_id" />
             </Dependent>
@@ -8475,6 +8488,10 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
             </Principal>
             <Dependent Role="user_schedule_sleep">
               <PropertyRef Name="uss_user_id" />
+
+            <Dependent Role="case_assign_history">
+              <PropertyRef Name="cah_cas_key" />
+
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -9806,6 +9823,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           <EntitySetMapping Name="cases">
             <EntityTypeMapping TypeName="DataModel.case">
               <MappingFragment StoreEntitySet="case">
@@ -10132,6 +10150,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           <FunctionImportMapping FunctionImportName="usp_get_cwh_data" FunctionName="DataModel.Store.usp_get_cwh_data">
             <ResultMapping>
               <ComplexTypeMapping TypeName="DataModel.usp_get_cwh_data_Result">
@@ -10718,67 +10737,6 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AspNetUsers">
-            <EntityTypeMapping TypeName="DataModel.AspNetUser">
-              <MappingFragment StoreEntitySet="AspNetUsers">
-                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
-                <ScalarProperty Name="CodeExpiryTime" ColumnName="CodeExpiryTime" />
-                <ScalarProperty Name="TwoFactVerifyCode" ColumnName="TwoFactVerifyCode" />
-                <ScalarProperty Name="IsTwoFactVerified" ColumnName="IsTwoFactVerified" />
-                <ScalarProperty Name="IsSleep" ColumnName="IsSleep" />
-                <ScalarProperty Name="User_Image" ColumnName="User_Image" />
-                <ScalarProperty Name="Zip" ColumnName="Zip" />
-                <ScalarProperty Name="State_key" ColumnName="State_key" />
-                <ScalarProperty Name="City" ColumnName="City" />
-                <ScalarProperty Name="Address_line2" ColumnName="Address_line2" />
-                <ScalarProperty Name="Address_line1" ColumnName="Address_line1" />
-                <ScalarProperty Name="IsDisable" ColumnName="IsDisable" />
-                <ScalarProperty Name="NHAlert" ColumnName="NHAlert" />
-                <ScalarProperty Name="IsStrokeAlert" ColumnName="IsStrokeAlert" />
-                <ScalarProperty Name="status_change_date_forAll" ColumnName="status_change_date_forAll" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="status_change_cas_key" ColumnName="status_change_cas_key" />
-                <ScalarProperty Name="ContractDate" ColumnName="ContractDate" />
-                <ScalarProperty Name="PasswordExpirationDate" ColumnName="PasswordExpirationDate" />
-                <ScalarProperty Name="RequirePasswordReset" ColumnName="RequirePasswordReset" />
-                <ScalarProperty Name="IsEEG" ColumnName="IsEEG" />
-                <ScalarProperty Name="APIPassword" ColumnName="APIPassword" />
-                <ScalarProperty Name="APISecretKey" ColumnName="APISecretKey" />
-                <ScalarProperty Name="CredentialIndex" ColumnName="CredentialIndex" />
-                <ScalarProperty Name="CredentialCount" ColumnName="CredentialCount" />
-                <ScalarProperty Name="status_change_date" ColumnName="status_change_date" />
-                <ScalarProperty Name="status_key" ColumnName="status_key" />
-                <ScalarProperty Name="CaseReviewer" ColumnName="CaseReviewer" />
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="ModifiedByName" ColumnName="ModifiedByName" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedByName" ColumnName="CreatedByName" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="AddressBlock" ColumnName="AddressBlock" />
-                <ScalarProperty Name="Gender" ColumnName="Gender" />
-                <ScalarProperty Name="UserInitial" ColumnName="UserInitial" />
-                <ScalarProperty Name="NPINumber" ColumnName="NPINumber" />
-                <ScalarProperty Name="MobilePhone" ColumnName="MobilePhone" />
-                <ScalarProperty Name="EnableFive9" ColumnName="EnableFive9" />
-                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
-                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
-                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
-                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
-                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
-                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
-                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="goals_data">
             <EntityTypeMapping TypeName="DataModel.goals_data">
               <MappingFragment StoreEntitySet="goals_data">
@@ -10864,6 +10822,115 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
                 <ScalarProperty Name="com_module_name" ColumnName="com_module_name" />
                 <ScalarProperty Name="com_parentcomponentid" ColumnName="com_parentcomponentid" />
                 <ScalarProperty Name="com_key" ColumnName="com_key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetUsers">
+            <EntityTypeMapping TypeName="DataModel.AspNetUser">
+              <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="PhysicianId" ColumnName="PhysicianId" />
+                <ScalarProperty Name="CodeExpiryTime" ColumnName="CodeExpiryTime" />
+                <ScalarProperty Name="TwoFactVerifyCode" ColumnName="TwoFactVerifyCode" />
+                <ScalarProperty Name="IsTwoFactVerified" ColumnName="IsTwoFactVerified" />
+                <ScalarProperty Name="IsSleep" ColumnName="IsSleep" />
+                <ScalarProperty Name="User_Image" ColumnName="User_Image" />
+                <ScalarProperty Name="Zip" ColumnName="Zip" />
+                <ScalarProperty Name="State_key" ColumnName="State_key" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address_line2" ColumnName="Address_line2" />
+                <ScalarProperty Name="Address_line1" ColumnName="Address_line1" />
+                <ScalarProperty Name="IsDisable" ColumnName="IsDisable" />
+                <ScalarProperty Name="NHAlert" ColumnName="NHAlert" />
+                <ScalarProperty Name="IsStrokeAlert" ColumnName="IsStrokeAlert" />
+                <ScalarProperty Name="status_change_date_forAll" ColumnName="status_change_date_forAll" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="status_change_cas_key" ColumnName="status_change_cas_key" />
+                <ScalarProperty Name="ContractDate" ColumnName="ContractDate" />
+                <ScalarProperty Name="PasswordExpirationDate" ColumnName="PasswordExpirationDate" />
+                <ScalarProperty Name="RequirePasswordReset" ColumnName="RequirePasswordReset" />
+                <ScalarProperty Name="IsEEG" ColumnName="IsEEG" />
+                <ScalarProperty Name="APIPassword" ColumnName="APIPassword" />
+                <ScalarProperty Name="APISecretKey" ColumnName="APISecretKey" />
+                <ScalarProperty Name="CredentialIndex" ColumnName="CredentialIndex" />
+                <ScalarProperty Name="CredentialCount" ColumnName="CredentialCount" />
+                <ScalarProperty Name="status_change_date" ColumnName="status_change_date" />
+                <ScalarProperty Name="status_key" ColumnName="status_key" />
+                <ScalarProperty Name="CaseReviewer" ColumnName="CaseReviewer" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ModifiedByName" ColumnName="ModifiedByName" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedByName" ColumnName="CreatedByName" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="AddressBlock" ColumnName="AddressBlock" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="UserInitial" ColumnName="UserInitial" />
+                <ScalarProperty Name="NPINumber" ColumnName="NPINumber" />
+                <ScalarProperty Name="MobilePhone" ColumnName="MobilePhone" />
+                <ScalarProperty Name="EnableFive9" ColumnName="EnableFive9" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="facilities">
+            <EntityTypeMapping TypeName="DataModel.facility">
+              <MappingFragment StoreEntitySet="facility">
+                <ScalarProperty Name="fac_ai_software_ddl" ColumnName="fac_ai_software_ddl" />
+                <ScalarProperty Name="fac_ts_account_ID" ColumnName="fac_ts_account_ID" />
+                <ScalarProperty Name="IsSleep" ColumnName="IsSleep" />
+                <ScalarProperty Name="fac_cst_key_with_Name" ColumnName="fac_cst_key_with_Name" />
+                <ScalarProperty Name="fac_cart_numbers" ColumnName="fac_cart_numbers" />
+                <ScalarProperty Name="fac_ucd_bed_size" ColumnName="fac_ucd_bed_size" />
+                <ScalarProperty Name="fac_imaging_protocol" ColumnName="fac_imaging_protocol" />
+                <ScalarProperty Name="fac_tpa_orderset" ColumnName="fac_tpa_orderset" />
+                <ScalarProperty Name="fac_ai_software" ColumnName="fac_ai_software" />
+                <ScalarProperty Name="fac_transfer_process" ColumnName="fac_transfer_process" />
+                <ScalarProperty Name="fac_cart_type" ColumnName="fac_cart_type" />
+                <ScalarProperty Name="fac_emr_portal" ColumnName="fac_emr_portal" />
+                <ScalarProperty Name="fac_freestanding_fac_key" ColumnName="fac_freestanding_fac_key" />
+                <ScalarProperty Name="fac_ucd_region_key" ColumnName="fac_ucd_region_key" />
+                <ScalarProperty Name="fac_ucd_key_system" ColumnName="fac_ucd_key_system" />
+                <ScalarProperty Name="fac_is_pac" ColumnName="fac_is_pac" />
+                <ScalarProperty Name="fac_emr" ColumnName="fac_emr" />
+                <ScalarProperty Name="qps_number" ColumnName="qps_number" />
+                <ScalarProperty Name="fac_go_live" ColumnName="fac_go_live" />
+                <ScalarProperty Name="fac_not_templated_used" ColumnName="fac_not_templated_used" />
+                <ScalarProperty Name="fac_system" ColumnName="fac_system" />
+                <ScalarProperty Name="fac_modified_by_name" ColumnName="fac_modified_by_name" />
+                <ScalarProperty Name="fac_created_by_name" ColumnName="fac_created_by_name" />
+                <ScalarProperty Name="fac_md_staff_reference_source_id" ColumnName="fac_md_staff_reference_source_id" />
+                <ScalarProperty Name="fac_md_staff_source_name" ColumnName="fac_md_staff_source_name" />
+                <ScalarProperty Name="fac_sct_key" ColumnName="fac_sct_key" />
+                <ScalarProperty Name="fac_cst_key" ColumnName="fac_cst_key" />
+                <ScalarProperty Name="fac_fct_key" ColumnName="fac_fct_key" />
+                <ScalarProperty Name="fac_timezone" ColumnName="fac_timezone" />
+                <ScalarProperty Name="fac_zip" ColumnName="fac_zip" />
+                <ScalarProperty Name="fac_stt_key" ColumnName="fac_stt_key" />
+                <ScalarProperty Name="fac_city" ColumnName="fac_city" />
+                <ScalarProperty Name="fac_address_line2" ColumnName="fac_address_line2" />
+                <ScalarProperty Name="fac_address_line1" ColumnName="fac_address_line1" />
+                <ScalarProperty Name="fac_modified_date" ColumnName="fac_modified_date" />
+                <ScalarProperty Name="fac_modified_by" ColumnName="fac_modified_by" />
+                <ScalarProperty Name="fac_created_date" ColumnName="fac_created_date" />
+                <ScalarProperty Name="fac_created_by" ColumnName="fac_created_by" />
+                <ScalarProperty Name="fac_is_active" ColumnName="fac_is_active" />
+                <ScalarProperty Name="fac_description" ColumnName="fac_description" />
+                <ScalarProperty Name="fac_name" ColumnName="fac_name" />
+                <ScalarProperty Name="fac_key" ColumnName="fac_key" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
