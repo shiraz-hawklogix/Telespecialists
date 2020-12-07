@@ -302,9 +302,18 @@
         <b>History of Present Illness:</b>
         @if (Model.cas_billing_dob.HasValue && !string.IsNullOrEmpty(Model.cas_metric_patient_gender))
         {
-            <div>
-                Patient is a  @DateTime.Now.ToEST().CalculateAge(Model.cas_billing_dob.Value).ToString() year old @(((Gender)Model.cas_metric_patient_gender.ToCharArray().FirstOrDefault()).ToDescription()).
-            </div>
+            if (Model.cas_metric_ethnicity.HasValue)
+            {
+                <div>
+                    Patient is a @DateTime.Now.ToEST().CalculateAge(Model.cas_billing_dob.Value).ToString() year old @(((Ethnicity)Model.cas_metric_ethnicity.ToInt()).ToDescription()) @(((Gender)Model.cas_metric_patient_gender.ToCharArray().FirstOrDefault()).ToDescription()).
+                </div>
+            }
+            else
+            {
+                <div>
+                    Patient is a @DateTime.Now.ToEST().CalculateAge(Model.cas_billing_dob.Value).ToString() year old @(((Gender)Model.cas_metric_patient_gender.ToCharArray().FirstOrDefault()).ToDescription()).
+                </div>
+            }
         }
 
         @if (ViewBag.IllnessHistory != null)
@@ -411,15 +420,11 @@
             @if (Model.case_template_statconsult != null && Model.cas_nihss_cannot_completed)
             {
                 string NIHSS = "NIHSS may not be reliable due to:";
-                if (Model.case_template_statconsult.ctt_NIHSS_comatose == 1)
+                if (Model.case_template_statconsult.ctt_NIHSS_comatose != 3)
                 {
-                    <span>@NIHSS Patient is comatose</span><br />
+                    <span>@NIHSS @(((NIHSSPatientsComatose)Model.case_template_statconsult.ctt_NIHSS_comatose.ToInt()).ToDescription())</span><br />
                 }
-                if (Model.case_template_statconsult.ctt_NIHSS_comatose == 2)
-                {
-                    <span>@NIHSS Patient was intubated and paralyzed</span><br />
-                }
-                if (Model.case_template_statconsult.ctt_NIHSS_comatose == 3)
+                else
                 {
                     <span>@NIHSS @Model.case_template_statconsult.ctt_NIHSS_comatose_text</span><br />
                 }
@@ -647,17 +652,17 @@
         </div>
     }
     @*@if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_nihss_totalscore.ToString()) && !(Model.case_template_statconsult.ctt_ignore_nihss))*@
-    @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_nihss_totalscore.ToString()) @*&& !(Model.cas_nihss_cannot_completed)*@)
-    {
-        if (Model.case_template_statconsult.ctt_nihss_or_neuro != "NeuroExam")
-        {
-            // this hide if neuro exam
-            <br />
-            <div>
-                <b>NIHSS Score: </b> @(Model.case_template_statconsult.ctt_nihss_totalscore.ToString())
-            </div>
-        }
-    }
+    @if (!string.IsNullOrEmpty(Model.case_template_statconsult.ctt_nihss_totalscore.ToString())@*&& !(Model.cas_nihss_cannot_completed)*@)
+{
+if (Model.case_template_statconsult.ctt_nihss_or_neuro != "NeuroExam")
+{
+// this hide if neuro exam
+<br />
+<div>
+    <b>NIHSS Score: </b> @(Model.case_template_statconsult.ctt_nihss_totalscore.ToString())
+</div>
+}
+}
     <br />
 
     @if (Model.case_template_statconsult.ctt_consented_to_tele == "true")

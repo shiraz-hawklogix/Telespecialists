@@ -26,7 +26,7 @@ namespace TeleSpecialists.BLL.Model
         public string efa_modified_by_name { get; set; }
         public Nullable<System.DateTime> efa_modified_date { get; set; }
     
-        public virtual AspNetUser AspNetUser { get; set; }
         public virtual facility facility { get; set; }
+        public virtual AspNetUser AspNetUser { get; set; }
     }
 }

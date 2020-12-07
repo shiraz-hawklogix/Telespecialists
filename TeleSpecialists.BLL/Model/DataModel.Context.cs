@@ -85,6 +85,7 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<facility_rate> facility_rate { get; set; }
         public virtual DbSet<user_schedule_sleep> user_schedule_sleep { get; set; }
         public virtual DbSet<user_schedule_nhalert> user_schedule_nhalert { get; set; }
+        public virtual DbSet<facility> facilities { get; set; }
         public virtual DbSet<cwh_data> cwh_data { get; set; }
         public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
         public virtual DbSet<facility_physician> facility_physician { get; set; }
@@ -107,13 +108,12 @@ namespace TeleSpecialists.BLL.Model
         public virtual DbSet<mock_case> mock_case { get; set; }
         public virtual DbSet<OperationOutlierNotificationLog> OperationOutlierNotificationLogs { get; set; }
         public virtual DbSet<token> tokens { get; set; }
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
         public virtual DbSet<goals_data> goals_data { get; set; }
         public virtual DbSet<BCI_ReportData> BCI_ReportData { get; set; }
         public virtual DbSet<CCIReport_Data> CCIReport_Data { get; set; }
         public virtual DbSet<component_access> component_access { get; set; }
         public virtual DbSet<component> components { get; set; }
-        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
-        public virtual DbSet<facility> facilities { get; set; }
         public virtual DbSet<@case> cases { get; set; }
         public virtual DbSet<case_assign_history> case_assign_history { get; set; }
     

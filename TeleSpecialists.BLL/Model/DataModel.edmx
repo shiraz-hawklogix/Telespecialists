@@ -95,7 +95,7 @@
           <Property Name="aps_session_timeout_in_minutes" Type="bigint" />
           <Property Name="aps_two_factor_code_expiry_timeout_in_minutes" Type="bigint" />
           <Property Name="aps_enable_logout_from_other_devices" Type="bit" Nullable="false" />
-          <Property Name="aps_enable_pending_cases_notifications" Type="bit" />
+          <Property Name="aps_enable_pending_cases_notifications" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
@@ -259,7 +259,7 @@
           <Property Name="Phy_Name" Type="nvarchar" MaxLength="100" />
           <Property Name="Phy_Bci_Value" Type="nvarchar" MaxLength="100" />
           <Property Name="Phy_Id" Type="nvarchar" MaxLength="100" />
-          <Property Name="PhysicianID" Type="nvarchar" MaxLength="100" />
+          <Property Name="PhysicianID" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="call_history">
           <Key>
@@ -571,6 +571,8 @@
           <Property Name="cas_premorbid_completed_by" Type="varchar" MaxLength="128" />
           <Property Name="cas_premorbid_completed_date" Type="datetime" />
           <Property Name="cas_metric_wakeup_stroke" Type="bit" Nullable="false" />
+          <Property Name="cas_pat_key" Type="int" />
+          <Property Name="cas_metric_ethnicity" Type="int" />
         </EntityType>
         <EntityType Name="case_assign_history">
           <Key>
@@ -930,7 +932,7 @@
           <Property Name="Month" Type="datetime" />
           <Property Name="Date" Type="datetime" />
           <Property Name="Physician_Name" Type="nvarchar" MaxLength="100" />
-          <Property Name="PhysicianID" Type="nvarchar" MaxLength="100" />
+          <Property Name="PhysicianID" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="component_access">
           <Key>
@@ -1231,7 +1233,7 @@
           <Property Name="fap_preapp_receive_date" Type="datetime" />
           <Property Name="fap_app_sent_to_dr" Type="datetime" />
           <Property Name="fap_Credentials_confirmed_date" Type="datetime" />
-          <Property Name="fap_Password" Type="nvarchar(max)" />
+          <Property Name="fap_Password" Type="nvarchar" MaxLength="40" />
           <Property Name="fap_Password_BY" Type="nvarchar" MaxLength="100" />
           <Property Name="fap_Password_Date" Type="datetime" />
           <Property Name="fap_Array_path" Type="nvarchar(max)" />
@@ -1413,7 +1415,7 @@
           <Property Name="cod_linked_id" Type="varchar" MaxLength="200" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.MDStaffFacility' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.MDStaffFacility' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="MDStaffFacility">
           <Key>
             <PropertyRef Name="ID" />
@@ -2142,7 +2144,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.MDStaffFacility' does not
           <Property Name="wcl_request_retry_count" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_facility_physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_facility_physician' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="view_facility_physician">
           <Key>
             <PropertyRef Name="fap_key" />
@@ -2164,7 +2166,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_facility_physician' 
           <Property Name="fac_go_live" Type="bit" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'dbTeleSpecialists-netsparker.dbo.view_user_schedule' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="view_user_schedule">
           <Key>
             <PropertyRef Name="uss_key" />
@@ -3858,6 +3860,10 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <AssociationSet Name="FK_rca_counter_measure_case" Association="DataModel.FK_rca_counter_measure_case">
             <End Role="case" EntitySet="cases" />
             <End Role="rca_counter_measure" EntitySet="rca_counter_measure" />
+          </AssociationSet>
+          <AssociationSet Name="FK_case_assign_history_case" Association="DataModel.FK_case_assign_history_case">
+            <End Role="case" EntitySet="cases" />
+            <End Role="case_assign_history" EntitySet="case_assign_history" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="alarm_setting">
@@ -5586,7 +5592,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="fap_preapp_receive_date" Type="DateTime" Precision="3" />
           <Property Name="fap_app_sent_to_dr" Type="DateTime" Precision="3" />
           <Property Name="fap_Credentials_confirmed_date" Type="DateTime" Precision="3" />
-          <Property Name="fap_Password" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="fap_Password" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
           <Property Name="fap_Password_BY" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="fap_Password_Date" Type="DateTime" Precision="3" />
           <Property Name="fap_Array_path" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -5679,7 +5685,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="aps_session_timeout_in_minutes" Type="Int64" />
           <Property Name="aps_two_factor_code_expiry_timeout_in_minutes" Type="Int64" />
           <Property Name="aps_enable_logout_from_other_devices" Type="Boolean" Nullable="false" />
-          <Property Name="aps_enable_pending_cases_notifications" Type="Boolean" />
+          <Property Name="aps_enable_pending_cases_notifications" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="user_login_verify">
           <Key>
@@ -6507,7 +6513,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="Phy_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Phy_Bci_Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Phy_Id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PhysicianID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="CCIReport_Data">
           <Key>
@@ -6519,7 +6525,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="Month" Type="DateTime" Precision="3" />
           <Property Name="Date" Type="DateTime" Precision="3" />
           <Property Name="Physician_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="PhysicianID" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhysicianID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="component_access">
           <Key>
@@ -6856,6 +6862,9 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <NavigationProperty Name="nih_stroke_scale_answer" Relationship="DataModel.FK_nih_stroke_scale_answer_case" FromRole="case" ToRole="nih_stroke_scale_answer" />
           <NavigationProperty Name="premorbid_correspondnce" Relationship="DataModel.FK_premorbid_correspondnce_case" FromRole="case" ToRole="premorbid_correspondnce" />
           <NavigationProperty Name="rca_counter_measure" Relationship="DataModel.FK_rca_counter_measure_case" FromRole="case" ToRole="rca_counter_measure" />
+          <Property Name="cas_pat_key" Type="Int32" />
+          <Property Name="cas_metric_ethnicity" Type="Int32" />
+          <NavigationProperty Name="case_assign_history" Relationship="DataModel.FK_case_assign_history_case" FromRole="case" ToRole="case_assign_history" />
         </EntityType>
         <EntityType Name="case_assign_history">
           <Key>
@@ -6878,6 +6887,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="cah_action_time_utc" Type="DateTime" Precision="3" />
           <Property Name="cah_created_date_utc" Type="DateTime" Precision="3" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_case_assign_history_AspNetUsers" FromRole="case_assign_history" ToRole="AspNetUser" />
+          <NavigationProperty Name="case" Relationship="DataModel.FK_case_assign_history_case" FromRole="case_assign_history" ToRole="case" />
         </EntityType>
         <Association Name="FK_case_AspNetUsers">
           <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
@@ -7066,6 +7076,18 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
             </Principal>
             <Dependent Role="rca_counter_measure">
               <PropertyRef Name="rca_key_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_assign_history_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="1" />
+          <End Type="DataModel.case_assign_history" Role="case_assign_history" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="case">
+              <PropertyRef Name="cas_key" />
+            </Principal>
+            <Dependent Role="case_assign_history">
+              <PropertyRef Name="cah_cas_key" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -9134,6 +9156,8 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <EntitySetMapping Name="cases">
             <EntityTypeMapping TypeName="DataModel.case">
               <MappingFragment StoreEntitySet="case">
+                <ScalarProperty Name="cas_metric_ethnicity" ColumnName="cas_metric_ethnicity" />
+                <ScalarProperty Name="cas_pat_key" ColumnName="cas_pat_key" />
                 <ScalarProperty Name="cas_metric_wakeup_stroke" ColumnName="cas_metric_wakeup_stroke" />
                 <ScalarProperty Name="cas_premorbid_completed_date" ColumnName="cas_premorbid_completed_date" />
                 <ScalarProperty Name="cas_premorbid_completed_by" ColumnName="cas_premorbid_completed_by" />

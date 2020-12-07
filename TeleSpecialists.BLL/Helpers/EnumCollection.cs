@@ -1616,7 +1616,34 @@ namespace TeleSpecialists.BLL.Helpers
         other = 3,
 
     }
-
+    public enum Ethnicity
+    {
+        [Description("Caucasian")]
+        Select = 1,
+        [Description("Black")]
+        patient_comatose = 2,
+        [Description("Hispanic")]
+        patient_intubated = 3,
+        [Description("")]
+        other = 4,
+    }
+    public enum MorbidSymptoms
+    {
+        [Description("No symptoms at all")]
+        no_symptom = 0,
+        [Description("No significant disability despite symptoms; able to carry out all usual duties and activities")]
+        disability_despite = 1,
+        [Description("Slight disability; unable to carry out all previous activities, but able to look after own affairs without assistance")]
+        slight_disability = 2,
+        [Description("Moderate disability; requiring some help, but able to walk without assistance")]
+        moderate_disability = 3,
+        [Description("Moderately severe disability; unable to walk and attend to bodily needs without assistance")]
+        moderate_severe_disability = 4,
+        [Description("Severe disability; bedridden, incontinent and requiring constant nursing care and attention")]
+        severe_disability = 5,
+        [Description("Dead")]
+        dead = 6
+    }
     #endregion
 }
 

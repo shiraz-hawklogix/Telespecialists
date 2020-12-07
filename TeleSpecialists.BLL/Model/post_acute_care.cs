@@ -118,7 +118,7 @@ namespace TeleSpecialists.BLL.Model
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<pac_case_template> pac_case_template { get; set; }
-        public virtual AspNetUser AspNetUser { get; set; }
         public virtual facility facility { get; set; }
+        public virtual AspNetUser AspNetUser { get; set; }
     }
 }
