@@ -246,12 +246,6 @@
             NIHSSstatus = "true";
         }
     }
-
-    var ethnicOpt = new Dictionary<string, string>();
-    ethnicOpt.Add("1", "Caucasian");
-    ethnicOpt.Add("2", "Black");
-    ethnicOpt.Add("3", "Hispanic");
-    ethnicOpt.Add("4", "Other");
 }
 
 
@@ -277,16 +271,6 @@
                     <label>This field is required</label>
                 </div>
                 @Html.ValidationMessageFor(model => model.cas_metric_patient_gender, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="control-label col-xl-4 col-sm-4 col-lg-12">Ethnicity: </label>
-            <div class="col-sm-8">
-                @Html.RadioButtonListFor(m => m.cas_metric_ethnicity, ethnicOpt)
-                <div class="error_msg" style="display:none;">
-                    <label>This field is required</label>
-                </div>
-                @Html.ValidationMessageFor(model => model.cas_metric_ethnicity, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group row">
