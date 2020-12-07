@@ -571,8 +571,6 @@
           <Property Name="cas_premorbid_completed_by" Type="varchar" MaxLength="128" />
           <Property Name="cas_premorbid_completed_date" Type="datetime" />
           <Property Name="cas_metric_wakeup_stroke" Type="bit" Nullable="false" />
-          <Property Name="cas_pat_key" Type="int" />
-          <Property Name="cas_metric_ethnicity" Type="int" />
         </EntityType>
         <EntityType Name="case_assign_history">
           <Key>
@@ -6578,7 +6576,6 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Key>
             <PropertyRef Name="cas_key" />
           </Key>
-
           <Property Name="cas_key" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="cas_ctp_key" Type="Int32" Nullable="false" />
           <Property Name="cas_associate_id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
@@ -6793,19 +6790,10 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="cas_billing_bic_key_initial" Type="Int32" />
           <Property Name="cas_cancelled_type" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="cas_cancelled_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="cas_template_deleted_date" Type="DateTime" Precision="3" />
-          <Property Name="cas_operations_review_completed" Type="Int32" />
-          <Property Name="cas_review_facility_communication" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="cas_review_internal_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="cas_cancelled_type" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="cas_cancelled_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="cas_billing_bic_key_initial" Type="Int32" />
           <Property Name="cas_datetime_of_contact" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="cas_typeof_correspondence" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="cas_contact_comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="cas_callback_response_by" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="cas_rejection_type" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
-          <Property Name="cas_rejection_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="cas_callback_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="cas_commnets_off" Type="Boolean" />
           <Property Name="cas_navigator_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -6821,17 +6809,6 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="cas_antiplatelet_use_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="cas_rejection_type" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
           <Property Name="cas_rejection_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="case_assign_history" Relationship="DataModel.FK_case_assign_history_case" FromRole="case" ToRole="case_assign_history" />
-          <NavigationProperty Name="facility" Relationship="DataModel.FK_case_facility" FromRole="case" ToRole="facility" />
-          <NavigationProperty Name="case_generated_template" Relationship="DataModel.FK_case_generated_template_case" FromRole="case" ToRole="case_generated_template" />
-          <NavigationProperty Name="case_review_template" Relationship="DataModel.FK_case_review_template_case" FromRole="case" ToRole="case_review_template" />
-          <NavigationProperty Name="case_template_statconsult" Relationship="DataModel.FK_case_template_statconsult_case" FromRole="case" ToRole="case_template_statconsult" />
-          <NavigationProperty Name="case_template_stroke_neuro_tpa" Relationship="DataModel.FK_case_template_stroke_neuro_tpa_case" FromRole="case" ToRole="case_template_stroke_neuro_tpa" />
-          <NavigationProperty Name="case_template_stroke_notpa" Relationship="DataModel.FK_case_template_stroke_notpa_case" FromRole="case" ToRole="case_template_stroke_notpa" />
-          <NavigationProperty Name="case_template_stroke_tpa" Relationship="DataModel.FK_case_template_stroke_tpa_case" FromRole="case" ToRole="case_template_stroke_tpa" />
-          <NavigationProperty Name="case_template_telestroke_notpa" Relationship="DataModel.FK_case_template_telestroke_notpa_case" FromRole="case" ToRole="case_template_telestroke_notpa" />
-          <NavigationProperty Name="nih_stroke_scale_answer" Relationship="DataModel.FK_nih_stroke_scale_answer_case" FromRole="case" ToRole="nih_stroke_scale_answer" />
-          <NavigationProperty Name="rca_counter_measure" Relationship="DataModel.FK_rca_counter_measure_case" FromRole="case" ToRole="rca_counter_measure" />
           <Property Name="cas_metric_has_time_of_set" Type="Int32" />
           <Property Name="cas_metric_has_ct_head_hemorrhage" Type="Int32" />
           <Property Name="cas_metric_has_ischemic_stroke" Type="Int32" />
@@ -6850,16 +6827,6 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="cas_navigator_stamp_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="cas_exam_free_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="cas_is_flagged_physician" Type="Boolean" Nullable="false" />
-          <Property Name="cas_is_flagged_physician" Type="Boolean" Nullable="false" />
-          <Property Name="cas_exam_free_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="cas_metric_advance_imaging_to_be_reviewed" Type="Boolean" Nullable="false" />
-          <Property Name="cas_metric_advance_imaging_is_reviewed" Type="Boolean" Nullable="false" />
-          <Property Name="cas_metric_advance_imaging_not_obtained" Type="Boolean" Nullable="false" />
-          <Property Name="cas_metric_advance_imaging_cta_head_checked_obtained" Type="Boolean" Nullable="false" />
-          <Property Name="cas_metric_advance_imaging_ctp_obtained" Type="Boolean" Nullable="false" />
-          <Property Name="cas_metric_advance_imaging_no_indication_thombus" Type="Boolean" Nullable="false" />
-          <Property Name="cas_metric_presentation_suggestive" Type="Boolean" Nullable="false" />
-          <Property Name="cas_metric_presentation_is_not_suggestive" Type="Boolean" Nullable="false" />
           <Property Name="cas_metric_ct_head_review" Type="Boolean" />
           <Property Name="cas_metric_ct_head_review_reason" Type="Int32" />
           <Property Name="cas_metric_ct_head_review_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -6878,7 +6845,6 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <Property Name="cas_premorbid_symptoms_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="cas_premorbid_completed_by" Type="String" MaxLength="128" FixedLength="false" Unicode="false" />
           <Property Name="cas_premorbid_completed_date" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="premorbid_correspondnce" Relationship="DataModel.FK_premorbid_correspondnce_case" FromRole="case" ToRole="premorbid_correspondnce" />
           <Property Name="cas_metric_wakeup_stroke" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_case_AspNetUsers" FromRole="case" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser1" Relationship="DataModel.FK_case_AspNetUsers_Navigator" FromRole="case" ToRole="AspNetUser" />
@@ -6919,74 +6885,55 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
           <NavigationProperty Name="AspNetUser" Relationship="DataModel.FK_case_assign_history_AspNetUsers" FromRole="case_assign_history" ToRole="AspNetUser" />
           <NavigationProperty Name="case" Relationship="DataModel.FK_case_assign_history_case" FromRole="case_assign_history" ToRole="case" />
         </EntityType>
-          <Property Name="cas_pat_key" Type="Int32" />
-          <Property Name="cas_metric_ethnicity" Type="Int32" />
-        </EntityType>
-        <EntityType Name="facility">
-          <Key>
-            <PropertyRef Name="fac_key" />
-          </Key>
-          <Property Name="fac_key" Type="Guid" Nullable="false" />
-          <Property Name="fac_name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="fac_is_active" Type="Boolean" Nullable="false" />
-          <Property Name="fac_created_by" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="fac_created_date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="fac_modified_by" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="fac_modified_date" Type="DateTime" Precision="3" />
-          <Property Name="fac_address_line1" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="fac_address_line2" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="fac_city" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="fac_stt_key" Type="Int32" />
-          <Property Name="fac_zip" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="fac_timezone" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="fac_fct_key" Type="Int32" />
-          <Property Name="fac_cst_key" Type="Int32" />
-          <Property Name="fac_sct_key" Type="Int32" />
-          <Property Name="fac_md_staff_source_name" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
-          <Property Name="fac_md_staff_reference_source_id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="fac_created_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="fac_modified_by_name" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
-          <Property Name="fac_not_templated_used" Type="Boolean" Nullable="false" />
-          <Property Name="fac_go_live" Type="Boolean" Nullable="false" />
-          <Property Name="qps_number" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="fac_emr" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_is_pac" Type="Boolean" Nullable="false" />
-          <Property Name="fac_ucd_key_system" Type="Int32" />
-          <Property Name="fac_ucd_region_key" Type="Int32" />
-          <Property Name="fac_freestanding_fac_key" Type="Guid" />
-          <Property Name="fac_emr_portal" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_cart_type" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_transfer_process" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_ai_software" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_tpa_orderset" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_imaging_protocol" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_ucd_bed_size" Type="Int32" />
-          <Property Name="fac_cart_numbers" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="fac_cst_key_with_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="IsSleep" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="cases" Relationship="DataModel.FK_case_facility" FromRole="facility" ToRole="case" />
-          <NavigationProperty Name="contacts" Relationship="DataModel.FK_contact_facility" FromRole="facility" ToRole="contact" />
-          <NavigationProperty Name="ealert_user_facility" Relationship="DataModel.FK_ealert_user_facility_facility" FromRole="facility" ToRole="ealert_user_facility" />
-          <NavigationProperty Name="facility_contract" Relationship="DataModel.FK_facility_contract_facility" FromRole="facility" ToRole="facility_contract" />
-          <NavigationProperty Name="facility_questionnaire_pre_live" Relationship="DataModel.FK_facility_questionnaire_pre_live_facility" FromRole="facility" ToRole="facility_questionnaire_pre_live" />
-          <NavigationProperty Name="post_acute_care" Relationship="DataModel.FK_post_acute_care_facility" FromRole="facility" ToRole="post_acute_care" />
-          <NavigationProperty Name="quality_goals" Relationship="DataModel.FK_quality_goals_facility" FromRole="facility" ToRole="quality_goals" />
-          <Property Name="fac_ts_account_ID" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="fac_description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="fac_system" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="facility_physician" Relationship="DataModel.FK_facility_physician_facility" FromRole="facility" ToRole="facility_physician" />
-          <Property Name="fac_ai_software_ddl" Type="Int32" />
-          <NavigationProperty Name="mock_case" Relationship="DataModel.FK_mock_case_facility" FromRole="facility" ToRole="mock_case" />
-        </EntityType>
-        <Association Name="FK_case_assign_history_case">
-          <End Type="DataModel.case" Role="case" Multiplicity="1" />
+        <Association Name="FK_case_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="DataModel.case" Role="case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="case">
+              <PropertyRef Name="cas_response_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_AspNetUsers_Navigator">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="DataModel.case" Role="case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="case">
+              <PropertyRef Name="cas_associate_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_AspNetUsers1">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DataModel.case" Role="case" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="case">
+              <PropertyRef Name="cas_phy_key" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_case_assign_history_AspNetUsers">
+          <End Type="DataModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Type="DataModel.case_assign_history" Role="case_assign_history" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="case">
-              <PropertyRef Name="cas_key" />
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="case_assign_history">
-              <PropertyRef Name="cah_cas_key" />
+              <PropertyRef Name="cah_phy_key" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -7104,13 +7051,14 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_rca_counter_measure_case">
-          <End Type="DataModel.case" Role="case" Multiplicity="1" />
-          <End Type="DataModel.rca_counter_measure" Role="rca_counter_measure" Multiplicity="*" />
+        <Association Name="FK_premorbid_correspondnce_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="0..1" />
+          <End Type="DataModel.premorbid_correspondnce" Role="premorbid_correspondnce" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="case">
               <PropertyRef Name="cas_key" />
             </Principal>
+
             <Dependent Role="rca_counter_measure">
               <PropertyRef Name="rca_key_id" />
             </Dependent>
@@ -7176,21 +7124,26 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
             </Principal>
             <Dependent Role="post_acute_care">
               <PropertyRef Name="pac_fac_key" />
+
+            <Dependent Role="premorbid_correspondnce">
+              <PropertyRef Name="pmc_cas_key" />
+
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_quality_goals_facility">
-          <End Type="DataModel.facility" Role="facility" Multiplicity="0..1" />
-          <End Type="DataModel.quality_goals" Role="quality_goals" Multiplicity="*" />
+        <Association Name="FK_rca_counter_measure_case">
+          <End Type="DataModel.case" Role="case" Multiplicity="1" />
+          <End Type="DataModel.rca_counter_measure" Role="rca_counter_measure" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="facility">
-              <PropertyRef Name="fac_key" />
+            <Principal Role="case">
+              <PropertyRef Name="cas_key" />
             </Principal>
-            <Dependent Role="quality_goals">
-              <PropertyRef Name="qag_fac_key" />
+            <Dependent Role="rca_counter_measure">
+              <PropertyRef Name="rca_key_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
+
         <ComplexType Name="usp_get_cwh_data_Result">
           <Property Type="String" Name="fac_key" Nullable="true" />
           <Property Type="String" Name="fac_name" Nullable="true" />
@@ -8651,6 +8604,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           <EntitySetMapping Name="case_assign_history">
             <EntityTypeMapping TypeName="DataModel.case_assign_history">
               <MappingFragment StoreEntitySet="case_assign_history">
@@ -8673,6 +8627,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           <EntitySetMapping Name="case_copy_log">
             <EntityTypeMapping TypeName="DataModel.case_copy_log">
               <MappingFragment StoreEntitySet="case_copy_log">
@@ -9576,6 +9531,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           <EntitySetMapping Name="goals_data">
             <EntityTypeMapping TypeName="DataModel.goals_data">
               <MappingFragment StoreEntitySet="goals_data">
@@ -9603,6 +9559,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+
           <EntitySetMapping Name="quality_goals">
             <EntityTypeMapping TypeName="DataModel.quality_goals">
               <MappingFragment StoreEntitySet="quality_goals">
@@ -9820,6 +9777,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
                 <ScalarProperty Name="uss_date" ColumnName="uss_date" />
                 <ScalarProperty Name="uss_user_id" ColumnName="uss_user_id" />
                 <ScalarProperty Name="uss_key" ColumnName="uss_key" />
+
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -10099,6 +10057,7 @@ warning 6002: The table/view 'dbTeleSpecialistsPrd.dbo.view_user_schedule' does 
                 <ScalarProperty Name="cas_associate_id" ColumnName="cas_associate_id" />
                 <ScalarProperty Name="cas_ctp_key" ColumnName="cas_ctp_key" />
                 <ScalarProperty Name="cas_key" ColumnName="cas_key" />
+
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
